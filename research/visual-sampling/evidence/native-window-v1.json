@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "scope": "One owned 560x260 text window on this host; no game cadence or semantic claim",
+  "modes": {
+    "full": {
+      "requested_delay_ms": 250,
+      "warmup_elapsed_ms": 2000,
+      "median_capture_ms": 1793.5,
+      "median_recognition_ms": 1592.0,
+      "median_start_interval_ms": 2124.665,
+      "start_intervals_ms": [
+        2097.534,
+        2152.215,
+        2125.799,
+        2123.945,
+        2124.665
+      ],
+      "image_hashes_verified": 6,
+      "captures": [
+        {
+          "mode": "full",
+          "number": 2,
+          "elapsed_ms": 1769,
+          "recognition_ms": 1577,
+          "screen_capture_ms": 190,
+          "memory_read_ms": 1,
+          "captured_bytes": 1044480
+        },
+        {
+          "mode": "full",
+          "number": 3,
+          "elapsed_ms": 1811,
+          "recognition_ms": 1594,
+          "screen_capture_ms": 214,
+          "memory_read_ms": 2,
+          "captured_bytes": 1044480
+        },
+        {
+          "mode": "full",
+          "number": 4,
+          "elapsed_ms": 1803,
+          "recognition_ms": 1604,
+          "screen_capture_ms": 196,
+          "memory_read_ms": 1,
+          "captured_bytes": 1044480
+        },
+        {
+          "mode": "full",
+          "number": 5,
+          "elapsed_ms": 1784,
+          "recognition_ms": 1590,
+          "screen_capture_ms": 191,
+          "memory_read_ms": 1,
+          "captured_bytes": 1044480
+        },
+        {
+          "mode": "full",
+          "number": 6,
+          "elapsed_ms": 1794,
+          "recognition_ms": 1604,
+          "screen_capture_ms": 187,
+          "memory_read_ms": 1,
+          "captured_bytes": 1044480
+        },
+        {
+          "mode": "full",
+          "number": 7,
+          "elapsed_ms": 1793,
+          "recognition_ms": 1588,
+          "screen_capture_ms": 203,
+          "memory_read_ms": 2,
+          "captured_bytes": 1044480
+        }
+      ],
+      "observed_ocr_sources": [
+        "pp_ocr_v6",
+        "windows_ocr"
+      ]
+    },
+    "visual": {
+      "requested_delay_ms": 50,
+      "warmup_elapsed_ms": 193,
+      "median_capture_ms": 193.5,
+      "median_recognition_ms": 0.0,
+      "median_start_interval_ms": 310.938,
+      "start_intervals_ms": [
+        310.75,
+        335.262,
+        311.049,
+        310.938,
+        310.017
+      ],
+      "image_hashes_verified": 6,
+      "captures": [
+        {
+          "mode": "visual",
+          "number": 2,
+          "elapsed_ms": 193,
+          "recognition_ms": 0,
+          "screen_capture_ms": 188,
+          "memory_read_ms": 2,
+          "captured_bytes": 1048576
+        },
+        {
+          "mode": "visual",
+          "number": 3,
+          "elapsed_ms": 199,
+          "recognition_ms": 0,
+          "screen_capture_ms": 195,
+          "memory_read_ms": 1,
+          "captured_bytes": 1048576
+        },
+        {
+          "mode": "visual",
+          "number": 4,
+          "elapsed_ms": 194,
+          "recognition_ms": 0,
+          "screen_capture_ms": 191,
+          "memory_read_ms": 1,
+          "captured_bytes": 1048576
+        },
+        {
+          "mode": "visual",
+          "number": 5,
+          "elapsed_ms": 189,
+          "recognition_ms": 0,
+          "screen_capture_ms": 184,
+          "memory_read_ms": 2,
+          "captured_bytes": 1048576
+        },
+        {
+          "mode": "visual",
+          "number": 6,
+          "elapsed_ms": 195,
+          "recognition_ms": 0,
+          "screen_capture_ms": 191,
+          "memory_read_ms": 1,
+          "captured_bytes": 1048576
+        },
+        {
+          "mode": "visual",
+          "number": 7,
+          "elapsed_ms": 188,
+          "recognition_ms": 0,
+          "screen_capture_ms": 183,
+          "memory_read_ms": 2,
+          "captured_bytes": 1048576
+        }
+      ],
+      "observed_ocr_sources": []
+    }
+  },
+  "controls": {
+    "paused_at": 8,
+    "cancelled_at": 9,
+    "resumed": true,
+    "no_captures_after_stop": true,
+    "text_resumed_without_filling_gaps": true
+  },
+  "capture_time_speedup": 9.268733850129198,
+  "manual_screenshots": 0,
+  "game_inputs": 0,
+  "measured_build": "0.1.0-20261021-000558",
+  "binaries": [
+    {
+      "name": "reversebolt-mcp.exe",
+      "sha256": "B521F796442613BCB92D908D64B4BC8D0B35C2389D36B2F54BBC6143BCAA9574"
+    },
+    {
+      "name": "Reversebolt.exe",
+      "sha256": "916B9B20F8E1AE9DFB1910D08991F5D05F2A924368335FAD6FE830890EF3BB55"
+    }
+  ],
+  "raw_report_sha256": "9f4ad23df790eb36572429a6435f0add3ee493a3c35b6161efac0f75ae4a6bfc"
+}

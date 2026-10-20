@@ -300,6 +300,18 @@ fn native_command(
             engine.live = Some(session);
         }
         "capture" => {
+            let mode: reversebolt_core::live::CaptureMode = command
+                .args
+                .get("mode")
+                .map(|value| serde_json::from_value(value.clone()))
+                .transpose()
+                .map_err(|_| "Choose capture mode full or visual.")?
+                .unwrap_or_default();
+            if mode == reversebolt_core::live::CaptureMode::Visual
+                && command.args["compare"] == true
+            {
+                return Err("Visual sampling skips text recognition; compare observations separately when enough evidence exists.".into());
+            }
             let session = engine
                 .live
                 .as_mut()
@@ -307,7 +319,7 @@ fn native_command(
             if command.args["compare"] == true {
                 session.capture_for_report()?;
             } else {
-                session.capture()?;
+                session.capture_mode(mode)?;
             }
             let message = session.view.phase.clone();
             engine.event(&command.source, message);

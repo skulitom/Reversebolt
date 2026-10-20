@@ -47,9 +47,10 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
                 job::Phase::Queued=>"Queued",job::Phase::Running=>"Observing",job::Phase::Pausing=>"Finishing this capture, then pausing",
                 job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing this capture, then stopping",_=>"Historical",
             };
-            let automatic = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.compare);
+            let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
+            let title = if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Capturing motion" } else if plan.is_some_and(|s| s.compare) { "Finding controls" } else { "Observation" };
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",if automatic {"Finding controls"}else{"Observation"},job.next_step,job.steps.len())).color(ACCENT));
+                ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",title,job.next_step,job.steps.len())).color(ACCENT));
                 if job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
                 }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish the current capture, then pause.").clicked() {
@@ -230,6 +231,11 @@ struct CaptureStep {
     source: String,
     #[serde(default, skip_serializing_if = "is_false")]
     compare: bool,
+    #[serde(
+        default,
+        skip_serializing_if = "reversebolt_core::live::CaptureMode::is_full"
+    )]
+    mode: reversebolt_core::live::CaptureMode,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -315,7 +321,7 @@ impl job::Executor for CaptureExecutor {
         }
         let command = Command {
             action: "capture".into(),
-            args: json!({"scope":step.scope,"compare":step.compare}),
+            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode}),
             source: step.source,
         };
         match self.engine.start_command(command) {
@@ -598,10 +604,18 @@ impl Controller {
                 .map_err(|_| "Supply the exact job binding from status.")?
         };
         let action = if command.action == "start_observation_job" {
+            let mode: reversebolt_core::live::CaptureMode = command
+                .args
+                .get("mode")
+                .map(|value| serde_json::from_value(value.clone()))
+                .transpose()
+                .map_err(|_| "Choose capture mode full or visual.")?
+                .unwrap_or_default();
             let count = command.args["count"].as_u64().unwrap_or(12) as usize;
             let interval = command.args["interval_ms"].as_u64().unwrap_or(1000);
-            if !(1..=16).contains(&count) || !(250..=60000).contains(&interval) {
-                return Err("Use 1–16 captures and a 250–60,000 ms interval.".into());
+            let minimum = if mode.is_full() { 250 } else { 50 };
+            if !(1..=16).contains(&count) || !(minimum..=60000).contains(&interval) {
+                return Err("Use 1–16 captures. Minimum interval is 250 ms for full mode or 50 ms for visual mode; maximum is 60,000 ms.".into());
             }
             // Reconstruct a replay from its original binding, not today's target.
             let parts: Vec<_> = binding.target.split('/').collect();
@@ -640,14 +654,22 @@ impl Controller {
             }
             let mut steps = vec![];
             let compare = command.args["compare"].as_bool().unwrap_or(false);
+            if compare && !mode.is_full() {
+                return Err("Visual sampling skips text recognition; compare separately when enough evidence exists.".into());
+            }
             for index in 0..count {
                 steps.push(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
                         scope: scope.clone(),
-                        delay_ms: if compare && index == 0 { 0 } else { interval },
+                        delay_ms: if (compare || !mode.is_full()) && index == 0 {
+                            0
+                        } else {
+                            interval
+                        },
                         source: command.source.clone(),
                         compare,
+                        mode,
                     })
                     .map_err(|e| e.to_string())?,
                 });
@@ -1034,5 +1056,75 @@ mod tests {
             false
         );
         assert!(c.jobs.snapshot().jobs.is_empty());
+    }
+
+    #[test]
+    fn visual_job_preserves_mode_scope_replay_and_cancellation() {
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            started_tx.send(command).unwrap();
+            release_rx.recv().unwrap();
+            view.live.as_mut().unwrap().sample_count += 1;
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        for args in [
+            json!({"mode":"bad"}),
+            json!({"mode":"visual","interval_ms":49}),
+            json!({"mode":"full","interval_ms":50}),
+            json!({"mode":"visual","interval_ms":50,"compare":true}),
+        ] {
+            let request = request(&c, "start_observation_job", args);
+            assert!(c.job_command(&request).is_err());
+        }
+        assert!(c.jobs.snapshot().jobs.is_empty());
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":3,"interval_ms":50,"mode":"visual"}),
+        );
+        let first = c.job_command(&command).unwrap();
+        let id = first["ack"]["job"].as_u64().unwrap();
+        let step: CaptureStep =
+            serde_json::from_str(&c.jobs.snapshot().jobs[&id].steps[0].payload).unwrap();
+        assert_eq!(step.delay_ms, 0);
+        assert!(!step.mode.is_full());
+        assert_eq!(c.job_command(&command).unwrap()["duplicate"], true);
+        let mut conflict = command.clone();
+        conflict.args["mode"] = json!("full");
+        conflict.args["interval_ms"] = json!(250);
+        assert!(c.job_command(&conflict).is_err());
+        for _ in 0..3 {
+            c.tick();
+        }
+        let actual = started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        assert_eq!(actual.args["mode"], "visual");
+        assert_eq!(
+            actual.args["scope"]["investigation_id"],
+            "fixture-investigation"
+        );
+        let cancel = request(&c, "job_control", json!({"job":id,"operation":"cancel"}));
+        c.job_command(&cancel).unwrap();
+        assert!(c.jobs.view().in_flight.is_some());
+        release_tx.send(()).unwrap();
+        for _ in 0..100 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].phase == job::Phase::Cancelled {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
+        assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 1);
+        assert!(started_rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn legacy_capture_plans_keep_their_original_serialized_payload() {
+        let legacy = r#"{"scope":{"investigation_id":"i","batch":1,"created":"c","window":1},"delay_ms":250,"source":"agent"}"#;
+        let step: CaptureStep = serde_json::from_str(legacy).unwrap();
+        assert!(step.mode.is_full());
+        assert_eq!(serde_json::to_string(&step).unwrap(), legacy);
     }
 }

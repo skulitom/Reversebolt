@@ -1,5 +1,23 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Faster visual sampling — 2026-10-21
+
+The 75-test workspace suite plus a newly added visual-mode matching integration
+test passed (76 total). Strict Clippy passes. The native MCP cadence check used
+the pinned OCR models and an owned text window: median capture 1,793.5 ms full
+versus 193.5 ms visual; actual visual start interval 310.938 ms. Six hashes per
+mode, replay, invalid options, pause/resume/cancel and resumed text with preserved
+gaps passed. This is one window/run, not a game frame-rate guarantee. No game
+input or manual image inspection was used. See [measurement details](research/VISUAL_SAMPLING.md).
+
+Desktop preview `0.1.0-20261021-000945` retains all seven prior history entries
+exactly. Published executables match the release build, models match their
+manifest, and the launcher points to this version. Its 23-tool published-build
+smoke passed: `test-results/smoke-d9bb897a/report.json`. Delivery proof is
+`test-results/visual-sampling-v1/desktop-delivery.json`. Cadence was measured on
+the preceding `000558` build; the final preview only adjusts capture-detail
+wording relative to that measured implementation.
+
 ## Temporal evidence and monotonic timing
 
 The 72-test workspace suite passed. Five new temporal tests cover ordered,

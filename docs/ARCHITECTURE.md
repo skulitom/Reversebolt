@@ -105,6 +105,14 @@ the shared worker afterward; screen capture, memory read and recognition duratio
 are reported separately. This reduces inference-induced sampling delay but does
 not make screen and memory capture atomic.
 
+Visual capture mode bypasses recognition while retaining the same image, memory,
+timing and provenance paths. It clears adapter-supplied words and records explicit
+gaps in numeric tracks. Full mode remains the default, including automatic
+connection jobs. Visual jobs permit 50 ms post-completion delays and an immediate
+first step; no target frame rate is guaranteed. The renderer still starts/stops
+its bounded graphics capture for each image. Modes share all retention limits,
+worker ownership and interruption semantics. See [cadence evidence](research/VISUAL_SAMPLING.md).
+
 Windows OCR and optional pinned PP-OCRv6 medium models run locally. The native
 `reversebolt-vision` crate uses RTen, with four inference threads, bounded
 detection and recognition tensors, and checksums before model loading. CTC word

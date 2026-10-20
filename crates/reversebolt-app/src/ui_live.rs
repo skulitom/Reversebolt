@@ -825,8 +825,12 @@ impl LivePane {
             if let Some(latest) = &live.latest {
                 ui.label(format!("{:.1} MiB read · {:.1} MiB unavailable · {} ms total",
                     latest.captured_bytes as f64 / 1_048_576.0, latest.unreadable_bytes as f64 / 1_048_576.0, latest.elapsed_ms));
-                ui.label(format!("Image {} ms · memory {} ms · text recognition {} ms",
-                    latest.screen_capture_ms, latest.memory_read_ms, latest.recognition_ms));
+                ui.label(format!("Image {} ms · memory {} ms", latest.screen_capture_ms, latest.memory_read_ms));
+                if latest.mode.is_full() {
+                    ui.label(format!("Text recognition {} ms", latest.recognition_ms));
+                } else {
+                    ui.label("Text recognition skipped for this moment.");
+                }
                 if let Some(screen) = &latest.screen {
                     ui.label(format!("Capture method: {}",screen.method));
                 }

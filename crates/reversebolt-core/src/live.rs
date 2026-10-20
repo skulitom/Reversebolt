@@ -18,6 +18,20 @@ use std::{
 const MAX_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CaptureMode {
+    #[default]
+    Full,
+    Visual,
+}
+
+impl CaptureMode {
+    pub fn is_full(&self) -> bool {
+        *self == Self::Full
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct ProcessInfo {
     pub pid: u32,
@@ -121,6 +135,9 @@ fn active_default() -> bool {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CaptureSummary {
+    /// Visual mode deliberately omits OCR; image and memory evidence still exist.
+    #[serde(default)]
+    pub mode: CaptureMode,
     pub number: usize,
     pub started_unix_ms: u128,
     pub elapsed_ms: u128,
@@ -280,6 +297,10 @@ impl LiveSession {
     }
 
     pub fn capture(&mut self) -> Result<()> {
+        self.capture_mode(CaptureMode::Full)
+    }
+
+    pub fn capture_mode(&mut self, mode: CaptureMode) -> Result<()> {
         if self.refresh_connection() || !self.view.connected {
             return Err(
                 "The selected process has exited. Reconnect before collecting more evidence."
@@ -389,7 +410,14 @@ impl LiveSession {
         self.view.coverage.changed_or_unavailable_bytes += (changed + unreadable) as u64;
         self.view.coverage.analyzed_current_bytes = 0;
         let recognition_start = Instant::now();
-        if let Ok(frame) = &mut screen
+        if mode == CaptureMode::Visual {
+            // Even adapters which supply text with screen() must not turn an
+            // unrecognized capture into a numeric observation.
+            if let Ok(frame) = &mut screen {
+                frame.text.clear();
+                frame.words.clear();
+            }
+        } else if let Ok(frame) = &mut screen
             && let Err(error) = self.target.recognize(frame)
         {
             frame.warning = Some(match frame.warning.take() {
@@ -397,7 +425,11 @@ impl LiveSession {
                 None => error,
             });
         }
-        let recognition_ms = recognition_start.elapsed().as_millis();
+        let recognition_ms = if mode == CaptureMode::Full {
+            recognition_start.elapsed().as_millis()
+        } else {
+            0
+        };
         self.snapshots.push(snapshot);
         self.receipts.push(receipts.clone());
         self.update_complete_coverage();
@@ -458,6 +490,7 @@ impl LiveSession {
         self.view.sample_count = number;
         self.view.retained_bytes += captured;
         self.view.latest = Some(CaptureSummary {
+            mode,
             number,
             started_unix_ms: now,
             elapsed_ms: start.elapsed().as_millis(),
@@ -492,10 +525,16 @@ impl LiveSession {
                 None => warning,
             });
         }
-        self.view.phase = format!(
-            "Captured {number} moments. {} screen-number tracks. Correlation needs at least 12 varied observations.",
-            self.view.tracks.len()
-        );
+        self.view.phase = if mode == CaptureMode::Visual {
+            format!(
+                "Captured {number} moments. Visual sampling keeps image and memory evidence; text recognition was skipped."
+            )
+        } else {
+            format!(
+                "Captured {number} moments. {} screen-number tracks. Correlation needs at least 12 varied observations.",
+                self.view.tracks.len()
+            )
+        };
         self.update_prediction_check(true);
         Ok(())
     }
@@ -1329,7 +1368,7 @@ mod tests {
         info: ProcessInfo,
         frame: Cell<usize>,
         alive: Rc<Cell<bool>>,
-        recognized: Cell<usize>,
+        recognized: Rc<Cell<usize>>,
     }
     impl NativeTarget for SampleTarget {
         fn info(&self) -> &ProcessInfo {
@@ -1391,6 +1430,43 @@ mod tests {
     }
 
     #[test]
+    fn visual_sampling_keeps_memory_and_numeric_gaps_without_calling_recognition() {
+        let alive = Rc::new(Cell::new(true));
+        let target = SampleTarget {
+            info: ProcessInfo::default(),
+            frame: Cell::new(0),
+            alive,
+            recognized: Rc::new(Cell::new(0)),
+        };
+        let recognized = target.recognized.clone();
+        let directory = std::env::temp_dir().join(format!(
+            "reversebolt-visual-sampling-{}",
+            uuid::Uuid::new_v4()
+        ));
+        let mut session = LiveSession::attach(Box::new(target), 1, directory.clone()).unwrap();
+        session.capture().unwrap();
+        assert_eq!(session.view.tracks[0].samples, vec![Some(20.)]);
+        session.capture_mode(CaptureMode::Visual).unwrap();
+        let latest = session.view.latest.as_ref().unwrap();
+        assert_eq!(recognized.get(), 1, "Visual mode must not invoke OCR");
+        assert_eq!(latest.mode, CaptureMode::Visual);
+        assert_eq!(latest.recognition_ms, 0);
+        assert_eq!(latest.captured_bytes, 256);
+        assert!(latest.screen.as_ref().unwrap().words.is_empty());
+        assert!(latest.screen.as_ref().unwrap().text.is_empty());
+        assert_eq!(session.view.tracks[0].samples, vec![Some(20.), None]);
+        assert!(session.view.tracks[0].readings[1].is_none());
+        // Resume text reading without carrying or interpolating the skipped value.
+        session.capture().unwrap();
+        assert_eq!(
+            session.view.tracks[0].samples,
+            vec![Some(20.), None, Some(34.)]
+        );
+        assert!(directory.starts_with(std::env::temp_dir()));
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
     fn visual_evidence_is_bound_to_images_sessions_and_geometry() {
         use crate::visual::{ObservationInput, Quality, VisualValue};
         struct ImageTarget(SampleTarget);
@@ -1427,7 +1503,7 @@ mod tests {
                 info: ProcessInfo::default(),
                 frame: Cell::new(0),
                 alive: alive.clone(),
-                recognized: Cell::new(0),
+                recognized: Rc::new(Cell::new(0)),
             })),
             1,
             directory.clone(),
@@ -1557,7 +1633,7 @@ mod tests {
                 info: ProcessInfo::default(),
                 frame: Cell::new(0),
                 alive: alive.clone(),
-                recognized: Cell::new(0),
+                recognized: Rc::new(Cell::new(0)),
             }),
             1,
             directory.clone(),

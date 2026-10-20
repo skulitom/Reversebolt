@@ -322,3 +322,22 @@ See [temporal evidence and limitations](research/TEMPORAL_EVIDENCE.md).
 
 Desktop preview `0.1.0-20261020-235611` was delivered with preserved history,
 matching executable/model hashes and a passing 23-tool published-build smoke.
+
+## 2026-10-21 — faster visual sampling: still 20%
+
+Agents can now request short image/memory sequences without paying the text
+recognition cost between samples. Full automatic discovery remains the default.
+In one owned-window run, median operation time fell from 1,793.5 to 193.5 ms;
+actual visual samples began 310.938 ms apart. Pause/resume/cancel and skipped
+reading gaps were verified through actual MCP. No game input was used.
+
+The 75-test workspace suite and an added visual-mode integration test passed,
+76 tests total. This is acquisition progress, not motion understanding or
+generalization; the unchanged weighted estimate remains **20 / 100**. Faster
+retained-stream capture, semantic observation and temporal matching remain open.
+See [visual sampling evidence](research/VISUAL_SAMPLING.md).
+
+Desktop preview `0.1.0-20261021-000945` was delivered with all seven history
+entries preserved exactly. Executable/model hashes and the launcher were
+verified; its 23-tool published-build smoke passed. Delivery proof is
+`test-results/visual-sampling-v1/desktop-delivery.json`.

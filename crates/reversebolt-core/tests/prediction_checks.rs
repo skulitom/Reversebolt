@@ -85,6 +85,10 @@ impl NativeTarget for Target {
     }
 }
 fn setup() -> (LiveSession, Rc<Flags>, PathBuf) {
+    setup_mode(CaptureMode::Full)
+}
+
+fn setup_mode(mode: CaptureMode) -> (LiveSession, Rc<Flags>, PathBuf) {
     let flags = Rc::new(Flags::default());
     let root =
         std::env::temp_dir().join(format!("reversebolt-prediction-{}", uuid::Uuid::new_v4()));
@@ -94,7 +98,7 @@ fn setup() -> (LiveSession, Rc<Flags>, PathBuf) {
     };
     let mut session = LiveSession::attach(Box::new(target), 1, root.clone()).unwrap();
     for _ in 0..12 {
-        session.capture().unwrap();
+        session.capture_mode(mode).unwrap();
     }
     (session, flags, root)
 }
@@ -122,6 +126,39 @@ fn submit(session: &mut LiveSession, number: usize) {
 }
 fn start(session: &mut LiveSession, source: Source) -> Result<()> {
     session.start_prediction_check(&session.view.investigation_id.clone(), 1, 12, source, 0)
+}
+
+#[test]
+fn visual_samples_keep_image_bound_external_matching_and_fresh_checks() {
+    let (mut session, _, root) = setup_mode(CaptureMode::Visual);
+    assert!(session.view.tracks.is_empty());
+    assert_eq!(session.view.frames.len(), 12);
+    for n in 1..=12 {
+        submit(&mut session, n);
+    }
+    session.correlate().unwrap();
+    assert!(!session.view.visual_tracks[0].matches.is_empty());
+    start(&mut session, Source::External).unwrap();
+    for n in 13..=16 {
+        session.capture_mode(CaptureMode::Visual).unwrap();
+        submit(&mut session, n);
+    }
+    let check = session.view.prediction_check.as_ref().unwrap();
+    assert!(
+        check
+            .candidates
+            .iter()
+            .any(|c| c.assessment(check) == Assessment::ConsistentInObservedScope)
+    );
+    assert!(
+        check
+            .candidates
+            .iter()
+            .all(|c| c.samples.iter().all(|s| s.bytes.is_some()))
+    );
+    assert!(session.view.tracks.is_empty());
+    assert!(root.starts_with(std::env::temp_dir()));
+    std::fs::remove_dir_all(root).unwrap();
 }
 
 #[test]

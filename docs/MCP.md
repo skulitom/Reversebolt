@@ -72,6 +72,22 @@ false). A timed observation job can use `compare:true` to update its findings af
 each capture with enough evidence; this never refits an active prediction check.
 The desktop uses the same controller and displays progress and pause/stop controls.
 
+`capture` and `start_observation_job` accept `mode: "full"` (default) or
+`mode: "visual"`. Full mode includes text recognition. Visual mode keeps the
+window image and bounded memory but skips OCR, leaves number readings missing,
+and performs no automatic later recognition. Existing image/temporal submissions
+remain usable; the default connection flow continues to use full mode.
+
+Visual jobs allow `interval_ms: 50` and start the first capture immediately.
+Full jobs require at least 250 ms; both allow up to 60,000 ms and 1–16 steps.
+Intervals are delays **after each completed capture**, not frame-rate promises.
+Both modes share the batch's 20 moments, 512 MiB retained-memory ceiling and
+existing image/read budgets. `compare:true` is rejected with visual mode;
+submit any interpretations and compare separately when there is enough evidence.
+The mode is part of the immutable job plan, so a retry cannot switch modes.
+Old plans without a mode retain full recognition and their original retry identity.
+Capture metadata records the chosen mode explicitly.
+
 The `live` state is separate from the practice state; practice
 write tools never edit the connected external application. A process restart
 requires a new selection; PID alone is not accepted as an identity.
@@ -223,7 +239,8 @@ unbinds the target and leaves unfinished jobs `Interrupted`; a pending durable
 intent has an unknown outcome. There is no automatic continuation, rediscovery
 or replay. Old jobs remain historical. Create a new job after reconnecting.
 
-Plans contain 1–16 read-only captures, 250–60,000 ms apart. Automatic reports and
+Plans contain 1–16 read-only captures with post-completion delays of 250–60,000 ms
+in full mode or 50–60,000 ms in visual mode. Automatic discovery passes and
 jobs with `compare:true` start the first capture immediately; other jobs retain
 the specified initial delay. Subsequent delays begin after completion. Connection
 requests 16 moments at one-second intervals. Remaining retention is checked including queued
