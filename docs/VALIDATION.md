@@ -1,6 +1,35 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Automated evidence
+## Current observation preview: 0.1.0-20261020-201128
+
+Nine workspace tests, strict Clippy and formatting checks pass. Tests cover
+conflicting and overlapping readings, invalid numeric input, region feedback
+and expiry, resize invalidation, memory-before-recognition ordering, incomplete
+pages and process exit, alongside the existing discovery cases.
+
+The published binaries passed `scripts/smoke.py`:
+`test-results/smoke-4e4aab25/report.json` records three practice seeds, verified
+practice edit/restore, 14 MCP tools, shared state, authentication/Origin
+rejections, stale restoration rejection and retained history after restart.
+
+Native original and fresh 12-value sequences both passed exact track comparison.
+All fresh captures used Windows Graphics Capture at 560×260, with one numeric
+track and zero memory hypotheses. Reports are
+`test-results/observation-v3/native-report-original.json` and
+`native-report-fresh.json`. The initially failed combined-reader test is
+preserved as `failed-native-status.json`; the regression and correction are
+explained in [observation evaluation](research/OBSERVATION_EVALUATION.md).
+
+Anode and saved images verify actual Blue Prince window rendering where the old
+PrintWindow path returned black, including an obscured window. Saved gameplay
+also exposes false OCR digits from icons. Half-Life 2 development replay yields
+33/36 correct numeric samples and three abstentions. These are observation
+results; neither game has passed a memory-discovery or editing acceptance gate.
+
+The versioned desktop build is running in the user's normal session with the
+five prior history events retained. Isolated test data was used throughout.
+
+## Initial automated evidence
 
 `cargo test --workspace`: two discovery regression tests pass, covering robust
 inverted scaling with observation noise and the inability of passive matching

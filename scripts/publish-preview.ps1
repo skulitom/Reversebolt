@@ -15,6 +15,30 @@ foreach ($name in @('Reversebolt.exe','reversebolt-mcp.exe')) {
     Copy-Item -LiteralPath (Join-Path $repository "target\release\$name") -Destination (Join-Path $destination $name)
 }
 Copy-Item -LiteralPath (Join-Path $repository 'LICENSE') -Destination $destination
+$publishedLicenses = Join-Path $destination 'licenses'
+New-Item -ItemType Directory -Path $publishedLicenses | Out-Null
+Get-ChildItem -LiteralPath (Join-Path $repository 'licenses') -File | ForEach-Object {
+    Copy-Item -LiteralPath $_.FullName -Destination $publishedLicenses
+}
+$modelDirectory = Join-Path $repository 'models'
+$modelManifest = Get-Content -LiteralPath (Join-Path $modelDirectory 'manifest.json') -Raw | ConvertFrom-Json
+$modelsAvailable = @($modelManifest.models | Where-Object {
+    Test-Path -LiteralPath (Join-Path $modelDirectory $_.name)
+}).Count -eq $modelManifest.models.Count
+if ($modelsAvailable) {
+    foreach ($model in $modelManifest.models) {
+        if ((Get-FileHash -LiteralPath (Join-Path $modelDirectory $model.name) -Algorithm SHA256).Hash -ne $model.sha256) {
+            throw "Refusing to publish a mismatched OCR model: $($model.name)"
+        }
+    }
+    $publishedModels = Join-Path $destination 'models'
+    New-Item -ItemType Directory -Path $publishedModels | Out-Null
+    foreach ($name in @('manifest.json','NOTICE.md') + @($modelManifest.models.name)) {
+        Copy-Item -LiteralPath (Join-Path $modelDirectory $name) -Destination $publishedModels
+    }
+} else {
+    Write-Warning 'Publishing without optional neural models; only Windows OCR will be available.'
+}
 $manifest = Get-ChildItem -LiteralPath $destination -Filter '*.exe' | ForEach-Object {
     [pscustomobject]@{ name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
 }

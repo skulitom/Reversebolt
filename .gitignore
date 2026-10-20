@@ -2,3 +2,5 @@
 /dist/
 /test-results/
 *.log
+/models/*.onnx
+/models/*.download

@@ -351,13 +351,26 @@ impl LivePane {
                     } else {
                         &screen.text
                     });
+                    for word in screen
+                        .words
+                        .iter()
+                        .filter(|w| w.source != reversebolt_core::live::TextSource::WindowsOcr)
+                        .take(100)
+                    {
+                        ui.label(format!("{:?}: {}", word.source, word.text));
+                    }
                 });
             }
         }
         if !live.tracks.is_empty() {
             ui.add_space(8.0);
             ui.label(RichText::new("Observed numbers").size(18.0).strong());
-            for track in &live.tracks {
+            ui.label(
+                RichText::new("Readings are provisional. Conflicting digits stay uncertain.")
+                    .size(12.0)
+                    .color(MUTED),
+            );
+            for track in live.tracks.iter().filter(|t| t.active) {
                 egui::CollapsingHeader::new(format!(
                     "{}  ·  {}  ·  {} matches",
                     track.label,
@@ -366,11 +379,21 @@ impl LivePane {
                         .last()
                         .copied()
                         .flatten()
-                        .map_or("not visible".into(), |v| v.to_string()),
+                        .map_or_else(|| if track.readings.last().is_some_and(|r|r.is_some()) {
+                            "uncertain".into()
+                        } else { "not visible".into() }, |v| v.to_string()),
                     track.matches.len()
                 ))
                 .id_salt(track.id)
                 .show(ui, |ui| {
+                    if let Some(Some(reading)) = track.readings.last() {
+                        if reading.value.is_none() {
+                            ui.colored_label(WARNING, "The readings disagree or cannot be assigned to one number. This moment is excluded from matching.");
+                        }
+                        for word in &reading.alternatives {
+                            ui.label(format!("{:?}: “{}”", word.source, word.text.trim()));
+                        }
+                    }
                     ui.label(
                         RichText::new(
                             "Matches are correlations. Their gameplay effect has not been tested.",
@@ -392,6 +415,11 @@ impl LivePane {
             if let Some(latest) = &live.latest {
                 ui.label(format!("{:.1} MiB read · {:.1} MiB unavailable · {} ms total",
                     latest.captured_bytes as f64 / 1_048_576.0, latest.unreadable_bytes as f64 / 1_048_576.0, latest.elapsed_ms));
+                ui.label(format!("Image {} ms · memory {} ms · text recognition {} ms",
+                    latest.screen_capture_ms, latest.memory_read_ms, latest.recognition_ms));
+                if let Some(screen) = &latest.screen {
+                    ui.label(format!("Capture method: {}",screen.method));
+                }
             }
             ui.label("Screen and memory are captured in sequence while the app runs. Coverage is bounded; evidence may be incomplete.");
         });

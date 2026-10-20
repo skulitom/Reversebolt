@@ -151,8 +151,22 @@ fn native_command(
                 .as_str()
                 .ok_or("Refresh the process list to obtain its current identity.")?;
             let budget = command.args["budget_mib"].as_u64().unwrap_or(16) as usize;
-            let target =
-                crate::native::Process::open(pid, created, command.args["window"].as_u64())?;
+            let local_models = directory.parent().unwrap_or(directory).join("models");
+            let models = if local_models.is_dir() {
+                local_models
+            } else {
+                std::env::current_exe()
+                    .map_err(|e| e.to_string())?
+                    .parent()
+                    .unwrap_or(directory)
+                    .join("models")
+            };
+            let target = crate::native::Process::open(
+                pid,
+                created,
+                command.args["window"].as_u64(),
+                models,
+            )?;
             let session = reversebolt_core::live::LiveSession::attach(
                 Box::new(target),
                 budget,

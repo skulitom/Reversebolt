@@ -1,6 +1,6 @@
 use reversebolt_core::{
     Result,
-    live::{NativeTarget, ProcessInfo, Region, Screen, Word},
+    live::{NativeTarget, ProcessInfo, Region, Screen, TextSource, Word},
 };
 use std::{
     path::{Path, PathBuf},
@@ -121,9 +121,16 @@ pub fn processes() -> Result<Vec<ProcessInfo>> {
 pub struct Process {
     handle: ProcessHandle,
     info: ProcessInfo,
+    observer: std::cell::RefCell<Option<crate::ocr::Observer>>,
+    models: PathBuf,
 }
 impl Process {
-    pub fn open(pid: u32, expected_created: &str, expected_window: Option<u64>) -> Result<Self> {
+    pub fn open(
+        pid: u32,
+        expected_created: &str,
+        expected_window: Option<u64>,
+        models: PathBuf,
+    ) -> Result<Self> {
         let info = processes()?
             .into_iter()
             .find(|p| p.pid == pid && expected_window.is_none_or(|w| p.window == w))
@@ -142,7 +149,12 @@ impl Process {
         if format!("{:016X}", created(handle.0)?) != expected_created {
             return Err("The process restarted while connecting.".into());
         }
-        Ok(Self { handle, info })
+        Ok(Self {
+            handle,
+            info,
+            observer: std::cell::RefCell::new(None),
+            models,
+        })
     }
 }
 
@@ -219,7 +231,23 @@ impl NativeTarget for Process {
         if pid != self.info.pid || !self.alive() {
             return Err("The original target window is no longer available.".into());
         }
-        capture_bounded(self.info.window, path.to_owned())
+        if unsafe { IsIconic(self.info.window as HWND) } != 0 {
+            return Err("Restore the selected window before capturing it.".into());
+        }
+        let result = capture_bounded(self.info.window, path.to_owned());
+        unsafe {
+            GetWindowThreadProcessId(self.info.window as HWND, &mut pid);
+        }
+        if pid != self.info.pid || !self.alive() {
+            return Err("The original target changed while capturing.".into());
+        }
+        result
+    }
+    fn recognize(&self, screen: &mut Screen) -> Result<()> {
+        let mut observer = self.observer.borrow_mut();
+        observer
+            .get_or_insert_with(|| crate::ocr::Observer::load(&self.models))
+            .recognize(screen)
     }
 }
 
@@ -240,7 +268,19 @@ fn capture_bounded(window: u64, path: PathBuf) -> Result<Screen> {
             }
         }
         let _guard = Guard;
-        let _ = tx.send(capture(window as HWND, &path));
+        let result = match crate::graphics::capture(window) {
+            Ok(image) => save_screen(image, &path, "windows_graphics_capture", None),
+            Err(error) => capture(window as HWND, &path).map(|mut screen| {
+                let note =
+                    format!("Using compatibility capture. Graphics capture unavailable: {error}");
+                screen.warning = Some(match screen.warning.take() {
+                    Some(previous) => format!("{previous} {note}"),
+                    None => note,
+                });
+                screen
+            }),
+        };
+        let _ = tx.send(result);
     });
     rx.recv_timeout(Duration::from_secs(5))
         .map_err(|_| "Window capture timed out. Memory evidence is still available.".to_string())?
@@ -336,34 +376,38 @@ fn capture(window: HWND, path: &Path) -> Result<Screen> {
     }
     let rgba = image::RgbaImage::from_raw(width as u32, height as u32, pixels)
         .ok_or("Invalid capture buffer.")?;
+    save_screen(rgba, path, "print_window", None)
+}
+
+fn save_screen(
+    rgba: image::RgbaImage,
+    path: &Path,
+    method: &str,
+    previous_warning: Option<String>,
+) -> Result<Screen> {
     rgba.save(path).map_err(|e| e.to_string())?;
     let range = rgba
         .pixels()
         .map(|p| u32::from(p[0]) + u32::from(p[1]) + u32::from(p[2]))
         .fold((u32::MAX, 0u32), |(lo, hi), v| (lo.min(v), hi.max(v)));
-    let mut warning = (range.1 - range.0 < 12).then(|| {
-        "The image is nearly uniform; the renderer may not support this capture method.".to_string()
-    });
-    let (text, words) = match ocr(&rgba) {
-        Ok(result) => result,
-        Err(error) => {
-            warning = Some(format!(
-                "Image saved; text recognition unavailable: {error}"
-            ));
-            (String::new(), vec![])
-        }
-    };
+    let warning = (range.1 - range.0 < 12)
+        .then(|| {
+            "The image is nearly uniform; the renderer may not support this capture method."
+                .to_string()
+        })
+        .or(previous_warning);
     Ok(Screen {
         path: path.to_string_lossy().into_owned(),
-        width: width as u32,
-        height: height as u32,
-        text,
-        words,
+        width: rgba.width(),
+        height: rgba.height(),
+        text: String::new(),
+        words: vec![],
         warning,
+        method: method.into(),
     })
 }
 
-fn ocr(image: &image::RgbaImage) -> Result<(String, Vec<Word>)> {
+pub(crate) fn ocr(image: &image::RgbaImage) -> Result<(String, Vec<Word>)> {
     use windows::{
         Graphics::Imaging::{BitmapAlphaMode, BitmapPixelFormat, SoftwareBitmap},
         Media::Ocr::OcrEngine,
@@ -407,6 +451,7 @@ fn ocr(image: &image::RgbaImage) -> Result<(String, Vec<Word>)> {
                         r.Height * factor_y,
                     ],
                     line: index,
+                    source: TextSource::WindowsOcr,
                 });
             }
         }
@@ -418,4 +463,80 @@ fn ocr(image: &image::RgbaImage) -> Result<(String, Vec<Word>)> {
         RoUninitialize();
     }
     result
+}
+
+/// Offline comparison of generic OCR preprocessing on an already captured image.
+/// This path has no game identity, memory access, expected values or known regions.
+pub fn evaluate_ocr(path: &Path, output: &Path) -> Result<()> {
+    let image = image::open(path).map_err(|e| e.to_string())?;
+    std::fs::create_dir_all(output).map_err(|e| e.to_string())?;
+    let original = image.to_rgba8();
+    let gray = image.to_luma8();
+    let mut inverted = gray.clone();
+    image::imageops::invert(&mut inverted);
+    let mut binary = gray.clone();
+    // Otsu's threshold maximizes between-class intensity variance.
+    let mut histogram = [0u64; 256];
+    for pixel in gray.pixels() {
+        histogram[pixel[0] as usize] += 1;
+    }
+    let total = (gray.width() as u64 * gray.height() as u64) as f64;
+    let sum: f64 = histogram
+        .iter()
+        .enumerate()
+        .map(|(i, n)| i as f64 * *n as f64)
+        .sum();
+    let (mut count, mut partial, mut best, mut threshold) = (0.0, 0.0, 0.0, 0u8);
+    for (i, n) in histogram.iter().enumerate() {
+        count += *n as f64;
+        partial += i as f64 * *n as f64;
+        if count == 0.0 || count == total {
+            continue;
+        }
+        let difference = partial / count - (sum - partial) / (total - count);
+        let score = count * (total - count) * difference * difference;
+        if score > best {
+            best = score;
+            threshold = i as u8;
+        }
+    }
+    for pixel in binary.pixels_mut() {
+        pixel[0] = if pixel[0] > threshold { 0 } else { 255 };
+    }
+    let mut report = vec![];
+    for (name, source) in [
+        ("original", original),
+        ("gray", image::DynamicImage::ImageLuma8(gray).into_rgba8()),
+        (
+            "inverted",
+            image::DynamicImage::ImageLuma8(inverted).into_rgba8(),
+        ),
+        ("otsu", image::DynamicImage::ImageLuma8(binary).into_rgba8()),
+    ] {
+        for scale in [1, 2] {
+            let pixels = image::imageops::resize(
+                &source,
+                source.width() * scale,
+                source.height() * scale,
+                image::imageops::FilterType::CatmullRom,
+            );
+            let file = output.join(format!("{name}-{scale}x.png"));
+            pixels.save(&file).map_err(|e| e.to_string())?;
+            let start = std::time::Instant::now();
+            match ocr(&pixels) {
+                Ok((text, words)) => report.push(serde_json::json!({
+                    "variant":name, "scale":scale, "text":text, "words":words,
+                    "elapsed_ms":start.elapsed().as_millis(), "image":file,
+                })),
+                Err(error) => report.push(serde_json::json!({
+                    "variant":name, "scale":scale, "error":error,
+                })),
+            }
+        }
+    }
+    std::fs::write(
+        output.join("report.json"),
+        serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())
 }

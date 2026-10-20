@@ -71,3 +71,34 @@ cancellation, and the corrected sidebar layout. See `VALIDATION.md`.
 Parallel research owns isolated `experiments/` directories for visual behavior,
 causal validation, and hidden-rule inference. Their results receive no
 integration or generalization credit until reproduced and integrated.
+
+## 2026-10-20 — graphics capture and explicit OCR uncertainty: 14%
+
+The multimodal observation credit increases from **1 / 15 to 2 / 15**.
+Other category credits remain unchanged: foundation 4, native access 3,
+discovery 2, validation 1, intent 0, agent collaboration 2, generalization 0.
+Total: **14 / 100**. The full goal remains active.
+
+Windows Graphics Capture now handles Blue Prince where PrintWindow returned
+black, including a window obscured by Reversebolt. Both rendering paths use
+the selected client area. Local Windows and neural OCR retain their sources;
+overlapping conflicting readings become uncertain samples with visible
+alternatives. Regions cannot expand themselves through repeated recognition,
+resizing retires tracks, and inference now follows memory acquisition.
+
+The Half-Life 2 development clip improves from 19/36 to 33/36 correct numeric
+samples, with three explicit abstentions. The final ordinary-window test passes
+24/24 values across its original and fresh sequences. It still finds zero
+memory hypotheses. Blue Prince's fresh gameplay reveals a false 1850 reading
+for an icon beside 50, followed by an abstention on 50 versus 950. This is
+failure evidence, not successful gameplay discovery.
+
+Nine workspace tests, strict Clippy, the native checks and the published
+practice/MCP smoke suite passed. Desktop preview
+`0.1.0-20261020-201128` is running with the previous history retained.
+See [observation evaluation](research/OBSERVATION_EVALUATION.md).
+
+Round 2 research has isolated assignments for memory coverage, shared durable
+jobs and real-game visual tracking. Next main-session work: distinguish icons
+and scenery from text, prevent spurious associations across scene changes, and
+collect changing gameplay evidence in Blue Prince's separate test profile.

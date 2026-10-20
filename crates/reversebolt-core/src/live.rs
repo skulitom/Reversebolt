@@ -38,6 +38,26 @@ pub struct Word {
     pub text: String,
     pub bounds: [f32; 4],
     pub line: usize,
+    #[serde(default)]
+    pub source: TextSource,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TextSource {
+    #[default]
+    WindowsOcr,
+    Ocrs,
+    OcrsRegion,
+}
+
+/// A provisional reading, never a verified semantic or authoritative value.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NumberReading {
+    pub bounds: [f32; 4],
+    pub value: Option<f64>,
+    pub reason: String,
+    pub alternatives: Vec<Word>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -48,6 +68,8 @@ pub struct Screen {
     pub text: String,
     pub words: Vec<Word>,
     pub warning: Option<String>,
+    #[serde(default)]
+    pub method: String,
 }
 
 pub trait NativeTarget {
@@ -55,6 +77,11 @@ pub trait NativeTarget {
     fn regions(&self) -> Result<Vec<Region>>;
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>>;
     fn screen(&self, path: &Path) -> Result<Screen>;
+    /// Run recognition after memory capture to avoid adding inference time to
+    /// the screen-to-memory sampling delay. Fixtures may supply words directly.
+    fn recognize(&self, _screen: &mut Screen) -> Result<()> {
+        Ok(())
+    }
     fn alive(&self) -> bool;
 }
 
@@ -72,6 +99,14 @@ pub struct NumberTrack {
     pub bounds: [f32; 4],
     pub samples: Vec<Option<f64>>,
     pub matches: Vec<LocatedCandidate>,
+    #[serde(default)]
+    pub readings: Vec<Option<NumberReading>>,
+    #[serde(default = "active_default")]
+    pub active: bool,
+}
+
+fn active_default() -> bool {
+    true
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -80,6 +115,10 @@ pub struct CaptureSummary {
     pub started_unix_ms: u128,
     pub elapsed_ms: u128,
     pub memory_read_ms: u128,
+    #[serde(default)]
+    pub screen_capture_ms: u128,
+    #[serde(default)]
+    pub recognition_ms: u128,
     pub captured_bytes: usize,
     pub unreadable_bytes: usize,
     pub screen: Option<Screen>,
@@ -105,6 +144,7 @@ pub struct LiveSession {
     plan: Vec<(u64, usize)>,
     snapshots: Vec<BTreeMap<u64, Vec<u8>>>,
     directory: PathBuf,
+    screen_size: Option<(u32, u32)>,
 }
 
 impl LiveSession {
@@ -171,12 +211,12 @@ impl LiveSession {
             plan,
             snapshots: vec![],
             directory,
+            screen_size: None,
         })
     }
 
     pub fn capture(&mut self) -> Result<()> {
-        if !self.target.alive() {
-            self.view.connected = false;
+        if self.refresh_connection() || !self.view.connected {
             return Err(
                 "The selected process has exited. Reconnect before collecting more evidence."
                     .into(),
@@ -194,7 +234,8 @@ impl LiveSession {
         let start = Instant::now();
         let number = self.snapshots.len() + 1;
         let screen_path = self.directory.join(format!("frame-{number:03}.png"));
-        let screen = self.target.screen(&screen_path);
+        let mut screen = self.target.screen(&screen_path);
+        let screen_capture_ms = start.elapsed().as_millis();
         let memory_start = Instant::now();
         let mut snapshot = BTreeMap::new();
         let mut unreadable = 0;
@@ -214,12 +255,31 @@ impl LiveSession {
                     .into(),
             );
         }
+        let recognition_start = Instant::now();
+        if let Ok(frame) = &mut screen
+            && let Err(error) = self.target.recognize(frame)
+        {
+            frame.warning = Some(match frame.warning.take() {
+                Some(previous) => format!("{previous} {error}"),
+                None => error,
+            });
+        }
+        let recognition_ms = recognition_start.elapsed().as_millis();
         self.snapshots.push(snapshot);
         if let Ok(frame) = &screen {
+            let size = (frame.width, frame.height);
+            if self.screen_size.is_some_and(|previous| previous != size) {
+                for track in &mut self.view.tracks {
+                    track.active = false;
+                    track.matches.clear();
+                }
+            }
+            self.screen_size = Some(size);
             track_numbers(&mut self.view.tracks, &frame.words, number);
         } else {
             for track in &mut self.view.tracks {
                 track.samples.push(None);
+                track.readings.push(None);
                 track.matches.clear();
             }
         }
@@ -230,11 +290,24 @@ impl LiveSession {
             started_unix_ms: now,
             elapsed_ms: start.elapsed().as_millis(),
             memory_read_ms,
+            screen_capture_ms,
+            recognition_ms,
             captured_bytes: captured,
             unreadable_bytes: unreadable,
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
         });
+        if let Err(error) = std::fs::write(
+            self.directory.join(format!("frame-{number:03}.json")),
+            serde_json::to_vec_pretty(&self.view.latest).map_err(|e| e.to_string())?,
+        ) && let Some(screen) = self.view.latest.as_mut().and_then(|c| c.screen.as_mut())
+        {
+            let warning = format!("Could not save observation metadata: {error}");
+            screen.warning = Some(match screen.warning.take() {
+                Some(previous) => format!("{previous} {warning}"),
+                None => warning,
+            });
+        }
         self.view.phase = format!(
             "Captured {number} moments. {} screen-number tracks. Correlation needs at least 12 varied observations.",
             self.view.tracks.len()
@@ -243,8 +316,7 @@ impl LiveSession {
     }
 
     pub fn correlate(&mut self) -> Result<()> {
-        if !self.target.alive() {
-            self.view.connected = false;
+        if self.refresh_connection() || !self.view.connected {
             return Err("The selected process has exited.".into());
         }
         if self.snapshots.len() < 12 {
@@ -259,7 +331,7 @@ impl LiveSession {
                 let values: Vec<f64> = t.samples.iter().flatten().copied().collect();
                 let lo = values.iter().copied().fold(f64::INFINITY, f64::min);
                 let hi = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-                (values.len() >= 10 && hi - lo > 2.2).then_some(i)
+                (t.active && values.len() >= 10 && hi - lo > 2.2).then_some(i)
             })
             .take(16)
             .collect();
@@ -313,51 +385,50 @@ impl LiveSession {
 
 /// Conservative screen-space association, not semantic identification.
 /// Keep missing detections as gaps; never replace them with zero.
-fn track_numbers(tracks: &mut Vec<NumberTrack>, words: &[Word], count: usize) {
+pub fn track_numbers(tracks: &mut Vec<NumberTrack>, words: &[Word], count: usize) {
     for track in tracks.iter_mut() {
         track.samples.push(None);
+        track.readings.push(None);
         track.matches.clear();
     }
     let mut assigned = std::collections::HashSet::new();
-    for word in words {
-        let text = word.text.trim().trim_end_matches('%');
-        if !text
-            .chars()
-            .all(|c| c.is_ascii_digit() || matches!(c, '.' | '-' | '+'))
-        {
-            continue;
-        }
-        let Ok(value) = text.parse::<f64>() else {
-            continue;
-        };
-        if !value.is_finite() {
-            continue;
-        }
-        let closest = tracks
+    for mut reading in number_readings(words) {
+        let possible: Vec<_> = tracks
             .iter()
             .enumerate()
             .filter(|(i, t)| {
-                !assigned.contains(i)
-                    && (t.bounds[0] - word.bounds[0]).abs() < 24.0
-                    && (t.bounds[1] - word.bounds[1]).abs() < 12.0
+                t.active
+                    && !assigned.contains(i)
+                    && (same_text_region(t.bounds, reading.bounds)
+                        || ((t.bounds[0] - reading.bounds[0]).abs() < 24.0
+                            && (t.bounds[1] - reading.bounds[1]).abs() < 12.0))
             })
-            .min_by(|(_, a), (_, b)| {
-                (a.bounds[0] - word.bounds[0])
-                    .abs()
-                    .total_cmp(&(b.bounds[0] - word.bounds[0]).abs())
-            })
-            .map(|(i, _)| i);
-        if let Some(index) = closest {
-            tracks[index].samples[count - 1] = Some(value);
-            tracks[index].bounds = word.bounds;
+            .map(|(i, _)| i)
+            .collect();
+        if possible.len() > 1 {
+            reading.value = None;
+            reading.reason = "ambiguous_track_assignment".into();
+            for index in possible {
+                tracks[index].readings[count - 1] = Some(reading.clone());
+                assigned.insert(index);
+            }
+        } else if let Some(&index) = possible.first() {
+            tracks[index].samples[count - 1] = reading.value;
+            tracks[index].bounds = reading.bounds;
+            tracks[index].readings[count - 1] = Some(reading);
             assigned.insert(index);
         } else if tracks.len() < 64 {
             let id = tracks.len();
             let mut samples = vec![None; count];
-            samples[count - 1] = Some(value);
+            samples[count - 1] = reading.value;
+            let word = &reading.alternatives[0];
             let context = words
                 .iter()
-                .filter(|w| w.line == word.line && w.text.parse::<f64>().is_err())
+                .filter(|w| {
+                    w.source == word.source
+                        && w.line == word.line
+                        && parse_number(&w.text).is_none()
+                })
                 .map(|w| w.text.as_str())
                 .collect::<Vec<_>>()
                 .join(" ");
@@ -369,16 +440,128 @@ fn track_numbers(tracks: &mut Vec<NumberTrack>, words: &[Word], count: usize) {
             } else {
                 format!("Near “{}”", context.chars().take(60).collect::<String>())
             };
+            let mut readings = vec![None; count];
+            let bounds = reading.bounds;
+            readings[count - 1] = Some(reading);
             tracks.push(NumberTrack {
                 id,
                 label,
-                bounds: word.bounds,
+                bounds,
                 samples,
                 matches: vec![],
+                readings,
+                active: true,
             });
             assigned.insert(id);
         }
     }
+}
+
+pub fn parse_number(text: &str) -> Option<f64> {
+    let text = text.trim().trim_end_matches('%');
+    if !text
+        .chars()
+        .all(|c| c.is_ascii_digit() || matches!(c, '.' | '-' | '+'))
+    {
+        return None;
+    }
+    text.parse::<f64>().ok().filter(|v| v.is_finite())
+}
+
+/// Intersection over the smaller area groups a partial word with its full
+/// reading. It never treats neighboring, non-overlapping words as votes.
+pub fn same_text_region(a: [f32; 4], b: [f32; 4]) -> bool {
+    if !a.iter().chain(&b).all(|x| x.is_finite())
+        || a[2] <= 0.0
+        || a[3] <= 0.0
+        || b[2] <= 0.0
+        || b[3] <= 0.0
+    {
+        return false;
+    }
+    let overlap = ((a[0] + a[2]).min(b[0] + b[2]) - a[0].max(b[0])).max(0.0)
+        * ((a[1] + a[3]).min(b[1] + b[3]) - a[1].max(b[1])).max(0.0);
+    overlap > 0.5 * (a[2] * a[3]).min(b[2] * b[3])
+}
+
+pub fn number_readings(words: &[Word]) -> Vec<NumberReading> {
+    let mut remaining: Vec<_> = words
+        .iter()
+        .filter(|w| parse_number(&w.text).is_some() && same_text_region(w.bounds, w.bounds))
+        .take(512)
+        .cloned()
+        .collect();
+    let mut result = vec![];
+    while let Some(first) = remaining.pop() {
+        let mut group = vec![first];
+        loop {
+            let before = group.len();
+            let mut i = 0;
+            while i < remaining.len() {
+                if group
+                    .iter()
+                    .any(|w| same_text_region(w.bounds, remaining[i].bounds))
+                {
+                    group.push(remaining.remove(i));
+                } else {
+                    i += 1;
+                }
+            }
+            if before == group.len() {
+                break;
+            }
+        }
+        group.sort_by(|a, b| {
+            a.bounds[0]
+                .total_cmp(&b.bounds[0])
+                .then(a.bounds[1].total_cmp(&b.bounds[1]))
+                .then(a.text.cmp(&b.text))
+        });
+        let value = parse_number(&group[0].text).unwrap();
+        let conflicting = group.iter().any(|w| parse_number(&w.text) != Some(value));
+        // A large box spanning two distinct numeric fields must not merge them,
+        // even when both happen to display the same number.
+        let ambiguous = group.iter().enumerate().any(|(i, a)| {
+            group[i + 1..]
+                .iter()
+                .any(|b| !same_text_region(a.bounds, b.bounds))
+        });
+        let left = group
+            .iter()
+            .map(|w| w.bounds[0])
+            .fold(f32::INFINITY, f32::min);
+        let top = group
+            .iter()
+            .map(|w| w.bounds[1])
+            .fold(f32::INFINITY, f32::min);
+        let right = group
+            .iter()
+            .map(|w| w.bounds[0] + w.bounds[2])
+            .fold(0.0, f32::max);
+        let bottom = group
+            .iter()
+            .map(|w| w.bounds[1] + w.bounds[3])
+            .fold(0.0, f32::max);
+        result.push(NumberReading {
+            bounds: [left, top, right - left, bottom - top],
+            value: (!conflicting && !ambiguous).then_some(value),
+            reason: if ambiguous {
+                "ambiguous_region"
+            } else if conflicting {
+                "conflicting_readings"
+            } else {
+                "provisional_reading"
+            }
+            .into(),
+            alternatives: group,
+        });
+    }
+    result.sort_by(|a, b| {
+        a.bounds[1]
+            .total_cmp(&b.bounds[1])
+            .then(a.bounds[0].total_cmp(&b.bounds[0]))
+    });
+    result
 }
 
 #[cfg(test)]
@@ -390,6 +573,7 @@ mod tests {
         info: ProcessInfo,
         frame: Cell<usize>,
         alive: Rc<Cell<bool>>,
+        recognized: Cell<usize>,
     }
     impl NativeTarget for SampleTarget {
         fn info(&self) -> &ProcessInfo {
@@ -417,17 +601,23 @@ mod tests {
             Ok(Screen {
                 path: path.to_string_lossy().into_owned(),
                 width: 100,
-                height: 100,
+                height: if self.frame.get() <= 12 { 100 } else { 110 },
                 text: String::new(),
                 warning: None,
+                method: "fixture".into(),
                 words: vec![Word {
                     text: (self.frame.get() * 7 + 13).to_string(),
                     bounds: [10.0, 20.0, 30.0, 20.0],
                     line: 0,
+                    source: TextSource::WindowsOcr,
                 }],
             })
         }
         fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
+            assert!(
+                self.recognized.get() < self.frame.get(),
+                "Recognition delayed the memory sample"
+            );
             if address == 0x20000 && self.frame.get() == 4 {
                 return Err("Page was unmapped during capture".into());
             }
@@ -435,6 +625,10 @@ mod tests {
             let value = (self.frame.get() * 7 + 13) as i32;
             bytes[32..36].copy_from_slice(&value.to_le_bytes());
             Ok(bytes)
+        }
+        fn recognize(&self, _screen: &mut Screen) -> Result<()> {
+            self.recognized.set(self.frame.get());
+            Ok(())
         }
     }
 
@@ -448,6 +642,7 @@ mod tests {
                 info: ProcessInfo::default(),
                 frame: Cell::new(0),
                 alive: alive.clone(),
+                recognized: Cell::new(0),
             }),
             1,
             directory.clone(),
@@ -461,12 +656,25 @@ mod tests {
         assert!(matches.iter().any(|m| m.address == "0x10020"));
         assert!(matches.iter().all(|m| !m.address.starts_with("0x2")));
         assert_eq!(session.view.retained_bytes, 12 * 256 - 128);
+        session.capture().unwrap();
+        assert!(!session.view.tracks[0].active);
+        assert!(session.view.tracks[0].matches.is_empty());
+        assert_eq!(session.view.tracks[0].samples.last(), Some(&None));
+        assert!(session.view.tracks[1].active);
+        assert!(
+            session.view.tracks[1].samples[..12]
+                .iter()
+                .all(Option::is_none)
+        );
         alive.set(false);
         assert!(session.refresh_connection());
         assert!(!session.view.connected);
         assert!(session.view.tracks[0].matches.is_empty());
         assert!(session.capture().is_err());
         assert!(!session.refresh_connection());
+        for number in 1..=13 {
+            std::fs::remove_file(directory.join(format!("frame-{number:03}.json"))).unwrap();
+        }
         std::fs::remove_dir(directory).unwrap();
     }
 
@@ -476,6 +684,7 @@ mod tests {
             text: text.into(),
             bounds: [x, 20.0, 30.0, 15.0],
             line: 0,
+            source: TextSource::WindowsOcr,
         };
         let mut tracks = vec![];
         track_numbers(&mut tracks, &[word("90", 10.0), word("30", 70.0)], 1);
@@ -483,5 +692,59 @@ mod tests {
         track_numbers(&mut tracks, &[word("85", 11.0), word("28", 70.0)], 3);
         assert_eq!(tracks[0].samples, vec![Some(90.0), None, Some(85.0)]);
         assert_eq!(tracks[1].samples, vec![Some(30.0), Some(29.0), Some(28.0)]);
+    }
+
+    fn reading_word(text: &str, bounds: [f32; 4], source: TextSource) -> Word {
+        Word {
+            text: text.into(),
+            bounds,
+            line: 0,
+            source,
+        }
+    }
+
+    #[test]
+    fn conflicting_partial_readings_abstain_regardless_of_order_or_vote_count() {
+        let full = reading_word("17", [100.0, 50.0, 40.0, 30.0], TextSource::WindowsOcr);
+        let partial = reading_word("7", [122.0, 51.0, 15.0, 28.0], TextSource::Ocrs);
+        let mut words = vec![full.clone(), full, partial];
+        for _ in 0..2 {
+            let readings = number_readings(&words);
+            assert_eq!(readings.len(), 1);
+            assert_eq!(readings[0].value, None);
+            assert_eq!(readings[0].reason, "conflicting_readings");
+            assert_eq!(readings[0].alternatives.len(), 3);
+            words.reverse();
+        }
+        let mut tracks = vec![];
+        track_numbers(&mut tracks, &words, 1);
+        assert_eq!(tracks.len(), 1);
+        assert_eq!(tracks[0].samples, vec![None]);
+        assert!(tracks[0].readings[0].is_some());
+    }
+
+    #[test]
+    fn overlapping_agreement_is_one_reading_but_spanning_fields_are_ambiguous() {
+        let a = reading_word("10", [0.0, 0.0, 20.0, 20.0], TextSource::WindowsOcr);
+        let b = reading_word("10", [40.0, 0.0, 20.0, 20.0], TextSource::WindowsOcr);
+        let duplicate = reading_word("10", [1.0, 1.0, 20.0, 20.0], TextSource::Ocrs);
+        let readings = number_readings(&[a.clone(), duplicate]);
+        assert_eq!(readings.len(), 1);
+        assert_eq!(readings[0].value, Some(10.0));
+        let bridge = reading_word("10", [0.0, 0.0, 60.0, 20.0], TextSource::OcrsRegion);
+        let readings = number_readings(&[a, b, bridge]);
+        assert_eq!(readings.len(), 1);
+        assert_eq!(readings[0].value, None);
+        assert_eq!(readings[0].reason, "ambiguous_region");
+    }
+
+    #[test]
+    fn letters_nonfinite_and_invalid_geometry_cannot_become_numbers() {
+        for text in ["IOO", "BOSS", "NaN", "inf", "1e3", "", "1/2"] {
+            assert!(parse_number(text).is_none());
+        }
+        assert_eq!(parse_number(" -12.5% "), Some(-12.5));
+        let word = reading_word("100", [f32::NAN, 0.0, 10.0, 10.0], TextSource::Ocrs);
+        assert!(number_readings(&[word]).is_empty());
     }
 }

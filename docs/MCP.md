@@ -59,6 +59,14 @@ lists main-desktop applications.
 
 ## Local transport and limits
 
+Live `status` includes source-tagged screen words and per-track `readings` with
+raw alternatives. A `null` sample can mean missing or conflicting recognition;
+check the corresponding reading's reason. Agreement remains provisional, and
+all memory matches remain unverified hypotheses. Retired tracks have
+`active: false` after a window resize. Capture metadata reports the rendering
+method and separates screen, memory and recognition timings. The desktop and
+MCP use these same observations.
+
 The app binds an ephemeral port on `127.0.0.1`; endpoint and random bearer token
 are stored in its user-local data directory. The adapter checks the loopback
 host, disables redirects and proxy routing, and reloads endpoint information for

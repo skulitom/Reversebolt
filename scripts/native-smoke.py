@@ -10,6 +10,8 @@ import time
 import urllib.request
 
 data, control, pid = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
+values = json.loads(sys.argv[4]) if len(sys.argv) > 4 else [40, 56, 31, 85, 64, 27, 75, 92, 44, 67, 38, 81]
+assert len(values) == 12
 endpoint = json.loads((data / "endpoint.json").read_text())
 
 def call(action, args=None):
@@ -34,7 +36,7 @@ assert not call("attach_process", {**identity, "window": 1})["ok"]
 assert require("status")["live"]["process"] == live["process"]
 assert not call("correlate")["ok"]
 captures = []
-for value in [40, 56, 31, 85, 64, 27, 75, 92, 44, 67, 38, 81]:
+for value in values:
     control.write_text(str(value))
     time.sleep(0.25)
     live = require("capture")["live"]
@@ -48,7 +50,7 @@ for value in [40, 56, 31, 85, 64, 27, 75, 92, 44, 67, 38, 81]:
                      "ms": latest["elapsed_ms"], "image": screen["path"]})
 correlated = require("correlate")["live"]
 assert correlated["sample_count"] == 12
-assert any(len([v for v in track["samples"] if v is not None]) == 12 for track in correlated["tracks"])
+assert any(track["samples"] == values for track in correlated["tracks"]), correlated["tracks"]
 require("detach_process")
 assert require("status")["live"] is None
 assert any(p["pid"] == pid for p in require("list_processes")["processes"]), "Detach terminated target"

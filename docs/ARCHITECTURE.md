@@ -56,12 +56,35 @@ the API permits 1–32 MiB. Up to 20 moments and 512 MiB are retained in memory.
 Coverage is explicit. Pages unavailable in any sample are excluded from
 correlation; missing OCR detections remain gaps, not zeros.
 
-Window capture uses `PrintWindow` for the selected client area, followed by
-Windows OCR. A single capture worker and a five-second wait bound renderer
-blocking without accumulating capture threads. It does not fall back to the
-whole desktop. Images remain on disk. The current numeric tracker associates
-whole numeric words by screen position; nearby text is a description, not a
-semantic gameplay label. Screen and memory capture are sequential, not atomic.
+Window capture first uses Windows Graphics Capture for the selected HWND through
+the MIT `windows-capture` library. PrintWindow's client area is a compatibility
+fallback, with its reason reported. A single capture worker and a five-second
+wait bound renderer blocking without accumulating capture threads. A stalled
+worker retains its slot until it actually finishes. Neither path captures a
+monitor or the whole desktop. The graphics frame is cropped to the selected
+window's client area using checked window geometry; a geometry mismatch falls
+back with a warning. Resize invalidates track association. Images and capture
+metadata remain on disk.
+
+Memory is sampled immediately after the image, before OCR. Recognition runs on
+the shared worker afterward; screen capture, memory read and recognition durations
+are reported separately. This reduces inference-induced sampling delay but does
+not make screen and memory capture atomic.
+
+Windows OCR and optional pinned Ocrs/RTen models run locally. Each word carries
+its source and bounds. Full-image detections establish up to 64 regions that can
+be re-read on later frames, with at most three missed detections. Recognition
+strips never enlarge or refresh their own seed geometry. A recovery pass is
+skipped where both full-image readers already agree. Resize clears regions.
+Neural recognition is currently limited to 2.1 million source pixels; unsupported
+sizes, missing models and errors retain Windows observations with warnings.
+
+Overlapping numeric readings are grouped; different values or a box bridging
+distinct fields produce an explicit uncertain observation with all alternatives,
+not a majority vote. These become `None` in matcher input. Agreement remains
+provisional, not calibrated confidence. Neighboring letters are not forcibly
+converted into digits. Numeric tracks retain per-frame reading evidence as well
+as samples; nearby text is a description, not a semantic gameplay label.
 
 After at least 12 moments, the same general numeric matcher compares varied OCR
 tracks against captured memory. Results retain absolute locations as hypotheses

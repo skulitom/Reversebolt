@@ -1,7 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod fixture;
+mod graphics;
 mod native;
+mod ocr;
 mod service;
 mod target;
 mod theme;
@@ -22,6 +24,23 @@ fn main() {
 
 fn run() -> Result<(), String> {
     let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("--ocr-sequence") {
+        let models = args.get(2).ok_or("Supply the OCR model directory.")?;
+        let frames = args.get(3).ok_or("Supply a directory of PNG frames.")?;
+        let output = args.get(4).ok_or("Supply a report file.")?;
+        return ocr::evaluate_sequence(
+            std::path::Path::new(models),
+            std::path::Path::new(frames),
+            std::path::Path::new(output),
+        );
+    }
+    if args.get(1).map(String::as_str) == Some("--ocr-sweep") {
+        let image = args.get(2).ok_or("Supply an image path for --ocr-sweep.")?;
+        let output = args
+            .get(3)
+            .ok_or("Supply an output folder for --ocr-sweep.")?;
+        return native::evaluate_ocr(std::path::Path::new(image), std::path::Path::new(output));
+    }
     if args.get(1).map(String::as_str) == Some("--fixture") {
         return target::serve(args.get(2).and_then(|s| s.parse().ok()).unwrap_or(8675309));
     }
