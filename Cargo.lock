@@ -2689,11 +2689,14 @@ dependencies = [
  "axum",
  "eframe",
  "fs2",
+ "image",
  "reversebolt-core",
  "serde",
  "serde_json",
  "tokio",
  "uuid",
+ "windows",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

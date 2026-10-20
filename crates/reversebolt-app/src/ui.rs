@@ -11,6 +11,8 @@ pub struct Workbench {
     edits: [String; 2],
     endpoint: String,
     show_connection: bool,
+    show_live: bool,
+    live: crate::ui_live::LivePane,
 }
 
 impl Workbench {
@@ -21,6 +23,8 @@ impl Workbench {
             edits: ["100".into(), "30".into()],
             endpoint,
             show_connection: false,
+            show_live: true,
+            live: crate::ui_live::LivePane::default(),
         }
     }
 }
@@ -31,40 +35,87 @@ impl eframe::App for Workbench {
             .request_repaint_after(std::time::Duration::from_millis(150));
         let state = self.handle.view.read().unwrap().clone();
         let busy = self.handle.busy.load(Ordering::SeqCst);
-        egui::Panel::left("navigation").exact_size(218.0).resizable(false)
-            .frame(egui::Frame::new().fill(CHROME).inner_margin(22))
+        egui::Panel::left("navigation")
+            .exact_size(236.0)
+            .resizable(false)
+            .frame(egui::Frame::new().fill(CHROME).inner_margin(18))
             .show(ui, |ui| {
                 ui.visuals_mut().override_text_color = Some(TEXT);
                 ui.add_space(8.0);
-                ui.label(RichText::new("Reversebolt").size(25.0).strong().color(Color32::WHITE));
+                ui.label(
+                    RichText::new("Reversebolt")
+                        .size(25.0)
+                        .strong()
+                        .color(Color32::WHITE),
+                );
                 ui.label(RichText::new("A Bolt workbench").size(13.0).color(MUTED));
                 ui.add_space(24.0);
-                ui.label(RichText::new("Discovery").size(19.0).strong().color(Color32::WHITE));
-                ui.label("Understand what changes.\nFind what controls it.");
+                if ui
+                    .add_enabled(
+                        !busy,
+                        theme::primary("Connect to application")
+                            .wrap_mode(egui::TextWrapMode::Extend)
+                            .min_size(Vec2::new(200.0, 36.0)),
+                    )
+                    .clicked()
+                {
+                    self.show_live = true;
+                    self.live.open_picker(&self.handle);
+                }
+                ui.add_space(12.0);
+                if ui.selectable_label(self.show_live, "Application").clicked() {
+                    self.show_live = true;
+                }
+                if ui.selectable_label(!self.show_live, "Practice").clicked() {
+                    self.show_live = false;
+                }
                 ui.add_space(14.0);
                 ui.separator();
                 ui.add_space(14.0);
-                ui.label(RichText::new("Research preview").strong().color(Color32::WHITE));
-                ui.label("This build works with its own practice process.");
+                ui.label(
+                    RichText::new("Research preview")
+                        .strong()
+                        .color(Color32::WHITE),
+                );
+                ui.label("Connect an app and collect evidence as it changes.");
                 ui.add_space(12.0);
-                ui.label("Game recognition, motion, appearance, and hidden rules are still in development.");
+                ui.label("Gameplay understanding is still in development.");
                 ui.add_space(22.0);
                 ui.separator();
                 ui.add_space(14.0);
-                if ui.add(egui::Button::new(RichText::new("Agent connection").color(ACCENT)).fill(SELECTED)).clicked() { self.show_connection = !self.show_connection; }
-                ui.label(RichText::new("Desktop + MCP\nOne shared session").size(13.0).color(MUTED));
+                if ui
+                    .add(
+                        egui::Button::new(RichText::new("Agent connection").color(ACCENT))
+                            .fill(SELECTED),
+                    )
+                    .clicked()
+                {
+                    self.show_connection = !self.show_connection;
+                }
+                ui.label(
+                    RichText::new("Desktop + MCP\nOne shared session")
+                        .size(13.0)
+                        .color(MUTED),
+                );
                 if self.show_connection {
                     ui.add_space(8.0);
                     ui.label(RichText::new(&self.endpoint).size(12.0));
                     ui.label("Run reversebolt-mcp.exe as an MCP stdio server. See docs/MCP.md.");
                 }
-                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT),|ui| {
-                    ui.label(RichText::new("v0.1.0  /  Rust + MIT").size(12.0).color(MUTED));
+                ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
+                    ui.label(
+                        RichText::new("v0.1.0  /  Rust + MIT")
+                            .size(12.0)
+                            .color(MUTED),
+                    );
                 });
             });
         egui::CentralPanel::default().frame(egui::Frame::new().fill(BACKGROUND).inner_margin(22))
             .show(ui, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
+                    if self.show_live {
+                        self.live.show(ui, &self.handle, &state, busy);
+                    } else {
                     ui.horizontal(|ui| {
                         ui.heading("Discovery workbench");
                         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -163,6 +214,7 @@ impl eframe::App for Workbench {
                             ui.separator();
                         });
                     }
+                    }
                     ui.add_space(12.0);
                     ui.horizontal(|ui| {
                         ui.label(RichText::new("Shared activity").size(18.0).strong());
@@ -178,6 +230,7 @@ impl eframe::App for Workbench {
                     }
                 });
             });
+        self.live.picker(ui.ctx(), &self.handle, &state, busy);
     }
 }
 

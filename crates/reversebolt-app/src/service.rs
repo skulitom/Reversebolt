@@ -37,6 +37,10 @@ impl Handle {
         let published = view.clone();
         let working = busy.clone();
         std::thread::spawn(move || {
+            let live_directory = path
+                .parent()
+                .unwrap_or(std::path::Path::new("."))
+                .join("captures");
             let mut engine = match Engine::load(path) {
                 Ok(engine) => engine,
                 Err(error) => {
@@ -46,9 +50,24 @@ impl Handle {
             };
             *published.write().unwrap() = engine.view.clone();
             let _ = ready_tx.send(Ok(()));
-            while let Ok((command, reply)) = receiver.recv() {
+            loop {
+                let job = receiver.recv_timeout(std::time::Duration::from_millis(300));
+                if let Some(session) = engine.live.as_mut()
+                    && session.refresh_connection()
+                {
+                    engine.view.live = Some(session.view.clone());
+                    *published.write().unwrap() = engine.view.clone();
+                }
+                let (command, reply) = match job {
+                    Ok(job) => job,
+                    Err(mpsc::RecvTimeoutError::Timeout) => continue,
+                    Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                };
                 working.store(true, Ordering::SeqCst);
-                let read_only = matches!(command.action.as_str(), "status" | "history");
+                let read_only = matches!(
+                    command.action.as_str(),
+                    "status" | "history" | "list_processes"
+                );
                 let result = if command.action == "open_practice" {
                     engine.view.error = None;
                     let seed = command.args["seed"].as_u64().unwrap_or_else(|| {
@@ -58,9 +77,20 @@ impl Handle {
                     ChildTarget::start(seed)
                         .and_then(|target| engine.open(Box::new(target), &command.source))
                         .map(|_| json!(engine.view))
+                } else if matches!(
+                    command.action.as_str(),
+                    "list_processes"
+                        | "attach_process"
+                        | "capture"
+                        | "correlate"
+                        | "detach_process"
+                ) {
+                    engine.view.error = None;
+                    native_command(&mut engine, &command, &live_directory)
                 } else {
                     engine.execute(&command)
                 };
+                engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
                 let mut error = result.err();
                 if let Some(message) = &error {
                     engine.view.error = Some(message.clone());
@@ -103,6 +133,68 @@ impl Handle {
             .map_err(|_| "The engine is busy; retry after the current action.".to_string())?;
         rx.recv().map_err(|e| e.to_string())
     }
+}
+
+fn native_command(
+    engine: &mut Engine,
+    command: &Command,
+    directory: &std::path::Path,
+) -> Result<Value> {
+    match command.action.as_str() {
+        "list_processes" => engine.view.processes = crate::native::processes()?,
+        "attach_process" => {
+            let pid = command.args["pid"]
+                .as_u64()
+                .and_then(|p| u32::try_from(p).ok())
+                .ok_or("Choose a valid process.")?;
+            let created = command.args["created"]
+                .as_str()
+                .ok_or("Refresh the process list to obtain its current identity.")?;
+            let budget = command.args["budget_mib"].as_u64().unwrap_or(16) as usize;
+            let target =
+                crate::native::Process::open(pid, created, command.args["window"].as_u64())?;
+            let session = reversebolt_core::live::LiveSession::attach(
+                Box::new(target),
+                budget,
+                directory.join(uuid::Uuid::new_v4().to_string()),
+            )?;
+            engine.event(
+                &command.source,
+                format!(
+                    "Connected to {} (PID {}) for window and memory observation.",
+                    session.view.process.name, pid
+                ),
+            );
+            engine.live = Some(session);
+        }
+        "capture" => {
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Select and connect a program first.")?;
+            session.capture()?;
+            let message = session.view.phase.clone();
+            engine.event(&command.source, message);
+        }
+        "correlate" => {
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Select and connect a program first.")?;
+            session.correlate()?;
+            let message = session.view.phase.clone();
+            engine.event(&command.source, message);
+        }
+        "detach_process" => {
+            engine.live = None;
+            engine.event(
+                &command.source,
+                "Detached from the observed program. The program keeps running.",
+            );
+        }
+        _ => return Err("Unsupported native action.".into()),
+    }
+    Ok(Value::Null)
 }
 
 #[derive(Clone)]

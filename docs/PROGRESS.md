@@ -47,3 +47,27 @@ Next: target inventory and bounded capture, a real screen/behavior observation
 path, then an unchanged discovery pipeline evaluated against an independently
 implemented offline target. Keep the supplied-label practice as a regression
 fixture; do not let it become the product's general inference architecture.
+
+## 2026-10-20 — application connection and observation: 13%
+
+| Capability | Credit / weight | New evidence |
+|---|---:|---|
+| Foundation and delivery | 4 / 10 | Dark Bolt-family desktop; existing delivery remains |
+| Native target access | 3 / 10 | Searchable window picker, exact process identity, read-only attachment, bounded snapshots, disconnect and exit invalidation |
+| Multimodal observation | 1 / 15 | Window image + native OCR + numeric screen tracks; 12/12 varied values in an owned WinForms fixture |
+| General discovery | 2 / 20 | Existing matcher accepts screen tracks; no new real-game discovery credit |
+| Validation | 1 / 15 | Existing practice evidence only |
+| Intent and editing | 0 / 10 | No external application writes or high-level intent |
+| Agent and human collaboration | 2 / 10 | Five new MCP tools share the application connection and history; 14 total |
+| Generalization and release | 0 / 10 | No independent real-game acceptance gate passed |
+| **Total** | **13 / 100** | **The full goal remains active** |
+
+The native fixture test found no correspondence in its 4 MiB sampled memory;
+this is recorded as zero hypotheses, not successful discovery. Unit evidence
+covers excluding incomplete pages and revoking hypotheses on process exit.
+Anode checks cover search, selection, connection, capture, empty search,
+cancellation, and the corrected sidebar layout. See `VALIDATION.md`.
+
+Parallel research owns isolated `experiments/` directories for visual behavior,
+causal validation, and hidden-rule inference. Their results receive no
+integration or generalization credit until reproduced and integrated.

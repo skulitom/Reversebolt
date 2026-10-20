@@ -74,6 +74,10 @@ pub struct View {
     pub history: Vec<Event>,
     pub patches: Vec<Patch>,
     pub error: Option<String>,
+    #[serde(default)]
+    pub processes: Vec<crate::live::ProcessInfo>,
+    #[serde(default)]
+    pub live: Option<crate::live::LiveView>,
 }
 
 impl Default for View {
@@ -89,6 +93,8 @@ impl Default for View {
             history: vec![],
             patches: vec![],
             error: None,
+            processes: vec![],
+            live: None,
         }
     }
 }
@@ -98,6 +104,7 @@ pub struct Engine {
     pub target: Option<Box<dyn PracticeTarget>>,
     snapshots: Vec<Vec<u8>>,
     path: PathBuf,
+    pub live: Option<crate::live::LiveSession>,
 }
 
 impl Engine {
@@ -115,6 +122,8 @@ impl Engine {
         view.connected = false;
         view.pid = None;
         view.tracks.clear();
+        view.processes.clear();
+        view.live = None;
         view.error = None;
         view.phase =
             "Open the practice environment to begin. Previous history is preserved.".into();
@@ -123,6 +132,7 @@ impl Engine {
             target: None,
             snapshots: vec![],
             path,
+            live: None,
         })
     }
 

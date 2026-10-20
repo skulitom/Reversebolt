@@ -11,6 +11,11 @@ struct Reversebolt {
 fn tools() -> Vec<Tool> {
     [
         ("status","Read the desktop's active session, observations, candidate evidence, edits and recent history.",json!({}),vec![]),
+        ("list_processes","List application windows on the desktop engine's Windows desktop. Returns names, titles, PID, window handle and creation identity for selection.",json!({}),vec![]),
+        ("attach_process","Connect a specific application for read-only observation. Pass its identity from list_processes. Replaces the current application investigation; leaves both programs running.",json!({"pid":{"type":"integer","minimum":1},"created":{"type":"string","description":"Exact process creation identity from list_processes."},"window":{"type":"integer","description":"Window handle from list_processes; selects the intended window when an app has several."},"budget_mib":{"type":"integer","minimum":1,"maximum":32,"default":16}}),vec!["pid","created","window"]),
+        ("capture","Capture the connected application's window, OCR numbers and bounded writable memory. Collect varied observations while interacting with the application. Screen and memory are sequential, not atomic. Up to 20 moments and 512 MiB retained.",json!({}),vec![]),
+        ("correlate","Compare captured screen-number trajectories against memory. Requires at least 12 captures. Results are correlations within sampled coverage, never verified controls.",json!({}),vec![]),
+        ("detach_process","Disconnect the observed application, releasing its process handle and in-memory snapshots. Leaves the application running and keeps activity history.",json!({}),vec![]),
         ("open_practice","Start a fresh disposable practice process. Replaces the current practice. Labels and numeric observations are provided by its adapter; this is not game recognition.",json!({"seed":{"type":"integer","minimum":1,"description":"Optional reproducible random layout seed."}}),vec![]),
         ("observe","Advance the practice through 20 state changes and capture synchronized observations and process memory. Clears prior hypotheses.",json!({}),vec![]),
         ("discover","Infer numeric mappings from captured bytes and observations. Held-out matches are hypotheses, not established controls.",json!({}),vec![]),
@@ -22,7 +27,7 @@ fn tools() -> Vec<Tool> {
     ].into_iter().map(|(name,description,properties,required)| {
         let schema = json!({"type":"object","properties":properties,"required":required,"additionalProperties":false});
         let mut annotations = ToolAnnotations::new();
-        annotations.read_only_hint = Some(matches!(name,"status"|"history"));
+        annotations.read_only_hint = Some(matches!(name,"status"|"history"|"list_processes"));
         annotations.open_world_hint = Some(false);
         Tool::new(format!("reversebolt_{name}"),description,schema.as_object().unwrap().clone())
             .with_annotations(annotations)
@@ -33,7 +38,7 @@ impl ServerHandler for Reversebolt {
     fn get_info(&self) -> ServerConfig {
         ServerConfig::new(ServerCapabilities::builder().enable_tools().build())
             .with_server_info(Implementation::new("reversebolt",env!("CARGO_PKG_VERSION")))
-            .with_instructions("Reversebolt shares the desktop engine and history. Open the desktop app first. This preview supports a disposable numeric practice process, not arbitrary games. Treat candidate correlations as hypotheses. Observe, discover, test, inspect ambiguity, then edit.")
+            .with_instructions("Reversebolt shares the desktop engine and history. Open the desktop app first. Use list_processes, attach_process, capture and correlate to observe an application; external application editing and semantic gameplay understanding are not implemented yet. Practice is a separate disposable target: open_practice, observe, discover, test_candidates, set_value and undo act only on practice. Treat candidate correlations as hypotheses.")
     }
 
     fn get_tool(&self, name: &str) -> Option<Tool> {

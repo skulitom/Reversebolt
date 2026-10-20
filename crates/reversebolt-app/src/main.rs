@@ -1,10 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod fixture;
+mod native;
 mod service;
 mod target;
 mod theme;
 mod ui;
+mod ui_live;
 
 use fs2::FileExt;
 

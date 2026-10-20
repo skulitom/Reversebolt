@@ -57,3 +57,43 @@ representation identification, or control of unobserved side effects.
 The independent GameDiscoveryLab research includes difficult failures, notably
 overlapping interpretations of floating-point values. Those findings remain
 applicable; the successful practice seeds do not erase them.
+
+## Application connection and capture — 2026-10-20
+
+Four workspace tests and strict Clippy pass. The added tests preserve missing
+OCR detections as gaps, keep adjacent number tracks separate, exclude pages
+missing from a trajectory, and revoke connected status and hypotheses on exit.
+The final release also passes the existing process/edit/restore/auth/restart
+suite and MCP lifecycle with 14 tools:
+`test-results/smoke-8b266a25/report.json`.
+
+In Anode, UI Automation opened the application picker, searched for an owned
+WinForms window, selected it, connected it, and invoked capture. The workspace
+displayed the correct name, title and PID. A nonexistent search showed an empty
+result and disabled Connect; Cancel returned to the workspace. The final dark
+layout was reviewed at 1280×720, including the prominent sidebar connection
+button and a picker that does not resize as filtering changes.
+
+`scripts/native-smoke.py` against the owned `observation-fixture.ps1` window
+verified:
+
+- A stale creation identity and wrong window are rejected; failed replacement
+  preserves the existing connection.
+- Twelve varied on-screen numbers are recognized and associated into one track,
+  with memory read and a saved target-window image for each capture.
+- The 560×260 captures took 11–40 ms (mean 15.2 ms) on this machine. This is
+  fixture timing, not game-performance evidence.
+- Disconnect leaves the target running. Closing the target invalidates the
+  connection automatically and prevents captures or stale reattachment.
+- Correlation ran over the 4 MiB sampled memory and found **zero hypotheses**.
+  This proves the observation path, not successful value discovery.
+
+Raw native report and images:
+`test-results/application-picker-v2/native-report.json`.
+
+The initial run failed on an OCR result merging `Quantity` and `56` into one
+word after needless upscaling. Capture now preserves native resolution unless
+it exceeds the OCR limit; the unchanged 12-value fixture then passed. Merged
+words, unusual fonts, localization, moving HUD elements, renderer compatibility,
+non-atomic screen/memory timing, partial coverage and inaccessible targets remain
+limitations. External application editing is not enabled.

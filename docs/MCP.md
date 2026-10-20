@@ -28,6 +28,11 @@ never creates a private simulator or duplicate session.
 | Tool | Behavior |
 |---|---|
 | `reversebolt_status` | Session, values, matches, evidence, edit history |
+| `reversebolt_list_processes` | Application windows with title, PID, creation identity and window handle |
+| `reversebolt_attach_process` | Connect an exact process/window for observation; default 16 MiB capture budget |
+| `reversebolt_capture` | Window image, OCR and bounded memory snapshot from connected application |
+| `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
+| `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
 | `reversebolt_observe` | Twenty observation/memory samples |
 | `reversebolt_discover` | Numeric correspondence hypotheses with held-out validation |
@@ -41,6 +46,16 @@ Typical investigation: status → open practice → observe → discover → ins
 candidate evidence → test candidates → inspect remaining ambiguity → set value
 → undo. A protocol response may contain `isError: true`; do not treat a delivered
 tool call as a successful edit.
+
+Application investigation: list processes → attach using `pid`, `created` and
+`window` returned by the list → capture varied moments → correlate → inspect
+evidence → detach. The `live` state is separate from the practice state; practice
+write tools never edit the connected external application. A process restart
+requires a new selection; PID alone is not accepted as an identity.
+
+Only windows on the engine's Windows desktop are listed. For Anode testing,
+launch the engine in Anode with an isolated `--data-dir`. A main-desktop engine
+lists main-desktop applications.
 
 ## Local transport and limits
 
@@ -58,5 +73,11 @@ clients should inspect status before repeating a mutation.
 
 The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused
-fixture, not a rollback strategy for a real game. Native target discovery and
-permission scope will be expanded separately.
+fixture, not a rollback strategy for a real game. External process handles
+currently request query/read access only. Captures retain up to 20 moments and
+512 MiB of raw memory; images remain in the data directory. The optional attach
+budget is 1–32 MiB per moment. The desktop uses 16 MiB.
+
+Capture reads screen and memory sequentially without pausing the target.
+Unavailable pages are reported and excluded from correlation; coverage and
+timing are visible. A window-rendering timeout preserves memory evidence.

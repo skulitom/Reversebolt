@@ -3,8 +3,10 @@
 An open-source Rust workbench for discovering what controls an unfamiliar game.
 Part of the Bolt family. Humans and agents use the same engine and session.
 
-**Research preview:** this first desktop build works with a disposable practice
-process. It does not yet recognize or edit arbitrary games. The destination is
+**Research preview:** connect a running application, capture its window and
+bounded memory, and compare changing screen numbers with memory trajectories.
+Automatic game understanding and live-game edits are not implemented yet.
+The disposable practice environment supports tested edits. The destination is
 documented in [the full vision](docs/VISION.md), with an explicit
 [progress rubric](docs/PROGRESS.md).
 
@@ -16,7 +18,16 @@ Requires stable Rust and the Microsoft C++ build tools.
 cargo run -p reversebolt-app --bin Reversebolt
 ```
 
-Choose **Open practice → Observe changes → Find matches → Test effects**.
+Choose **Connect to application**, search by name, title or PID, select a window,
+then **Connect**. The application workspace shows the chosen target. Use
+**Capture moment** as visible numbers change; **Compare changes** becomes
+available after 12 moments. Results are unverified correlations. This preview
+samples up to 16 MiB per moment, not the whole process. Capture support varies
+by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
+application running. The connection invalidates when the original process exits.
+
+For the editable demo, choose **Practice → Open practice → Observe changes →
+Find matches → Test effects**.
 Each practice process has new random offsets and a numeric encoding. Discovery
 receives synchronized bytes and observations, not the true field locations.
 Testing separates controlling fields from misleading display/telemetry copies.
@@ -60,7 +71,9 @@ overwritten. No global MCP client settings are changed.
 - `reversebolt-mcp`: official MCP protocol adapter to the same engine.
 
 The current practice adapter is deliberately separate from the discovery
-algorithm. General screen, motion, appearance, object and rule inference,
+algorithm. Native capture uses Windows window rendering and OCR; the first
+screen tracker associates numeric text by location, without semantic labels.
+General motion, appearance, object and rule inference,
 live-game experiments, durable cancellable jobs, and restart revalidation are
 future milestones, not advertised capabilities.
 
