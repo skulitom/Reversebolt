@@ -359,3 +359,25 @@ guard test); strict Clippy passes. The desktop preview remains available.
 The stable weighted goal estimate stays **20 / 100**. Next: independent proposal
 verification and tighter grounding before automatic shared-session integration.
 See [local observer evidence and scoring corrections](research/LOCAL_OBSERVER.md).
+
+## 2026-10-21 — crop-focused review: still 20%
+
+The Rust observer can now review an unlabelled crop with its source context,
+retaining exact image provenance and coordinate transforms. A frozen automated
+replay reviewed 90 proposals across the same 53 archived pairs. Category
+filtering retained all 45 strict matches and reduced unmatched proposals from
+44 to 16; 27 removals were semantic judgments and one was a contract failure.
+Using the new coordinates instead lost a correct match. The experiment therefore
+supports filtering with original coordinates, not automatic box refinement.
+
+This remains correlated same-model evidence on already seen clips, with false
+proposals and missed actors. Median additional cost is 3.817 seconds per review.
+It does not establish persistent identity, physical movement, memory relations
+or editing authority. No desktop source or game control was enabled. All 81
+workspace tests, strict Clippy, formatting, image-provenance negative checks and
+exact receipt-only rescoring pass. The desktop remains available.
+
+All category credits and the denominator stay unchanged at **20 / 100**; the full
+goal remains active. Next: independent grounding and bounded shared-session
+model execution, preserving provisional observations until effects are verified.
+See [crop review evidence](research/CROP_REVIEW.md).

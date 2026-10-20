@@ -181,6 +181,14 @@ object localization. It is not yet wired into automatic observation or MCP;
 that requires proposal verification and durable model-job ownership. See
 [local-model evaluation](research/LOCAL_OBSERVER.md).
 
+Its crop-review module takes source-bound proposal geometry without the proposed
+name/category, presents source context and an enlarged crop, and retains exact
+transforms and raw model output. Replay separates category filtering from box
+refinement: filtering reduces unmatched proposals while refinement loses a
+correct match. Same-model agreement is correlated evidence. It remains an
+experimental CLI, with no engine mutation or editing authority. See
+[crop-review results](research/CROP_REVIEW.md).
+
 ## Observation job controller
 
 The `reversebolt-session-jobs` crate supplies bounded durable state transitions,

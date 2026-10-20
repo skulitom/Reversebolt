@@ -9,6 +9,8 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub mod review;
+
 const ENDPOINT: &str = "http://127.0.0.1:11434";
 pub const MAX_FRAMES: usize = 4;
 pub const MAX_ENTITIES: usize = 6;
@@ -98,7 +100,7 @@ pub fn validate(value: &Interpretation, frame_count: usize) -> Result<()> {
     Ok(())
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrameEvidence {
     pub sha256: String,
     pub width: u32,
@@ -132,7 +134,7 @@ impl Frame {
     }
 }
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
     pub schema_version: u32,
     pub model: String,
@@ -233,16 +235,7 @@ impl Observer {
     }
 
     pub async fn observe(&self, frames: &[Frame]) -> Result<Receipt> {
-        if !(2..=MAX_FRAMES).contains(&frames.len())
-            || frames.iter().map(|f| f.bytes.len()).sum::<usize>() > 16 * 1024 * 1024
-            || frames.windows(2).any(|p| {
-                p[0].evidence.timestamp_ns >= p[1].evidence.timestamp_ns
-                    || p[0].evidence.width != p[1].evidence.width
-                    || p[0].evidence.height != p[1].evidence.height
-            })
-        {
-            return Err("Supply 2–4 ordered, same-size images within 16 MiB.".into());
-        }
+        validate_frames(frames)?;
         self.verify_model().await?;
         let prompt = format!(
             "{PROMPT}\nSchema: {}\nImage timestamps in nanoseconds, in order: {:?}",
@@ -254,15 +247,17 @@ impl Observer {
         );
         let start = Instant::now();
         let options = json!({"temperature":0,"seed":42,"num_ctx":8192,"num_predict":1500});
-        let mut request = json!({
-            "model":self.model,"stream":false,"keep_alive":"2m","format":schema(),
-            "options":options,
-            "messages":[{"role":"user","content":prompt,"images":frames.iter().map(|f| STANDARD.encode(&f.bytes)).collect::<Vec<_>>()}]
-        });
-        if self.thinking {
-            request["think"] = json!(false);
-        }
-        let response = post(&self.client, "/api/chat", request, 128 * 1024).await?;
+        let response = self
+            .generate(
+                &prompt,
+                schema(),
+                options.clone(),
+                &frames
+                    .iter()
+                    .map(|f| f.bytes.as_slice())
+                    .collect::<Vec<_>>(),
+            )
+            .await?;
         self.verify_model().await?;
         let parsed = parse_response(&response, frames.len());
         let (interpretation, rejection) = match parsed {
@@ -273,9 +268,44 @@ impl Observer {
             prompt_sha256:visual::digest(prompt.as_bytes()), prompt, output_schema:schema(), options, thinking_disabled:self.thinking, frames:frames.iter().map(|f| f.evidence.clone()).collect(), elapsed_ms:start.elapsed().as_millis(),
             response, interpretation, rejection, limitation:"Unverified local model interpretation. Boxes and within-request correspondence may be wrong. No persistent identity, physical quantity, memory relation or edit authority is established.".into() })
     }
+
+    async fn generate(
+        &self,
+        prompt: &str,
+        schema: Value,
+        options: Value,
+        images: &[&[u8]],
+    ) -> Result<Value> {
+        if images.is_empty()
+            || images.len() > 4
+            || images.iter().map(|b| b.len()).sum::<usize>() > 16 * 1024 * 1024
+        {
+            return Err("Model request exceeds the four-image or 16 MiB limit.".into());
+        }
+        let mut request = json!({"model":self.model,"stream":false,"keep_alive":"2m","format":schema,
+            "options":options,"messages":[{"role":"user","content":prompt,"images":images.iter().map(|b| STANDARD.encode(b)).collect::<Vec<_>>()}]});
+        if self.thinking {
+            request["think"] = json!(false);
+        }
+        post(&self.client, "/api/chat", request, 128 * 1024).await
+    }
 }
 
-pub fn parse_response(response: &Value, frame_count: usize) -> Result<Interpretation> {
+fn validate_frames(frames: &[Frame]) -> Result<()> {
+    if !(2..=MAX_FRAMES).contains(&frames.len())
+        || frames.iter().map(|f| f.bytes.len()).sum::<usize>() > 16 * 1024 * 1024
+        || frames.windows(2).any(|p| {
+            p[0].evidence.timestamp_ns >= p[1].evidence.timestamp_ns
+                || p[0].evidence.width != p[1].evidence.width
+                || p[0].evidence.height != p[1].evidence.height
+        })
+    {
+        return Err("Supply 2–4 ordered, same-size images within 16 MiB.".into());
+    }
+    Ok(())
+}
+
+fn response_text(response: &Value) -> Result<&str> {
     if response["done"] != true
         || response["done_reason"] != "stop"
         || response["message"]["role"] != "assistant"
@@ -291,6 +321,11 @@ pub fn parse_response(response: &Value, frame_count: usize) -> Result<Interpreta
     if text.len() > 16 * 1024 {
         return Err("Model text exceeds its limit.".into());
     }
+    Ok(text)
+}
+
+pub fn parse_response(response: &Value, frame_count: usize) -> Result<Interpretation> {
+    let text = response_text(response)?;
     let value: Interpretation =
         serde_json::from_str(text).map_err(|e| format!("Invalid observation JSON: {e}"))?;
     validate(&value, frame_count)?;

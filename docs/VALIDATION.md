@@ -1,5 +1,21 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Crop-focused proposal review — 2026-10-21
+
+All 81 workspace tests, strict workspace Clippy and formatting pass. A frozen
+automated replay completed 90 local-model crop reviews over the same 53 archived
+pairs. Filtering retained all 45 strict matched boxes while reducing unmatched
+proposals from 44 to 16; 27 removals were other-object judgments and one was a
+structural failure. Replacing coordinates lost one correct match. This is
+same-model research on previously seen footage, not independent confirmation.
+
+Altered source hashes and timestamps were rejected before model connection.
+Source, executable and evaluator hashes matched the launch manifest after the
+run, and receipt-only rescoring reproduced the complete results exactly.
+See [method, results and limits](research/CROP_REVIEW.md). The observer stays
+experimental. The existing card-based desktop preview remains running; this
+change requires no new desktop build, game input or screenshot capture.
+
 ## Experimental local semantic observer — 2026-10-21
 
 The 78-test workspace suite, the subsequently added CLI resource-limit test and
