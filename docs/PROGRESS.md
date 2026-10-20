@@ -154,3 +154,31 @@ Next: integrate bounded shared investigation jobs and broader memory coverage,
 then evaluate a repeatable agent observation loop against fresh gameplay.
 Completed research prototypes still require independent reproduction and engine
 integration; their results do not count as delivered product capabilities.
+
+## 2026-10-20 — bounded coverage across memory batches: 16%
+
+Native target access increases from **3 / 10 to 4 / 10**. Other credits remain:
+foundation 4, multimodal observation 2, discovery 2, validation 1, intent 0,
+agent collaboration 3, generalization 0. Total: **16 / 100**. The full goal
+remains active.
+
+The desktop and MCP can now continue beyond the initial memory window. Each
+batch keeps its observations separate, archives hypotheses and sparse byte
+witnesses, then releases its raw snapshots. Mapping checks exclude observed
+discontinuities, and coverage distinguishes addresses read from complete local
+histories. Read, retention, image and archive limits are explicit.
+
+In paused Blue Prince, two 16 MiB batches each completed 12 captures. A third
+batch brought unique reads to 48 MiB, with complete histories for 32 MiB. The
+static scene supplied no changing numeric observations, so matching refused to
+run. No gameplay control or editing ability is claimed. The prototype's broader
+synthetic recall is not transferred to the application as generalization credit.
+
+Twenty-one tests, strict Clippy, formatting and the 17-tool release smoke suite
+pass. Anode checks cover the desktop workflow; MCP advancement and archive
+preservation after restart also pass. Preview `0.1.0-20261020-212137` carries the
+change. See [memory coverage evidence](research/MEMORY_BATCHES.md).
+
+Next: durable cancellable investigation jobs that can coordinate observations
+and memory batches, followed by fresh changing-gameplay evaluations. The full
+vision still requires semantic inference, causal validation and scoped edits.

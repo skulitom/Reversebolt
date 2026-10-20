@@ -2,17 +2,17 @@
 //! No executable-name rules, game offsets or source-derived layouts.
 use crate::{
     Result,
+    coverage::{self, BatchSummary, Chunk, Coverage, Ranges},
     discovery::{Candidate, discover},
     visual::{self, FrameRef, ObservationInput, VisualTrack},
 };
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     path::{Path, PathBuf},
     time::{Instant, SystemTime, UNIX_EPOCH},
 };
 
-const CHUNK_BYTES: usize = 64 * 1024;
 const MAX_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 
@@ -27,12 +27,7 @@ pub struct ProcessInfo {
     pub created: String,
 }
 
-#[derive(Clone, Debug)]
-pub struct Region {
-    pub base: u64,
-    pub length: usize,
-    pub image: bool,
-}
+pub use crate::coverage::Region;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Word {
@@ -76,6 +71,14 @@ pub struct Screen {
 pub trait NativeTarget {
     fn info(&self) -> &ProcessInfo;
     fn regions(&self) -> Result<Vec<Region>>;
+    fn query(&self, address: u64) -> Result<Option<Region>> {
+        Ok(self.regions()?.into_iter().find(|r| {
+            r.base <= address
+                && r.base
+                    .checked_add(r.length as u64)
+                    .is_some_and(|end| address < end)
+        }))
+    }
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>>;
     fn screen(&self, path: &Path) -> Result<Screen>;
     /// Run recognition after memory capture to avoid adding inference time to
@@ -122,12 +125,29 @@ pub struct CaptureSummary {
     pub recognition_ms: u128,
     pub captured_bytes: usize,
     pub unreadable_bytes: usize,
+    #[serde(default)]
+    pub changed_mapping_bytes: usize,
+    #[serde(default)]
+    pub memory_reads: Vec<MemoryRead>,
     pub screen: Option<Screen>,
     pub screen_error: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct MemoryRead {
+    pub address: String,
+    pub requested: usize,
+    pub retained: usize,
+    /// Milliseconds from this capture's start; screen and memory are sequential.
+    pub begin_ms: u128,
+    pub end_ms: u128,
+    pub disposition: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    #[serde(default)]
+    pub coverage: Coverage,
     #[serde(default)]
     pub investigation_id: String,
     #[serde(default)]
@@ -148,8 +168,15 @@ pub struct LiveView {
 pub struct LiveSession {
     pub view: LiveView,
     target: Box<dyn NativeTarget>,
-    plan: Vec<(u64, usize)>,
+    plan: Vec<Chunk>,
+    budget_bytes: usize,
+    selected: Ranges,
+    read_ranges: Ranges,
+    complete_ranges: Ranges,
+    invalid_chunks: BTreeSet<u64>,
+    root_directory: PathBuf,
     snapshots: Vec<BTreeMap<u64, Vec<u8>>>,
+    receipts: Vec<Vec<MemoryRead>>,
     directory: PathBuf,
     screen_size: Option<(u32, u32)>,
     image_epoch: usize,
@@ -182,31 +209,20 @@ impl LiveSession {
         if !(1..=32).contains(&budget_mib) {
             return Err("Memory capture budget must be 1–32 MiB.".into());
         }
-        let mut regions = target.regions()?;
-        let eligible_bytes = regions.iter().map(|r| r.length as u64).sum();
-        // Writable image pages first, then smaller private regions. This is a
-        // general prioritization under a budget, not a game layout heuristic.
-        regions.sort_by_key(|r| (!r.image, r.length, r.base));
-        let mut remaining = budget_mib * 1024 * 1024;
-        let mut plan = vec![];
-        for region in regions {
-            let mut offset = 0;
-            while offset < region.length && remaining > 0 {
-                let length = CHUNK_BYTES.min(region.length - offset).min(remaining);
-                plan.push((region.base + offset as u64, length));
-                offset += length;
-                remaining -= length;
-            }
-            if remaining == 0 {
-                break;
-            }
-        }
-        let planned_bytes = plan.iter().map(|(_, n)| *n).sum();
+        let budget_bytes = budget_mib * 1024 * 1024;
+        let (plan, eligible_bytes) =
+            coverage::plan(target.regions()?, &Ranges::default(), budget_bytes)?;
+        let planned_bytes = plan.iter().map(|c| c.length).sum();
         if planned_bytes == 0 {
             return Err("No readable writable memory regions were found.".into());
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            coverage: Coverage {
+                batch: 1,
+                selected_unique_bytes: planned_bytes as u64,
+                ..Coverage::default()
+            },
             investigation_id: uuid::Uuid::new_v4().to_string(),
             frames: vec![],
             visual_tracks: vec![],
@@ -224,7 +240,14 @@ impl LiveSession {
             view,
             target,
             plan,
+            budget_bytes,
+            selected: Ranges::default(),
+            read_ranges: Ranges::default(),
+            complete_ranges: Ranges::default(),
+            invalid_chunks: BTreeSet::new(),
+            root_directory: directory.clone(),
             snapshots: vec![],
+            receipts: vec![],
             directory,
             screen_size: None,
             image_epoch: 0,
@@ -241,7 +264,17 @@ impl LiveSession {
         if self.snapshots.len() >= MAX_SAMPLES
             || (self.snapshots.len() + 1) * self.view.planned_bytes > RETAINED_MEMORY_BUDGET
         {
-            return Err("This capture session reached its memory/sample budget. Analyze it or reconnect for a fresh session.".into());
+            return Err("This memory batch reached its capture budget. Compare its observations, then search more memory.".into());
+        }
+        if self.view.coverage.attempted_bytes + self.view.planned_bytes as u64
+            > coverage::MAX_READ_BYTES
+        {
+            return Err("This investigation reached its 4 GiB read budget. Start a new connection to continue.".into());
+        }
+        if self.view.coverage.image_budget_bytes + visual::MAX_IMAGE_BYTES as u64
+            > coverage::MAX_IMAGE_DISK_BYTES
+        {
+            return Err("This investigation reached its image storage budget.".into());
         }
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -251,26 +284,77 @@ impl LiveSession {
         let number = self.snapshots.len() + 1;
         let screen_path = self.directory.join(format!("frame-{number:03}.png"));
         let mut screen = self.target.screen(&screen_path);
+        let image_length = std::fs::metadata(&screen_path)
+            .map(|m| m.len())
+            .unwrap_or(0);
+        if image_length > visual::MAX_IMAGE_BYTES as u64 {
+            let _ = std::fs::remove_file(&screen_path);
+            screen = Err("The image exceeded the 10 MiB capture budget.".into());
+        } else {
+            self.view.coverage.image_disk_bytes += image_length;
+        }
+        // A timed-out renderer can still be writing on its bounded worker.
+        // Charge its full allowance even if its file is not visible yet.
+        self.view.coverage.image_budget_bytes += if screen.is_err() {
+            visual::MAX_IMAGE_BYTES as u64
+        } else {
+            image_length
+        };
         let screen_capture_ms = start.elapsed().as_millis();
         let memory_start = Instant::now();
         let mut snapshot = BTreeMap::new();
         let mut unreadable = 0;
-        for &(address, length) in &self.plan {
-            match self.target.read(address, length) {
-                Ok(bytes) if bytes.len() == length => {
-                    snapshot.insert(address, bytes);
+        let mut changed = 0;
+        let mut receipts = vec![];
+        for chunk in &self.plan {
+            let (address, length) = (chunk.address, chunk.length);
+            let begin_ms = start.elapsed().as_millis();
+            let mut disposition = "unavailable";
+            let compatible = |chunk: &Chunk| {
+                self.target
+                    .query(chunk.address)
+                    .ok()
+                    .flatten()
+                    .is_some_and(|r| chunk.covered_by(&r))
+            };
+            if self.invalid_chunks.contains(&address) || !compatible(chunk) {
+                self.invalid_chunks.insert(address);
+                changed += length;
+                disposition = "mapping_changed_or_unavailable";
+            } else {
+                self.view.coverage.attempted_bytes += length as u64;
+                match self.target.read(address, length) {
+                    Ok(bytes) if bytes.len() == length => {
+                        self.view.coverage.read_bytes += length as u64;
+                        if compatible(chunk) {
+                            self.read_ranges.add(address, length);
+                            snapshot.insert(address, bytes);
+                            disposition = "retained_generation_unverified";
+                        } else {
+                            self.invalid_chunks.insert(address);
+                            changed += length;
+                            disposition = "mapping_changed_during_read";
+                        }
+                    }
+                    _ => {
+                        unreadable += length;
+                    }
                 }
-                _ => unreadable += length,
             }
+            receipts.push(MemoryRead {
+                address: format!("0x{address:X}"),
+                requested: length,
+                retained: snapshot.get(&address).map_or(0, Vec::len),
+                begin_ms,
+                end_ms: start.elapsed().as_millis(),
+                disposition: disposition.into(),
+            });
         }
         let captured = snapshot.values().map(Vec::len).sum::<usize>();
         let memory_read_ms = memory_start.elapsed().as_millis();
-        if captured == 0 {
-            return Err(
-                "None of the planned memory could be read. Reconnect to refresh the memory map."
-                    .into(),
-            );
-        }
+        self.view.coverage.read_unique_bytes = self.read_ranges.bytes();
+        self.view.coverage.changed_or_unavailable_bytes += (changed + unreadable) as u64;
+        self.view.coverage.analyzed_current_bytes = 0;
         let recognition_start = Instant::now();
         if let Ok(frame) = &mut screen
             && let Err(error) = self.target.recognize(frame)
@@ -282,6 +366,8 @@ impl LiveSession {
         }
         let recognition_ms = recognition_start.elapsed().as_millis();
         self.snapshots.push(snapshot);
+        self.receipts.push(receipts.clone());
+        self.update_complete_coverage();
         if let Ok(frame) = &screen {
             let size = (frame.width, frame.height);
             if self.screen_size.is_some_and(|previous| previous != size) {
@@ -339,6 +425,8 @@ impl LiveSession {
             recognition_ms,
             captured_bytes: captured,
             unreadable_bytes: unreadable,
+            changed_mapping_bytes: changed,
+            memory_reads: receipts,
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
         });
@@ -366,6 +454,175 @@ impl LiveSession {
         self.view.phase = format!(
             "Captured {number} moments. {} screen-number tracks. Correlation needs at least 12 varied observations.",
             self.view.tracks.len()
+        );
+        Ok(())
+    }
+
+    fn complete_chunks(&self) -> Vec<&Chunk> {
+        if self.snapshots.len() < 12 {
+            return vec![];
+        }
+        self.plan
+            .iter()
+            .filter(|c| {
+                !self.invalid_chunks.contains(&c.address)
+                    && self
+                        .snapshots
+                        .iter()
+                        .all(|s| s.get(&c.address).is_some_and(|b| b.len() == c.length))
+            })
+            .collect()
+    }
+
+    fn update_complete_coverage(&mut self) {
+        let mut complete = self.complete_ranges.clone();
+        for c in self.complete_chunks() {
+            complete.add(c.address, c.length);
+        }
+        self.view.coverage.complete_trajectory_bytes = complete.bytes();
+    }
+
+    /// Archive the current batch before dropping its bulk bytes. New samples
+    /// never join an old memory trajectory, even if a label or address repeats.
+    pub fn advance_memory(&mut self, investigation: &str, batch: usize) -> Result<()> {
+        if investigation != self.view.investigation_id || batch != self.view.coverage.batch {
+            return Err(
+                "The investigation or memory batch changed. Read status before continuing.".into(),
+            );
+        }
+        if self.refresh_connection() || !self.view.connected {
+            return Err("The selected process closed.".into());
+        }
+        if self.snapshots.is_empty() {
+            return Err("Capture this memory batch before moving on.".into());
+        }
+        if batch >= coverage::MAX_BATCHES {
+            return Err("The investigation reached its 24-batch limit.".into());
+        }
+        let mut selected = self.selected.clone();
+        for chunk in &self.plan {
+            selected.add(chunk.address, chunk.length);
+        }
+        let (next, eligible) =
+            coverage::plan(self.target.regions()?, &selected, self.budget_bytes)?;
+        if next.is_empty() {
+            return Err("All currently inventoried eligible addresses have been selected. This does not prove every value was recognized or every allocation lifetime observed.".into());
+        }
+        let planned_bytes: usize = next.iter().map(|c| c.length).sum();
+        if self.view.coverage.attempted_bytes + planned_bytes as u64 * 12 > coverage::MAX_READ_BYTES
+        {
+            return Err(
+                "Not enough of the 4 GiB read budget remains for another 12-capture batch.".into(),
+            );
+        }
+        let matches: Vec<_> = self
+            .view
+            .tracks
+            .iter()
+            .flat_map(|t| {
+                t.matches
+                    .iter()
+                    .map(move |m| ("ocr", t.id, t.label.as_str(), m))
+            })
+            .chain(self.view.visual_tracks.iter().flat_map(|t| {
+                t.matches
+                    .iter()
+                    .map(move |m| ("external", t.id, t.label.as_str(), m))
+            }))
+            .collect();
+        let mut witnesses = vec![];
+        for (source, track, label, candidate) in matches.iter().take(256) {
+            let address = u64::from_str_radix(candidate.address.trim_start_matches("0x"), 16)
+                .map_err(|_| "Invalid candidate address.")?;
+            let chunk = self
+                .plan
+                .iter()
+                .find(|c| c.address <= address && address < c.address + c.length as u64)
+                .ok_or("Candidate is outside its sampling batch.")?;
+            let offset = (address - chunk.address) as usize;
+            let width = candidate.mapping.kind.width();
+            let bytes: Vec<_> = self
+                .snapshots
+                .iter()
+                .map(|s| {
+                    s.get(&chunk.address)
+                        .and_then(|b| b.get(offset..offset + width))
+                        .map(|b| b.to_vec())
+                })
+                .collect();
+            let timings: Vec<_> = self
+                .receipts
+                .iter()
+                .map(|r| {
+                    r.iter()
+                        .find(|r| r.address == format!("0x{:X}", chunk.address))
+                })
+                .collect();
+            witnesses.push(serde_json::json!({"source":source,"track":track,"label":label,
+                "candidate":candidate,"region":chunk.region,"bytes":bytes,"reads":timings,
+                "continuity":"Historical batch only; allocation generation and editing authority unverified."}));
+        }
+        let archive_path = self.directory.join("memory-batch.json");
+        let summary = BatchSummary {
+            number: batch,
+            captures: self.snapshots.len(),
+            planned_bytes: self.view.planned_bytes,
+            complete_trajectory_bytes: self.complete_chunks().iter().map(|c| c.length).sum(),
+            analyzed_bytes: self.view.coverage.analyzed_current_bytes,
+            hypotheses: matches.len(),
+            retained_witnesses: witnesses.len(),
+            archive: archive_path.to_string_lossy().into_owned(),
+        };
+        let bytes=serde_json::to_vec(&serde_json::json!({"schema_version":1,"summary":summary,
+            "state":self.view,"plan":self.plan,"witnesses":witnesses,
+            "scope":"Historical observations; raw noncandidate memory discarded; no current control authority."}))
+            .map_err(|e| e.to_string())?;
+        if bytes.len() + self.view.coverage.archive_bytes > coverage::MAX_ARCHIVE_BYTES {
+            return Err(
+                "The 32 MiB batch-archive budget is exhausted. The current batch is preserved."
+                    .into(),
+            );
+        }
+        // Prepare all fallible work before releasing the previous snapshots.
+        let next_directory = self.root_directory.join(format!("batch-{:03}", batch + 1));
+        std::fs::create_dir_all(&next_directory).map_err(|e| e.to_string())?;
+        write_evidence(&archive_path, &bytes)?;
+        let complete: Vec<_> = self
+            .complete_chunks()
+            .into_iter()
+            .map(|c| (c.address, c.length))
+            .collect();
+        for (a, n) in complete {
+            self.complete_ranges.add(a, n);
+        }
+        self.selected = selected;
+        let mut all_selected = self.selected.clone();
+        for c in &next {
+            all_selected.add(c.address, c.length);
+        }
+        self.view.coverage.selected_unique_bytes = all_selected.bytes();
+        self.view.coverage.archive_bytes += bytes.len();
+        self.view.coverage.batches.push(summary);
+        self.view.coverage.batch += 1;
+        self.view.coverage.analyzed_current_bytes = 0;
+        self.view.eligible_bytes = eligible;
+        self.view.planned_bytes = planned_bytes;
+        self.plan = next;
+        self.directory = next_directory;
+        self.snapshots.clear();
+        self.receipts.clear();
+        self.invalid_chunks.clear();
+        self.view.sample_count = 0;
+        self.view.retained_bytes = 0;
+        self.view.latest = None;
+        self.view.frames.clear();
+        self.view.tracks.clear();
+        self.view.visual_tracks.clear();
+        self.image_epoch += 1;
+        self.screen_size = None;
+        self.view.phase = format!(
+            "Searching memory batch {}. Earlier evidence is archived. Collect fresh observations as the application changes.",
+            batch + 1
         );
         Ok(())
     }
@@ -423,28 +680,17 @@ impl LiveSession {
     fn save_visual_evidence(&self, tracks: &[VisualTrack]) -> Result<()> {
         // Archived evidence survives the active engine's restart invalidation.
         // This file is not a journal or a transaction with session.json.
-        use std::io::Write;
         let bytes = serde_json::to_vec_pretty(&serde_json::json!({
             "schema_version":1,
             "investigation_id":self.view.investigation_id,
             "process":self.view.process,
             "frames":self.view.frames,
             "visual_tracks":tracks,
+            "memory_batch":self.view.coverage.batch,
             "scope":"Historical image interpretations; no current address or editing authority."
         }))
         .map_err(|e| e.to_string())?;
-        let temporary = self.directory.join("evidence.pending");
-        let result = (|| -> std::io::Result<()> {
-            let mut file = std::fs::File::create(&temporary)?;
-            file.write_all(&bytes)?;
-            file.sync_all()?;
-            drop(file);
-            std::fs::rename(&temporary, self.directory.join("evidence.json"))
-        })();
-        if result.is_err() {
-            let _ = std::fs::remove_file(&temporary);
-        }
-        result.map_err(|e| format!("Image interpretation was not saved: {e}"))
+        write_evidence(&self.directory.join("evidence.json"), &bytes)
     }
 
     pub fn correlate(&mut self) -> Result<()> {
@@ -489,7 +735,11 @@ impl LiveSession {
             return Err("Reversebolt could not follow a changing number across enough captures. Review missing or uncertain readings, or add image-grounded observations, then capture more moments.".into());
         }
         let mut analyzed = 0usize;
-        for &(base, length) in &self.plan {
+        for chunk in &self.plan {
+            let (base, length) = (chunk.address, chunk.length);
+            if self.invalid_chunks.contains(&base) {
+                continue;
+            }
             let Some(trajectory) = self
                 .snapshots
                 .iter()
@@ -515,11 +765,12 @@ impl LiveSession {
                     matches.push(LocatedCandidate {
                         address:format!("0x{:X}",base+candidate.offset as u64),
                         mapping:candidate,
-                        evidence:format!("Correlates with {} on held-out frames. Its meaning and causal authority are unverified; this is not an editable control.", if *external { "an externally supplied visual interpretation" } else { "an OCR observation" }),
+                        evidence:format!("Correlates with {} on held-out frames in memory batch {}. Allocation generation, meaning and causal authority are unverified; this is not an editable control.", if *external { "an externally supplied visual interpretation" } else { "an OCR observation" },self.view.coverage.batch),
                     });
                 }
             }
         }
+        self.view.coverage.analyzed_current_bytes = analyzed;
         self.view.phase = format!(
             "Compared {} changing tracks across {:.1} MiB present in every frame. {} hypotheses; none causally verified.",
             varying.len(),
@@ -538,6 +789,22 @@ impl LiveSession {
         );
         Ok(())
     }
+}
+
+fn write_evidence(path: &Path, bytes: &[u8]) -> Result<()> {
+    use std::io::Write;
+    let temporary = path.with_extension("pending");
+    let result = (|| -> std::io::Result<()> {
+        let mut file = std::fs::File::create(&temporary)?;
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        drop(file);
+        std::fs::rename(&temporary, path)
+    })();
+    if result.is_err() {
+        let _ = std::fs::remove_file(&temporary);
+    }
+    result.map_err(|e| format!("Evidence was not saved: {e}"))
 }
 
 /// Conservative screen-space association, not semantic identification.
@@ -745,11 +1012,13 @@ mod tests {
                     base: 0x10000,
                     length: 128,
                     image: false,
+                    ..Region::default()
                 },
                 Region {
                     base: 0x20000,
                     length: 128,
                     image: false,
+                    ..Region::default()
                 },
             ])
         }

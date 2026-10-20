@@ -251,8 +251,8 @@ impl LivePane {
                 ui.label(&live.process.title);
                 ui.label(
                     RichText::new(format!(
-                        "PID {}  ·  {} moments captured",
-                        live.process.pid, live.sample_count
+                        "PID {}  ·  Memory batch {}  ·  {} moments captured",
+                        live.process.pid, live.coverage.batch, live.sample_count
                     ))
                     .size(12.0)
                     .color(MUTED),
@@ -291,6 +291,16 @@ impl LivePane {
                         self.image = None;
                     }
                 });
+                ui.horizontal_wrapped(|ui| {
+                    if ui.add_enabled(!busy && live.connected && live.sample_count>0 && live.coverage.batch<24,
+                        egui::Button::new("Search more memory")).on_hover_text("Archive this batch's observations and findings, release its raw memory, and collect fresh evidence from other addresses.").clicked() {
+                        handle.submit("advance_memory",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch}));
+                        self.image=None;
+                    }
+                    ui.label(RichText::new(format!("{:.1} MiB read · {:.1} MiB with complete histories",
+                        live.coverage.read_unique_bytes as f64/1_048_576.0,
+                        live.coverage.complete_trajectory_bytes as f64/1_048_576.0)).size(12.0).color(MUTED));
+                });
             });
         ui.add_space(8.0);
         if busy {
@@ -309,6 +319,15 @@ impl LivePane {
             ui.label("Collect at least 12 moments with a changing on-screen number to compare it with memory.");
         }
         ui.add_space(8.0);
+        if !live.coverage.batches.is_empty() {
+            egui::CollapsingHeader::new("Earlier memory batches").show(ui,|ui| {
+                ui.label("Historical evidence. Addresses and gameplay effects remain unverified.");
+                for batch in &live.coverage.batches {
+                    ui.label(format!("Batch {} · {} captures · {:.1} MiB compared · {} hypotheses ({} byte witnesses saved)",
+                        batch.number,batch.captures,batch.analyzed_bytes as f64/1_048_576.0,batch.hypotheses,batch.retained_witnesses));
+                }
+            });
+        }
         if !live.visual_tracks.is_empty() {
             ui.add_space(8.0);
             ui.label(RichText::new("Agent observations").size(18.0).strong());
@@ -499,6 +518,9 @@ impl LivePane {
             }
         }
         egui::CollapsingHeader::new("Capture details").show(ui, |ui| {
+            ui.label(format!("Investigation: {:.1} MiB requested reads of 4096 MiB budget · {} of 24 batches",
+                live.coverage.attempted_bytes as f64/1_048_576.0,live.coverage.batch));
+            ui.label("Coverage counts addresses over time, not verified objects. Reused allocations can look unchanged. Each batch needs fresh changing observations.");
             ui.label(format!("Memory coverage: {:.1} of {:.1} MiB eligible writable memory per moment.",
                 live.planned_bytes as f64 / 1_048_576.0, live.eligible_bytes as f64 / 1_048_576.0));
             if let Some(latest) = &live.latest {

@@ -84,6 +84,7 @@ impl Handle {
                         | "attach_process"
                         | "capture"
                         | "correlate"
+                        | "advance_memory"
                         | "detach_process"
                         | "read_capture"
                         | "submit_observation"
@@ -245,6 +246,22 @@ fn native_command(
                 .as_mut()
                 .ok_or("Select and connect a program first.")?;
             session.correlate()?;
+            let message = session.view.phase.clone();
+            engine.event(&command.source, message);
+        }
+        "advance_memory" => {
+            let investigation = command.args["investigation_id"]
+                .as_str()
+                .ok_or("Read the current investigation identity first.")?;
+            let batch = command.args["batch"]
+                .as_u64()
+                .and_then(|n| usize::try_from(n).ok())
+                .ok_or("Supply the current memory batch number.")?;
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect an application first.")?;
+            session.advance_memory(investigation, batch)?;
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }

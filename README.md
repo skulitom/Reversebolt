@@ -28,6 +28,12 @@ samples up to 16 MiB per moment, not the whole process. Capture support varies
 by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
 application running. The connection invalidates when the original process exits.
 
+**Search more memory** archives the current batch's evidence and moves to other
+eligible addresses. Collect fresh changing observations for each batch. The
+coverage display distinguishes addresses read from those with complete memory
+histories; neither means a gameplay control was found. Earlier findings remain
+historical and unverified.
+
 For the editable demo, choose **Practice → Open practice → Observe changes →
 Find matches → Test effects**.
 Each practice process has new random offsets and a numeric encoding. Discovery

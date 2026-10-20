@@ -51,10 +51,39 @@ exits. Disconnect releases the connection without terminating the application.
 
 `LiveSession` is independent of practice's fixed channels and oracle. It plans
 bounded 64 KiB reads of committed writable regions, prioritizing writable image
-regions and then smaller private regions. The desktop budgets 16 MiB per moment;
-the API permits 1–32 MiB. Up to 20 moments and 512 MiB are retained in memory.
+regions and then smaller non-image regions. The desktop budgets 16 MiB per moment;
+the API permits 1–32 MiB. Up to 20 moments and 512 MiB of raw snapshots are
+retained per memory batch; this is not a whole-process memory ceiling.
 Coverage is explicit. Pages unavailable in any sample are excluded from
 correlation; missing OCR detections remain gaps, not zeros.
+
+`advance_memory` archives observations and hypotheses, retains up to 256 sparse
+byte witnesses, and releases the old raw snapshots before collecting a fresh
+batch from previously unselected addresses. Interval subtraction preserves
+unvisited suffixes of partially selected regions. Selection does not restart at
+an earlier address when protection changes, so repeated churn cannot force the
+planner to reselect that address indefinitely. It also means changed/reused
+addresses are not revisited automatically.
+
+Each chunk's allocation base, protection, type and containing range are checked
+before and after a read. An observed incompatibility retires that chunk for the
+rest of the batch; failed reads remain missing. Identical metadata cannot prove
+allocation continuity. Native inventory errors are distinguished from the
+documented upper-address boundary and query/region counts are bounded.
+
+Coverage separates selected/read address unions, complete local trajectories,
+requested I/O, retained raw bytes and bytes actually compared. A complete
+trajectory needs at least 12 successful captures in one batch, with no observed
+mapping discontinuity. It does not require a usable visual track. Memory read
+receipts retain timing relative to each capture and a disposition.
+
+Limits per investigation: 24 batches, 4 GiB requested reads, 512 MiB image
+allowance and 32 MiB batch archives. A renderer finishing after timeout retains
+its 10 MiB reservation; native PNG encoding is capped before writing a file.
+Image allowance and batch archives are separate from the bounded per-frame
+metadata and visual manifests, not a global disk quota. There is no automatic
+sweep or resumable job yet. Native calls remain cooperatively bounded and cannot
+be preempted. See [coverage validation](research/MEMORY_BATCHES.md).
 
 Window capture first uses Windows Graphics Capture for the selected HWND through
 the MIT `windows-capture` library. PrintWindow's client area is a compatibility
@@ -103,7 +132,7 @@ name or the truth of its interpretation. OCR remains an independent channel.
 
 MCP `read_capture` returns an image block, and `submit_observation` uses the
 same serial engine owner as the desktop. External series are bounded to 32 and
-aligned to the existing 20 captured moments. Duplicate submissions are no-ops;
+aligned to the current batch's at most 20 captured moments. Duplicate submissions are no-ops;
 conflicting replacements, geometry changes and stale identities are checked.
 Accepted interpretations are saved in a local evidence manifest before they
 are published, independently of active-session metadata. The manifest remains

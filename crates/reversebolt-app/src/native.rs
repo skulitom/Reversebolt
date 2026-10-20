@@ -170,15 +170,30 @@ impl NativeTarget for Process {
         let mut address = 0usize;
         let mut result = vec![];
         let mut region = MEMORY_BASIC_INFORMATION::default();
-        while unsafe {
-            VirtualQueryEx(
-                self.handle.0,
-                address as *const _,
-                &mut region,
-                std::mem::size_of_val(&region),
-            )
-        } != 0
-        {
+        let mut queries = 0;
+        loop {
+            if queries >= 100_000 || result.len() >= 32768 {
+                return Err("Memory inventory exceeded its bounded query budget.".into());
+            }
+            queries += 1;
+            let count = unsafe {
+                VirtualQueryEx(
+                    self.handle.0,
+                    address as *const _,
+                    &mut region,
+                    std::mem::size_of_val(&region),
+                )
+            };
+            if count == 0 {
+                let error = unsafe { GetLastError() };
+                if error == ERROR_INVALID_PARAMETER && self.alive() {
+                    break;
+                }
+                return Err(format!(
+                    "Memory inventory stopped at 0x{address:X}: {}",
+                    std::io::Error::from_raw_os_error(error as i32)
+                ));
+            }
             let base = region.BaseAddress as usize;
             if region.State == MEM_COMMIT
                 && region.Protect & PAGE_GUARD == 0
@@ -194,14 +209,45 @@ impl NativeTarget for Process {
                     base: base as u64,
                     length: region.RegionSize,
                     image: region.Type == MEM_IMAGE,
+                    allocation_base: region.AllocationBase as u64,
+                    protection: region.Protect,
+                    kind: region.Type,
                 });
             }
             let Some(next) = base.checked_add(region.RegionSize).filter(|n| *n > address) else {
-                break;
+                return Err("Memory inventory returned a non-advancing region.".into());
             };
             address = next;
         }
         Ok(result)
+    }
+    fn query(&self, address: u64) -> Result<Option<Region>> {
+        let mut region = MEMORY_BASIC_INFORMATION::default();
+        if unsafe {
+            VirtualQueryEx(
+                self.handle.0,
+                address as *const _,
+                &mut region,
+                std::mem::size_of_val(&region),
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().to_string());
+        }
+        Ok((region.State == MEM_COMMIT
+            && region.Protect & PAGE_GUARD == 0
+            && matches!(
+                region.Protect & 0xff,
+                PAGE_READWRITE | PAGE_WRITECOPY | PAGE_EXECUTE_READWRITE | PAGE_EXECUTE_WRITECOPY
+            ))
+        .then_some(Region {
+            base: region.BaseAddress as u64,
+            length: region.RegionSize,
+            image: region.Type == MEM_IMAGE,
+            allocation_base: region.AllocationBase as u64,
+            protection: region.Protect,
+            kind: region.Type,
+        }))
     }
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
         if length > 64 * 1024 {
@@ -379,13 +425,39 @@ fn capture(window: HWND, path: &Path) -> Result<Screen> {
     save_screen(rgba, path, "print_window", None)
 }
 
+struct PngBudget(Vec<u8>);
+impl std::io::Write for PngBudget {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        if bytes.len() > reversebolt_core::visual::MAX_IMAGE_BYTES - self.0.len() {
+            return Err(std::io::Error::other(
+                "PNG exceeded the 10 MiB image budget.",
+            ));
+        }
+        self.0.extend_from_slice(bytes);
+        Ok(bytes.len())
+    }
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
 fn save_screen(
     rgba: image::RgbaImage,
     path: &Path,
     method: &str,
     previous_warning: Option<String>,
 ) -> Result<Screen> {
-    rgba.save(path).map_err(|e| e.to_string())?;
+    use image::ImageEncoder as _;
+    let mut png = PngBudget(Vec::new());
+    image::codecs::png::PngEncoder::new(&mut png)
+        .write_image(
+            rgba.as_raw(),
+            rgba.width(),
+            rgba.height(),
+            image::ExtendedColorType::Rgba8,
+        )
+        .map_err(|e| e.to_string())?;
+    std::fs::write(path, &png.0).map_err(|e| e.to_string())?;
     let range = rgba
         .pixels()
         .map(|p| u32::from(p[0]) + u32::from(p[1]) + u32::from(p[2]))
@@ -558,6 +630,21 @@ pub fn evaluate_ocr(path: &Path, output: &Path) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn png_budget_rejects_overflow_and_capture_pixels_round_trip() {
+        use std::io::Write;
+        let mut buffer = super::PngBudget(vec![0; reversebolt_core::visual::MAX_IMAGE_BYTES - 2]);
+        buffer.write_all(&[1, 2]).unwrap();
+        assert!(buffer.write_all(&[3]).is_err());
+        assert_eq!(buffer.0.len(), reversebolt_core::visual::MAX_IMAGE_BYTES);
+        let path =
+            std::env::temp_dir().join(format!("reversebolt-png-{}.png", uuid::Uuid::new_v4()));
+        let pixels =
+            image::RgbaImage::from_fn(64, 32, |x, y| image::Rgba([x as u8, y as u8, 42, 255]));
+        super::save_screen(pixels.clone(), &path, "fixture", None).unwrap();
+        assert_eq!(image::open(&path).unwrap().into_rgba8(), pixels);
+        std::fs::remove_file(path).unwrap();
+    }
     #[test]
     fn ocr_factories_survive_idle_worker_threads() {
         // Actual Windows OCR across caller-thread teardown, plus an explicit

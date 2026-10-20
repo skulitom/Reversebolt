@@ -34,6 +34,7 @@ never creates a private simulator or duplicate session.
 | `reversebolt_read_capture` | A recorded PNG as MCP image content, with frame identity and checksum |
 | `reversebolt_submit_observation` | Add an image interpretation with its source, uncertainty and explanation |
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
+| `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
 | `reversebolt_observe` | Twenty observation/memory samples |
@@ -61,7 +62,7 @@ lists main-desktop applications.
 
 ## Image-grounded agent observations
 
-There are now 16 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 17 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -119,6 +120,21 @@ global MCP configuration changes are made.
 
 ## Local transport and limits
 
+To search beyond the initial memory window, call `reversebolt_advance_memory`
+with the current `investigation_id` and `batch` from `live.coverage.batch`.
+This archives the current observations, hypotheses and up to 256 candidate byte
+witnesses, releases its raw memory and resets capture/track lists. Inspect or
+compare the current batch before advancing if its findings are still needed.
+The new batch needs fresh changing observations. Replaying an old batch number
+is rejected; inspect status after an interrupted call before retrying.
+
+`live.coverage` separates unique selected/read addresses, complete trajectories,
+actual requested reads and current analyzed bytes. `coverage.batches` contains
+historical summaries and local archive paths. These counts span different times
+and do not prove object identity or current editing authority. Old frame IDs
+cannot be submitted into the new batch. The earlier PNGs and manifests remain
+on disk, but the MCP image tool reads the active batch only.
+
 Live `status` includes source-tagged screen words and per-track `readings` with
 raw alternatives. A `null` sample can mean missing or conflicting recognition;
 check the corresponding reading's reason. Agreement remains provisional, and
@@ -142,9 +158,16 @@ clients should inspect status before repeating a mutation.
 The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused
 fixture, not a rollback strategy for a real game. External process handles
-currently request query/read access only. Captures retain up to 20 moments and
+currently request query/read access only. Each batch retains up to 20 moments and
 512 MiB of raw memory; images remain in the data directory. The optional attach
 budget is 1–32 MiB per moment. The desktop uses 16 MiB.
+
+An investigation allows at most 24 batches, 4 GiB of requested reads, 512 MiB of
+image storage allowance (including late-renderer reservations) and 32 MiB of
+batch archives. Per-frame metadata is separate. Batches are explicit actions;
+there is no automatic scan, automatic resume, or guarantee of whole-process
+coverage within these limits. Observed mapping changes exclude affected chunks
+for the rest of a batch; same-address reuse between checks remains unverified.
 
 Capture reads screen and memory sequentially without pausing the target.
 Unavailable pages are reported and excluded from correlation; coverage and

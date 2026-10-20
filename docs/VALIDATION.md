@@ -1,6 +1,32 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Current agent observation preview: 0.1.0-20261020-210429
+## Current memory coverage preview: 0.1.0-20261020-212137
+
+Twenty-one workspace tests, strict Clippy and formatting pass. Release
+practice/MCP regression checks pass with 17 tools:
+`test-results/smoke-6804a334/report.json`.
+
+The integrated batch fixture finds a value beyond the initial window and
+retains its byte witnesses without joining separate trajectories. Tests cover
+archive failure, stale replay, observed mapping changes, bounded resources and
+late renderer storage reservations. The independent coverage prototype's 12
+tests and 56 saved-artifact checks were also rerun; its full benchmark was not.
+
+Paused Blue Prince completed two 12-capture batches, with 32 MiB of complete
+memory histories. A third batch increased unique reads to 48 MiB. Both OCR
+sources were active, images were correct WGC captures, and no warnings occurred.
+The static scene lacked changing observations, so correlation refused to run;
+this is coverage evidence, not discovered gameplay values. Anode verified desktop
+advancement and historical summaries; real MCP advancement shared that state.
+Restart preserved both batch archives and 31 history events while invalidating
+the live connection. See [memory batch validation](research/MEMORY_BATCHES.md)
+for exact artifacts, timing, limits and failures.
+
+The new version is running on the user's desktop with all five prior activity
+events retained. Both published executables match the tested release binaries;
+delivery is recorded in `test-results/memory-batches-v3/desktop-delivery.json`.
+
+## Previous agent observation preview: 0.1.0-20261020-210429
 
 Thirteen workspace tests, strict Clippy and formatting checks pass. The final
 release practice/MCP suite passes with 16 tools:
