@@ -1,6 +1,23 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Current observation preview: 0.1.0-20261020-201128
+## Current reliability preview: 0.1.0-20261020-203437
+
+Blue Prince exposed an access violation after an idle interval: Windows unloaded
+the OCR DLL while windows-rs retained its factory pointer. A process-lifetime MTA
+hold now keeps that runtime available. Ten workspace tests, strict Clippy,
+formatting and release practice/MCP smoke checks pass, with report
+`test-results/smoke-88bb4d9e/report.json`. The added short OCR/thread-lifetime test
+also passed before the fix; it is not claimed as a crash reproducer.
+
+The fixed release completed twelve gameplay captures, then another after a
+199.899-second idle gap in the same process, without warnings or a crash.
+The changing counter failed recognition: zero correct, three incorrect, eight
+uncertain and one missing sample. Memory correlation refused insufficient
+observations. See [observation evaluation](research/OBSERVATION_EVALUATION.md)
+and `test-results/blue-prince-changing-v2/score.json` / `idle-report.json`.
+No game-specific reading rules were added.
+
+## Previous observation preview: 0.1.0-20261020-201128
 
 Nine workspace tests, strict Clippy and formatting checks pass. Tests cover
 conflicting and overlapping readings, invalid numeric input, region feedback

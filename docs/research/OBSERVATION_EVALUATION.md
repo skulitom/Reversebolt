@@ -96,6 +96,71 @@ correctly abstained on that disagreement. No changing gameplay-number trajectory
 or memory hypothesis has been established. The game was paused in the new third
 profile after a short walk, leaving the two existing profiles intact.
 
+## Blue Prince: changing counter and idle-crash investigation
+
+The next session used the same third profile and ordinary gameplay: collect the
+blueprint, draft a Closet from the Entrance Hall, and walk across that doorway
+in both directions. No expected values, HUD coordinates, game names or memory
+layouts were supplied to the observer. Evaluation labels were recorded separately
+after inspecting the saved images.
+
+The first run crashed on its second capture after about 154 seconds between
+captures. The image was saved, but recognition did not complete. Windows recorded
+an access violation in the cached `OcrEngine` activation-factory call. The crash
+dump's invalid address lies inside an **unloaded `Windows.Media.Ocr.dll`**.
+Evidence is in `test-results/blue-prince-changing-v1/crash-summary.json`, with the
+original binary hash and symbol; the original preview remains in its versioned
+distribution directory. The dump remains local in the Windows CrashDumps folder.
+
+The OCR path now retains one process-lifetime MTA usage cookie, matching the
+lifetime of windows-rs's static activation-factory cache. Individual OCR calls
+still balance their thread initialization. This prevents the runtime disappearing
+between observations. Microsoft's documentation describes
+[runtime teardown](https://learn.microsoft.com/en-us/windows/win32/api/roapi/nf-roapi-rouninitialize)
+and [keeping the MTA available between workers](https://learn.microsoft.com/en-us/windows/win32/api/combaseapi/nf-combaseapi-coincrementmtausage).
+The added four-thread OCR/library-unload check passes, but also passed before the
+fix: it does **not** reproduce the idle failure on its own.
+
+The fixed release also completed capture 13 in the same process after a
+**199.899-second gap** from capture 12, with 23 recognized words and no capture
+or recognition warning. This is recorded in `blue-prince-changing-v2/idle-report.json`.
+One idle regression is evidence for this fix, not a general stability guarantee.
+
+With that lifetime fix, twelve consecutive captures completed. The unchanged
+numeric reader failed the changing-counter evaluation:
+
+| Evidence | Result |
+|---|---|
+| Visually checked counter values | 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38 |
+| Correct admitted readings | **0 / 12** |
+| Incorrect admitted readings | **3 / 12**: 1849, 1847, 14 |
+| Explicit conflicting readings | **8 / 12** |
+| Missing reading | **1 / 12** |
+| Capture path | Windows Graphics Capture, 1280×720, no warnings |
+| End-to-end capture time | 347–469 ms, mean 381 ms |
+| Memory sampled per capture | 24 MiB of 4,353,998,848 eligible bytes at attachment |
+| Memory correlation | Refused: no track met the changing-observation requirement |
+
+The footprint symbol repeatedly becomes leading digits. The stylized 41 was
+also read as 14. Agreement and temporal location do not establish numeric
+correctness. The raw alternatives, all twelve PNGs, metadata, manual annotations,
+hashes and scoring output are under `test-results/blue-prince-changing-v2/`.
+The region is identified only in those evaluation annotations, never in runtime.
+Other tracks include the room's Rank 1 and spurious scenery readings.
+
+This is failure evidence, not a successful memory search with zero results:
+matching never ran, and the memory budget covered only about 0.58% of eligible
+bytes anyway. Next observation work needs generic icon/text separation and
+better handling of stylized characters, tested on new sequences and prior
+regressions. Trimming a known prefix, subtracting 1800, or supplying the visible
+counter as an oracle would not satisfy the generalization goal.
+
+Preview `0.1.0-20261020-203437` contains the lifetime fix. Ten workspace tests,
+strict Clippy, formatting and the release practice/MCP smoke suite pass; the
+smoke report is `test-results/smoke-88bb4d9e/report.json`. The game remains
+paused in the third profile, Day 1, with 38 footsteps. The test engine was
+disconnected and closed; the original profiles were not used.
+
 ## Ordinary-window regression
 
 The initial combined reader regressed on the existing WinForms test: region

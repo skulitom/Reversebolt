@@ -414,6 +414,21 @@ pub(crate) fn ocr(image: &image::RgbaImage) -> Result<(String, Vec<Word>)> {
         Storage::Streams::DataWriter,
         Win32::System::WinRT::{RO_INIT_MULTITHREADED, RoInitialize, RoUninitialize},
     };
+    // windows-rs caches agile activation factories for the process lifetime.
+    // Letting the last MTA apartment disappear between observations can unload
+    // Windows.Media.Ocr.dll while that cache still points into it. Blue Prince's
+    // second capture after an idle interval exposed this as an access violation.
+    // Retain one MTA usage cookie for the same lifetime as those static factories.
+    // It is intentionally released only by process teardown, including when
+    // capture workers are still unwinding during application shutdown.
+    static MTA: std::sync::OnceLock<Result<usize>> = std::sync::OnceLock::new();
+    MTA.get_or_init(|| {
+        unsafe { windows::Win32::System::Com::CoIncrementMTAUsage() }
+            .map(|cookie| cookie.0 as usize)
+            .map_err(|e| e.to_string())
+    })
+    .as_ref()
+    .map_err(Clone::clone)?;
     let run = || -> windows::core::Result<(String, Vec<Word>)> {
         let engine = OcrEngine::TryCreateFromUserProfileLanguages()?;
         let maximum = OcrEngine::MaxImageDimension()?;
@@ -539,4 +554,25 @@ pub fn evaluate_ocr(path: &Path, output: &Path) -> Result<()> {
         serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?,
     )
     .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn ocr_factories_survive_idle_worker_threads() {
+        // Actual Windows OCR across caller-thread teardown, plus an explicit
+        // request to unload unused COM libraries. Also test longer idle periods
+        // against a live window: this short test alone did not reproduce the bug.
+        for _ in 0..4 {
+            std::thread::spawn(|| {
+                let image = image::RgbaImage::from_pixel(320, 160, image::Rgba([255; 4]));
+                super::ocr(&image).expect("Windows OCR must remain usable");
+            })
+            .join()
+            .unwrap();
+            unsafe {
+                windows::Win32::System::Com::CoFreeUnusedLibrariesEx(0, None);
+            }
+        }
+    }
 }

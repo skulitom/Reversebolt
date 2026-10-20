@@ -102,3 +102,25 @@ Round 2 research has isolated assignments for memory coverage, shared durable
 jobs and real-game visual tracking. Next main-session work: distinguish icons
 and scenery from text, prevent spurious associations across scene changes, and
 collect changing gameplay evidence in Blue Prince's separate test profile.
+
+## 2026-10-20 — Blue Prince changing-counter test: still 14%
+
+The full goal and all weighted credits remain unchanged. The test found a real
+idle-capture crash: the cached Windows OCR factory referenced an unloaded DLL.
+A process-lifetime runtime hold fixes that lifetime mismatch. The same process
+then completed twelve gameplay captures and another capture after a 200-second
+idle gap. Ten tests, strict Clippy, formatting and release practice/MCP checks pass.
+Desktop preview `0.1.0-20261020-203437` carries the fix.
+
+The visible counter changed from 49 down to 38 during normal movement between
+two rooms. The unchanged observer admitted zero correct values, three incorrect
+values, eight conflicts and one missing sample. It often included the adjacent
+footprint icon as digits. Correlation correctly refused to run without enough
+changing observations. This does not earn discovery or generalization credit.
+Raw images, separately recorded evaluation labels and failure evidence are
+described in [observation evaluation](research/OBSERVATION_EVALUATION.md).
+
+Next: generic icon/text separation and stylized-number observation, with fresh
+gameplay and prior-game regressions; review the completed shared-jobs prototype
+before integrating automatic investigations. Memory coverage remains another
+limit: this run sampled 24 MiB, about 0.58% of eligible memory at attachment.
