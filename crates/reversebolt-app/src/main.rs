@@ -3,6 +3,7 @@
 mod fixture;
 mod service;
 mod target;
+mod theme;
 mod ui;
 
 use fs2::FileExt;

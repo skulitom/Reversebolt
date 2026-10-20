@@ -1,9 +1,15 @@
 # First desktop workbench
 
-Use a calm, readable native workbench: light mist canvas, dark navy navigation,
-blue actions, warm amber for unresolved evidence, green only for verified facts.
+User preference, 2026-10-20: dark mode informed by Anode and Agentbolt.
+Use the Bolt family's charcoal surfaces, warm amber selection and key actions,
+soft borders, rounded controls, and a dark native title bar. Text is off-white
+with readable gray secondary labels; green marks verified facts.
 Typography is a clear sans serif with generous spacing; numeric observations
 use tabular/monospaced values. No decorative chart data or nonfunctional controls.
+
+Reference tokens: Agentbolt's `crates/agentbolt-desk/src/theme.rs` and Anode's
+`src/Anode/Daemon/ViewerTheme.cs`. Reversebolt's shared tokens live in
+`crates/reversebolt-app/src/theme.rs`.
 
 The left rail identifies Reversebolt and the session's observation source.
 The main workspace follows a clear sequence: open practice, observe, discover,
