@@ -104,11 +104,12 @@ try:
     send({"jsonrpc":"2.0","method":"notifications/initialized"})
     send({"jsonrpc":"2.0","id":2,"method":"tools/list"})
     listed = response(2)
-    assert len(listed["tools"])==17
+    assert len(listed["tools"])==20
     assert {"reversebolt_list_processes", "reversebolt_attach_process",
             "reversebolt_capture", "reversebolt_correlate",
             "reversebolt_detach_process", "reversebolt_read_capture",
-            "reversebolt_submit_observation", "reversebolt_advance_memory"} <= {tool["name"] for tool in listed["tools"]}
+            "reversebolt_submit_observation", "reversebolt_advance_memory", "reversebolt_start_observation_job",
+            "reversebolt_job_control", "reversebolt_job_events"} <= {tool["name"] for tool in listed["tools"]}
     send({"jsonrpc":"2.0","id":3,"method":"tools/call","params":{
         "name":"reversebolt_set_value","arguments":{"track":0,"value":111}}})
     edited = response(3)

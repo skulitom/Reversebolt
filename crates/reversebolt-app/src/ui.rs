@@ -34,7 +34,12 @@ impl eframe::App for Workbench {
         ui.ctx()
             .request_repaint_after(std::time::Duration::from_millis(150));
         let state = self.handle.view.read().unwrap().clone();
-        let busy = self.handle.busy.load(Ordering::SeqCst);
+        let job_state = self.handle.jobs.read().unwrap().clone();
+        let busy =
+            self.handle.busy.load(Ordering::SeqCst)
+                || job_state.history.jobs.values().any(|j| {
+                    !j.phase.terminal() && j.phase != reversebolt_session_jobs::Phase::Paused
+                });
         egui::Panel::left("navigation")
             .exact_size(236.0)
             .resizable(false)
@@ -113,6 +118,7 @@ impl eframe::App for Workbench {
         egui::CentralPanel::default().frame(egui::Frame::new().fill(BACKGROUND).inner_margin(22))
             .show(ui, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
+                    crate::jobs::panel(ui,&self.handle,&job_state);
                     if self.show_live {
                         self.live.show(ui, &self.handle, &state, busy);
                     } else {

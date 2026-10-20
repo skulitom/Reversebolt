@@ -28,6 +28,9 @@ never creates a private simulator or duplicate session.
 | Tool | Behavior |
 |---|---|
 | `reversebolt_status` | Session, values, matches, evidence, edit history |
+| `reversebolt_start_observation_job` | Durable timed captures with a receipt and shared progress |
+| `reversebolt_job_control` | Pause, resume or cancel a current observation job |
+| `reversebolt_job_events` | Read bounded, ordered job events after a cursor |
 | `reversebolt_list_processes` | Application windows with title, PID, creation identity and window handle |
 | `reversebolt_attach_process` | Connect an exact process/window for observation; default 16 MiB capture budget |
 | `reversebolt_capture` | Window image, OCR and bounded memory snapshot from connected application |
@@ -62,7 +65,7 @@ lists main-desktop applications.
 
 ## Image-grounded agent observations
 
-There are now 17 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 20 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -118,6 +121,76 @@ their source, capture number, explanation, uncertainty and history. This API
 delivers image content to the requesting client; no background image uploads or
 global MCP configuration changes are made.
 
+## Durable observation jobs
+
+Read `status.jobs.history` after connecting an application. It contains `boot`,
+`current` (the exact binding), `clients` and `event_head`. Start a job with:
+
+```json
+{
+  "request_id": 1,
+  "boot": 1,
+  "binding": {"session": "from status", "target": "from status", "generation": 1},
+  "count": 12,
+  "interval_ms": 1000
+}
+```
+
+These are schema examples; use the actual current values. The next request ID
+is `clients["mcp-agent"].high_water + 1`, or 1 for a new client. All MCP callers
+currently share this client identity and must serialize their job requests.
+The adapter assigns agent provenance; supplying `source: "desktop"` in HTTP
+does not grant human control. Declared observer names are unrelated to authority.
+
+A successful reply's `data.ack.job` identifies the job. The acknowledgement is
+a durable receipt, **not completion**. Inspect `jobs.history.jobs[id].phase`,
+`next_step`, `checkpoints` and `jobs.in_flight` for current progress. On a lost
+reply, retry the exact original arguments and ID. A retained exact retry returns
+the historical receipt even after rebind/restart; it does not perform the action
+again. Changed contents with the same ID are rejected. Evicted IDs cannot be
+used to create replacement work. Business rejections saved in `data.ack` consume
+the ID; validation before journaling may not. Refresh status rather than guessing.
+
+`job_control` takes the next request ID, current boot and binding, plus `job`
+and `operation: "pause" | "resume" | "cancel"`. Pause/cancel prevents the next
+capture; an owned capture settles before `Pausing`/`Cancelling` becomes terminal
+or paused. Cancelling does not remove earlier evidence. Calls that alter the
+investigation are held during active jobs. Image interpretations can still be
+submitted between captures. Status and job controls remain responsive.
+
+Desktop **Take control** transfers active agent jobs to the human, pauses them
+and holds further agent mutations. **Release control** allows new agent work;
+it does not resume paused jobs or transfer their ownership back. The human can
+resume or stop those jobs. The desktop also has a reserved control admission
+lane, preserving order within each source.
+
+The binding pins the investigation, memory batch, process creation identity and
+window. Replacement, exit and restart invalidate work. Restart increments boot,
+unbinds the target and leaves unfinished jobs `Interrupted`; a pending durable
+intent has an unknown outcome. There is no automatic continuation, rediscovery
+or replay. Old jobs remain historical. Create a new job after reconnecting.
+
+Plans contain 1–16 read-only captures, 250–60,000 ms apart, with a delay before
+the first capture and after each completion. The desktop requests up to 12 at
+one-second intervals. Remaining batch retention is checked including queued
+jobs. There is no gameplay input, semantic-model execution, automatic memory
+batch advancement or live-game write in these plans.
+
+The job ledger retains at most 24 jobs, 8 queued jobs, 8 receipts per client and
+128 events. `job_events` returns up to 64 events after its `cursor`; use `next`
+until reaching `head`. An expired cursor requires a status refresh and restart
+from `event_head`; this explicitly skips the missing historical interval. A
+future cursor is rejected. Cursors belong to one ledger session.
+
+`jobs/jobs.wal` is append-only, checksummed and synchronized, under an exclusive
+lock. The ceiling is 64 MiB, with 2 MiB records and reserved outcome/recovery
+space. Incomplete final records can be repaired; complete corruption stops
+loading. Storage uncertainty fences new job dispatch. Preserve that ledger;
+rotation/migration and user-facing recovery are unfinished. This is not an
+exactly-once guarantee or a transaction with the separate capture archives.
+After the bounded poll budget, a slow capture retains ownership until it
+actually settles; no replacement capture is launched behind it.
+
 ## Local transport and limits
 
 To search beyond the initial memory window, call `reversebolt_advance_memory`
@@ -151,9 +224,9 @@ The token protects against accidental unauthenticated clients, not other
 software with access to the same user's files.
 
 A file lock prevents two engines from owning one data directory. History
-persists; active addresses do not survive engine restart. Commands are currently
-bounded synchronous operations, not durable cancellable MCP jobs. Interrupted
-clients should inspect status before repeating a mutation.
+persists; active addresses do not survive engine restart. Observation jobs use
+the receipt/recovery contract above. Other commands remain synchronous and do
+not acquire its idempotency guarantees. Inspect status before repeating them.
 
 The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused

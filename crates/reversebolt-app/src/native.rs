@@ -298,6 +298,9 @@ impl NativeTarget for Process {
 }
 
 static CAPTURING: AtomicBool = AtomicBool::new(false);
+pub(crate) fn renderer_busy() -> bool {
+    CAPTURING.load(Ordering::SeqCst)
+}
 fn capture_bounded(window: u64, path: PathBuf) -> Result<Screen> {
     if CAPTURING
         .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)

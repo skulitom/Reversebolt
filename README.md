@@ -34,6 +34,13 @@ coverage display distinguishes addresses read from those with complete memory
 histories; neither means a gameplay control was found. Earlier findings remain
 historical and unverified.
 
+**Observe over time** collects up to 12 moments at one-second intervals while
+you interact with the application. **Pause**, **Resume** and **Stop job** remain
+available during capture. An agent can start the same job through MCP; **Take
+control** pauses its work and holds further agent changes. A capture already in
+progress may finish. Jobs interrupted by restart remain in history and never
+resume automatically.
+
 For the editable demo, choose **Practice → Open practice → Observe changes →
 Find matches → Test effects**.
 Each practice process has new random offsets and a numeric encoding. Discovery
@@ -85,6 +92,8 @@ overwritten. No global MCP client settings are changed.
 - `reversebolt-app`: Windows native process transport, engine worker, local API,
   egui desktop and isolated practice fixture.
 - `reversebolt-mcp`: official MCP protocol adapter to the same engine.
+- `reversebolt-session-jobs`: durable observation jobs, receipts, interruption
+  and human takeover; production plans currently contain captures only.
 
 The current practice adapter is deliberately separate from the discovery
 algorithm. Native capture uses Windows Graphics Capture with a PrintWindow
@@ -93,7 +102,7 @@ source-tagged readings. Conflicting numbers remain gaps in the matching data;
 the desktop exposes their alternatives. Screen tracking is spatial, without
 semantic gameplay labels.
 General motion, appearance, object and rule inference,
-live-game experiments, durable cancellable jobs, and restart revalidation are
+live-game experiments, broader investigation jobs, and restart revalidation are
 future milestones, not advertised capabilities.
 
 ## Research and license

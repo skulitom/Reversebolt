@@ -182,3 +182,30 @@ change. See [memory coverage evidence](research/MEMORY_BATCHES.md).
 Next: durable cancellable investigation jobs that can coordinate observations
 and memory batches, followed by fresh changing-gameplay evaluations. The full
 vision still requires semantic inference, causal validation and scoped edits.
+
+## 2026-10-20 — shared observation jobs and human takeover: 18%
+
+Agent and human collaboration increases from **3 / 10 to 5 / 10**. Other credits
+remain: foundation 4, native access 4, multimodal observation 2, discovery 2,
+validation 1, intent 0, generalization 0. Total: **18 / 100**. The full goal
+remains active.
+
+Desktop and MCP share durable timed observation jobs, request receipts, progress
+and event cursors. Pause/cancel remain responsive during a capture, retain its
+actual outcome and prevent later steps. Human takeover holds agent mutations.
+Target/batch changes invalidate old work. Restart leaves interrupted jobs in
+history without replay or automatic continuation.
+
+The integrated workspace passes 53 tests. Blue Prince checks through real MCP
+and Anode cover completion, retry, cancellation during capture, desktop takeover,
+human pause/resume/stop, rebind and restart. The initial native cancellation
+acknowledgement took 53 ms while status took 27 ms. A human-started desktop job
+also captured six moments before pausing and stopping. These are read-only
+coordination results, not gameplay understanding or discovered controls.
+Desktop preview `0.1.0-20261020-214537` carries the change with prior history
+retained; the release regression suite passes with 20 MCP tools.
+
+The production plan supports captures only. Broader investigation, multiple
+agent identities, journal lifecycle, semantic interpretation, meaningful game
+experiments and scoped edits remain required. See
+[observation job evidence](research/OBSERVATION_JOBS.md).

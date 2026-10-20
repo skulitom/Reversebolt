@@ -5,9 +5,11 @@ flowchart LR
     Person[Person] --> Desktop[Native Rust desktop]
     Agent[Agent] --> MCP[MCP stdio adapter]
     MCP --> API[Authenticated loopback API]
-    Desktop --> Queue[Serialized command queue]
-    API --> Queue
-    Queue --> Engine[Shared session engine]
+    Desktop --> Controller[Responsive job controller]
+    API --> Controller
+    Controller --> Journal[Durable receipts and job checkpoints]
+    Controller --> Queue[One operation at a time]
+    Queue --> Engine[Shared session engine worker]
     Engine --> Evidence[Observations and candidate evidence]
     Engine --> History[Persistent history and edit records]
     Engine --> Target[Practice target interface]
@@ -18,10 +20,13 @@ flowchart LR
     Target --> Observations[Numeric observation adapter]
 ```
 
-The worker exclusively owns the target. The UI renders published snapshots and
-queues commands; experiments never block its event loop. HTTP calls join that
-same queue and receive the completed state. Access to the engine's session
-directory is protected by an OS file lock.
+The engine worker exclusively owns the target. A separate controller thread
+owns the job journal and dispatches one engine operation at a time. The UI
+renders published snapshots and queues commands. HTTP joins the same controller;
+status and job-control replies do not wait for a native capture. Other commands
+receive their completed engine state. OS file locks protect both the session
+directory and journal. No extra target handles or per-job engine workers are
+created.
 
 The practice target is a separate owned process. It reports only its byte-arena boundary
 and observations. Discovery enumerates naturally aligned numeric representations
@@ -82,7 +87,7 @@ allowance and 32 MiB batch archives. A renderer finishing after timeout retains
 its 10 MiB reservation; native PNG encoding is capped before writing a file.
 Image allowance and batch archives are separate from the bounded per-frame
 metadata and visual manifests, not a global disk quota. There is no automatic
-sweep or resumable job yet. Native calls remain cooperatively bounded and cannot
+memory sweep or restart continuation. Native calls remain cooperatively bounded and cannot
 be preempted. See [coverage validation](research/MEMORY_BATCHES.md).
 
 Window capture first uses Windows Graphics Capture for the selected HWND through
@@ -140,8 +145,36 @@ historical on restart, with no restored process handle or write capability.
 
 Single-frame evidence is insufficient for rates, animation or causal claims.
 Temporal semantic inference, an automatic model executor and calibrated
-uncertainty remain required work. The completed job and memory-coverage
-experiments remain isolated prototypes pending review and integration.
+uncertainty remain required work. Memory coverage and capture-only jobs now use
+reviewed integrations of their isolated prototypes; neither implies semantic
+understanding or general causal experiments.
+
+## Observation job controller
+
+The `reversebolt-session-jobs` crate supplies bounded durable state transitions,
+request receipts, event cursors, pause/cancel and human takeover. Its application
+executor accepts only typed capture steps. Every step pins the investigation,
+batch, process creation identity and HWND, checked again by the engine before
+capture. Delay is outside the durable operation intent so pausing between
+captures does not manufacture a completed step.
+
+The controller records intent before sending a capture to the sole worker.
+It polls a completion channel without blocking command processing. A pause or
+cancel can be acknowledged while that channel is pending. The worker's actual
+outcome is recorded before releasing ownership. A timed-out renderer also
+retains its slot until its thread finishes. Poll-budget exhaustion requests
+drain of that owned operation, never replacement work. Storage failure fences
+dispatch; a settled result may be exposed as volatile if it cannot be persisted.
+
+On restart, the ledger is historical, the boot changes, and pending work is
+interrupted without auto-resume. Exact retained command retries return the
+original receipt; they do not replay captures. A durable intent without an
+outcome is unknown even for read-only captures. Journal checkpoints and evidence
+files are separate writes, not an atomic cross-file transaction. The library's
+generic effect/consent tests do not expose production write operations.
+
+See [MCP contract](MCP.md#durable-observation-jobs) and
+[integration evidence](research/OBSERVATION_JOBS.md) for limits and failure cases.
 
 ## Next architectural boundaries
 
@@ -150,7 +183,7 @@ experiments remain isolated prototypes pending review and integration.
 3. Hypotheses over objects and relationships, not two fixed scalar tracks.
 4. Experiment proposals, confidence calibration, scoped write journals and
    verifiable recovery without assuming a paused whole arena.
-5. Durable cancellable jobs, human/agent takeover and identity, performance budgets.
+5. Broader investigation jobs, multiple agent identities, journal lifecycle and performance budgets.
 6. Learned re-identification and withheld independent-game evaluation.
 
 These boundaries should replace practice assumptions rather than disguise them

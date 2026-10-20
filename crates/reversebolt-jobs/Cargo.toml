@@ -1,0 +1,12 @@
+[package]
+name = "reversebolt-session-jobs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Durable single-owner investigation job state machine"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+crc32fast = "1"
+fs2 = "0.4"

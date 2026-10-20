@@ -1,6 +1,31 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Current memory coverage preview: 0.1.0-20261020-212137
+## Current observation jobs preview: 0.1.0-20261020-214537
+
+Fifty-three workspace tests, strict Clippy and formatting pass. Seven app tests
+and the release practice/MCP suite were rerun after the final UI wording change.
+The final suite passes with 20 tools:
+`test-results/smoke-57937da7/report.json`.
+
+Blue Prince in Anode verified real MCP job completion, exact retry, rejection of
+conflicting IDs, pause, cancellation during a native capture, events, target
+replacement and restart. Status responded in 27 ms and cancellation in 53 ms in
+the measured run. The current capture finished and the next did not start.
+Desktop Take control blocked agent mutations; human resume/pause/stop/release
+worked. A separate human-started Observe over time job paused and stopped after
+six captures. Restart left unfinished work Interrupted and preserved all nine
+existing capture/evidence files byte-for-byte. These checks are coordination
+evidence on a paused game, not automatic value discovery or game editing.
+
+The final version is running on the user's normal desktop with all five prior
+activity events retained. Both published executable hashes match the tested
+release files; the desktop shortcut targets this version. Anode test engines
+were closed and the lease released, leaving Blue Prince paused. See
+[observation job evidence](research/OBSERVATION_JOBS.md) for scope, limitations
+and raw report paths. Delivery is recorded in
+`test-results/jobs-native-v1/desktop-delivery.json`.
+
+## Previous memory coverage preview: 0.1.0-20261020-212137
 
 Twenty-one workspace tests, strict Clippy and formatting pass. Release
 practice/MCP regression checks pass with 17 tools:

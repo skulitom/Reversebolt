@@ -21,15 +21,44 @@ use std::{
 };
 
 type Job = (Command, Option<mpsc::Sender<Value>>);
+pub use crate::jobs::Handle;
 
 #[derive(Clone)]
-pub struct Handle {
+pub(crate) struct EngineHandle {
     sender: mpsc::SyncSender<Job>,
     pub view: Arc<RwLock<View>>,
     pub busy: Arc<AtomicBool>,
 }
 
-impl Handle {
+impl EngineHandle {
+    #[cfg(test)]
+    pub(crate) fn test_worker(
+        view: View,
+        mut execute: impl FnMut(Command, &mut View) -> Value + Send + 'static,
+    ) -> Self {
+        let (sender, receiver) = mpsc::sync_channel::<Job>(16);
+        let published = Arc::new(RwLock::new(view));
+        let busy = Arc::new(AtomicBool::new(false));
+        let worker_view = published.clone();
+        let worker_busy = busy.clone();
+        std::thread::spawn(move || {
+            while let Ok((command, reply)) = receiver.recv() {
+                worker_busy.store(true, Ordering::SeqCst);
+                let mut view = worker_view.read().unwrap().clone();
+                let result = execute(command, &mut view);
+                *worker_view.write().unwrap() = view;
+                worker_busy.store(false, Ordering::SeqCst);
+                if let Some(reply) = reply {
+                    let _ = reply.send(result);
+                }
+            }
+        });
+        Self {
+            sender,
+            view: published,
+            busy,
+        }
+    }
     pub fn start(path: PathBuf) -> Result<Self> {
         let (sender, receiver) = mpsc::sync_channel::<Job>(16);
         let (ready_tx, ready_rx) = mpsc::channel();
@@ -133,23 +162,12 @@ impl Handle {
         Ok(Self { sender, view, busy })
     }
 
-    pub fn submit(&self, action: &str, args: Value) {
-        let command = Command {
-            action: action.into(),
-            args,
-            source: "desktop".into(),
-        };
-        if self.sender.try_send((command, None)).is_err() {
-            self.view.write().unwrap().error =
-                Some("The engine queue is full. Try again after the current action.".into());
-        }
-    }
-    pub fn call(&self, command: Command) -> Result<Value> {
+    pub fn start_command(&self, command: Command) -> Result<mpsc::Receiver<Value>> {
         let (tx, rx) = mpsc::channel();
         self.sender
             .try_send((command, Some(tx)))
             .map_err(|_| "The engine is busy; retry after the current action.".to_string())?;
-        rx.recv().map_err(|e| e.to_string())
+        Ok(rx)
     }
 }
 
@@ -158,6 +176,19 @@ fn native_command(
     command: &Command,
     directory: &std::path::Path,
 ) -> Result<Value> {
+    if let Some(scope) = command.args.get("scope") {
+        let live = engine
+            .live
+            .as_ref()
+            .ok_or("The job's application is no longer connected.")?;
+        if scope["investigation_id"] != live.view.investigation_id
+            || scope["batch"] != live.view.coverage.batch
+            || scope["created"] != live.view.process.created
+            || scope["window"] != live.view.process.window
+        {
+            return Err("The job's target or memory batch changed; no capture was started.".into());
+        }
+    }
     match command.action.as_str() {
         "read_capture" => {
             let session = engine

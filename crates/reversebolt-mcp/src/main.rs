@@ -9,7 +9,11 @@ struct Reversebolt {
 }
 
 fn tools() -> Vec<Tool> {
+    let binding = json!({"type":"object","properties":{"session":{"type":"string"},"target":{"type":"string"},"generation":{"type":"integer","minimum":1}},"required":["session","target","generation"],"additionalProperties":false});
     [
+        ("start_observation_job","Durably queue 1–16 timed captures of the current application and memory batch. Returns a receipt, not completion. Read status.jobs.history for boot, current binding and clients.mcp-agent.high_water; use high_water+1 (or 1) as request_id. Serialize requests for this shared MCP client. On transport failure retry the SAME arguments/request_id; never allocate a replacement automatically. Observe progress through status. No gameplay input, semantic model or writes are performed; interact with the game to produce changes.",json!({"request_id":{"type":"integer","minimum":1},"boot":{"type":"integer","minimum":1},"binding":binding.clone(),"count":{"type":"integer","minimum":1,"maximum":16,"default":12},"interval_ms":{"type":"integer","minimum":250,"maximum":60000,"default":1000}}),vec!["request_id","boot","binding","count","interval_ms"]),
+        ("job_control","Pause, resume or cancel an observation job in the shared desktop controller. Use the next request_id, current boot and exact binding from status.jobs.history. An accepted pause/cancel can report Pausing/Cancelling while the already-started capture settles; it prevents later captures and does not undo earlier evidence. Restarted jobs stay Interrupted; create a new observation job with fresh binding. Desktop takeover can revoke agent control.",json!({"request_id":{"type":"integer","minimum":1},"boot":{"type":"integer","minimum":1},"binding":binding,"job":{"type":"integer","minimum":1},"operation":{"enum":["pause","resume","cancel"]}}),vec!["request_id","boot","binding","job","operation"]),
+        ("job_events","Read up to 64 durable ordered job events after a cursor. On an expired cursor refresh status and resume after its jobs.history.event_head. Cursors are scoped to the job ledger session. No subscription queue is created.",json!({"cursor":{"type":"integer","minimum":0}}),vec!["cursor"]),
         ("status","Read the desktop's active session, observations, candidate evidence, edits and recent history.",json!({}),vec![]),
         ("list_processes","List application windows on the desktop engine's Windows desktop. Returns names, titles, PID, window handle and creation identity for selection.",json!({}),vec![]),
         ("attach_process","Connect a specific application for read-only observation. Pass its identity from list_processes. Replaces the current application investigation; leaves both programs running.",json!({"pid":{"type":"integer","minimum":1},"created":{"type":"string","description":"Exact process creation identity from list_processes."},"window":{"type":"integer","description":"Window handle from list_processes; selects the intended window when an app has several."},"budget_mib":{"type":"integer","minimum":1,"maximum":32,"default":16}}),vec!["pid","created","window"]),
@@ -35,7 +39,7 @@ fn tools() -> Vec<Tool> {
     ].into_iter().map(|(name,description,properties,required)| {
         let schema = json!({"type":"object","properties":properties,"required":required,"additionalProperties":false});
         let mut annotations = ToolAnnotations::new();
-        annotations.read_only_hint = Some(matches!(name,"status"|"history"|"list_processes"|"read_capture"));
+        annotations.read_only_hint = Some(matches!(name,"status"|"history"|"list_processes"|"read_capture"|"job_events"));
         annotations.open_world_hint = Some(false);
         Tool::new(format!("reversebolt_{name}"),description,schema.as_object().unwrap().clone())
             .with_annotations(annotations)

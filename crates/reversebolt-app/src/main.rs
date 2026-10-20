@@ -2,6 +2,7 @@
 
 mod fixture;
 mod graphics;
+mod jobs;
 mod native;
 mod ocr;
 mod service;

@@ -292,6 +292,11 @@ impl LivePane {
                     }
                 });
                 ui.horizontal_wrapped(|ui| {
+                    let remaining=(512*1024*1024/live.planned_bytes.max(1)).min(20).saturating_sub(live.sample_count).min(12);
+                    if ui.add_enabled(!busy && live.connected && remaining>0,
+                        egui::Button::new("Observe over time")).on_hover_text("Collect up to 12 captures, one second apart. Play or interact with the app while Reversebolt observes; pause or stop at any time.").clicked() {
+                        handle.submit("start_observation_job",json!({"count":remaining,"interval_ms":1000}));
+                    }
                     if ui.add_enabled(!busy && live.connected && live.sample_count>0 && live.coverage.batch<24,
                         egui::Button::new("Search more memory")).on_hover_text("Archive this batch's observations and findings, release its raw memory, and collect fresh evidence from other addresses.").clicked() {
                         handle.submit("advance_memory",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch}));
