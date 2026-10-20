@@ -1,0 +1,19 @@
+[package]
+name = "reversebolt-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "Reversebolt"
+path = "src/main.rs"
+
+[dependencies]
+reversebolt-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+eframe = { version = "=0.36.2", default-features = false, features = ["default_fonts", "glow", "accesskit"] }
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "net", "macros"] }
+uuid = { version = "1", features = ["v4"] }
+fs2 = "0.4"
