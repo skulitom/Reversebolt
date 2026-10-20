@@ -104,7 +104,7 @@ try:
     mcp.stdin.flush()
     if PHASE == "exercise":
         names = {t["name"] for t in rpc("tools/list", {})["tools"]}
-        assert len(names) == 21
+        assert len(names) == 23
         record("mcp_tools", len(names))
         programs = call("list_processes")["state"]["processes"]
         program = next(p for p in programs if p["pid"] == PID)

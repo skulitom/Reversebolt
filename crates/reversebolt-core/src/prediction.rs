@@ -208,6 +208,7 @@ mod tests {
                             height: 10,
                             epoch: 0,
                             started_unix_ms: i as u128,
+                            capture_interval: None,
                         }),
                         bytes: None,
                         read: None,

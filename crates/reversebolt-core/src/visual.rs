@@ -8,6 +8,15 @@ use std::{io::Read, path::Path};
 pub const MAX_IMAGE_BYTES: usize = 10 * 1024 * 1024;
 pub const MAX_TRACKS: usize = 32;
 
+/// Bounds of the capture operation in an investigation-local monotonic clock.
+/// These are not game presentation timestamps or an atomic memory snapshot.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CaptureInterval {
+    pub clock_id: String,
+    pub begin_us: u64,
+    pub end_us: u64,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrameRef {
     pub id: String,
@@ -17,6 +26,8 @@ pub struct FrameRef {
     pub height: u32,
     pub epoch: usize,
     pub started_unix_ms: u128,
+    #[serde(default)]
+    pub capture_interval: Option<CaptureInterval>,
 }
 
 pub fn image_bytes(path: &Path) -> Result<Vec<u8>> {
@@ -58,7 +69,7 @@ impl VisualValue {
             Self::Vector(v) => format!("{v:?}"),
         }
     }
-    fn shape(&self) -> (&'static str, usize) {
+    pub(crate) fn shape(&self) -> (&'static str, usize) {
         match self {
             Self::Number(_) => ("number", 1),
             Self::Boolean(_) => ("boolean", 1),
@@ -141,6 +152,15 @@ pub fn record(
     source: &str,
     sample_count: usize,
 ) -> Result<bool> {
+    validate(&input, frame, sample_count)?;
+    record_validated(tracks, input, frame, source, sample_count)
+}
+
+pub(crate) fn validate(
+    input: &ObservationInput,
+    frame: &FrameRef,
+    sample_count: usize,
+) -> Result<()> {
     if input.frame_id != frame.id || input.image_sha256 != frame.sha256 {
         return Err("The observation references a different captured image.".into());
     }
@@ -182,6 +202,16 @@ pub fn record(
     {
         return Err("Observation bounds must lie inside the referenced image.".into());
     }
+    Ok(())
+}
+
+fn record_validated(
+    tracks: &mut Vec<VisualTrack>,
+    input: ObservationInput,
+    frame: &FrameRef,
+    source: &str,
+    sample_count: usize,
+) -> Result<bool> {
     if let Some(track) = tracks.iter_mut().find(|t| {
         t.epoch == frame.epoch
             && t.observer == input.observer
@@ -254,6 +284,7 @@ mod tests {
             height: 100,
             epoch: 0,
             started_unix_ms: 1,
+            capture_interval: None,
         }
     }
     fn input() -> ObservationInput {

@@ -150,8 +150,17 @@ are published, independently of active-session metadata. The manifest remains
 historical on restart, with no restored process handle or write capability.
 
 Single-frame evidence is insufficient for rates, animation or causal claims.
+The temporal observation protocol now binds 2–8 ordered images and their capture
+intervals to one declared appearance, screen-motion or change interpretation.
+Image and memory-read intervals share an investigation-local monotonic clock.
+Elapsed bounds, omitted moments and gaps remain explicit. Temporal series are
+saved before publication, immutable on replay, invalidated by geometry/target
+changes and archived with their memory batch. They are excluded from scalar
+correlation; no continuous identity, physical motion or authority is established.
+See [temporal evidence](research/TEMPORAL_EVIDENCE.md).
+
 Temporal semantic inference, an automatic model executor and calibrated
-uncertainty remain required work. Memory coverage and capture-only jobs now use
+uncertainty remain required work. Memory coverage and capture-only jobs use
 reviewed integrations of their isolated prototypes; neither implies semantic
 understanding or general causal experiments.
 

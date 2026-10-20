@@ -5,7 +5,8 @@ use crate::{
     coverage::{self, BatchSummary, Chunk, Coverage, Ranges},
     discovery::{Candidate, discover},
     prediction::{self, FrozenCandidate, PredictionCheck},
-    visual::{self, FrameRef, ObservationInput, VisualTrack},
+    temporal,
+    visual::{self, CaptureInterval, FrameRef, ObservationInput, VisualTrack},
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -146,6 +147,10 @@ pub struct MemoryRead {
     /// Milliseconds from this capture's start; screen and memory are sequential.
     pub begin_ms: u128,
     pub end_ms: u128,
+    /// Same investigation-local monotonic clock as image capture bounds.
+    /// Includes mapping queries; does not make a read atomic with the image.
+    #[serde(default)]
+    pub capture_interval: Option<CaptureInterval>,
     pub disposition: String,
 }
 
@@ -161,6 +166,8 @@ pub struct LiveView {
     pub frames: Vec<FrameRef>,
     #[serde(default)]
     pub visual_tracks: Vec<VisualTrack>,
+    #[serde(default)]
+    pub temporal_tracks: Vec<temporal::Track>,
     pub process: ProcessInfo,
     pub eligible_bytes: u64,
     pub planned_bytes: usize,
@@ -187,6 +194,7 @@ pub struct LiveSession {
     directory: PathBuf,
     screen_size: Option<(u32, u32)>,
     image_epoch: usize,
+    capture_clock: Instant,
 }
 
 impl LiveSession {
@@ -205,6 +213,9 @@ impl LiveSession {
             }
             for track in &mut self.view.visual_tracks {
                 track.matches.clear();
+                track.active = false;
+            }
+            for track in &mut self.view.temporal_tracks {
                 track.active = false;
             }
             return true;
@@ -238,6 +249,7 @@ impl LiveSession {
             investigation_id: uuid::Uuid::new_v4().to_string(),
             frames: vec![],
             visual_tracks: vec![],
+            temporal_tracks: vec![],
             process: target.info().clone(),
             eligible_bytes,
             planned_bytes,
@@ -263,6 +275,7 @@ impl LiveSession {
             directory,
             screen_size: None,
             image_epoch: 0,
+            capture_clock: Instant::now(),
         })
     }
 
@@ -295,7 +308,9 @@ impl LiveSession {
         let start = Instant::now();
         let number = self.snapshots.len() + 1;
         let screen_path = self.directory.join(format!("frame-{number:03}.png"));
+        let capture_begin_us = self.capture_clock.elapsed().as_micros() as u64;
         let mut screen = self.target.screen(&screen_path);
+        let capture_end_us = self.capture_clock.elapsed().as_micros() as u64;
         let image_length = std::fs::metadata(&screen_path)
             .map(|m| m.len())
             .unwrap_or(0);
@@ -320,6 +335,7 @@ impl LiveSession {
         let mut receipts = vec![];
         for chunk in &self.plan {
             let (address, length) = (chunk.address, chunk.length);
+            let begin_us = self.capture_clock.elapsed().as_micros() as u64;
             let begin_ms = start.elapsed().as_millis();
             let mut disposition = "unavailable";
             let compatible = |chunk: &Chunk| {
@@ -359,6 +375,11 @@ impl LiveSession {
                 retained: snapshot.get(&address).map_or(0, Vec::len),
                 begin_ms,
                 end_ms: start.elapsed().as_millis(),
+                capture_interval: Some(CaptureInterval {
+                    clock_id: self.view.investigation_id.clone(),
+                    begin_us,
+                    end_us: self.capture_clock.elapsed().as_micros() as u64,
+                }),
                 disposition: disposition.into(),
             });
         }
@@ -384,6 +405,9 @@ impl LiveSession {
             let size = (frame.width, frame.height);
             if self.screen_size.is_some_and(|previous| previous != size) {
                 self.image_epoch += 1;
+                for track in &mut self.view.temporal_tracks {
+                    track.active = false;
+                }
                 for track in &mut self.view.visual_tracks {
                     track.active = false;
                     track.matches.clear();
@@ -416,6 +440,11 @@ impl LiveSession {
                     height: frame.height,
                     epoch: self.image_epoch,
                     started_unix_ms: now,
+                    capture_interval: Some(CaptureInterval {
+                        clock_id: self.view.investigation_id.clone(),
+                        begin_us: capture_begin_us,
+                        end_us: capture_end_us,
+                    }),
                 }),
                 Err(error) => {
                     let note = format!("Image evidence unavailable: {error}");
@@ -644,6 +673,7 @@ impl LiveSession {
         self.view.frames.clear();
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
+        self.view.temporal_tracks.clear();
         self.view.prediction_check = None;
         self.image_epoch += 1;
         self.screen_size = None;
@@ -701,6 +731,61 @@ impl LiveSession {
             self.save_visual_evidence(&tracks)?;
             self.view.visual_tracks = tracks;
             self.update_prediction_check(false);
+        }
+        Ok(changed)
+    }
+
+    /// Read a bounded sequence using engine-owned paths and verified image hashes.
+    /// This does not acquire new images or modify the investigation.
+    pub fn read_sequence(
+        &self,
+        investigation: &str,
+        ids: &[String],
+    ) -> Result<(temporal::Sequence, Vec<Vec<u8>>)> {
+        if investigation != self.view.investigation_id {
+            return Err("That sequence belongs to a different investigation.".into());
+        }
+        let sequence = temporal::sequence(&self.view.frames, ids)?;
+        let mut images = vec![];
+        let mut bytes = 0;
+        for frame in &sequence.frames {
+            let (_, image) = self.read_frame(investigation, &frame.id)?;
+            bytes += image.len();
+            if bytes > temporal::MAX_SEQUENCE_BYTES {
+                return Err("The selected sequence exceeds 16 MiB. Request fewer images.".into());
+            }
+            images.push(image);
+        }
+        Ok((sequence, images))
+    }
+
+    pub fn submit_temporal_observation(
+        &mut self,
+        input: temporal::Input,
+        source: &str,
+    ) -> Result<bool> {
+        if self.refresh_connection() || !self.view.connected {
+            return Err("Reconnect before submitting evidence to a closed investigation.".into());
+        }
+        if input.batch != self.view.coverage.batch {
+            return Err("This temporal observation belongs to a different memory batch.".into());
+        }
+        let ids: Vec<_> = input.frames.iter().map(|f| f.frame_id.clone()).collect();
+        let (sequence, _) = self.read_sequence(&input.investigation_id, &ids)?;
+        if sequence.frames[0].epoch != self.image_epoch {
+            return Err("Image geometry changed. Use the current sequence.".into());
+        }
+        let mut tracks = self.view.temporal_tracks.clone();
+        let changed = temporal::record(&mut tracks, input, sequence, source)?;
+        if changed {
+            let bytes = serde_json::to_vec_pretty(&serde_json::json!({
+                "schema_version": 1, "investigation_id": self.view.investigation_id,
+                "memory_batch": self.view.coverage.batch, "process": self.view.process,
+                "temporal_tracks": tracks, "limitation": temporal::LIMITATION,
+            }))
+            .map_err(|e| e.to_string())?;
+            write_evidence(&self.directory.join("temporal-evidence.json"), &bytes)?;
+            self.view.temporal_tracks = tracks;
         }
         Ok(changed)
     }

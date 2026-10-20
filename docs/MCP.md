@@ -36,6 +36,8 @@ never creates a private simulator or duplicate session.
 | `reversebolt_capture` | Window image, OCR and bounded memory snapshot from connected application |
 | `reversebolt_read_capture` | A recorded PNG as MCP image content, with frame identity and checksum |
 | `reversebolt_submit_observation` | Add an image interpretation with its source, uncertainty and explanation |
+| `reversebolt_read_sequence` | 2–8 ordered recorded PNGs with timing bounds, hashes and gaps |
+| `reversebolt_submit_temporal_observation` | Provisional appearance, screen-motion or change interpretation across several images |
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
 | `reversebolt_start_prediction_check` | Freeze one series' mappings and check fresh observations without refitting |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
@@ -55,7 +57,7 @@ candidate evidence → test candidates → inspect remaining ambiguity → set v
 tool call as a successful edit.
 
 Application investigation: list processes → attach using `pid`, `created` and
-`window` returned by the list → watch the automatic report in status → inspect
+`window` returned by the list → watch automatic discovery in status → inspect
 evidence → detach. Connection starts one durable 16-capture pass with no initial
 delay and one second between completed captures. Comparisons refresh from
 capture 12. Attachment returns `data.automatic_observation`, its job receipt;
@@ -66,7 +68,7 @@ attachment replaces the investigation. No work resumes automatically on restart.
 
 Use `auto_observe:false` on `attach_process` for controlled manual experiments.
 `advance_memory` accepts `auto_observe:true` to start another bounded pass (default
-false). A timed observation job can use `compare:true` to update its report after
+false). A timed observation job can use `compare:true` to update its findings after
 each capture with enough evidence; this never refits an active prediction check.
 The desktop uses the same controller and displays progress and pause/stop controls.
 
@@ -80,7 +82,7 @@ lists main-desktop applications.
 
 ## Image-grounded agent observations
 
-There are now 21 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 23 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -135,6 +137,42 @@ The desktop lists these interpretations under **Agent observations**, including
 their source, capture number, explanation, uncertainty and history. This API
 delivers image content to the requesting client; no background image uploads or
 global MCP configuration changes are made.
+
+## Observations across several images
+
+Use `reversebolt_read_sequence` with `investigation_id` and `frame_ids` (2–8
+distinct, chronological IDs from the current batch). The response alternates
+frame labels and native PNG blocks, followed by the shared state JSON. Its
+`data.sequence` contains the matching frames, monotonic clock identity,
+`elapsed_us: [minimum, maximum]`, `largest_gap_us` and `omitted_moments`.
+Images must share geometry and clock; combined image bytes are capped at 16 MiB.
+The capture intervals bound engine operations, not exact game presentation.
+
+After inspecting the sequence, `reversebolt_submit_temporal_observation` takes:
+
+- `investigation_id`, current `batch`, declared `observer`, stable `key`, `label`
+  and `unit`.
+- `basis`: `appearance`, `screen_motion` or `observed_change`.
+- `frames`: ordered objects containing `frame_id`, `image_sha256` and `bounds`
+  (null or `[x,y,width,height]` in that image).
+- `value`, `quality` and `explanation`, with the same typed value forms as
+  single-image interpretations.
+
+The engine derives timing from recorded frames; the observer cannot supply a
+different clock or elapsed interval. It retains gaps and verifies every image
+before accepting the declaration. An exact retry is a no-op. A different
+declaration ending at an occupied frame needs a new key. Late observations are
+sorted by their ending frame. There are 16 series and 20 observations per series
+per batch. The current state exposes `live.temporal_tracks`; evidence persists
+in `temporal-evidence.json` and the batch archive.
+
+These series remain descriptive and do not enter numeric memory matching.
+Screen motion is not world motion; several snapshots do not prove continuous
+identity, a path, animation frequency, or causality. Use uncertainty for gaps
+or ambiguity. The desktop shows cards and explanations, with older observations
+distinguished from current readings. Submission respects human takeover and
+can occur between automatic captures, never concurrently with a capture.
+See [implementation and verification](research/TEMPORAL_EVIDENCE.md).
 
 ## Durable observation jobs
 

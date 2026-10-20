@@ -1,5 +1,24 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Temporal evidence and monotonic timing
+
+The 72-test workspace suite passed. Five new temporal tests cover ordered,
+image-bound interpretations, interval uncertainty, gaps, resource limits, late
+arrival, immutable replay and lifecycle/persistence failures. Temporal integration
+tests were rerun after adding memory-read clock bounds. Strict Clippy passes.
+
+An automated WinForms fixture and actual MCP image blocks verified a three-image
+appearance change and return, then submitted that interpretation to the shared
+engine. UI Automation confirmed its card and Inspect view. No manual screenshot
+inspection or game control was used. This establishes a temporal evidence path,
+not semantic recognition. See [verification and limits](research/TEMPORAL_EVIDENCE.md).
+
+Preview `0.1.0-20261020-235611` is running on the normal desktop with all seven
+prior history entries retained. Published binary/model hashes and the launcher
+were verified. The final 23-tool smoke passed:
+`test-results/smoke-a56f4bf3/report.json`. Restart and delivery proofs are in
+`test-results/temporal-v1/`.
+
 ## Automatic discovery, control cards and frozen predictions
 
 Sixty-seven workspace tests pass, including automatic connection scheduling,

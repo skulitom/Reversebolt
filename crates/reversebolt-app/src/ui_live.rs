@@ -6,6 +6,13 @@ use eframe::egui::{self, RichText};
 use reversebolt_core::{engine::View, live::ProcessInfo};
 use serde_json::json;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+enum CardSource {
+    Ocr,
+    Image,
+    Temporal,
+}
+
 #[derive(Default)]
 pub struct LivePane {
     picker: bool,
@@ -14,7 +21,7 @@ pub struct LivePane {
     pending: bool,
     focus_search: bool,
     image: Option<(String, egui::TextureHandle)>,
-    detail: Option<(String, bool, usize)>,
+    detail: Option<(String, CardSource, usize)>,
 }
 
 impl LivePane {
@@ -197,11 +204,9 @@ impl LivePane {
             self.investigation(ui, handle, state, busy);
             return;
         };
-        if self
-            .detail
-            .as_ref()
-            .is_some_and(|(scope, _, _)| scope != &live.investigation_id)
-        {
+        if self.detail.as_ref().is_some_and(|(scope, _, _)| {
+            scope != &format!("{}:{}", live.investigation_id, live.coverage.batch)
+        }) {
             self.detail = None;
         }
         ui.horizontal_wrapped(|ui| {
@@ -234,7 +239,7 @@ impl LivePane {
             ui.colored_label(ERROR, error);
         }
         ui.add_space(16.0);
-        let mut cards: Vec<(bool, usize, String, String, String, bool)> = vec![];
+        let mut cards: Vec<(CardSource, usize, String, String, String, bool)> = vec![];
         for track in live.tracks.iter().filter(|t| t.active) {
             let title = track
                 .label
@@ -244,7 +249,7 @@ impl LivePane {
                 .unwrap_or_else(|| format!("Unidentified value {}", track.id + 1));
             let value = track.samples.last().copied().flatten();
             cards.push((
-                false,
+                CardSource::Ocr,
                 track.id,
                 title,
                 value.map_or_else(|| "—".into(), |v| v.to_string()),
@@ -261,11 +266,42 @@ impl LivePane {
                 .filter(|_| readable)
                 .map_or_else(|| "—".into(), |v| v.display());
             cards.push((
-                true,
+                CardSource::Image,
                 track.id,
                 track.label.clone(),
                 value,
                 "Interpreted from the app. Its effect is not verified yet.".into(),
+                readable,
+            ));
+        }
+        for track in live.temporal_tracks.iter().filter(|t| t.active) {
+            let Some(latest) = track.observations.last() else {
+                continue;
+            };
+            let current = latest
+                .evidence
+                .frames
+                .last()
+                .is_some_and(|f| f.number == live.sample_count);
+            let readable =
+                current && latest.input.quality == reversebolt_core::visual::Quality::Provisional;
+            let value = latest
+                .input
+                .value
+                .as_ref()
+                .filter(|_| readable)
+                .map_or_else(|| "—".into(), |v| v.display());
+            cards.push((
+                CardSource::Temporal,
+                track.id,
+                track.label.clone(),
+                value,
+                if current {
+                    "Interpreted across several moments. Its effect is not verified."
+                } else {
+                    "An earlier change. Waiting for a fresh observation."
+                }
+                .into(),
                 readable,
             ));
         }
@@ -316,8 +352,14 @@ impl LivePane {
                                     );
                                 });
                                 if ui.button("Inspect").clicked() {
-                                    self.detail =
-                                        Some((live.investigation_id.clone(), *external, *id));
+                                    self.detail = Some((
+                                        format!(
+                                            "{}:{}",
+                                            live.investigation_id, live.coverage.batch
+                                        ),
+                                        *external,
+                                        *id,
+                                    ));
                                 }
                             });
                     });
@@ -348,10 +390,22 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("Reversebolt can observe this value. It is still identifying the controlling state, so editing is not available yet.");
-                    let matches=if external {live.visual_tracks.iter().find(|t|t.id==id).map(|t|&t.matches)}
-                        else {live.tracks.iter().find(|t|t.id==id).map(|t|&t.matches)};
-                    ui.add_space(12.0);
-                    prediction_button(ui,handle,live,busy,if external {"external"}else{"ocr"},id,matches.is_some_and(|m|!m.is_empty()));
+                    if external == CardSource::Temporal {
+                        if let Some(track) = live.temporal_tracks.iter().find(|t| t.id == id)
+                            && let Some(observation) = track.observations.last() {
+                            ui.label(&observation.input.explanation);
+                            ui.label(format!("Interpretation by {} · {}", track.observer,
+                                observation.input.value.as_ref().map_or_else(|| "uncertain".into(), |v| v.display())));
+                            ui.label(format!("{} sampled moments · {:.2}–{:.2} seconds apart",
+                                observation.evidence.frames.len(), observation.evidence.elapsed_us[0] as f64 / 1_000_000., observation.evidence.elapsed_us[1] as f64 / 1_000_000.));
+                            ui.label("Changes between these images may be missing. This does not verify continuous movement or a gameplay effect.");
+                        }
+                    } else {
+                        let matches = if external == CardSource::Image { live.visual_tracks.iter().find(|t| t.id == id).map(|t| &t.matches) }
+                            else { live.tracks.iter().find(|t| t.id == id).map(|t| &t.matches) };
+                        ui.add_space(12.0);
+                        prediction_button(ui, handle, live, busy, if external == CardSource::Image {"external"} else {"ocr"}, id, matches.is_some_and(|m| !m.is_empty()));
+                    }
                     if ui.button("Close").clicked() {self.detail=None;}
                 });
                 if response.should_close() {

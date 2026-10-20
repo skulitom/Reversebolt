@@ -101,7 +101,7 @@ fn control(c: &Command) -> bool {
 fn read_only(action: &str) -> bool {
     matches!(
         action,
-        "status" | "history" | "job_events" | "read_capture" | "list_processes"
+        "status" | "history" | "job_events" | "read_capture" | "read_sequence" | "list_processes"
     )
 }
 fn pop(inbox: &mut VecDeque<Request>) -> Option<Request> {
@@ -496,7 +496,13 @@ impl Controller {
                 .jobs
                 .values()
                 .any(|j| !j.phase.terminal() && j.phase != job::Phase::Paused);
-            if active && !read_only(&command.action) && command.action != "submit_observation" {
+            if active
+                && !read_only(&command.action)
+                && !matches!(
+                    command.action.as_str(),
+                    "submit_observation" | "submit_temporal_observation"
+                )
+            {
                 return Err("An observation job owns the investigation. Pause or cancel it, or take control from the desktop.".into());
             }
             if self.manual.is_some() || self.executor.flight.is_some() {
@@ -744,6 +750,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                temporal_tracks: vec![],
                 prediction_check: None,
                 coverage: reversebolt_core::coverage::Coverage {
                     batch: 1,

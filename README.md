@@ -8,6 +8,9 @@ bounded memory, and compare changing screen numbers with memory trajectories.
 Connecting starts observation automatically; values appear as simple cards.
 An image-reading agent can contribute provisional observations through MCP;
 the desktop shows their sources and uncertainty alongside OCR.
+Agents can also read ordered image sequences and contribute appearance or
+behavior interpretations spanning several moments. Timing bounds and gaps stay
+with the evidence; these interpretations do not establish editable controls.
 Automatic game understanding and live-game edits are not implemented yet.
 The disposable practice environment supports tested edits. The destination is
 documented in [the full vision](docs/VISION.md), with an explicit

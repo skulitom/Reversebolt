@@ -303,3 +303,22 @@ verified; the 21-tool release smoke passed. Native UI Automation verified a
 practice numeric edit and restoration. The updated interface receives no extra
 general-discovery credit. Delivery is recorded in
 `test-results/automatic-report-v1/desktop-delivery.json`.
+
+## 2026-10-20 — temporal evidence and shared timing: still 20%
+
+The engine now retains image and memory-read operation bounds on one monotonic
+clock. Agents can read ordered image sequences and submit multi-image
+appearance, motion or change interpretations. The desktop shows them as
+provisional cards, with stale observations distinguished from current values.
+Persistence, scope, ordering, gaps and immutable retries are enforced.
+
+Seventy-two workspace tests passed, and an automated native shape fixture
+verified the real MCP image/observation round trip. UI Automation verified the
+card and Inspect view without screenshots. This receives no additional motion
+understanding or generalization credit: no semantic observer, reliable entity
+tracking, high-cadence acquisition or temporal memory matching is integrated.
+The full goal remains active at **20 / 100**, with the same denominator.
+See [temporal evidence and limitations](research/TEMPORAL_EVIDENCE.md).
+
+Desktop preview `0.1.0-20261020-235611` was delivered with preserved history,
+matching executable/model hashes and a passing 23-tool published-build smoke.

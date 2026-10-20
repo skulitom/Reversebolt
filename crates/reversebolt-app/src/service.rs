@@ -96,7 +96,7 @@ impl EngineHandle {
                 working.store(true, Ordering::SeqCst);
                 let read_only = matches!(
                     command.action.as_str(),
-                    "status" | "history" | "list_processes" | "read_capture"
+                    "status" | "history" | "list_processes" | "read_capture" | "read_sequence"
                 );
                 let result = if command.action == "open_practice" {
                     engine.view.error = None;
@@ -118,6 +118,8 @@ impl EngineHandle {
                         | "detach_process"
                         | "read_capture"
                         | "submit_observation"
+                        | "read_sequence"
+                        | "submit_temporal_observation"
                 ) {
                     engine.view.error = None;
                     native_command(&mut engine, &command, &live_directory)
@@ -129,7 +131,10 @@ impl EngineHandle {
                     Ok(data) => (
                         if matches!(
                             command.action.as_str(),
-                            "read_capture" | "submit_observation"
+                            "read_capture"
+                                | "submit_observation"
+                                | "read_sequence"
+                                | "submit_temporal_observation"
                         ) {
                             data
                         } else {
@@ -191,6 +196,37 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "read_sequence" => {
+            let session = engine
+                .live
+                .as_ref()
+                .ok_or("Connect a program and capture moments first.")?;
+            let investigation = command.args["investigation_id"]
+                .as_str()
+                .ok_or("Supply the investigation identity from status.")?;
+            let ids: Vec<String> = serde_json::from_value(command.args["frame_ids"].clone())
+                .map_err(|_| "Supply 2–8 frame identities in chronological order.")?;
+            let (sequence, images) = session.read_sequence(investigation, &ids)?;
+            let images: Vec<_> = sequence.frames.iter().zip(images).map(|(frame, bytes)| json!({
+                "frame_id": frame.id, "png_base64": base64::engine::general_purpose::STANDARD.encode(bytes)
+            })).collect();
+            return Ok(json!({"sequence": sequence, "images": images}));
+        }
+        "submit_temporal_observation" => {
+            let input: reversebolt_core::temporal::Input =
+                serde_json::from_value(command.args.clone())
+                    .map_err(|e| format!("Invalid temporal observation: {e}"))?;
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect a program and capture moments first.")?;
+            let label = input.label.clone();
+            let changed = session.submit_temporal_observation(input, &command.source)?;
+            if changed {
+                engine.event(&command.source, format!("Recorded provisional temporal evidence for {label}. No continuous identity or control was verified."));
+            }
+            return Ok(json!({"recorded": changed, "duplicate": !changed}));
+        }
         "read_capture" => {
             let session = engine
                 .live

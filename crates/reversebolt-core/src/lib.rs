@@ -3,6 +3,7 @@ pub mod discovery;
 pub mod engine;
 pub mod live;
 pub mod prediction;
+pub mod temporal;
 pub mod visual;
 
 use serde::{Deserialize, Serialize};
