@@ -1,0 +1,5 @@
+# The evaluator's exact bytes are part of the pre-capture protocol freeze.
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf

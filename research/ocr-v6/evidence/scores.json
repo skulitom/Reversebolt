@@ -1,0 +1,2381 @@
+{
+  "scope": "Selected fields, not exhaustive OCR accuracy or game discovery",
+  "evaluator_sha256": "f0494e07766163cd4f33eb80c9d5469029e10d840fad65ee84d427a2d9d7ddef",
+  "protocol": {
+    "frozen_at": "2026-10-20T21:00:26.6333838Z",
+    "algorithm": "PP-OCRv6 medium detection and recognition; previous numeric detection regions, max 3 misses, no padding or feedback",
+    "python_sha256": "F0494E07766163CD4F33EB80C9D5469029E10D840FAD65EE84D427A2D9D7DDEF",
+    "model_manifest": [
+      {
+        "name": "PP-OCRv6_medium_det_onnx",
+        "revision": "61323801669c338b7891481ec7bac61ce31b576a",
+        "license": "apache-2.0",
+        "sha256": "EB13B44B25BB36F89528B68720AF8A61D9CF381176107F465DB1757B65D086E1"
+      },
+      {
+        "name": "PP-OCRv6_medium_rec_onnx",
+        "revision": "50c7eacafc52fa7bcf4194e8cd08e46f8558504b",
+        "license": "apache-2.0",
+        "sha256": "9C09ABF0957F7968C7586464B7397B84AD2387A0497A351AF40E9ACC71B673BA"
+      }
+    ],
+    "discovery_inputs": "Full images and temporal order only; no annotations, labels, game names or value sequences",
+    "development": "Blue Prince 49..38 and HL2 saved clips",
+    "next_evaluation": "Fresh Blue Prince gameplay and ordinary-window regression; no model or threshold changes from those results"
+  },
+  "results": [
+    {
+      "sequence": "blue-development",
+      "prediction": "blue-prince-initial.json",
+      "correct": 4,
+      "wrong": 2,
+      "conflicting": 0,
+      "missing": 6,
+      "prediction_sha256": "859dc9bacd9b7c0f3c478156235f05d8fecb15c78e238bf2ea22fd1854adcd97",
+      "first_ms": 582.0158999995328,
+      "warm_median_ms": 184.28299999504816,
+      "warm_min_ms": 176.83530000795145,
+      "warm_max_ms": 212.33569999458268,
+      "frames": [
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-001.png",
+          "sha256": "899c51bd47297287015a4e383d0a7f5a2ed2fab700e9ec9529b9e4a8f715cef7",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 49,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "!!49"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-002.png",
+          "sha256": "e51910eba22e30a867b2c13549fe4688cc7589d2cc8b53d9ae61727750dd8c85",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 48,
+              "values": [
+                48.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "48"
+              ]
+            }
+          ],
+          "unscored_numeric": [
+            {
+              "text": "6",
+              "score": 0.77167,
+              "polygon": [
+                [
+                  35.0,
+                  37.0
+                ],
+                [
+                  45.0,
+                  37.0
+                ],
+                [
+                  45.0,
+                  47.0
+                ],
+                [
+                  35.0,
+                  47.0
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-003.png",
+          "sha256": "b44d13f8275a91c6c0f71e04acedf554d8d4573f85a8a2dad7b249df038485af",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 47,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-004.png",
+          "sha256": "7994dabaa20e9f754f429f6246f84ca79e7b75773d566d2c927bf866ce65b5e4",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 46,
+              "values": [
+                46.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "46"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-005.png",
+          "sha256": "5e22ef9f3921c3f53b18a660a6a36a0cc4149a45709402ea3a1772ed0ca5b7c2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 45,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-006.png",
+          "sha256": "7c279f1bede811e8a19223f43e6a84f50db091d042e60116e18386a168df95a2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 44,
+              "values": [
+                44.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "44"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-007.png",
+          "sha256": "d5ad3ba91812e260fc0014819447e5571e810d04dd3c1de9586e1e5b4c10980b",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 43,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "!!43"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-008.png",
+          "sha256": "176fd594a8fc5e22ec6e413bc24fd28bef09338431778350c8b006b617fbeba3",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 42,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "!！42"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-009.png",
+          "sha256": "6ee755b9a134fbc6a36d4fc0e87c1d9c33890b506d66c99b3dbd84c6186045ba",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 41,
+              "values": [
+                1141.0
+              ],
+              "outcome": "wrong",
+              "raw_texts": [
+                "1141"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-010.png",
+          "sha256": "d8e2b24b7c554870ab8510711826fe3be4e9251260285a38e232513504904657",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 40,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "!！40"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-011.png",
+          "sha256": "d6f405ef4cb68591a5d2a1e273cfa6ba4a3433eafc3fe3e6924e2606166d0f04",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 39,
+              "values": [
+                39.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "39"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-012.png",
+          "sha256": "9f17273c6118c4240086161adf497a3285afbbc2b90027e4f11a31a169dd1966",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 38,
+              "values": [
+                1138.0
+              ],
+              "outcome": "wrong",
+              "raw_texts": [
+                "1138"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "blue-development",
+      "prediction": "blue-prince-medium.json",
+      "correct": 8,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 4,
+      "prediction_sha256": "c1a8494e2d81de75a4b700f4422cd2ef4c4ca2b715f7e6a9809f81c2fb3c13cb",
+      "first_ms": 1549.1253999934997,
+      "warm_median_ms": 692.0769999996992,
+      "warm_min_ms": 649.8041000013473,
+      "warm_max_ms": 744.3531000026269,
+      "frames": [
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-001.png",
+          "sha256": "899c51bd47297287015a4e383d0a7f5a2ed2fab700e9ec9529b9e4a8f715cef7",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 49,
+              "values": [
+                49.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "49"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-002.png",
+          "sha256": "e51910eba22e30a867b2c13549fe4688cc7589d2cc8b53d9ae61727750dd8c85",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 48,
+              "values": [
+                48.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "48"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-003.png",
+          "sha256": "b44d13f8275a91c6c0f71e04acedf554d8d4573f85a8a2dad7b249df038485af",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 47,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-004.png",
+          "sha256": "7994dabaa20e9f754f429f6246f84ca79e7b75773d566d2c927bf866ce65b5e4",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 46,
+              "values": [
+                46.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "46"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-005.png",
+          "sha256": "5e22ef9f3921c3f53b18a660a6a36a0cc4149a45709402ea3a1772ed0ca5b7c2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 45,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-006.png",
+          "sha256": "7c279f1bede811e8a19223f43e6a84f50db091d042e60116e18386a168df95a2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 44,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-007.png",
+          "sha256": "d5ad3ba91812e260fc0014819447e5571e810d04dd3c1de9586e1e5b4c10980b",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 43,
+              "values": [
+                43.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "43"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-008.png",
+          "sha256": "176fd594a8fc5e22ec6e413bc24fd28bef09338431778350c8b006b617fbeba3",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 42,
+              "values": [
+                42.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "42"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-009.png",
+          "sha256": "6ee755b9a134fbc6a36d4fc0e87c1d9c33890b506d66c99b3dbd84c6186045ba",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 41,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-010.png",
+          "sha256": "d8e2b24b7c554870ab8510711826fe3be4e9251260285a38e232513504904657",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 40,
+              "values": [
+                40.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "40"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-011.png",
+          "sha256": "d6f405ef4cb68591a5d2a1e273cfa6ba4a3433eafc3fe3e6924e2606166d0f04",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 39,
+              "values": [
+                39.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "39"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-012.png",
+          "sha256": "9f17273c6118c4240086161adf497a3285afbbc2b90027e4f11a31a169dd1966",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 38,
+              "values": [
+                38.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "38"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "blue-development",
+      "prediction": "blue-prince-medium-temporal.json",
+      "correct": 12,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 0,
+      "prediction_sha256": "886cc6916772d0076c2fdedd52622cb8abc3a38ba3abf3574438977dabbcc28f",
+      "first_ms": 1443.5384000098566,
+      "warm_median_ms": 710.767600001418,
+      "warm_min_ms": 696.067500000936,
+      "warm_max_ms": 799.7994999896036,
+      "frames": [
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-001.png",
+          "sha256": "899c51bd47297287015a4e383d0a7f5a2ed2fab700e9ec9529b9e4a8f715cef7",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 49,
+              "values": [
+                49.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "49"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-002.png",
+          "sha256": "e51910eba22e30a867b2c13549fe4688cc7589d2cc8b53d9ae61727750dd8c85",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 48,
+              "values": [
+                48.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "48"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-003.png",
+          "sha256": "b44d13f8275a91c6c0f71e04acedf554d8d4573f85a8a2dad7b249df038485af",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 47,
+              "values": [
+                47.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "47"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-004.png",
+          "sha256": "7994dabaa20e9f754f429f6246f84ca79e7b75773d566d2c927bf866ce65b5e4",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 46,
+              "values": [
+                46.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "46"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-005.png",
+          "sha256": "5e22ef9f3921c3f53b18a660a6a36a0cc4149a45709402ea3a1772ed0ca5b7c2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 45,
+              "values": [
+                45.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "45"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-006.png",
+          "sha256": "7c279f1bede811e8a19223f43e6a84f50db091d042e60116e18386a168df95a2",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 44,
+              "values": [
+                44.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "44"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-007.png",
+          "sha256": "d5ad3ba91812e260fc0014819447e5571e810d04dd3c1de9586e1e5b4c10980b",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 43,
+              "values": [
+                43.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "43"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-008.png",
+          "sha256": "176fd594a8fc5e22ec6e413bc24fd28bef09338431778350c8b006b617fbeba3",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 42,
+              "values": [
+                42.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "42"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-009.png",
+          "sha256": "6ee755b9a134fbc6a36d4fc0e87c1d9c33890b506d66c99b3dbd84c6186045ba",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 41,
+              "values": [
+                41.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "41"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-010.png",
+          "sha256": "d8e2b24b7c554870ab8510711826fe3be4e9251260285a38e232513504904657",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 40,
+              "values": [
+                40.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "40"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-011.png",
+          "sha256": "d6f405ef4cb68591a5d2a1e273cfa6ba4a3433eafc3fe3e6924e2606166d0f04",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 39,
+              "values": [
+                39.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "39"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/blue-prince-changing-v2/captures/cd70b675-4688-4bf6-a284-0a9ad073cbc0/frame-012.png",
+          "sha256": "9f17273c6118c4240086161adf497a3285afbbc2b90027e4f11a31a169dd1966",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 38,
+              "values": [
+                38.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "38"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "blue-fresh",
+      "prediction": "fresh-blue-medium-temporal.json",
+      "correct": 12,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 0,
+      "prediction_sha256": "8823368a30a59289c6e524401d41f6b6899ef2cc3a2931bd2429368fee42ba8f",
+      "first_ms": 1353.3032999985153,
+      "warm_median_ms": 702.1983000013279,
+      "warm_min_ms": 656.648900010623,
+      "warm_max_ms": 812.8532000118867,
+      "frames": [
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-001.png",
+          "sha256": "f47d0fbbe334e2526fb08f5dfa0d163d75931c51ac83ecfdaee9ce93c47a2df4",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 36,
+              "values": [
+                36.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "36"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-002.png",
+          "sha256": "1c6c12831df85dd48110b025b492140b2d2c7ad01fc2b57534f7e053d2b38948",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 35,
+              "values": [
+                35.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "35"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-003.png",
+          "sha256": "8c29b439a47dcc825c27693231b37bdf1b7709a8b83e44373974dddbd7c2b2bc",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 34,
+              "values": [
+                34.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "34"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-004.png",
+          "sha256": "b726735bdfb6e50932d28479c83b1a435980b7920ad04296e82eb29cac1b468c",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 33,
+              "values": [
+                33.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "33"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-005.png",
+          "sha256": "fc136b9efb8180499397fd8578d8cc715c9091a9477408d5c29bcfea869b22a0",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 32,
+              "values": [
+                32.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "32"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-006.png",
+          "sha256": "cc3c2d6f2580e8c4e25523925aaa6ae895d43a5973359f6264829f40107afbb5",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 31,
+              "values": [
+                31.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "31"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-007.png",
+          "sha256": "7b2af0ef11bcef3cf18571ea391443774fc447c9f739a8691ed9efdec053114e",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 30,
+              "values": [
+                30.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "30"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-008.png",
+          "sha256": "b115bf4e0c96215d286be7f6108cec92629001f2225d95dfef3f5df0254fc51c",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 29,
+              "values": [
+                29.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "29"
+              ]
+            }
+          ],
+          "unscored_numeric": [
+            {
+              "text": "1",
+              "score": 0.51784,
+              "polygon": [
+                [
+                  39.0,
+                  19.0
+                ],
+                [
+                  49.0,
+                  21.0
+                ],
+                [
+                  45.0,
+                  48.0
+                ],
+                [
+                  35.0,
+                  47.0
+                ]
+              ],
+              "source": "detected"
+            }
+          ]
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-009.png",
+          "sha256": "779e0329535e8e0d1804e094ee3ad09c8418a9164df804845ab8dbd35e820b16",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 28,
+              "values": [
+                28.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "28"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-010.png",
+          "sha256": "0fd4b6e4f1187150a5fae8cfe376f887bfebc8549354fdeea3ef67c46fd94d5a",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 27,
+              "values": [
+                27.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "27"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-011.png",
+          "sha256": "918f9b72f1dc32bcad8fda5e1d94529f469ef9875339ea9067a72bbddfc8bffe",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 26,
+              "values": [
+                26.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "26"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/ocr-v6/fresh-blue/captures/1216da1d-fe0d-46a7-98d6-08625a45ce36/frame-012.png",
+          "sha256": "cfad732b22e836d8243b18525e578d2aff9f183304c026ded8db2f685e3239ab",
+          "fields": [
+            {
+              "field": "visible counter",
+              "expected": 25,
+              "values": [
+                25.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "25"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "hl2-development",
+      "prediction": "hl2-tiny-small.json",
+      "correct": 31,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 5,
+      "prediction_sha256": "0b640eda48934d07d3885b085014c517c783b713d890a844af2b9f07f95831f4",
+      "first_ms": 623.2948999968357,
+      "warm_median_ms": 169.96519999520388,
+      "warm_min_ms": 160.56390000449028,
+      "warm_max_ms": 177.901799994288,
+      "frames": [
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-001.png",
+          "sha256": "357d5eb95c32d99be1d8d84f3ee91d2de436b47d92f7e67f24112fe13e13a2dd",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 18,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-002.png",
+          "sha256": "ad3f511248b0acbdef0c88bbd4cbdf3dad199a85d608ae89e10d39b5f3d29dc0",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 17,
+              "values": [
+                17.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "17"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-003.png",
+          "sha256": "f3e183f5a94f45b6a9e29abe2ff95c86965928902742dfc64f42c98ab1518478",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 16,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-004.png",
+          "sha256": "ae024de35fa7d211f4e746994a5d012ecd76754e908dc3482c53212537541e44",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 15,
+              "values": [
+                15.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "15"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-005.png",
+          "sha256": "d6db43e53bfa320fbfce411d53101035d5b2ed8e8cbb5cc81329eb4453d68c0b",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 14,
+              "values": [
+                14.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "14"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-006.png",
+          "sha256": "26466d8565d3ad47c1d12f53b4ee0d6700629024010b10e0cc4e5a955b81aa9e",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 13,
+              "values": [
+                13.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "13"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-007.png",
+          "sha256": "3607a0052d2a429df9ae9fc4dac97a949a5e45956e5c33ce8adf9c67f8e928c3",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 12,
+              "values": [
+                12.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "12"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-008.png",
+          "sha256": "f20516fccf5c0f06eddf3f6d1d49da5c7bbb195bbc4349be7459f0c15907e620",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 11,
+              "values": [
+                11.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "11"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-009.png",
+          "sha256": "6a1bf18093a8c3ea9b83710e203022533026722265ea6392fa560f8ac54593b8",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 10,
+              "values": [
+                10.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "10"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-010.png",
+          "sha256": "0550bb184173d6baca4416648ffc58f13cbaec4e56da5cc4cce14ef40b8bea5e",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 9,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": []
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-011.png",
+          "sha256": "61c2a17879853d250ce8dc4bea53fccd49b06f570dcce024dad52f5447229065",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 8,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "e"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-012.png",
+          "sha256": "1419f3acf670a8e02a1d489aa036c961c53930fc955c1f826fc82cf52d486b20",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 7,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "C"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "hl2-development",
+      "prediction": "hl2-medium-temporal.json",
+      "correct": 36,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 0,
+      "prediction_sha256": "b8eb4e99254fca668c8f4679e4f642867c73e02de079cd8199cc33bc1cb7e14c",
+      "first_ms": 1422.0455000031507,
+      "warm_median_ms": 748.3506999997189,
+      "warm_min_ms": 687.5330000038957,
+      "warm_max_ms": 873.8221999956295,
+      "frames": [
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-001.png",
+          "sha256": "357d5eb95c32d99be1d8d84f3ee91d2de436b47d92f7e67f24112fe13e13a2dd",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 18,
+              "values": [
+                18.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "18"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-002.png",
+          "sha256": "ad3f511248b0acbdef0c88bbd4cbdf3dad199a85d608ae89e10d39b5f3d29dc0",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 17,
+              "values": [
+                17.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "17"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-003.png",
+          "sha256": "f3e183f5a94f45b6a9e29abe2ff95c86965928902742dfc64f42c98ab1518478",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 16,
+              "values": [
+                16.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "16"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-004.png",
+          "sha256": "ae024de35fa7d211f4e746994a5d012ecd76754e908dc3482c53212537541e44",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 15,
+              "values": [
+                15.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "15"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-005.png",
+          "sha256": "d6db43e53bfa320fbfce411d53101035d5b2ed8e8cbb5cc81329eb4453d68c0b",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 14,
+              "values": [
+                14.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "14"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-006.png",
+          "sha256": "26466d8565d3ad47c1d12f53b4ee0d6700629024010b10e0cc4e5a955b81aa9e",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 13,
+              "values": [
+                13.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "13"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-007.png",
+          "sha256": "3607a0052d2a429df9ae9fc4dac97a949a5e45956e5c33ce8adf9c67f8e928c3",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 12,
+              "values": [
+                12.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "12"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-008.png",
+          "sha256": "f20516fccf5c0f06eddf3f6d1d49da5c7bbb195bbc4349be7459f0c15907e620",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 11,
+              "values": [
+                11.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "11"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-009.png",
+          "sha256": "6a1bf18093a8c3ea9b83710e203022533026722265ea6392fa560f8ac54593b8",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 10,
+              "values": [
+                10.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "10"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-010.png",
+          "sha256": "0550bb184173d6baca4416648ffc58f13cbaec4e56da5cc4cce14ef40b8bea5e",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 9,
+              "values": [
+                9.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "9"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-011.png",
+          "sha256": "61c2a17879853d250ce8dc4bea53fccd49b06f570dcce024dad52f5447229065",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 8,
+              "values": [
+                8.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "8"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        },
+        {
+          "image": "test-results/hl2-capture/captures/2a0c4a95-9964-45c3-bc15-6399b3c54d07/frame-012.png",
+          "sha256": "1419f3acf670a8e02a1d489aa036c961c53930fc955c1f826fc82cf52d486b20",
+          "fields": [
+            {
+              "field": "health",
+              "expected": 100,
+              "values": [
+                100.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "100"
+              ]
+            },
+            {
+              "field": "ammunition",
+              "expected": 7,
+              "values": [
+                7.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "7"
+              ]
+            },
+            {
+              "field": "reserve",
+              "expected": 150,
+              "values": [
+                150.0
+              ],
+              "outcome": "correct",
+              "raw_texts": [
+                "150"
+              ]
+            }
+          ],
+          "unscored_numeric": []
+        }
+      ]
+    },
+    {
+      "sequence": "ordinary-original",
+      "prediction": "ordinary-medium-temporal.json",
+      "correct": 0,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 12,
+      "prediction_sha256": "ab9430d734a85b8a56f02e7b4c200a51ee1be1e016fc3f33937341fd71a4b4b1",
+      "first_ms": 1377.895300000091,
+      "warm_median_ms": 615.042799996445,
+      "warm_min_ms": 597.9289999959292,
+      "warm_max_ms": 622.9501999914646,
+      "frames": [
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-001.png",
+          "sha256": "1c87bf87bbd4bc8514bd84926b0509b3d85fbf018a25f4184ae6adc6bdaaf42a",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 40,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 40"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-002.png",
+          "sha256": "a35d1c42337da0ea82ad2be4ad84dc084fe7579ae092726799e32c4e6b83173a",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 56,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 56"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-003.png",
+          "sha256": "b736d06376b7a79ec9d0cd365d6e0421ff06b3dbdd5da30e8508791e325249d5",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 31,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 31"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-004.png",
+          "sha256": "4955a206380203248942abd2765c5ce409eafd54d2ccc4cddf608731a0e0c414",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 85,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 85"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-005.png",
+          "sha256": "b9a41e5371809e99c7db980fb1cf961b9e0052c92a2e7c5b2c2735f2e130816d",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 64,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 64"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-006.png",
+          "sha256": "89bcc632d65be6ba9464ac5579386a31e93047e377cfc705da03fe6e7c69cbc3",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 27,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 27"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-007.png",
+          "sha256": "10b1b57d3d0e44d489044a56b726faa97907520599fa114c7656c8e087e1a7e9",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 75,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 75"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-008.png",
+          "sha256": "fe1fd73eb62e2e266df44de00c850b5e7f2f7e62e362f42dce864df187bb0b1e",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 92,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 92"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-009.png",
+          "sha256": "241086953a01cd4ecdf897029e27426240b07bd27f5f8bc18d6a878f1ec9a072",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 44,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 44"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-010.png",
+          "sha256": "ff8bca134cff32cab0bea59f522513dddf13defac2f752235e396088d4fc29db",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 67,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 67"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-011.png",
+          "sha256": "7f995039f18d376a3201b08d2b438300a8243128c11c9489444d28c1399d9fe4",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 38,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 38"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/d493b970-5043-4416-a3e0-968d804a6fc1/frame-012.png",
+          "sha256": "70dbe697eed8419dc909d07f7f74faddb86b1e71b1d9f34f3d9eb2fa739fbd06",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 81,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 81"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        }
+      ],
+      "full_line_exact": 12
+    },
+    {
+      "sequence": "ordinary-fresh",
+      "prediction": "ordinary-fresh-medium-temporal.json",
+      "correct": 0,
+      "wrong": 0,
+      "conflicting": 0,
+      "missing": 12,
+      "prediction_sha256": "05d14c8bec507a2e82e6e2cf2070894e8f4f182230a0559850968f0dcc867ec7",
+      "first_ms": 1317.7197999903,
+      "warm_median_ms": 610.5293000000529,
+      "warm_min_ms": 595.5828000005567,
+      "warm_max_ms": 628.0834000062896,
+      "frames": [
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-001.png",
+          "sha256": "b3f84849a6e49cb4042b78caaddd2bc823ecd59b032b446da426db053058efa1",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 17,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 17"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-002.png",
+          "sha256": "c215cbb89ed217802c0bf0ef0638e2693a2bc09ff11e867d723412693f949256",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 62,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 62"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-003.png",
+          "sha256": "5c958fd308bdcc750d5005cfdc43daba4ace1c5c204ea9283a71b7429fc327e4",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 48,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 48"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-004.png",
+          "sha256": "1566ab45a7d7b4a8d8469e340c3a7b67670044237f0bded48ea517a5ae646c07",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 93,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 93"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-005.png",
+          "sha256": "c9545ed7a5cf7b8ddcc65bc12a29c40c3cc730c2ac126df59380fcdc05699cdd",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 26,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 26"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-006.png",
+          "sha256": "366f30e468ab82490e4c1c27655f8f4c0a4b36d7d02083f1b0b14cacf5aa8c18",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 71,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 71"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-007.png",
+          "sha256": "0a1d660a1af620156a85dec065c308d6131cd5c87aa502022e7a5d436332daea",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 35,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 35"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-008.png",
+          "sha256": "753a1117d2b105376592ca9e61186bf9f41c72ac18f96b0a98785023064dbed2",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 89,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 89"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-009.png",
+          "sha256": "26c9b604085cca8029ae4011ec555ece47523b177c2a2fa3c78dd6cf88f1d96c",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 54,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 54"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-010.png",
+          "sha256": "89ffa046a95b4da3711805091ab977236272c74839ad188ab00e69e97fce3a39",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 22,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 22"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-011.png",
+          "sha256": "d4e513492c547f0409e4890b9ee6a2afd7f0d310eaafffaacc54aeb0cf842130",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 78,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 78"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        },
+        {
+          "image": "test-results/observation-v3/captures/7b8a9251-076d-461e-bbef-1642ae40ce70/frame-012.png",
+          "sha256": "4ecfb984d9a830af090f1445ad34dc8025f710208d25ecafea83a0a75888e766",
+          "fields": [
+            {
+              "field": "quantity",
+              "expected": 46,
+              "values": [],
+              "outcome": "missing",
+              "raw_texts": [
+                "Quantity 46"
+              ]
+            }
+          ],
+          "unscored_numeric": [],
+          "full_line_exact": true
+        }
+      ],
+      "full_line_exact": 12
+    }
+  ]
+}

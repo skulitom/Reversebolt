@@ -209,3 +209,22 @@ The production plan supports captures only. Broader investigation, multiple
 agent identities, journal lifecycle, semantic interpretation, meaningful game
 experiments and scoped edits remain required. See
 [observation job evidence](research/OBSERVATION_JOBS.md).
+
+## 2026-10-20 — fresh Blue Prince OCR experiment: still 18%
+
+All capability credits remain unchanged. A general PP-OCRv6 medium reader with
+regions learned from prior images reads 12/12 counters in a fresh Blue Prince
+sequence after its configuration was frozen. It also reads 36/36 selected fields
+in the Half-Life 2 development clip. A footprint creates one separate false `1`;
+ordinary-window text is correct but its numeric field is not isolated.
+
+The official models run in Rust's existing RTen runtime. Six real-input model
+calls match the Python reference's detection masks and all twelve decoded text
+crops. This is runtime feasibility, not a native observer implementation.
+The full evaluation and pinned reproduction tools are in
+[the OCR experiment](../research/ocr-v6/README.md).
+
+The experiment is not integrated, has not searched or validated game memory,
+and does not earn generalization credit. The desktop remains on the tested
+`0.1.0-20261020-214537` preview. Next is native extraction, word geometry and
+uncertainty integration, followed by fresh complete-pipeline evaluation.

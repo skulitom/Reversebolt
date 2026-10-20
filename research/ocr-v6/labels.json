@@ -1,0 +1,37 @@
+{
+  "purpose": "Post-hoc manual evaluation only; never an input to recognition or memory matching",
+  "source": "Saved images visually inspected; ordinary-window sequences also have independent fixture reports",
+  "sequences": {
+    "blue-development": {
+      "fields": [{"name": "visible counter", "bounds_xywh": [50, 14, 54, 43], "values": [49,48,47,46,45,44,43,42,41,40,39,38]}]
+    },
+    "blue-fresh": {
+      "fields": [{"name": "visible counter", "bounds_xywh": [50, 14, 54, 43], "values": [36,35,34,33,32,31,30,29,28,27,26,25]}]
+    },
+    "hl2-development": {
+      "fields": [
+        {"name": "health", "bounds_xywh": [76,494,45,29], "values": [100,100,100,100,100,100,100,100,100,100,100,100]},
+        {"name": "ammunition", "bounds_xywh": [841,493,35,33], "values": [18,17,16,15,14,13,12,11,10,9,8,7]},
+        {"name": "reserve", "bounds_xywh": [901,502,34,21], "values": [150,150,150,150,150,150,150,150,150,150,150,150]}
+      ]
+    },
+    "ordinary-original": {
+      "fields": [{"name": "quantity", "bounds_xywh": [228,70,59,51], "values": [40,56,31,85,64,27,75,92,44,67,38,81]}],
+      "line_template": "Quantity {}"
+    },
+    "ordinary-fresh": {
+      "fields": [{"name": "quantity", "bounds_xywh": [228,70,59,51], "values": [17,62,48,93,26,71,35,89,54,22,78,46]}],
+      "line_template": "Quantity {}"
+    }
+  },
+  "runs": [
+    {"sequence": "blue-development", "prediction": "blue-prince-initial.json"},
+    {"sequence": "blue-development", "prediction": "blue-prince-medium.json"},
+    {"sequence": "blue-development", "prediction": "blue-prince-medium-temporal.json"},
+    {"sequence": "blue-fresh", "prediction": "fresh-blue-medium-temporal.json"},
+    {"sequence": "hl2-development", "prediction": "hl2-tiny-small.json"},
+    {"sequence": "hl2-development", "prediction": "hl2-medium-temporal.json"},
+    {"sequence": "ordinary-original", "prediction": "ordinary-medium-temporal.json"},
+    {"sequence": "ordinary-fresh", "prediction": "ordinary-fresh-medium-temporal.json"}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "frozen_at": "2026-10-20T21:00:26.6333838Z",
+  "algorithm": "PP-OCRv6 medium detection and recognition; previous numeric detection regions, max 3 misses, no padding or feedback",
+  "python_sha256": "F0494E07766163CD4F33EB80C9D5469029E10D840FAD65EE84D427A2D9D7DDEF",
+  "model_manifest": [
+    {
+      "name": "PP-OCRv6_medium_det_onnx",
+      "revision": "61323801669c338b7891481ec7bac61ce31b576a",
+      "license": "apache-2.0",
+      "sha256": "EB13B44B25BB36F89528B68720AF8A61D9CF381176107F465DB1757B65D086E1"
+    },
+    {
+      "name": "PP-OCRv6_medium_rec_onnx",
+      "revision": "50c7eacafc52fa7bcf4194e8cd08e46f8558504b",
+      "license": "apache-2.0",
+      "sha256": "9C09ABF0957F7968C7586464B7397B84AD2387A0497A351AF40E9ACC71B673BA"
+    }
+  ],
+  "discovery_inputs": "Full images and temporal order only; no annotations, labels, game names or value sequences",
+  "development": "Blue Prince 49..38 and HL2 saved clips",
+  "next_evaluation": "Fresh Blue Prince gameplay and ordinary-window regression; no model or threshold changes from those results"
+}

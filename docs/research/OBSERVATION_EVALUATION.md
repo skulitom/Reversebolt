@@ -1,5 +1,9 @@
 # Local OCR and renderer evaluation
 
+For the later PP-OCRv6 experiment, including fresh Blue Prince footage and
+its unresolved integration gaps, see [the experimental report](../../research/ocr-v6/README.md).
+Those results do not replace the released-reader evaluations below.
+
 20 October 2026. This is observation evidence, not proof of semantic discovery,
 authoritative state, or verified game editing.
 

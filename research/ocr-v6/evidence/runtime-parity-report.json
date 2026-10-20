@@ -1,0 +1,94 @@
+{
+  "scope": "Identical Python-prepared tensors; Rust operator compatibility only",
+  "cases_sha256": "88afbf78d50ecbd82eaf460e89c09064b339c876928983b9c0d79bfcd4c37c36",
+  "cases": [
+    {
+      "name": "case-00-det",
+      "kind": "det",
+      "shape": [
+        1,
+        1,
+        736,
+        1312
+      ],
+      "mean_abs_error": 3.1104363529266266e-08,
+      "max_abs_error": 4.690885543823242e-05,
+      "output_sha256": "62b450e92e098d23c46cd3d2991faf92c0589c907713ab97c5363e5f704b6a7b",
+      "passed": true,
+      "threshold_flip_fraction": 0.0
+    },
+    {
+      "name": "case-01-rec",
+      "kind": "rec",
+      "shape": [
+        5,
+        40,
+        18710
+      ],
+      "mean_abs_error": 1.6571482033822527e-11,
+      "max_abs_error": 8.165836334228516e-06,
+      "output_sha256": "0e6d9fa9fcb15b91caf437c316d5f7d1ee73e9dfd49e4c2d11bf5b7223cef9bd",
+      "passed": true,
+      "ctc_paths_match": true
+    },
+    {
+      "name": "case-02-det",
+      "kind": "det",
+      "shape": [
+        1,
+        1,
+        736,
+        1312
+      ],
+      "mean_abs_error": 3.1595025262731724e-08,
+      "max_abs_error": 8.594989776611328e-05,
+      "output_sha256": "eb06f2909e4287c740a69c0fc55256e28e29b61fb011cceec56f8fd3458ebb2e",
+      "passed": true,
+      "threshold_flip_fraction": 0.0
+    },
+    {
+      "name": "case-03-rec",
+      "kind": "rec",
+      "shape": [
+        6,
+        40,
+        18710
+      ],
+      "mean_abs_error": 2.514742060422126e-11,
+      "max_abs_error": 4.696846008300781e-05,
+      "output_sha256": "ac5e7722b6a17e3d0eda38c20117049d66e724a02d0e0a6e91b55f3e396db264",
+      "passed": true,
+      "ctc_paths_match": true
+    },
+    {
+      "name": "case-04-det",
+      "kind": "det",
+      "shape": [
+        1,
+        1,
+        736,
+        1600
+      ],
+      "mean_abs_error": 1.8957440772737755e-07,
+      "max_abs_error": 0.0002859830856323242,
+      "output_sha256": "f7235a7850ebd77c4bd5269424b11fc5105907155f7011fa16c950f381bcfe32",
+      "passed": true,
+      "threshold_flip_fraction": 0.0
+    },
+    {
+      "name": "case-05-rec",
+      "kind": "rec",
+      "shape": [
+        1,
+        40,
+        18710
+      ],
+      "mean_abs_error": 3.956727740589416e-12,
+      "max_abs_error": 2.421438694000244e-07,
+      "output_sha256": "660b2c5cb64f5dd4674cfb7174599cbf1006d15f7264a8bb503d7a54249978c0",
+      "passed": true,
+      "ctc_paths_match": true
+    }
+  ],
+  "passed": true
+}
