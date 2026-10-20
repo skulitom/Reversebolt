@@ -1,0 +1,21 @@
+{
+  "author": "Robert Knight / Ocrs contributors",
+  "source": "https://huggingface.co/robertknight/ocrs",
+  "license": "CC-BY-SA-4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "modified": false,
+  "models": [
+    {
+      "name": "text-detection.onnx",
+      "url": "https://ocrs-models.s3-accelerate.amazonaws.com/text-detection.onnx",
+      "bytes": 2499479,
+      "sha256": "A917B23DBD9524B465DF7E922641B3FF2981623DF4DED5A0234004EF2FEE7CFE"
+    },
+    {
+      "name": "text-recognition.onnx",
+      "url": "https://ocrs-models.s3-accelerate.amazonaws.com/text-recognition.onnx",
+      "bytes": 9713177,
+      "sha256": "86C145C2EDB96C8CAED5B1EBB8F44D706408922211451C309C625157DD6061C5"
+    }
+  ]
+}

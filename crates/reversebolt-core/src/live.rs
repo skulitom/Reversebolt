@@ -45,6 +45,10 @@ pub enum TextSource {
     WindowsOcr,
     Ocrs,
     OcrsRegion,
+    #[serde(rename = "pp_ocr_v6")]
+    PpOcrV6,
+    #[serde(rename = "pp_ocr_v6_region")]
+    PpOcrV6Region,
 }
 
 /// A provisional reading, never a verified semantic or authoritative value.
@@ -815,32 +819,58 @@ pub fn track_numbers(tracks: &mut Vec<NumberTrack>, words: &[Word], count: usize
         track.readings.push(None);
         track.matches.clear();
     }
-    let mut assigned = std::collections::HashSet::new();
-    for mut reading in number_readings(words) {
-        let possible: Vec<_> = tracks
-            .iter()
-            .enumerate()
-            .filter(|(i, t)| {
-                t.active
-                    && !assigned.contains(i)
-                    && (same_text_region(t.bounds, reading.bounds)
-                        || ((t.bounds[0] - reading.bounds[0]).abs() < 24.0
-                            && (t.bounds[1] - reading.bounds[1]).abs() < 12.0))
-            })
-            .map(|(i, _)| i)
-            .collect();
-        if possible.len() > 1 {
+    let readings = number_readings(words);
+    // Compute association for the whole frame before assigning anything. A
+    // nearby, disjoint region must not compete with a direct spatial overlap.
+    // Otherwise small neighboring detections can erase an unchanged HUD track,
+    // and iteration order decides which reading consumes a track first.
+    let overlaps: Vec<Vec<usize>> = readings
+        .iter()
+        .map(|reading| {
+            tracks
+                .iter()
+                .enumerate()
+                .filter(|(_, t)| t.active && same_text_region(t.bounds, reading.bounds))
+                .map(|(i, _)| i)
+                .collect()
+        })
+        .collect();
+    let reserved: std::collections::HashSet<usize> = overlaps.iter().flatten().copied().collect();
+    let choices: Vec<Vec<usize>> = readings
+        .iter()
+        .zip(overlaps)
+        .map(|(reading, overlap)| {
+            if !overlap.is_empty() {
+                return overlap;
+            }
+            tracks
+                .iter()
+                .enumerate()
+                .filter(|(i, t)| {
+                    t.active
+                        && !reserved.contains(i)
+                        && (t.bounds[0] - reading.bounds[0]).abs() < 24.0
+                        && (t.bounds[1] - reading.bounds[1]).abs() < 12.0
+                })
+                .map(|(i, _)| i)
+                .collect()
+        })
+        .collect();
+    let mut users = vec![0; tracks.len()];
+    for &index in choices.iter().flatten() {
+        users[index] += 1;
+    }
+    for (mut reading, possible) in readings.into_iter().zip(choices) {
+        if possible.len() > 1 || possible.iter().any(|&i| users[i] > 1) {
             reading.value = None;
             reading.reason = "ambiguous_track_assignment".into();
             for index in possible {
                 tracks[index].readings[count - 1] = Some(reading.clone());
-                assigned.insert(index);
             }
         } else if let Some(&index) = possible.first() {
             tracks[index].samples[count - 1] = reading.value;
             tracks[index].bounds = reading.bounds;
             tracks[index].readings[count - 1] = Some(reading);
-            assigned.insert(index);
         } else if tracks.len() < 64 {
             let id = tracks.len();
             let mut samples = vec![None; count];
@@ -876,7 +906,6 @@ pub fn track_numbers(tracks: &mut Vec<NumberTrack>, words: &[Word], count: usize
                 readings,
                 active: true,
             });
-            assigned.insert(id);
         }
     }
 }
@@ -1304,6 +1333,53 @@ mod tests {
         assert_eq!(tracks.len(), 1);
         assert_eq!(tracks[0].samples, vec![None]);
         assert!(tracks[0].readings[0].is_some());
+    }
+
+    #[test]
+    fn adjacent_disjoint_regions_do_not_displace_direct_spatial_matches() {
+        let word = |text, b| reading_word(text, b, TextSource::PpOcrV6);
+        for reverse in [false, true] {
+            let mut tracks = vec![];
+            let mut first = vec![
+                word("90", [100., 50., 50., 30.]),
+                word("1", [88., 54., 8., 20.]),
+            ];
+            let mut second = vec![
+                word("89", [101., 50., 49., 30.]),
+                word("3", [87., 54., 8., 20.]),
+            ];
+            if reverse {
+                first.reverse();
+                second.reverse();
+            }
+            track_numbers(&mut tracks, &first, 1);
+            track_numbers(&mut tracks, &second, 2);
+            assert_eq!(tracks.len(), 2);
+            assert_eq!(tracks[0].samples, vec![Some(90.), Some(89.)]);
+            assert_eq!(tracks[1].samples, vec![Some(1.), Some(3.)]);
+        }
+    }
+
+    #[test]
+    fn two_current_readings_cannot_consume_one_previous_track_by_iteration_order() {
+        let word = |text, b| reading_word(text, b, TextSource::PpOcrV6);
+        let mut tracks = vec![];
+        track_numbers(&mut tracks, &[word("123", [0., 0., 100., 30.])], 1);
+        track_numbers(
+            &mut tracks,
+            &[
+                word("4", [0., 0., 30., 30.]),
+                word("5", [70., 0., 30., 30.]),
+            ],
+            2,
+        );
+        assert_eq!(tracks.len(), 1);
+        assert_eq!(tracks[0].samples, vec![Some(123.), None]);
+        assert_eq!(
+            tracks[0].readings[1].as_ref().unwrap().reason,
+            "ambiguous_track_assignment"
+        );
+        assert_eq!(tracks[0].bounds, [0., 0., 100., 30.]);
     }
 
     #[test]

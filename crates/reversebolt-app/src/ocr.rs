@@ -246,12 +246,34 @@ impl Regions {
 
 pub struct Observer {
     reader: Option<Reader>,
+    paddle: Option<reversebolt_vision::Reader>,
     unavailable: Option<String>,
     regions: Regions,
 }
 
 impl Observer {
     pub fn load(models: &Path) -> Self {
+        // A versioned model installation selects one neural reader. Retaining
+        // obsolete model votes would manufacture disagreements between versions.
+        if models.join("PP-OCRv6_medium_det_onnx").exists()
+            || models.join("PP-OCRv6_medium_rec_onnx").exists()
+        {
+            let (paddle, unavailable) = match reversebolt_vision::Reader::load(models) {
+                Ok(reader) => (Some(reader), None),
+                Err(error) => (
+                    None,
+                    Some(format!(
+                        "Using Windows text recognition only. PP-OCRv6 unavailable: {error}"
+                    )),
+                ),
+            };
+            return Self {
+                reader: None,
+                paddle,
+                unavailable,
+                regions: Regions::default(),
+            };
+        }
         let (reader, unavailable) = match Reader::load(models) {
             Ok(reader) => (Some(reader), None),
             Err(error) => (
@@ -263,6 +285,7 @@ impl Observer {
         };
         Self {
             reader,
+            paddle: None,
             unavailable,
             regions: Regions::default(),
         }
@@ -281,7 +304,45 @@ impl Observer {
             }
             Err(error) => warnings.push(format!("Windows text recognition: {error}")),
         }
-        if let Some(reader) = &self.reader {
+        if let Some(reader) = &mut self.paddle {
+            let rgb = image::DynamicImage::ImageRgba8(rgba).into_rgb8();
+            match reader.read(&rgb) {
+                Ok(reading) => {
+                    for word in reading.words {
+                        let left = word
+                            .polygon
+                            .iter()
+                            .map(|p| p[0])
+                            .fold(f32::INFINITY, f32::min);
+                        let top = word
+                            .polygon
+                            .iter()
+                            .map(|p| p[1])
+                            .fold(f32::INFINITY, f32::min);
+                        let right = word
+                            .polygon
+                            .iter()
+                            .map(|p| p[0])
+                            .fold(f32::NEG_INFINITY, f32::max);
+                        let bottom = word
+                            .polygon
+                            .iter()
+                            .map(|p| p[1])
+                            .fold(f32::NEG_INFINITY, f32::max);
+                        screen.words.push(Word {
+                            text: word.text,
+                            bounds: [left, top, right - left, bottom - top],
+                            line: word.line,
+                            source: match word.source {
+                                reversebolt_vision::Source::Detected => TextSource::PpOcrV6,
+                                reversebolt_vision::Source::Revisited => TextSource::PpOcrV6Region,
+                            },
+                        });
+                    }
+                }
+                Err(error) => warnings.push(format!("PP-OCRv6 text recognition: {error}")),
+            }
+        } else if let Some(reader) = &self.reader {
             let rgb = image::DynamicImage::ImageRgba8(rgba).into_rgb8();
             match reader.read(&rgb, &hints, &screen.words) {
                 Ok(reading) => {
@@ -293,7 +354,9 @@ impl Observer {
         } else if let Some(error) = &self.unavailable {
             warnings.push(error.clone());
         }
-        self.regions.update(&screen.words);
+        if self.reader.is_some() {
+            self.regions.update(&screen.words);
+        }
         if warnings.is_empty() {
             Ok(())
         } else {
@@ -306,7 +369,11 @@ impl Observer {
 pub fn evaluate_sequence(models: &Path, frames: &Path, output: &Path) -> Result<()> {
     // Fail evaluation if the requested models are missing; production retains
     // Windows-only observations with a visible warning instead.
-    Reader::load(models)?;
+    if models.join("PP-OCRv6_medium_det_onnx").exists() {
+        reversebolt_vision::Reader::load(models)?;
+    } else {
+        Reader::load(models)?;
+    }
     let mut observer = Observer::load(models);
     let mut paths = std::fs::read_dir(frames)
         .map_err(|e| e.to_string())?

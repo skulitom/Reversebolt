@@ -105,18 +105,24 @@ the shared worker afterward; screen capture, memory read and recognition duratio
 are reported separately. This reduces inference-induced sampling delay but does
 not make screen and memory capture atomic.
 
-Windows OCR and optional pinned Ocrs/RTen models run locally. Each word carries
-its source and bounds. Full-image detections establish up to 64 regions that can
-be re-read on later frames, with at most three missed detections. Recognition
-strips never enlarge or refresh their own seed geometry. A recovery pass is
-skipped where both full-image readers already agree. Resize clears regions.
+Windows OCR and optional pinned PP-OCRv6 medium models run locally. The native
+`reversebolt-vision` crate uses RTen, with four inference threads, bounded
+detection and recognition tensors, and checksums before model loading. CTC word
+positions approximate word geometry within detected text lines. Each word carries
+its source and bounds. Fresh numeric detections establish up to 64 regions that
+can be re-read on later frames, with at most three missed detections. Recovery
+never enlarges or refreshes its own seed geometry; resize and errors clear it.
+Legacy Ocrs installations remain supported when PP-OCRv6 is absent. Only one
+neural model version participates, alongside independent Windows OCR.
 Neural recognition is currently limited to 2.1 million source pixels; unsupported
 sizes, missing models and errors retain Windows observations with warnings.
 
 Overlapping numeric readings are grouped; different values or a box bridging
 distinct fields produce an explicit uncertain observation with all alternatives,
 not a majority vote. These become `None` in matcher input. Agreement remains
-provisional, not calibrated confidence. Neighboring letters are not forcibly
+provisional, not calibrated confidence. Direct spatial overlaps reserve their
+tracks before any proximity fallback. Competing assignments become explicit gaps
+independently of iteration order. Neighboring letters are not forcibly
 converted into digits. Numeric tracks retain per-frame reading evidence as well
 as samples; nearby text is a description, not a semantic gameplay label.
 

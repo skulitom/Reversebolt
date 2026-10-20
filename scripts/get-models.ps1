@@ -4,8 +4,9 @@ $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $modelDirectory = Join-Path $repository 'models'
 $manifest = Get-Content -LiteralPath (Join-Path $modelDirectory 'manifest.json') -Raw | ConvertFrom-Json
 foreach ($model in $manifest.models) {
-    if ($model.name -notmatch '^text-(detection|recognition)\.onnx$') { throw 'Unexpected model filename.' }
+    if ($model.name -notmatch '^(text-(detection|recognition)\.onnx|PP-OCRv6_medium_(det|rec)_onnx/inference\.onnx)$') { throw 'Unexpected model filename.' }
     $destination = Join-Path $modelDirectory $model.name
+    New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
     if ((Test-Path -LiteralPath $destination) -and
         ((Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash -eq $model.sha256)) {
         Write-Output "Verified $($model.name)"

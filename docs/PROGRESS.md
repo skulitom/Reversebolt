@@ -228,3 +228,38 @@ The experiment is not integrated, has not searched or validated game memory,
 and does not earn generalization credit. The desktop remains on the tested
 `0.1.0-20261020-214537` preview. Next is native extraction, word geometry and
 uncertainty integration, followed by fresh complete-pipeline evaluation.
+
+## 2026-10-20 — native styled text and fresh live evaluation: 19%
+
+Multimodal observation increases from **2 / 15 to 3 / 15**. Other credits remain
+foundation 4, native access 4, discovery 2, validation 1, intent 0, agent
+collaboration 5 and generalization 0. Total: **19 / 100**. The full goal remains
+active, with the same denominator and acceptance criteria.
+
+The Rust observer now runs pinned PP-OCRv6 models, extracts numeric words from
+text lines and re-reads bounded regions learned only from prior images. Windows
+OCR remains independent; disagreements are gaps. Spatial matching no longer
+lets a nearby icon displace a direct counter overlap. Sources and alternatives
+remain visible to desktop users and agents.
+
+After freezing native code and binaries, all 12 fresh Blue Prince counter values
+were tracked correctly, from 25 through 14. A fresh ordinary-window sequence
+also passed 12/12 with both readers active. Development replay results were
+12/12 Blue Prince, 36/36 selected Half-Life 2 values and 12/12 ordinary-window
+values. These are selected-field results: false footprint readings and duplicate
+Rank readings remain. There is no whole-image precision or unseen-game claim.
+
+Real MCP comparison returned 18 non-exact hypotheses from 16 MiB of Blue Prince
+memory. None is a verified control; monotonic activity can generate spurious
+correlations. No game writes occurred. Median live capture time was 1.89 seconds,
+mostly recognition. The cost and the remaining false readings are explicit.
+
+All 60 workspace tests, strict Clippy, formatting and the 20-tool release smoke
+suite pass. Preview `0.1.0-20261020-224603` is running on the normal desktop with
+the identical tested binary, pinned models and all five prior activity entries
+retained. See [native OCR evidence](research/NATIVE_OCR.md).
+
+Next: investigation sequences that distinguish changing gameplay state from
+time and activity, broader memory coverage, and visual behavior evidence beyond
+text. Causal validation, scoped live-game edits and restart revalidation remain
+required before the full goal can be completed.

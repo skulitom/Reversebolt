@@ -1,8 +1,11 @@
 # PP-OCRv6 observation experiment
 
-20 October 2026. Research tooling only; the desktop still uses its released
-Windows OCR + Ocrs reader. Nothing here identifies controlling game state or
-authorizes a game edit. The full Reversebolt goal remains at **18%**.
+20 October 2026. This records the original research stage, when the desktop used
+Windows OCR + Ocrs and progress remained **18%**. The subsequent native Rust
+implementation, fresh complete-pipeline results and delivered preview are
+documented in [native integration evidence](../../docs/research/NATIVE_OCR.md).
+Nothing in this earlier experiment identifies controlling game state or
+authorizes a game edit.
 
 ## Finding
 

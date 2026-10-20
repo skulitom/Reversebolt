@@ -74,7 +74,7 @@ python scripts/smoke.py
 ```
 
 For the optional local neural text reader, run `scripts/get-models.ps1` before
-publishing. The approximately 12 MB of weights are pinned by hash and included
+publishing. The approximately 139 MB of weights are pinned by hash and included
 in previews when available. See [model attribution](models/NOTICE.md).
 Development builds look for `models/` in their data directory or beside the
 executable. The desktop does not download models or upload screenshots.
@@ -94,10 +94,12 @@ overwritten. No global MCP client settings are changed.
 - `reversebolt-mcp`: official MCP protocol adapter to the same engine.
 - `reversebolt-session-jobs`: durable observation jobs, receipts, interruption
   and human takeover; production plans currently contain captures only.
+- `reversebolt-vision`: local PP-OCRv6 inference, word geometry and bounded
+  temporal regions through the Rust RTen runtime.
 
 The current practice adapter is deliberately separate from the discovery
 algorithm. Native capture uses Windows Graphics Capture with a PrintWindow
-compatibility path. Windows OCR and the optional Ocrs/RTen reader produce
+compatibility path. Windows OCR and the optional PP-OCRv6/RTen reader produce
 source-tagged readings. Conflicting numbers remain gaps in the matching data;
 the desktop exposes their alternatives. Screen tracking is spatial, without
 semantic gameplay labels.
@@ -107,7 +109,8 @@ future milestones, not advertised capabilities.
 
 ## Research and license
 
-Original source: MIT. Optional Ocrs model weights are separately CC-BY-SA-4.0.
+Original source: MIT. Current optional PP-OCRv6 weights and dictionary are
+Apache-2.0. Legacy Ocrs model installations remain separately CC-BY-SA-4.0.
 Ocrs/RTen are MIT OR Apache-2.0; windows-capture is MIT. Attribution is retained
 under `models/` and `licenses/`. Independent code originated in the MIT
 GameDiscoveryLab research prototype.

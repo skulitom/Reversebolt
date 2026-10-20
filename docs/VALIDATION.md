@@ -221,3 +221,22 @@ it exceeds the OCR limit; the unchanged 12-value fixture then passed. Merged
 words, unusual fonts, localization, moving HUD elements, renderer compatibility,
 non-atomic screen/memory timing, partial coverage and inaccessible targets remain
 limitations. External application editing is not enabled.
+
+## Native PP-OCRv6 integration
+
+The current release passes 60 workspace tests, strict Clippy and formatting.
+The release regression suite exercises 20 MCP tools and three randomized
+practice seeds, including edits, restoration, stale restoration refusal and
+restart invalidation (`test-results/smoke-1eea615a/report.json`).
+
+The frozen native observer tracks 12/12 fresh Blue Prince counter samples and
+12/12 fresh ordinary-window values. Development replay scores and remaining
+false detections, timing, source/model hashes and real memory comparison are
+documented in [native OCR evidence](research/NATIVE_OCR.md). The 18 real-game
+hypotheses are unverified; no arbitrary-game editing capability is inferred.
+
+Anode confirms shared activity and source-tagged text in the native desktop.
+Owned test windows were closed and the game left paused. Desktop preview
+`0.1.0-20261020-224603` was published with verified models and binaries, launched
+after the prior instance was confirmed idle, and retained all five prior activity
+entries. Local delivery proof: `test-results/ocr-native-v1/desktop-delivery.json`.

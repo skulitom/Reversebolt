@@ -1,21 +1,23 @@
 {
-  "author": "Robert Knight / Ocrs contributors",
-  "source": "https://huggingface.co/robertknight/ocrs",
-  "license": "CC-BY-SA-4.0",
-  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "author": "PaddlePaddle / PaddleOCR contributors",
+  "source": "https://github.com/PaddlePaddle/PaddleOCR",
+  "license": "Apache-2.0",
+  "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
   "modified": false,
   "models": [
     {
-      "name": "text-detection.onnx",
-      "url": "https://ocrs-models.s3-accelerate.amazonaws.com/text-detection.onnx",
-      "bytes": 2499479,
-      "sha256": "A917B23DBD9524B465DF7E922641B3FF2981623DF4DED5A0234004EF2FEE7CFE"
+      "name": "PP-OCRv6_medium_det_onnx/inference.onnx",
+      "revision": "61323801669c338b7891481ec7bac61ce31b576a",
+      "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_det_onnx/resolve/61323801669c338b7891481ec7bac61ce31b576a/inference.onnx",
+      "bytes": 62032837,
+      "sha256": "eb13b44b25bb36f89528b68720af8a61d9cf381176107f465db1757b65d086e1"
     },
     {
-      "name": "text-recognition.onnx",
-      "url": "https://ocrs-models.s3-accelerate.amazonaws.com/text-recognition.onnx",
-      "bytes": 9713177,
-      "sha256": "86C145C2EDB96C8CAED5B1EBB8F44D706408922211451C309C625157DD6061C5"
+      "name": "PP-OCRv6_medium_rec_onnx/inference.onnx",
+      "revision": "50c7eacafc52fa7bcf4194e8cd08e46f8558504b",
+      "url": "https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec_onnx/resolve/50c7eacafc52fa7bcf4194e8cd08e46f8558504b/inference.onnx",
+      "bytes": 76554979,
+      "sha256": "9c09abf0957f7968c7586464b7397b84ad2387a0497a351af40e9acc71b673ba"
     }
   ]
 }

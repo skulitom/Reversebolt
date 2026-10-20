@@ -4,3 +4,6 @@
 *.log
 /models/*.onnx
 /models/*.download
+/models/**/*.onnx
+/models/**/*.download
+__pycache__/

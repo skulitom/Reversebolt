@@ -1,0 +1,270 @@
+{
+  "freeze_verified": true,
+  "frozen_at": "2026-10-20T21:33:34.4651151Z",
+  "input": "Full images and bounded memory; no evaluation values or regions supplied",
+  "capture_count": 12,
+  "phase": "Compared 1 changing tracks across 16.0 MiB present in every frame. 18 hypotheses; none causally verified.",
+  "eligible_bytes": 4373860352,
+  "coverage": {
+    "analyzed_current_bytes": 16777216,
+    "archive_bytes": 0,
+    "attempted_bytes": 201326592,
+    "batch": 1,
+    "batches": [],
+    "changed_or_unavailable_bytes": 0,
+    "complete_trajectory_bytes": 16777216,
+    "image_budget_bytes": 15977850,
+    "image_disk_bytes": 15977850,
+    "read_bytes": 201326592,
+    "read_unique_bytes": 16777216,
+    "selected_unique_bytes": 16777216
+  },
+  "correlation_ms": 250.0,
+  "tracks": [
+    {
+      "id": 0,
+      "label": "Number at 50, 17",
+      "samples": [
+        25.0,
+        24.0,
+        23.0,
+        22.0,
+        21.0,
+        20.0,
+        19.0,
+        18.0,
+        17.0,
+        16.0,
+        15.0,
+        14.0
+      ],
+      "hypotheses": 18,
+      "exact_matches": 0
+    },
+    {
+      "id": 1,
+      "label": "Near \u201cRank\u201d",
+      "samples": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "hypotheses": 0,
+      "exact_matches": 0
+    },
+    {
+      "id": 2,
+      "label": "Number at 35, 19",
+      "samples": [
+        null,
+        null,
+        null,
+        1.0,
+        1.0,
+        10.0,
+        1.0,
+        10.0,
+        null,
+        10.0,
+        1.0,
+        1.0
+      ],
+      "hypotheses": 0,
+      "exact_matches": 0
+    },
+    {
+      "id": 3,
+      "label": "Number at 26, 44",
+      "samples": [
+        null,
+        null,
+        null,
+        null,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        null
+      ],
+      "hypotheses": 0,
+      "exact_matches": 0
+    },
+    {
+      "id": 4,
+      "label": "Near \u201cRank\u201d",
+      "samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1.0,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "hypotheses": 0,
+      "exact_matches": 0
+    },
+    {
+      "id": 5,
+      "label": "Near \u201cRank\u201d",
+      "samples": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1.0
+      ],
+      "hypotheses": 0,
+      "exact_matches": 0
+    }
+  ],
+  "timing_ms": {
+    "elapsed_ms": {
+      "min": 1790,
+      "median": 1886.5,
+      "max": 2111
+    },
+    "recognition_ms": {
+      "min": 1572,
+      "median": 1638.5,
+      "max": 1811
+    },
+    "screen_capture_ms": {
+      "min": 203,
+      "median": 221.0,
+      "max": 277
+    },
+    "memory_read_ms": {
+      "min": 8,
+      "median": 10.0,
+      "max": 20
+    }
+  },
+  "frames": [
+    {
+      "number": 1,
+      "image_sha256": "03e6c240eb650bb3c61eea5e7567fd6bf8e489a82a4d372869999e28d7ffe375",
+      "sources": [
+        "pp_ocr_v6"
+      ]
+    },
+    {
+      "number": 2,
+      "image_sha256": "1df43dd304d143a53633fcd810aa6cd0f7d997a1c648c6b58ecbf1bcdb8e4cd4",
+      "sources": [
+        "pp_ocr_v6",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 3,
+      "image_sha256": "abe9c8411a3f743e75563fa55a150b7cc6335b91cd275a0bf8a7666dce967d81",
+      "sources": [
+        "pp_ocr_v6",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 4,
+      "image_sha256": "a3657345ed5edf532e9bd00532c98cb037683da1dcfe3eb583bb800b36e88a79",
+      "sources": [
+        "pp_ocr_v6",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 5,
+      "image_sha256": "5e89c30ffb59b4bf61fbbd9182a69d189139ef36508eadf16bb0bc531ba96a41",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region"
+      ]
+    },
+    {
+      "number": 6,
+      "image_sha256": "b19de08ca2180c3df56ab096b3622789697b28857312a459b4ad5475e607cdd4",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 7,
+      "image_sha256": "adc5f23ed8149475f81fd60ebfee3c166933c609054bfc26ad55fabe007b9fde",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 8,
+      "image_sha256": "1fdb85612e79505ac452954c8e8cbfe7a9fbbf20e1e6c8263cf34c022b1dfa34",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 9,
+      "image_sha256": "41421a80f703cee105841c88be6ed1c7e4ae80fbf4ee7794c497f2cc051cbcd0",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region"
+      ]
+    },
+    {
+      "number": 10,
+      "image_sha256": "3c0e4975e2b3ef3a9bfcd3ce20df6f31e50832f5c8571d4d0b0cb44c5382f6e6",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 11,
+      "image_sha256": "ec3a9e03aad5f995c28104a3f632a2de68ff8880f65d4ac4cb8351263d10b507",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    },
+    {
+      "number": 12,
+      "image_sha256": "9f9c90bd87cd4843ba0d4d0035e0b57d2ee58a04aa410e20ae54533d2e383754",
+      "sources": [
+        "pp_ocr_v6",
+        "pp_ocr_v6_region",
+        "windows_ocr"
+      ]
+    }
+  ]
+}

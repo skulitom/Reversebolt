@@ -34,7 +34,9 @@ if ($modelsAvailable) {
     $publishedModels = Join-Path $destination 'models'
     New-Item -ItemType Directory -Path $publishedModels | Out-Null
     foreach ($name in @('manifest.json','NOTICE.md') + @($modelManifest.models.name)) {
-        Copy-Item -LiteralPath (Join-Path $modelDirectory $name) -Destination $publishedModels
+        $publishedModelPath = Join-Path $publishedModels $name
+        New-Item -ItemType Directory -Path (Split-Path -Parent $publishedModelPath) -Force | Out-Null
+        Copy-Item -LiteralPath (Join-Path $modelDirectory $name) -Destination $publishedModelPath
     }
 } else {
     Write-Warning 'Publishing without optional neural models; only Windows OCR will be available.'

@@ -1,0 +1,30 @@
+{
+  "frozen_at": "2026-10-20T21:33:34.4651151Z",
+  "inputs": "Full captured images only, with native temporal region history. No evaluation values or boxes supplied.",
+  "files": [
+    {
+      "path": "crates/reversebolt-vision/src/lib.rs",
+      "sha256": "BACE6DCF331023C3F718D754C12E601E866498FF13017B5CFC10EE462D5DAEE7"
+    },
+    {
+      "path": "crates/reversebolt-vision/src/geometry.rs",
+      "sha256": "D6FCD96221543AFDA2B8D712A6F91F37F9F24EC70B233BBB6416B1D59B2F90E9"
+    },
+    {
+      "path": "crates/reversebolt-core/src/live.rs",
+      "sha256": "40A5E385DE3FAEC0B51DF24DBB03D13E83776F8A064401F2E8E9204901F719A2"
+    },
+    {
+      "path": "crates/reversebolt-app/src/ocr.rs",
+      "sha256": "E91C831C25C2F0DEF92476D577B9A924EDA1DCD23DBD4BD490EB99E46C7A0B00"
+    },
+    {
+      "path": "models/manifest.json",
+      "sha256": "08F25ECF30A7398BB578D438B1B3755794728853ED628F768951B6BD01A885C1"
+    },
+    {
+      "path": "target/release/Reversebolt.exe",
+      "sha256": "4706C8FF6E1A23C5E627C9B01761C70430DEDE4D94F31DA65F29C5B068F0AB8F"
+    }
+  ]
+}
