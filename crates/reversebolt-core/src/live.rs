@@ -3,6 +3,7 @@
 use crate::{
     Result,
     discovery::{Candidate, discover},
+    visual::{self, FrameRef, ObservationInput, VisualTrack},
 };
 use serde::{Deserialize, Serialize};
 use std::{
@@ -127,6 +128,12 @@ pub struct CaptureSummary {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    #[serde(default)]
+    pub investigation_id: String,
+    #[serde(default)]
+    pub frames: Vec<FrameRef>,
+    #[serde(default)]
+    pub visual_tracks: Vec<VisualTrack>,
     pub process: ProcessInfo,
     pub eligible_bytes: u64,
     pub planned_bytes: usize,
@@ -145,6 +152,7 @@ pub struct LiveSession {
     snapshots: Vec<BTreeMap<u64, Vec<u8>>>,
     directory: PathBuf,
     screen_size: Option<(u32, u32)>,
+    image_epoch: usize,
 }
 
 impl LiveSession {
@@ -156,6 +164,10 @@ impl LiveSession {
                 "The application closed. Connect again to start a new investigation.".into();
             for track in &mut self.view.tracks {
                 track.matches.clear();
+            }
+            for track in &mut self.view.visual_tracks {
+                track.matches.clear();
+                track.active = false;
             }
             return true;
         }
@@ -195,6 +207,9 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            investigation_id: uuid::Uuid::new_v4().to_string(),
+            frames: vec![],
+            visual_tracks: vec![],
             process: target.info().clone(),
             eligible_bytes,
             planned_bytes,
@@ -212,6 +227,7 @@ impl LiveSession {
             snapshots: vec![],
             directory,
             screen_size: None,
+            image_epoch: 0,
         })
     }
 
@@ -269,6 +285,11 @@ impl LiveSession {
         if let Ok(frame) = &screen {
             let size = (frame.width, frame.height);
             if self.screen_size.is_some_and(|previous| previous != size) {
+                self.image_epoch += 1;
+                for track in &mut self.view.visual_tracks {
+                    track.active = false;
+                    track.matches.clear();
+                }
                 for track in &mut self.view.tracks {
                     track.active = false;
                     track.matches.clear();
@@ -281,6 +302,30 @@ impl LiveSession {
                 track.samples.push(None);
                 track.readings.push(None);
                 track.matches.clear();
+            }
+        }
+        for track in &mut self.view.visual_tracks {
+            track.observations.push(None);
+            track.matches.clear();
+        }
+        if let Ok(frame) = &mut screen {
+            match visual::image_bytes(&screen_path) {
+                Ok(bytes) => self.view.frames.push(FrameRef {
+                    id: uuid::Uuid::new_v4().to_string(),
+                    number,
+                    sha256: visual::digest(&bytes),
+                    width: frame.width,
+                    height: frame.height,
+                    epoch: self.image_epoch,
+                    started_unix_ms: now,
+                }),
+                Err(error) => {
+                    let note = format!("Image evidence unavailable: {error}");
+                    frame.warning = Some(match frame.warning.take() {
+                        Some(previous) => format!("{previous} {note}"),
+                        None => note,
+                    });
+                }
             }
         }
         self.view.sample_count = number;
@@ -297,6 +342,16 @@ impl LiveSession {
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
         });
+        if !self.view.frames.is_empty()
+            && let Err(error) = self.save_visual_evidence(&self.view.visual_tracks)
+            && let Some(screen) = self.view.latest.as_mut().and_then(|c| c.screen.as_mut())
+        {
+            let note = format!("Could not save image evidence: {error}");
+            screen.warning = Some(match screen.warning.take() {
+                Some(previous) => format!("{previous} {note}"),
+                None => note,
+            });
+        }
         if let Err(error) = std::fs::write(
             self.directory.join(format!("frame-{number:03}.json")),
             serde_json::to_vec_pretty(&self.view.latest).map_err(|e| e.to_string())?,
@@ -315,6 +370,83 @@ impl LiveSession {
         Ok(())
     }
 
+    pub fn read_frame(&self, investigation: &str, frame_id: &str) -> Result<(FrameRef, Vec<u8>)> {
+        if investigation != self.view.investigation_id {
+            return Err(
+                "That image belongs to a different investigation. Read the current status.".into(),
+            );
+        }
+        let frame = self
+            .view
+            .frames
+            .iter()
+            .find(|f| f.id == frame_id)
+            .ok_or("The requested image is not part of this investigation.")?;
+        let bytes = visual::image_bytes(
+            &self
+                .directory
+                .join(format!("frame-{:03}.png", frame.number)),
+        )?;
+        if visual::digest(&bytes) != frame.sha256 {
+            return Err(
+                "The saved image has changed; it can no longer support this observation.".into(),
+            );
+        }
+        Ok((frame.clone(), bytes))
+    }
+
+    pub fn submit_observation(&mut self, input: ObservationInput, source: &str) -> Result<bool> {
+        if self.refresh_connection() || !self.view.connected {
+            return Err(
+                "Reconnect before submitting observations to a closed investigation.".into(),
+            );
+        }
+        let (frame, _) = self.read_frame(&input.investigation_id, &input.frame_id)?;
+        if input.image_sha256 != frame.sha256 {
+            return Err("The observation does not identify the captured image's checksum.".into());
+        }
+        if frame.epoch != self.image_epoch {
+            return Err(
+                "The window size changed. Submit observations for the current image geometry."
+                    .into(),
+            );
+        }
+        let mut tracks = self.view.visual_tracks.clone();
+        let changed = visual::record(&mut tracks, input, &frame, source, self.view.sample_count)?;
+        if changed {
+            self.save_visual_evidence(&tracks)?;
+            self.view.visual_tracks = tracks;
+        }
+        Ok(changed)
+    }
+
+    fn save_visual_evidence(&self, tracks: &[VisualTrack]) -> Result<()> {
+        // Archived evidence survives the active engine's restart invalidation.
+        // This file is not a journal or a transaction with session.json.
+        use std::io::Write;
+        let bytes = serde_json::to_vec_pretty(&serde_json::json!({
+            "schema_version":1,
+            "investigation_id":self.view.investigation_id,
+            "process":self.view.process,
+            "frames":self.view.frames,
+            "visual_tracks":tracks,
+            "scope":"Historical image interpretations; no current address or editing authority."
+        }))
+        .map_err(|e| e.to_string())?;
+        let temporary = self.directory.join("evidence.pending");
+        let result = (|| -> std::io::Result<()> {
+            let mut file = std::fs::File::create(&temporary)?;
+            file.write_all(&bytes)?;
+            file.sync_all()?;
+            drop(file);
+            std::fs::rename(&temporary, self.directory.join("evidence.json"))
+        })();
+        if result.is_err() {
+            let _ = std::fs::remove_file(&temporary);
+        }
+        result.map_err(|e| format!("Image interpretation was not saved: {e}"))
+    }
+
     pub fn correlate(&mut self) -> Result<()> {
         if self.refresh_connection() || !self.view.connected {
             return Err("The selected process has exited.".into());
@@ -322,7 +454,7 @@ impl LiveSession {
         if self.snapshots.len() < 12 {
             return Err("Capture at least 12 moments with changing observations first.".into());
         }
-        let varying: Vec<usize> = self
+        let mut varying: Vec<(bool, usize, Vec<Option<f64>>)> = self
             .view
             .tracks
             .iter()
@@ -331,15 +463,30 @@ impl LiveSession {
                 let values: Vec<f64> = t.samples.iter().flatten().copied().collect();
                 let lo = values.iter().copied().fold(f64::INFINITY, f64::min);
                 let hi = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-                (t.active && values.len() >= 10 && hi - lo > 2.2).then_some(i)
+                (t.active && values.len() >= 10 && hi - lo > 2.2)
+                    .then(|| (false, i, t.samples.clone()))
             })
             .take(16)
             .collect();
+        for (i, track) in self.view.visual_tracks.iter().enumerate() {
+            let samples = track.numeric_samples();
+            let values: Vec<_> = samples.iter().flatten().copied().collect();
+            let lo = values.iter().copied().fold(f64::INFINITY, f64::min);
+            let hi = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+            if track.active && values.len() >= 10 && hi - lo > 2.2 {
+                varying.push((true, i, samples));
+            }
+        }
+        // Each source is separately bounded; external interpretations do not
+        // replace OCR or silently consume its candidate capacity.
+        for track in &mut self.view.visual_tracks {
+            track.matches.clear();
+        }
         for track in &mut self.view.tracks {
             track.matches.clear();
         }
         if varying.is_empty() {
-            return Err("No screen-number track has enough changing observations. Try an activity that visibly changes a number.".into());
+            return Err("Reversebolt could not follow a changing number across enough captures. Review missing or uncertain readings, or add image-grounded observations, then capture more moments.".into());
         }
         let mut analyzed = 0usize;
         for &(base, length) in &self.plan {
@@ -355,16 +502,20 @@ impl LiveSession {
                 continue;
             }
             analyzed += length;
-            for &index in &varying {
-                let track = &mut self.view.tracks[index];
-                for candidate in discover(&trajectory, &track.samples) {
-                    if track.matches.len() >= 200 {
+            for (external, index, samples) in &varying {
+                let matches = if *external {
+                    &mut self.view.visual_tracks[*index].matches
+                } else {
+                    &mut self.view.tracks[*index].matches
+                };
+                for candidate in discover(&trajectory, samples) {
+                    if matches.len() >= 200 {
                         break;
                     }
-                    track.matches.push(LocatedCandidate {
+                    matches.push(LocatedCandidate {
                         address:format!("0x{:X}",base+candidate.offset as u64),
                         mapping:candidate,
-                        evidence:"Correlates with an OCR observation on held-out frames. No causal test has been performed; do not treat this as a verified control.".into(),
+                        evidence:format!("Correlates with {} on held-out frames. Its meaning and causal authority are unverified; this is not an editable control.", if *external { "an externally supplied visual interpretation" } else { "an OCR observation" }),
                     });
                 }
             }
@@ -378,6 +529,12 @@ impl LiveSession {
                 .iter()
                 .map(|t| t.matches.len())
                 .sum::<usize>()
+                + self
+                    .view
+                    .visual_tracks
+                    .iter()
+                    .map(|t| t.matches.len())
+                    .sum::<usize>()
         );
         Ok(())
     }
@@ -630,6 +787,163 @@ mod tests {
             self.recognized.set(self.frame.get());
             Ok(())
         }
+    }
+
+    #[test]
+    fn visual_evidence_is_bound_to_images_sessions_and_geometry() {
+        use crate::visual::{ObservationInput, Quality, VisualValue};
+        struct ImageTarget(SampleTarget);
+        impl NativeTarget for ImageTarget {
+            fn info(&self) -> &ProcessInfo {
+                self.0.info()
+            }
+            fn alive(&self) -> bool {
+                self.0.alive()
+            }
+            fn regions(&self) -> Result<Vec<Region>> {
+                self.0.regions()
+            }
+            fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
+                self.0.read(address, length)
+            }
+            fn recognize(&self, frame: &mut Screen) -> Result<()> {
+                self.0.recognize(frame)
+            }
+            fn screen(&self, path: &Path) -> Result<Screen> {
+                let screen = self.0.screen(path)?;
+                // Opaque fixture bytes exercise binding, not PNG decoding or OCR.
+                let mut bytes = b"\x89PNG\r\n\x1a\nfixture".to_vec();
+                bytes.extend(self.0.frame.get().to_le_bytes());
+                std::fs::write(path, bytes).unwrap();
+                Ok(screen)
+            }
+        }
+        let alive = Rc::new(Cell::new(true));
+        let directory =
+            std::env::temp_dir().join(format!("reversebolt-grounding-{}", uuid::Uuid::new_v4()));
+        let mut session = LiveSession::attach(
+            Box::new(ImageTarget(SampleTarget {
+                info: ProcessInfo::default(),
+                frame: Cell::new(0),
+                alive: alive.clone(),
+                recognized: Cell::new(0),
+            })),
+            1,
+            directory.clone(),
+        )
+        .unwrap();
+        for _ in 0..12 {
+            session.capture().unwrap();
+        }
+        let frames = session.view.frames.clone();
+        assert_eq!(frames.len(), 12);
+        let input = |f: &FrameRef| ObservationInput {
+            investigation_id: session.view.investigation_id.clone(),
+            frame_id: f.id.clone(),
+            image_sha256: f.sha256.clone(),
+            observer: "fixture labels".into(),
+            key: "visible-counter".into(),
+            label: "Fixture counter".into(),
+            unit: "count".into(),
+            value: Some(VisualValue::Number((f.number * 7 + 13) as f64)),
+            quality: Quality::Provisional,
+            bounds: Some([10.0, 20.0, 30.0, 20.0]),
+            explanation: "Adapter-supplied fixture label; validates transport and matching only."
+                .into(),
+        };
+        let inputs: Vec<_> = frames.iter().map(input).collect();
+        let mut wrong = inputs[0].clone();
+        wrong.investigation_id = uuid::Uuid::new_v4().to_string();
+        assert!(session.submit_observation(wrong, "agent").is_err());
+        let mut wrong = inputs[0].clone();
+        wrong.image_sha256 = "incorrect".into();
+        assert!(session.submit_observation(wrong, "agent").is_err());
+        assert!(session.view.visual_tracks.is_empty());
+        let archive = directory.join("evidence.json");
+        std::fs::remove_file(&archive).unwrap();
+        std::fs::create_dir(&archive).unwrap();
+        assert!(
+            session
+                .submit_observation(inputs[0].clone(), "agent")
+                .is_err()
+        );
+        assert!(
+            session.view.visual_tracks.is_empty(),
+            "Failed persistence published an observation"
+        );
+        std::fs::remove_dir(&archive).unwrap();
+        // Backfill in reverse order, preserving frame alignment and gaps.
+        for mut input in inputs.iter().rev().cloned() {
+            if input.frame_id == frames[3].id {
+                input.quality = Quality::Uncertain;
+            }
+            session.submit_observation(input, "agent").unwrap();
+        }
+        assert!(
+            !session
+                .submit_observation(inputs[0].clone(), "agent")
+                .unwrap()
+        );
+        assert_eq!(session.view.visual_tracks[0].numeric_samples()[3], None);
+        let archived: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(&archive).unwrap()).unwrap();
+        assert_eq!(archived["frames"].as_array().unwrap().len(), 12);
+        assert_eq!(
+            archived["visual_tracks"][0]["observations"]
+                .as_array()
+                .unwrap()
+                .len(),
+            12
+        );
+        session.correlate().unwrap();
+        assert!(
+            session.view.visual_tracks[0]
+                .matches
+                .iter()
+                .any(|m| m.address == "0x10020")
+        );
+        assert!(
+            session.view.visual_tracks[0]
+                .matches
+                .iter()
+                .all(|m| m.evidence.contains("unverified"))
+        );
+        let file = directory.join("frame-001.png");
+        let original = std::fs::read(&file).unwrap();
+        std::fs::write(&file, b"\x89PNG\r\n\x1a\naltered").unwrap();
+        assert!(
+            session
+                .read_frame(&session.view.investigation_id, &frames[0].id)
+                .is_err()
+        );
+        assert!(
+            session
+                .submit_observation(inputs[0].clone(), "agent")
+                .is_err()
+        );
+        std::fs::write(&file, original).unwrap();
+        session.capture().unwrap();
+        assert!(!session.view.visual_tracks[0].active);
+        assert!(session.view.visual_tracks[0].matches.is_empty());
+        assert!(
+            session
+                .submit_observation(inputs[0].clone(), "agent")
+                .is_err()
+        );
+        alive.set(false);
+        session.refresh_connection();
+        assert!(
+            session
+                .submit_observation(inputs[0].clone(), "agent")
+                .is_err()
+        );
+        for n in 1..=13 {
+            for extension in ["png", "json"] {
+                std::fs::remove_file(directory.join(format!("frame-{n:03}.{extension}"))).unwrap();
+            }
+        }
+        std::fs::remove_file(archive).unwrap();
+        std::fs::remove_dir(directory).unwrap();
     }
 
     #[test]

@@ -124,3 +124,33 @@ Next: generic icon/text separation and stylized-number observation, with fresh
 gameplay and prior-game regressions; review the completed shared-jobs prototype
 before integrating automatic investigations. Memory coverage remains another
 limit: this run sampled 24 MiB, about 0.58% of eligible memory at attachment.
+
+## 2026-10-20 — image-grounded agent collaboration: 15%
+
+Agent and human collaboration increases from **2 / 10 to 3 / 10**. Other credits
+stay unchanged: foundation 4, native access 3, multimodal observation 2,
+discovery 2, validation 1, intent 0, generalization 0. Total: **15 / 100**.
+The full goal remains active.
+
+Two new MCP tools return actual capture images and accept typed, source-tagged
+interpretations. Numbers, text, booleans, vectors and explicit uncertainty share
+the desktop investigation. Images and observations are bound to capture and
+connection identities; replay is idempotent and incompatible replacements are
+rejected. Historical evidence survives restart while live authority is revoked.
+
+In Blue Prince, the agent inspected three actual MCP images and submitted the
+visible counter readings 38, 37 and 36, plus descriptive and uncertain evidence.
+The desktop displayed the interpretations and their sources. This is an
+agent-assisted integration test, not a blinded accuracy benchmark, automatic
+model invocation, OCR improvement or discovered gameplay control. No discovery
+or generalization credit is awarded.
+
+Thirteen workspace tests, strict Clippy, formatting, the 16-tool release smoke
+suite, nine rejection checks and archive/restart verification passed. Desktop
+preview `0.1.0-20261020-210429` includes the change. See
+[agent observation evidence](research/AGENT_OBSERVATIONS.md).
+
+Next: integrate bounded shared investigation jobs and broader memory coverage,
+then evaluate a repeatable agent observation loop against fresh gameplay.
+Completed research prototypes still require independent reproduction and engine
+integration; their results do not count as delivered product capabilities.

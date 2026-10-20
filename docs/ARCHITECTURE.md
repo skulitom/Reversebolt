@@ -91,6 +91,29 @@ tracks against captured memory. Results retain absolute locations as hypotheses
 only. Native causal intervention and arbitrary application writes are not
 implemented; practice write commands never target this session.
 
+## External visual observations
+
+`visual.rs` defines typed, image-bound interpretations from agent or human
+transports. Each investigation and image has a fresh identity; image bytes are
+hashed and checked when read or used for a new submission. Scalar, boolean,
+text and vector values keep provenance and explicit provisional/uncertain
+status. Only provisional scalars enter memory correlation. The producer is
+responsible for observing the image; the engine cannot certify a claimed model
+name or the truth of its interpretation. OCR remains an independent channel.
+
+MCP `read_capture` returns an image block, and `submit_observation` uses the
+same serial engine owner as the desktop. External series are bounded to 32 and
+aligned to the existing 20 captured moments. Duplicate submissions are no-ops;
+conflicting replacements, geometry changes and stale identities are checked.
+Accepted interpretations are saved in a local evidence manifest before they
+are published, independently of active-session metadata. The manifest remains
+historical on restart, with no restored process handle or write capability.
+
+Single-frame evidence is insufficient for rates, animation or causal claims.
+Temporal semantic inference, an automatic model executor and calibrated
+uncertainty remain required work. The completed job and memory-coverage
+experiments remain isolated prototypes pending review and integration.
+
 ## Next architectural boundaries
 
 1. Broader renderer support, efficient incremental snapshots and coverage planning.

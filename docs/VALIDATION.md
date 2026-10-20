@@ -1,6 +1,33 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Current reliability preview: 0.1.0-20261020-203437
+## Current agent observation preview: 0.1.0-20261020-210429
+
+Thirteen workspace tests, strict Clippy and formatting checks pass. The final
+release practice/MCP suite passes with 16 tools:
+`test-results/smoke-cc3df47f/report.json`.
+
+Blue Prince images returned through actual MCP image content were inspected
+and recorded as provisional counter readings 38, 37 and 36. Text, boolean and
+uncertain interpretations were also accepted. Anode verified the desktop's
+source, explanation and unverified status. This is an agent-assisted integration
+test, not a blinded accuracy benchmark or a new automatic OCR result.
+
+Nine invalid submissions left the accepted observations unchanged. Exact replay
+was idempotent; stale investigation IDs and altered image checksums were
+rejected. Restart retained the archive byte-for-byte and 26 history events,
+while invalidating the live connection. Unit tests also cover persistence failure,
+geometry changes, target exit, backfill and numeric matching with fixture labels.
+See [agent observation evidence](research/AGENT_OBSERVATIONS.md) for artifacts,
+scope and remaining limitations. No external-game write was performed.
+
+The published executable and MCP adapter match the tested release binaries.
+The new desktop preview is running in the user's normal Windows session with
+all five previous history events retained; the desktop launcher points to it.
+Anode test engines were closed and Blue Prince was left paused in the test
+profile. Delivery verification is recorded in
+`test-results/visual-agent-v1/desktop-delivery.json`.
+
+## Previous reliability preview: 0.1.0-20261020-203437
 
 Blue Prince exposed an access violation after an idle interval: Windows unloaded
 the OCR DLL while windows-rs retained its factory pointer. A process-lifetime MTA

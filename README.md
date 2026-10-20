@@ -5,6 +5,8 @@ Part of the Bolt family. Humans and agents use the same engine and session.
 
 **Research preview:** connect a running application, capture its window and
 bounded memory, and compare changing screen numbers with memory trajectories.
+An image-reading agent can contribute provisional observations through MCP;
+the desktop shows their sources and uncertainty alongside OCR.
 Automatic game understanding and live-game edits are not implemented yet.
 The disposable practice environment supports tested edits. The destination is
 documented in [the full vision](docs/VISION.md), with an explicit
@@ -63,6 +65,8 @@ publishing. The approximately 12 MB of weights are pinned by hash and included
 in previews when available. See [model attribution](models/NOTICE.md).
 Development builds look for `models/` in their data directory or beside the
 executable. The desktop does not download models or upload screenshots.
+An explicit MCP `read_capture` request returns the selected image to that
+client; its subsequent processing is controlled by the client.
 
 `scripts/publish-preview.ps1` builds versioned preview binaries, updates the
 desktop launcher, and can launch the preview. Existing running versions are not

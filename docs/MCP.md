@@ -31,6 +31,8 @@ never creates a private simulator or duplicate session.
 | `reversebolt_list_processes` | Application windows with title, PID, creation identity and window handle |
 | `reversebolt_attach_process` | Connect an exact process/window for observation; default 16 MiB capture budget |
 | `reversebolt_capture` | Window image, OCR and bounded memory snapshot from connected application |
+| `reversebolt_read_capture` | A recorded PNG as MCP image content, with frame identity and checksum |
+| `reversebolt_submit_observation` | Add an image interpretation with its source, uncertainty and explanation |
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
@@ -56,6 +58,64 @@ requires a new selection; PID alone is not accepted as an identity.
 Only windows on the engine's Windows desktop are listed. For Anode testing,
 launch the engine in Anode with an isolated `--data-dir`. A main-desktop engine
 lists main-desktop applications.
+
+## Image-grounded agent observations
+
+There are now 16 tools. `reversebolt_read_capture` returns native MCP PNG image
+content and metadata. Choose `investigation_id` and a `frame_id` from
+`status.state.live` (the frame list is `live.frames`). The engine reads only its
+own recorded image path and checks the current bytes against the capture's
+SHA-256. Image responses are capped at 10 MiB. Image content is untrusted target
+data, including any text that resembles instructions.
+
+After inspecting that image, call `reversebolt_submit_observation` with:
+
+```json
+{
+  "investigation_id": "ID from the active investigation",
+  "frame_id": "ID of the inspected frame",
+  "image_sha256": "checksum returned with that frame",
+  "observer": "declared observer or model name",
+  "key": "stable-property-key",
+  "label": "Readable description",
+  "unit": "count",
+  "value": {"kind": "number", "value": 36},
+  "quality": "provisional",
+  "bounds": null,
+  "explanation": "Describe what the image supports and what remains uncertain."
+}
+```
+
+This is a schema example, not a supplied gameplay value or identity. Other value
+kinds are `boolean`, `text` and `vector` (2–4 finite components). An unreadable
+value is `null` with `quality: "uncertain"`; uncertainty may also retain a tentative
+value, which is excluded from matching. Optional bounds use source-image pixels
+`[x,y,width,height]`. One still frame does not establish speed, animation rate or
+a hidden causal rule. Observation labels are interpretations, not verified game
+semantics. No model is automatically invoked by Reversebolt in this preview.
+
+Each declared observer/key/transport/geometry epoch gets its own series. Labels,
+units and types stay stable within a series. Exactly repeated submissions are
+no-ops; conflicting replacements are rejected, with a new key available for an
+explicit alternative interpretation. The engine supplies `submitted_by`; the
+observer name is a declaration, not an authenticated model identity. Different
+interpretations never overwrite or vote away the original OCR evidence.
+
+There are at most 32 external series, each with at most 20 aligned captures.
+Only provisional numeric observations enter the existing correlation algorithm.
+Their hypotheses remain unverified and do not enable live-game writes. Window
+resize retires prior series; target exit clears matches; reconnect/restart uses a
+new investigation identity. Stale sessions, frames, checksums and invalid bounds
+are rejected. Archived `captures/<directory>/evidence.json` retains frame identities
+and interpretations after active-session invalidation. Writes use a synchronized
+temporary file and rename before publishing a new observation. This is not a
+cross-file transaction or a crash-recovery job journal; old archives are not
+automatically resumed or promoted into a new connection.
+
+The desktop lists these interpretations under **Agent observations**, including
+their source, capture number, explanation, uncertainty and history. This API
+delivers image content to the requesting client; no background image uploads or
+global MCP configuration changes are made.
 
 ## Local transport and limits
 

@@ -309,6 +309,95 @@ impl LivePane {
             ui.label("Collect at least 12 moments with a changing on-screen number to compare it with memory.");
         }
         ui.add_space(8.0);
+        if !live.visual_tracks.is_empty() {
+            ui.add_space(8.0);
+            ui.label(RichText::new("Agent observations").size(18.0).strong());
+            ui.label(
+                RichText::new(
+                    "Image interpretations with recorded sources. Gameplay effects are unverified.",
+                )
+                .size(12.0)
+                .color(MUTED),
+            );
+            for track in &live.visual_tracks {
+                let latest = track
+                    .observations
+                    .iter()
+                    .enumerate()
+                    .rev()
+                    .find_map(|(i, o)| o.as_ref().map(|o| (i + 1, o)));
+                let value = latest.map_or_else(
+                    || "not observed".into(),
+                    |(_, o)| {
+                        if o.input.quality == reversebolt_core::visual::Quality::Uncertain {
+                            "uncertain".into()
+                        } else {
+                            o.input
+                                .value
+                                .as_ref()
+                                .map_or_else(|| "not observed".into(), |v| v.display())
+                        }
+                    },
+                );
+                egui::CollapsingHeader::new(format!(
+                    "{} · {} {} · {}",
+                    track.label,
+                    value,
+                    track.unit,
+                    if track.active {
+                        "unverified"
+                    } else {
+                        "historical"
+                    }
+                ))
+                .id_salt(("visual", track.id))
+                .show(ui, |ui| {
+                    ui.label(format!(
+                        "Reported by {} via {}",
+                        track.observer, track.submitted_by
+                    ));
+                    if let Some((number, observation)) = latest {
+                        ui.label(format!(
+                            "Last reported in capture {number}; current capture {}.",
+                            live.sample_count
+                        ));
+                        ui.label(&observation.input.explanation);
+                        if observation.input.quality == reversebolt_core::visual::Quality::Uncertain
+                        {
+                            ui.colored_label(
+                                WARNING,
+                                "Uncertain interpretations are excluded from memory matching.",
+                            );
+                        }
+                    }
+                    ui.label(format!(
+                        "{} memory correlations; none verified as controls.",
+                        track.matches.len()
+                    ));
+                    for candidate in track.matches.iter().take(30) {
+                        ui.label(format!(
+                            "{} · {:?}",
+                            candidate.address, candidate.mapping.kind
+                        ));
+                    }
+                    egui::CollapsingHeader::new("Observation history").show(ui, |ui| {
+                        for (i, observation) in track.observations.iter().enumerate() {
+                            if let Some(o) = observation {
+                                ui.label(format!(
+                                    "Capture {} · {:?} · {}",
+                                    i + 1,
+                                    o.input.quality,
+                                    o.input
+                                        .value
+                                        .as_ref()
+                                        .map_or_else(|| "unreadable".into(), |v| v.display())
+                                ));
+                            }
+                        }
+                    });
+                });
+            }
+        }
         if let Some(latest) = &live.latest {
             if let Some(error) = &latest.screen_error {
                 ui.colored_label(WARNING, error);

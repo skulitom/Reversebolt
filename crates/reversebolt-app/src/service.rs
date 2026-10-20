@@ -5,6 +5,7 @@ use axum::{
     http::{HeaderMap, StatusCode},
     routing::post,
 };
+use base64::Engine as _;
 use reversebolt_core::{
     Command, Endpoint, Result,
     engine::{Engine, View},
@@ -66,7 +67,7 @@ impl Handle {
                 working.store(true, Ordering::SeqCst);
                 let read_only = matches!(
                     command.action.as_str(),
-                    "status" | "history" | "list_processes"
+                    "status" | "history" | "list_processes" | "read_capture"
                 );
                 let result = if command.action == "open_practice" {
                     engine.view.error = None;
@@ -84,6 +85,8 @@ impl Handle {
                         | "capture"
                         | "correlate"
                         | "detach_process"
+                        | "read_capture"
+                        | "submit_observation"
                 ) {
                     engine.view.error = None;
                     native_command(&mut engine, &command, &live_directory)
@@ -91,7 +94,20 @@ impl Handle {
                     engine.execute(&command)
                 };
                 engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
-                let mut error = result.err();
+                let (data, mut error) = match result {
+                    Ok(data) => (
+                        if matches!(
+                            command.action.as_str(),
+                            "read_capture" | "submit_observation"
+                        ) {
+                            data
+                        } else {
+                            Value::Null
+                        },
+                        None,
+                    ),
+                    Err(error) => (Value::Null, Some(error)),
+                };
                 if let Some(message) = &error {
                     engine.view.error = Some(message.clone());
                     engine.event(
@@ -106,8 +122,9 @@ impl Handle {
                 *published.write().unwrap() = engine.view.clone();
                 working.store(false, Ordering::SeqCst);
                 if let Some(reply) = reply {
-                    let _ =
-                        reply.send(json!({"ok":error.is_none(),"error":error,"state":engine.view}));
+                    let _ = reply.send(
+                        json!({"ok":error.is_none(),"error":error,"state":engine.view,"data":data}),
+                    );
                 }
             }
         });
@@ -141,6 +158,38 @@ fn native_command(
     directory: &std::path::Path,
 ) -> Result<Value> {
     match command.action.as_str() {
+        "read_capture" => {
+            let session = engine
+                .live
+                .as_ref()
+                .ok_or("Connect a program and capture a moment first.")?;
+            let investigation = command.args["investigation_id"]
+                .as_str()
+                .ok_or("Supply the investigation identity from status.")?;
+            let frame_id = command.args["frame_id"]
+                .as_str()
+                .ok_or("Choose an image from the investigation's frames.")?;
+            let (frame, bytes) = session.read_frame(investigation, frame_id)?;
+            return Ok(
+                json!({"frame":frame,"mime_type":"image/png","png_base64":base64::engine::general_purpose::STANDARD.encode(bytes)}),
+            );
+        }
+        "submit_observation" => {
+            let input: reversebolt_core::visual::ObservationInput =
+                serde_json::from_value(command.args.clone())
+                    .map_err(|e| format!("Invalid image observation: {e}"))?;
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect a program and capture a moment first.")?;
+            let label = input.label.clone();
+            let observer = input.observer.clone();
+            let changed = session.submit_observation(input, &command.source)?;
+            if changed {
+                engine.event(&command.source, format!("Recorded provisional visual evidence for {label} from declared observer {observer}. No control was verified."));
+            }
+            return Ok(json!({"recorded":changed,"duplicate":!changed}));
+        }
         "list_processes" => engine.view.processes = crate::native::processes()?,
         "attach_process" => {
             let pid = command.args["pid"]

@@ -2815,6 +2815,7 @@ name = "reversebolt-app"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "base64 0.22.1",
  "eframe",
  "fs2",
  "image",
@@ -2838,6 +2839,7 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "sha2",
  "uuid",
 ]
 
