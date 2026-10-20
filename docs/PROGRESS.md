@@ -263,3 +263,43 @@ Next: investigation sequences that distinguish changing gameplay state from
 time and activity, broader memory coverage, and visual behavior evidence beyond
 text. Causal validation, scoped live-game edits and restart revalidation remain
 required before the full goal can be completed.
+
+## 2026-10-20 — automatic discovery, control cards and frozen predictions: 20%
+
+Validation increases from **1 / 15 to 2 / 15** for implemented prospective
+falsification, supported by controlled failure tests and a real-game rejection
+result. Other credits remain foundation 4, native access 4, observation 3,
+discovery 2, intent 0, agent collaboration 5 and generalization 0. Total:
+**20 / 100**. The full goal and denominator remain unchanged and active.
+
+Four initial Blue Prince correlations failed all four later observations with
+their coefficients frozen. The engine retains predictions, fresh bytes, images,
+timing and contradictions; no control is promoted. Missing evidence, geometry,
+mapping, process exit and persistence faults are tested. Identical copies remain
+indistinguishable. This is progress in rejecting bad hypotheses, not causal
+control, representation recovery or unseen-game generalization.
+
+Automatic OCR in this run was 12 correct, 2 missing and 2 wrong on the selected
+counter. Agent interpretations stayed separate. The failure is preserved and
+the observer was not retuned. No game writes occurred.
+
+Connecting now starts a bounded 16-moment observation pass automatically, with the first
+capture immediate and comparison from moment 12. The main surface is now control
+cards with names, short descriptions and values; investigation information and
+images are secondary. Live cards remain in Learning/Uncertain states, while
+verified practice values can be dragged or typed. Pause/stop remain visible.
+Humans and MCP share the same controller. A scripted native window
+passed 16/16 readings, automatic comparison, pause/resume/stop and manual opt-out;
+it found zero memory hypotheses. Sixty-seven workspace tests pass.
+
+Follow the user's testing preference: automate regression and recorded-input
+evaluation, using owned windows for native plumbing. Live-game control and
+manual screenshots should answer a specific remaining uncertainty. See
+[prediction and automatic-discovery evidence](research/FROZEN_PREDICTIONS.md).
+
+Preview `0.1.0-20261020-233851` is running on the normal desktop with all seven
+prior history entries retained. Its published binaries and model hashes were
+verified; the 21-tool release smoke passed. Native UI Automation verified a
+practice numeric edit and restoration. The updated interface receives no extra
+general-discovery credit. Delivery is recorded in
+`test-results/automatic-report-v1/desktop-delivery.json`.

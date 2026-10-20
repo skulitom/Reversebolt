@@ -18,33 +18,54 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
     use crate::theme::{ACCENT, ERROR, MUTED, SURFACE};
     use eframe::egui::{self, RichText};
     let error = handle.job_error.read().unwrap().clone();
-    if state.history.jobs.is_empty() && error.is_none() && state.fence.is_none() {
+    if state.history.jobs.is_empty()
+        && error.is_none()
+        && state.fence.is_none()
+        && state.history.human_hold.is_none()
+    {
+        return;
+    }
+    let only_history = state.history.jobs.values().all(|j| j.phase.terminal())
+        && state.history.human_hold.is_none()
+        && error.is_none()
+        && state.fence.is_none();
+    if only_history {
+        egui::CollapsingHeader::new("Observation history").show(ui, |ui| {
+            for job in state.history.jobs.values().rev().take(6) {
+                ui.label(format!(
+                    "Observation {} · {:?} · {} recorded moments",
+                    job.id, job.phase, job.next_step
+                ));
+            }
+        });
+        ui.add_space(8.);
         return;
     }
     egui::Frame::new().fill(SURFACE).inner_margin(12).corner_radius(8).show(ui,|ui| {
-        ui.label(RichText::new("Observation jobs").strong().color(ACCENT));
         for job in state.history.jobs.values().filter(|j|!j.phase.terminal()) {
             let phase=match job.phase {
                 job::Phase::Queued=>"Queued",job::Phase::Running=>"Observing",job::Phase::Pausing=>"Finishing this capture, then pausing",
                 job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing this capture, then stopping",_=>"Historical",
             };
-            ui.label(format!("Job {} · {phase} · {} of {} captures · {}",job.id,job.next_step,job.steps.len(),
-                if job.creator.role==job::Role::Agent {"started by agent"}else{"started here"}));
+            let automatic = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.compare);
             ui.horizontal_wrapped(|ui| {
+                ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",if automatic {"Finding controls"}else{"Observation"},job.next_step,job.steps.len())).color(ACCENT));
                 if job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
-                }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").clicked() {
+                }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish the current capture, then pause.").clicked() {
                     handle.submit("job_control",json!({"operation":"pause","job":job.id}));
                 }
-                if ui.button("Stop job").clicked() {handle.submit("job_control",json!({"operation":"cancel","job":job.id}));}
+                if ui.button("Stop").on_hover_text("Finish any capture already in progress; prevent later captures.").clicked() {handle.submit("job_control",json!({"operation":"cancel","job":job.id}));}
+                if state.history.human_hold.is_none() && job.controller.role==job::Role::Agent
+                    && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
             });
         }
         if state.history.human_hold.is_some() {
-            ui.label("You have control. Agent changes are held; paused jobs stay paused.");
-            if ui.button("Release control").clicked() {handle.submit("job_control",json!({"operation":"release_control"}));}
-        }else if state.history.jobs.values().any(|j|!j.phase.terminal() && j.controller.role==job::Role::Agent)
-            && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
-        if state.in_flight.is_some() {ui.label(RichText::new("A capture is in progress. Pausing or stopping prevents the next capture; this one may still finish.").size(12.).color(MUTED));}
+            ui.horizontal_wrapped(|ui| {
+                ui.label(RichText::new("You have control. Agent changes are held.").color(MUTED));
+                if ui.button("Release control").clicked() {handle.submit("job_control",json!({"operation":"release_control"}));}
+            });
+        }
         if let Some(error)=state.fence.as_ref().or(error.as_ref()) {
             let message=match error.as_str() {
                 "stale worker incarnation"=>"Reversebolt restarted. Refresh the agent's session before starting new work.",
@@ -56,12 +77,6 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             };
             ui.colored_label(ERROR,message);
         }
-        egui::CollapsingHeader::new("Job history").show(ui,|ui| {
-            for job in state.history.jobs.values().rev().filter(|j|j.phase.terminal()).take(6) {
-                ui.label(format!("Job {} · {:?} · {} recorded captures",job.id,job.phase,job.next_step));
-                if job.phase==job::Phase::Interrupted {ui.label("Interrupted work stays historical. Connect and start a new observation job to continue.");}
-            }
-        });
     });
     ui.add_space(12.);
 }
@@ -213,6 +228,12 @@ struct CaptureStep {
     scope: Scope,
     delay_ms: u64,
     source: String,
+    #[serde(default, skip_serializing_if = "is_false")]
+    compare: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !value
 }
 
 struct Flight {
@@ -294,7 +315,7 @@ impl job::Executor for CaptureExecutor {
         }
         let command = Command {
             action: "capture".into(),
-            args: json!({"scope":step.scope}),
+            args: json!({"scope":step.scope,"compare":step.compare}),
             source: step.source,
         };
         match self.engine.start_command(command) {
@@ -353,6 +374,7 @@ impl job::Executor for CaptureExecutor {
 struct Manual {
     response: mpsc::Receiver<Value>,
     reply: Option<mpsc::Sender<Value>>,
+    automatic: Option<String>,
 }
 struct Controller {
     jobs: job::Jobs<FileJournal>,
@@ -396,6 +418,19 @@ impl Controller {
         match manual.response.try_recv() {
             Ok(mut value) => {
                 self.refresh_binding();
+                if value["ok"] == true
+                    && let Some(source) = manual.automatic
+                {
+                    match self.start_automatic_observation(source) {
+                        Ok(receipt) => value["data"] = json!({"automatic_observation":receipt}),
+                        Err(error) => {
+                            self.error(format!(
+                                "Connected, but automatic observation could not start: {error}"
+                            ));
+                            value["data"] = json!({"automatic_observation_error":error});
+                        }
+                    }
+                }
                 value["jobs"] = json!(self.jobs.view());
                 if let Some(reply) = manual.reply {
                     let _ = reply.send(value);
@@ -410,6 +445,26 @@ impl Controller {
                 }
             }
         }
+    }
+    fn start_automatic_observation(&mut self, source: String) -> Result<Value> {
+        let snapshot = self.jobs.snapshot();
+        let client = if source == "desktop" {
+            "desktop"
+        } else {
+            "mcp-agent"
+        };
+        let command = Command {
+            action: "start_observation_job".into(),
+            source,
+            args: json!({"count":16,"interval_ms":1000,"compare":true,
+                "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
+                "boot":snapshot.boot,"binding":snapshot.current}),
+        };
+        let receipt = self.job_command(&command)?;
+        if let Some(error) = receipt["ack"]["rejection"].as_str() {
+            return Err(error.into());
+        }
+        Ok(receipt)
     }
     fn command(&mut self, (command, reply): Request) {
         let result: Result<Value> = (|| {
@@ -447,10 +502,23 @@ impl Controller {
             if self.manual.is_some() || self.executor.flight.is_some() {
                 return Err("A capture or engine command is still in progress. Status and job controls remain available.".into());
             }
+            if command
+                .args
+                .get("auto_observe")
+                .is_some_and(|v| !v.is_boolean())
+            {
+                return Err("auto_observe must be true or false.".into());
+            }
+            let automatic = match command.action.as_str() {
+                "attach_process" => command.args["auto_observe"].as_bool().unwrap_or(true),
+                "advance_memory" => command.args["auto_observe"] == true,
+                _ => false,
+            };
             let response = self.engine.start_command(command.clone())?;
             self.manual = Some(Manual {
                 response,
                 reply: reply.clone(),
+                automatic: automatic.then(|| command.source.clone()),
             });
             Ok(Value::Null)
         })();
@@ -565,13 +633,15 @@ impl Controller {
                 }
             }
             let mut steps = vec![];
-            for _ in 0..count {
+            let compare = command.args["compare"].as_bool().unwrap_or(false);
+            for index in 0..count {
                 steps.push(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
                         scope: scope.clone(),
-                        delay_ms: interval,
+                        delay_ms: if compare && index == 0 { 0 } else { interval },
                         source: command.source.clone(),
+                        compare,
                     })
                     .map_err(|e| e.to_string())?,
                 });
@@ -674,6 +744,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                prediction_check: None,
                 coverage: reversebolt_core::coverage::Coverage {
                     batch: 1,
                     ..Default::default()
@@ -840,5 +911,121 @@ mod tests {
         assert!(c.job_command(&resume).unwrap()["ack"]["rejection"].is_string());
         c.tick();
         assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 0);
+    }
+
+    #[test]
+    fn successful_connection_starts_one_bounded_report_without_another_command() {
+        for source in ["desktop", "agent"] {
+            let (sent, received) = mpsc::channel();
+            let engine = EngineHandle::test_worker(EngineView::default(), move |command, view| {
+                sent.send(command.clone()).unwrap();
+                if command.action == "attach_process" {
+                    *view = initial_view();
+                }
+                json!({"ok":true,"state":view})
+            });
+            let mut c = controller(engine);
+            let (reply, response) = mpsc::channel();
+            c.command((
+                Command {
+                    action: "attach_process".into(),
+                    args: json!({}),
+                    source: source.into(),
+                },
+                Some(reply),
+            ));
+            assert_eq!(
+                received
+                    .recv_timeout(Duration::from_secs(2))
+                    .unwrap()
+                    .action,
+                "attach_process"
+            );
+            for _ in 0..100 {
+                c.finish_manual();
+                if c.manual.is_none() {
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            let result = response.recv_timeout(Duration::from_secs(1)).unwrap();
+            assert_eq!(result["ok"], true);
+            let id = result["data"]["automatic_observation"]["ack"]["job"]
+                .as_u64()
+                .unwrap();
+            let job = &c.jobs.snapshot().jobs[&id];
+            assert_eq!(job.steps.len(), 16);
+            assert_eq!(
+                job.creator.role,
+                if source == "desktop" {
+                    job::Role::Human
+                } else {
+                    job::Role::Agent
+                }
+            );
+            let first: CaptureStep = serde_json::from_str(&job.steps[0].payload).unwrap();
+            assert!(first.compare);
+            assert_eq!(first.delay_ms, 0);
+            c.finish_manual();
+            assert_eq!(c.jobs.snapshot().jobs.len(), 1);
+            for _ in 0..3 {
+                c.tick();
+            }
+            let capture = received.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert_eq!(capture.action, "capture");
+            assert_eq!(capture.args["compare"], true);
+            assert_eq!(
+                capture.args["scope"]["investigation_id"],
+                "fixture-investigation"
+            );
+        }
+    }
+
+    #[test]
+    fn failed_or_manual_connection_and_rejected_options_do_not_schedule_captures() {
+        for (succeeds, args) in [(false, json!({})), (true, json!({"auto_observe":false}))] {
+            let engine = EngineHandle::test_worker(EngineView::default(), move |_, view| {
+                if succeeds {
+                    *view = initial_view();
+                }
+                json!({"ok":succeeds,"state":view})
+            });
+            let mut c = controller(engine);
+            c.command((
+                Command {
+                    action: "attach_process".into(),
+                    args,
+                    source: "desktop".into(),
+                },
+                None,
+            ));
+            for _ in 0..100 {
+                c.finish_manual();
+                if c.manual.is_none() {
+                    break;
+                }
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            assert!(c.manual.is_none());
+            assert!(c.jobs.snapshot().jobs.is_empty());
+        }
+        let engine = EngineHandle::test_worker(EngineView::default(), |_, _| {
+            panic!("Rejected before attachment")
+        });
+        let mut c = controller(engine);
+        let (reply, response) = mpsc::channel();
+        c.command((
+            Command {
+                action: "attach_process".into(),
+                args: json!({"auto_observe":"false"}),
+                source: "desktop".into(),
+            },
+            Some(reply),
+        ));
+        assert_eq!(
+            response.recv_timeout(Duration::from_secs(1)).unwrap()["ok"],
+            false
+        );
+        assert!(c.jobs.snapshot().jobs.is_empty());
     }
 }

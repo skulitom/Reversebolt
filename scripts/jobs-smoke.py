@@ -104,12 +104,13 @@ try:
     mcp.stdin.flush()
     if PHASE == "exercise":
         names = {t["name"] for t in rpc("tools/list", {})["tools"]}
-        assert len(names) == 20
+        assert len(names) == 21
         record("mcp_tools", len(names))
         programs = call("list_processes")["state"]["processes"]
         program = next(p for p in programs if p["pid"] == PID)
         args = {k: program[k] for k in ("pid", "created", "window")}
         args["budget_mib"] = 16
+        args["auto_observe"] = False
         call("attach_process", args)
         ident, original, receipt = start(3, 250)
         call("detach_process", expected=False)

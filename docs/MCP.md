@@ -37,6 +37,7 @@ never creates a private simulator or duplicate session.
 | `reversebolt_read_capture` | A recorded PNG as MCP image content, with frame identity and checksum |
 | `reversebolt_submit_observation` | Add an image interpretation with its source, uncertainty and explanation |
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
+| `reversebolt_start_prediction_check` | Freeze one series' mappings and check fresh observations without refitting |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
@@ -54,8 +55,22 @@ candidate evidence → test candidates → inspect remaining ambiguity → set v
 tool call as a successful edit.
 
 Application investigation: list processes → attach using `pid`, `created` and
-`window` returned by the list → capture varied moments → correlate → inspect
-evidence → detach. The `live` state is separate from the practice state; practice
+`window` returned by the list → watch the automatic report in status → inspect
+evidence → detach. Connection starts one durable 16-capture pass with no initial
+delay and one second between completed captures. Comparisons refresh from
+capture 12. Attachment returns `data.automatic_observation`, its job receipt;
+read the returned `jobs` for the advanced client request counter. An unsuccessful
+automatic start is reported separately without undoing a successful connection.
+On uncertain attachment delivery, inspect status before retrying, because a new
+attachment replaces the investigation. No work resumes automatically on restart.
+
+Use `auto_observe:false` on `attach_process` for controlled manual experiments.
+`advance_memory` accepts `auto_observe:true` to start another bounded pass (default
+false). A timed observation job can use `compare:true` to update its report after
+each capture with enough evidence; this never refits an active prediction check.
+The desktop uses the same controller and displays progress and pause/stop controls.
+
+The `live` state is separate from the practice state; practice
 write tools never edit the connected external application. A process restart
 requires a new selection; PID alone is not accepted as an identity.
 
@@ -65,7 +80,7 @@ lists main-desktop applications.
 
 ## Image-grounded agent observations
 
-There are now 20 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 21 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -170,9 +185,10 @@ unbinds the target and leaves unfinished jobs `Interrupted`; a pending durable
 intent has an unknown outcome. There is no automatic continuation, rediscovery
 or replay. Old jobs remain historical. Create a new job after reconnecting.
 
-Plans contain 1–16 read-only captures, 250–60,000 ms apart, with a delay before
-the first capture and after each completion. The desktop requests up to 12 at
-one-second intervals. Remaining batch retention is checked including queued
+Plans contain 1–16 read-only captures, 250–60,000 ms apart. Automatic reports and
+jobs with `compare:true` start the first capture immediately; other jobs retain
+the specified initial delay. Subsequent delays begin after completion. Connection
+requests 16 moments at one-second intervals. Remaining retention is checked including queued
 jobs. There is no gameplay input, semantic-model execution, automatic memory
 batch advancement or live-game write in these plans.
 
@@ -238,10 +254,34 @@ budget is 1–32 MiB per moment. The desktop uses 16 MiB.
 An investigation allows at most 24 batches, 4 GiB of requested reads, 512 MiB of
 image storage allowance (including late-renderer reservations) and 32 MiB of
 batch archives. Per-frame metadata is separate. Batches are explicit actions;
-there is no automatic scan, automatic resume, or guarantee of whole-process
+there is no automatic batch advancement, restart resume, or guarantee of whole-process
 coverage within these limits. Observed mapping changes exclude affected chunks
 for the rest of a batch; same-address reuse between checks remains unverified.
 
 Capture reads screen and memory sequentially without pausing the target.
 Unavailable pages are reported and excluded from correlation; coverage and
 timing are visible. A window-rendering timeout preserves memory evidence.
+
+## Frozen prediction checks
+
+After comparison, call `reversebolt_start_prediction_check` with the current
+`investigation_id`, `batch`, `after_frame` equal to `sample_count`, `source`
+(`ocr` or `external`) and the series' `track` ID. At least four capture slots
+must remain. All existing mappings for that series are fixed before new captures.
+Fresh observations join their original image identity; late agent submissions
+can fill missing readings, but cannot change the stored predictions or bytes.
+
+Inspect `live.prediction_check`: it contains the original mappings, image hashes,
+fresh byte witnesses, read receipts, predictions, observations and outcomes.
+`live.phase` gives the aggregate result. A contradiction rules out the mapping
+against that observation. Four agreements including an adjacent hold and a
+distinct change permit only **consistent in observed scope**. This is a
+descriptive check, not statistical confidence, semantic meaning, causal authority,
+or permission to edit. Missing observations do not count as agreement.
+
+One check is allowed per batch. Correlation cannot refit its fresh interval.
+Mapping changes, geometry changes, target exit and evidence persistence failures
+invalidate the relevant scope. New batches archive the prior view and require
+fresh discovery. `prediction-check.json` is historical evidence after restart.
+The initial fitting interval's full bytes are transient; the check retains its
+coefficients and fresh byte witnesses, not a complete replay of initial fitting.

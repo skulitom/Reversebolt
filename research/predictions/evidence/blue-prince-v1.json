@@ -1,0 +1,545 @@
+{
+  "schema_version": 1,
+  "freeze": {
+    "frozen_at": "2026-10-20T21:57:27.2220857Z",
+    "protocol": "Generic frozen mappings; fresh captures include holds and changing values; no refit or game writes.",
+    "files": [
+      {
+        "path": "crates/reversebolt-core/src/prediction.rs",
+        "sha256": "9A6BA2EDFBB06A5E252DD60938F4579B6E819CE16566A70B6D1A127F03C63605"
+      },
+      {
+        "path": "crates/reversebolt-core/src/live.rs",
+        "sha256": "88A3ECD4465EFC62DF4C99C21DF516622C5B25DF4101B3309AD9C533E2B29AA5"
+      },
+      {
+        "path": "target/release/Reversebolt.exe",
+        "sha256": "B33DD8EBB3FE23510AA5A52CD841F57D3C0449712768A3F4A11A8CDF930BF8A8"
+      },
+      {
+        "path": "target/release/reversebolt-mcp.exe",
+        "sha256": "8B3EDF1A30CFDF1A0C19B9828D26A3B6345266099F5547888DB458F2C3E6C20F"
+      }
+    ]
+  },
+  "scope": "One Blue Prince run. Agent image interpretations are provisional. No game writes or verified controls.",
+  "check_id": "bdf7f0f3-9c60-4c73-8945-43e4896ba28e",
+  "after_frame": 12,
+  "source": "external",
+  "tolerance": 0.55,
+  "observations": [
+    {
+      "frame": 1,
+      "value": 14,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 14. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 2,
+      "value": 13,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 13. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 3,
+      "value": 12,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 12. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 4,
+      "value": 11,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 11. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 5,
+      "value": 10,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 10. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 6,
+      "value": 9,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 9. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 7,
+      "value": 8,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 8. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 8,
+      "value": 7,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 7. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 9,
+      "value": 6,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 6. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 10,
+      "value": 5,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 5. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 11,
+      "value": 4,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 4. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 12,
+      "value": 3,
+      "explanation": "I inspected the exported, checksum-verified capture. The top-left counter visibly reads 3. Meaning and memory authority remain unverified."
+    },
+    {
+      "frame": 13,
+      "value": 3,
+      "explanation": "I inspected the saved frame-013.png: the upper-left numeral beside the footprint symbol is 3."
+    },
+    {
+      "frame": 14,
+      "value": 3,
+      "explanation": "I inspected the saved frame-014.png: the upper-left numeral beside the footprint symbol is 3."
+    },
+    {
+      "frame": 15,
+      "value": 1,
+      "explanation": "I inspected the saved frame-015.png: the upper-left numeral beside the footprint symbol is 1."
+    },
+    {
+      "frame": 16,
+      "value": 1,
+      "explanation": "I inspected the saved frame-016.png: the upper-left numeral beside the footprint symbol is 1."
+    }
+  ],
+  "frames": [
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "e42ad5ca-d671-4e82-a616-802ddcaf32a8",
+      "number": 1,
+      "sha256": "702fc7c2b1889c3ef7e102edd2677f5e84ce438aeb4147fc5a1f616c9169dca7",
+      "started_unix_ms": 1792533474705,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "17085f79-54d5-4368-984d-0702a12f8d4d",
+      "number": 2,
+      "sha256": "48f93228ff65c89f3ce3b88b0c413dec5455899d9ff458728b497c1fdd7efa7d",
+      "started_unix_ms": 1792533490040,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "8f0c0f80-c7e5-41ff-96de-7fc29621df73",
+      "number": 3,
+      "sha256": "05834141c3234823a72cb3e7c7e4b2966fd748e7d8c47e2c68793bbb8e358efa",
+      "started_unix_ms": 1792533511148,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "e0857e80-1075-45d1-b32b-9a6129263af7",
+      "number": 4,
+      "sha256": "cbf1856f55c1279eaa25fc8a80ee14163f087db462ef3905000c47ba39c36401",
+      "started_unix_ms": 1792533527341,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "00fb33c4-d224-45b2-a79a-b8c63853d229",
+      "number": 5,
+      "sha256": "39d9dcb162896afc3480aa38ab3690da9f25775de2548cd94892b37dee91651b",
+      "started_unix_ms": 1792533541506,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "ee8793c2-59f1-477b-bcbd-82554fe7d2b5",
+      "number": 6,
+      "sha256": "85ece36bd93171af434725730471a66dfaa52b6730313f680691ae70c013b108",
+      "started_unix_ms": 1792533560280,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "bdad23e4-ec08-4270-8245-0b5a72cd9eef",
+      "number": 7,
+      "sha256": "a63db168007185a336c7b592c946fab139d8eaaac6ef7e4e4ba31151db46ac68",
+      "started_unix_ms": 1792533577110,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "562f1c7b-8097-4169-97c4-aaddf26f57bb",
+      "number": 8,
+      "sha256": "90c76e88521528493979cf0d94d54c7337d63547e79fd50910fc7c2f3772e68f",
+      "started_unix_ms": 1792533608336,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "0e78ed1f-b265-41f3-9593-52d20985b527",
+      "number": 9,
+      "sha256": "1932efb382286d448e684b855ad0ffd92f377fa02ee98645cacde6a461376636",
+      "started_unix_ms": 1792533624102,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "3ca9a549-c94f-4d56-b4c7-6b9c515501da",
+      "number": 10,
+      "sha256": "668dd49123832abba5a601e8b5b34aabecabca88982809c58aa478a08e93cf1c",
+      "started_unix_ms": 1792533641591,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "13d0f7c7-7974-46f1-81ff-8dc0b4cdb7f5",
+      "number": 11,
+      "sha256": "03f71b2974780a23813e2054ff483730a368a13df7895c260e5018477dab2ffb",
+      "started_unix_ms": 1792533658404,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "7bae145a-4de4-4b0e-acb4-93e0cb34a288",
+      "number": 12,
+      "sha256": "2061a23645858396b9aaccacedf9e9519119c9e3751b61c85b13b6fcd6c70a2c",
+      "started_unix_ms": 1792533674824,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "f3da307e-802d-4b6b-b1d4-741a3ea4eded",
+      "number": 13,
+      "sha256": "ee25cbe4105fcd45c809ba5de728a3a035c884903a43f40f403b1f93832c235e",
+      "started_unix_ms": 1792533826870,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "dfd5601c-7d87-4b79-9b96-0deb5787821d",
+      "number": 14,
+      "sha256": "93be4f06bf09f15d8685341ef78bb3a7cda00b94ca6d6e4998a7c7da22de3969",
+      "started_unix_ms": 1792533829299,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "b9b7958a-355e-45a1-9da9-9cb16de26c06",
+      "number": 15,
+      "sha256": "d8b0d4861d6c5d1726f346af0d6f15f86cd5e9d7381e8fb3a6b180b74164b64d",
+      "started_unix_ms": 1792533871779,
+      "width": 1280
+    },
+    {
+      "epoch": 0,
+      "height": 720,
+      "id": "58fe1ef5-2503-49a9-a90a-0bb178842101",
+      "number": 16,
+      "sha256": "48b43be04b1db30a3749af3165d3f1b5cac129863a918d8b0f1d46cedc126ba6",
+      "started_unix_ms": 1792533874134,
+      "width": 1280
+    }
+  ],
+  "ocr_selected_track": {
+    "id": 6,
+    "values": [
+      null,
+      null,
+      12.0,
+      11.0,
+      10.0,
+      9.0,
+      8.0,
+      7.0,
+      6.0,
+      5.0,
+      4.0,
+      3.0,
+      3.0,
+      3.0,
+      7.0,
+      7.0
+    ],
+    "score": {
+      "correct": 12,
+      "incorrect": 2,
+      "missing": 2
+    }
+  },
+  "phase": "Frozen predictions: 4 contradicted, 0 consistent in observed scope, 0 need evidence, 0 invalidated. No gameplay control is verified.",
+  "candidates": [
+    {
+      "address": "0x7FF8D6D92088",
+      "mapping": {
+        "exact": false,
+        "intercept": 601.5306794372942,
+        "kind": "I32",
+        "offset": 61576,
+        "slope": -0.001197246333433104,
+        "train_inliers": 6,
+        "validation_inliers": 5
+      },
+      "invalidated": null,
+      "samples": [
+        {
+          "frame": 13,
+          "bytes": [
+            235,
+            186,
+            7,
+            0
+          ],
+          "predicted": -4.997904818916481,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 14,
+          "bytes": [
+            235,
+            186,
+            7,
+            0
+          ],
+          "predicted": -4.997904818916481,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 15,
+          "bytes": [
+            170,
+            194,
+            7,
+            0
+          ],
+          "predicted": -7.372044298114361,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 16,
+          "bytes": [
+            170,
+            194,
+            7,
+            0
+          ],
+          "predicted": -7.372044298114361,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        }
+      ]
+    },
+    {
+      "address": "0x7FF8D6D92150",
+      "mapping": {
+        "exact": false,
+        "intercept": 171.8,
+        "kind": "I32",
+        "offset": 61776,
+        "slope": -0.2,
+        "train_inliers": 6,
+        "validation_inliers": 6
+      },
+      "invalidated": null,
+      "samples": [
+        {
+          "frame": 13,
+          "bytes": [
+            82,
+            3,
+            0,
+            0
+          ],
+          "predicted": 1.8000000000000114,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 14,
+          "bytes": [
+            82,
+            3,
+            0,
+            0
+          ],
+          "predicted": 1.8000000000000114,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 15,
+          "bytes": [
+            91,
+            3,
+            0,
+            0
+          ],
+          "predicted": 0.0,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 16,
+          "bytes": [
+            91,
+            3,
+            0,
+            0
+          ],
+          "predicted": 0.0,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        }
+      ]
+    },
+    {
+      "address": "0x7FFF6FA488D8",
+      "mapping": {
+        "exact": false,
+        "intercept": 7592.261904761905,
+        "kind": "I32",
+        "offset": 10456,
+        "slope": -0.023809523809523808,
+        "train_inliers": 5,
+        "validation_inliers": 6
+      },
+      "invalidated": null,
+      "samples": [
+        {
+          "frame": 13,
+          "bytes": [
+            222,
+            240,
+            4,
+            0
+          ],
+          "predicted": -117.40476190476147,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 14,
+          "bytes": [
+            127,
+            241,
+            4,
+            0
+          ],
+          "predicted": -121.23809523809541,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 15,
+          "bytes": [
+            68,
+            252,
+            4,
+            0
+          ],
+          "predicted": -186.8809523809523,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 16,
+          "bytes": [
+            68,
+            252,
+            4,
+            0
+          ],
+          "predicted": -186.8809523809523,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        }
+      ]
+    },
+    {
+      "address": "0x7FFF6D580B18",
+      "mapping": {
+        "exact": false,
+        "intercept": 5760.0,
+        "kind": "I32",
+        "offset": 19224,
+        "slope": -1.0,
+        "train_inliers": 6,
+        "validation_inliers": 6
+      },
+      "invalidated": null,
+      "samples": [
+        {
+          "frame": 13,
+          "bytes": [
+            115,
+            22,
+            0,
+            0
+          ],
+          "predicted": 13.0,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 14,
+          "bytes": [
+            115,
+            22,
+            0,
+            0
+          ],
+          "predicted": 13.0,
+          "observed": 3.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 15,
+          "bytes": [
+            117,
+            22,
+            0,
+            0
+          ],
+          "predicted": 11.0,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        },
+        {
+          "frame": 16,
+          "bytes": [
+            117,
+            22,
+            0,
+            0
+          ],
+          "predicted": 11.0,
+          "observed": 1.0,
+          "outcome": "contradicts"
+        }
+      ]
+    }
+  ],
+  "audit": "All image hashes, original mappings, fresh byte-derived predictions, submitted readings and per-frame outcomes checked.",
+  "limitations": [
+    "Initial full memory snapshots are transient; this audit checks the frozen mappings, not a refit of the discovery interval.",
+    "Image and memory acquisition are sequential, not atomic.",
+    "Matching values cannot establish causal authority, representation or allocation continuity."
+  ]
+}

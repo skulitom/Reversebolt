@@ -5,6 +5,7 @@ Part of the Bolt family. Humans and agents use the same engine and session.
 
 **Research preview:** connect a running application, capture its window and
 bounded memory, and compare changing screen numbers with memory trajectories.
+Connecting starts observation automatically; values appear as simple cards.
 An image-reading agent can contribute provisional observations through MCP;
 the desktop shows their sources and uncertainty alongside OCR.
 Automatic game understanding and live-game edits are not implemented yet.
@@ -21,12 +22,20 @@ cargo run -p reversebolt-app --bin Reversebolt
 ```
 
 Choose **Connect to application**, search by name, title or PID, select a window,
-then **Connect**. The application workspace shows the chosen target. Use
-**Capture moment** as visible numbers change; **Compare changes** becomes
-available after 12 moments. Results are unverified correlations. This preview
+then **Connect**. Observation starts immediately. Keep playing while a bounded
+16-moment pass discovers values; comparisons begin after 12 moments. Each card
+has a name, short description and current value. **Learning** means its effect
+and controlling state are still unverified; **Inspect** opens its details.
+Use **Pause** or **Stop** at any time. **Keep looking** starts another pass over
+different memory. Screenshots, activity and manual tools are collapsed behind
+details. Results are unverified correlations. This preview
 samples up to 16 MiB per moment, not the whole process. Capture support varies
 by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
 application running. The connection invalidates when the original process exits.
+
+For a series with matches, **Challenge these matches** freezes its predictions
+and checks them against fresh observations. Agreement is limited evidence;
+contradictions rule out that mapping. Neither outcome verifies a gameplay control.
 
 **Search more memory** archives the current batch's evidence and moves to other
 eligible addresses. Collect fresh changing observations for each batch. The
@@ -35,7 +44,7 @@ histories; neither means a gameplay control was found. Earlier findings remain
 historical and unverified.
 
 **Observe over time** collects up to 12 moments at one-second intervals while
-you interact with the application. **Pause**, **Resume** and **Stop job** remain
+you interact with the application. **Pause**, **Resume** and **Stop** remain
 available during capture. An agent can start the same job through MCP; **Take
 control** pauses its work and holds further agent changes. A capture already in
 progress may finish. Jobs interrupted by restart remain in history and never
@@ -46,7 +55,8 @@ Find matches → Test effects**.
 Each practice process has new random offsets and a numeric encoding. Discovery
 receives synchronized bytes and observations, not the true field locations.
 Testing separates controlling fields from misleading display/telemetry copies.
-When a unique candidate passes, enter a value and choose **Apply**.
+When a unique candidate passes, drag the numeric field or click it to type a
+value, then choose **Apply**.
 **Restore last edit** checks the bytes have not changed before restoring them.
 
 The two labels and observations come from the practice adapter. Twenty random

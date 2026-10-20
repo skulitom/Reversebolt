@@ -28,7 +28,7 @@ def good(action, args=None):
 programs = call("list_processes")["state"]["processes"]
 program = next(p for p in programs if p["pid"] == pid)
 live = good("attach_process", {"pid": pid, "created": program["created"],
-    "window": program["window"], "budget_mib": 16})
+    "window": program["window"], "budget_mib": 16, "auto_observe": False})
 investigation = live["investigation_id"]
 report = {"process": program, "investigation_id": investigation, "batches": [],
     "scope": "Read-only coverage on a static scene; no semantic or control claim."}

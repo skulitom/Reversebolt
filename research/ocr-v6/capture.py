@@ -18,7 +18,7 @@ def call(action, args=None):
 
 if len(sys.argv) > 2:
     program = next(p for p in call("list_processes")["state"]["processes"] if p["pid"] == int(sys.argv[2]))
-    call("attach_process", {**{k: program[k] for k in ("pid", "created", "window")}, "budget_mib": 16})
+    call("attach_process", {**{k: program[k] for k in ("pid", "created", "window")}, "budget_mib": 16, "auto_observe": False})
 else:
     result = call("capture")
     live = result["state"]["live"]

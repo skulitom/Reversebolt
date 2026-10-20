@@ -82,7 +82,7 @@ impl eframe::App for Workbench {
                         .strong()
                         .color(Color32::WHITE),
                 );
-                ui.label("Connect an app and collect evidence as it changes.");
+                ui.label("Connect an app. Discover controls as you play.");
                 ui.add_space(12.0);
                 ui.label("Gameplay understanding is still in development.");
                 ui.add_space(22.0);
@@ -185,20 +185,12 @@ impl eframe::App for Workbench {
                                 trace(ui,&track.samples);
                                 ui.add_enabled_ui(track.verified().is_some() && !busy,|ui| {
                                     let label = ui.label("Set to");
-                                    let edit_id = ui.make_persistent_id("value_entry");
-                                    if ui.is_enabled() {
-                                        ui.input_mut(|input| input.consume_accesskit_action_requests(edit_id, |request| {
-                                            if request.action == egui::accesskit::Action::SetValue
-                                                && let Some(egui::accesskit::ActionData::Value(value)) = &request.data {
-                                                    self.edits[index] = value.chars().take(128).collect();
-                                                    return true;
-                                                }
-                                            false
-                                        }));
-                                    }
-                                    ui.add(egui::TextEdit::singleline(&mut self.edits[index]).id(edit_id).desired_width(68.0).hint_text("Value"))
+                                    let mut value=self.edits[index].parse::<f64>().unwrap_or(track.value);
+                                    if ui.add(egui::DragValue::new(&mut value).speed(1.0).range(-1_000_000.0..=1_000_000.0))
                                         .labelled_by(label.id)
-                                        .on_hover_text(format!("New {} value",track.label));
+                                        .on_hover_text("Drag to adjust, or click to type a value.").changed() {
+                                        self.edits[index]=value.to_string();
+                                    }
                                     if ui.button("Apply").clicked() {
                                         if let Ok(value) = self.edits[index].parse::<f64>() {
                                             self.handle.submit("set_value",json!({"track":index,"value":value}));
@@ -222,9 +214,7 @@ impl eframe::App for Workbench {
                     }
                     }
                     ui.add_space(12.0);
-                    ui.horizontal(|ui| {
-                        ui.label(RichText::new("Shared activity").size(18.0).strong());
-                    });
+                    egui::CollapsingHeader::new("Activity").show(ui, |ui| {
                     if state.history.is_empty() {
                         ui.label(RichText::new("Your actions and agent actions will appear here.").color(MUTED));
                     }
@@ -234,6 +224,7 @@ impl eframe::App for Workbench {
                             ui.label(RichText::new(&event.text).size(13.0));
                         });
                     }
+                    });
                 });
             });
         self.live.picker(ui.ctx(), &self.handle, &state, busy);

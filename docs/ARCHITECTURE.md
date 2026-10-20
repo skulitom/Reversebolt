@@ -182,6 +182,26 @@ generic effect/consent tests do not expose production write operations.
 See [MCP contract](MCP.md#durable-observation-jobs) and
 [integration evidence](research/OBSERVATION_JOBS.md) for limits and failure cases.
 
+## Automatic reports and prospective checks
+
+A successful application connection schedules one durable 16-moment report in
+the same controller used by explicit observation jobs. The attachment response
+returns its receipt before any capture completes. The first step has no delay;
+later steps wait one second after completion. Each step pins the target and batch.
+Comparison runs within the existing worker from capture 12, so partial reports
+appear before the bounded pass ends. Insufficient variation remains an ordinary
+report result. Stop, pause, takeover and restart interruption keep their existing
+ownership rules. Manual agents can opt out with `auto_observe:false`.
+
+`prediction` checks freeze one selected series' current coefficients and scope.
+Fresh captures retain candidate bytes, frame identities and read receipts;
+external interpretations can arrive later for those exact frames. Observation
+agreement cannot establish authority or distinguish identical copies. A frozen
+check blocks refitting until the batch changes. Geometry/process/mapping changes
+and failed evidence persistence invalidate scope. The file is historical after
+restart, never an active handle or write capability. Initial fitting bytes are
+not retained by this check. See [evaluation](research/FROZEN_PREDICTIONS.md).
+
 ## Next architectural boundaries
 
 1. Broader renderer support, efficient incremental snapshots and coverage planning.

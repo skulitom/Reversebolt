@@ -32,6 +32,20 @@ MCP is a first-class interface to the same engine, observations, experiments,
 durable jobs, change history, and recovery mechanisms as the desktop. Neither
 interface owns a private parallel interpretation of the session.
 
+## The human interface
+
+Selecting an application starts investigation automatically. The main surface
+is a small collection of direct controls, not a report: each has a meaningful
+name, a short description of its effect, and an appropriate interaction such as
+a draggable number, slider, toggle or action button. Findings appear as they
+become supported. Investigation logs, screenshots and raw evidence are secondary
+details. Do not make people operate screenshot or recording tools to get started.
+
+Learning and uncertain observations must be visibly distinguished from controls
+the engine can actually edit. Do not invent names or enable a cosmetic slider
+when the causal meaning and editable state have not been established. These
+intermediate cards can be inspected while the shared engine keeps learning.
+
 ## Completion evidence
 
 The full goal is complete only when these capabilities work together in the

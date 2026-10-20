@@ -113,6 +113,7 @@ impl EngineHandle {
                         | "attach_process"
                         | "capture"
                         | "correlate"
+                        | "start_prediction_check"
                         | "advance_memory"
                         | "detach_process"
                         | "read_capture"
@@ -267,7 +268,11 @@ fn native_command(
                 .live
                 .as_mut()
                 .ok_or("Select and connect a program first.")?;
-            session.capture()?;
+            if command.args["compare"] == true {
+                session.capture_for_report()?;
+            } else {
+                session.capture()?;
+            }
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }
@@ -277,6 +282,32 @@ fn native_command(
                 .as_mut()
                 .ok_or("Select and connect a program first.")?;
             session.correlate()?;
+            let message = session.view.phase.clone();
+            engine.event(&command.source, message);
+        }
+        "start_prediction_check" => {
+            let investigation = command.args["investigation_id"]
+                .as_str()
+                .ok_or("Read the current investigation identity first.")?;
+            let number = |key: &str| {
+                command.args[key]
+                    .as_u64()
+                    .and_then(|n| usize::try_from(n).ok())
+                    .ok_or_else(|| format!("Supply {key} from current status."))
+            };
+            let source = serde_json::from_value(command.args["source"].clone())
+                .map_err(|_| "Choose an OCR or external observation series.")?;
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect an application first.")?;
+            session.start_prediction_check(
+                investigation,
+                number("batch")?,
+                number("after_frame")?,
+                source,
+                number("track")?,
+            )?;
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }

@@ -29,6 +29,7 @@ def require(action, args=None):
 windows = require("list_processes")["processes"]
 target = next(p for p in windows if p["pid"] == pid and p["title"] == "Reversebolt observation fixture")
 identity = {k: target[k] for k in ("pid", "created", "window")}
+identity["auto_observe"] = False
 assert not call("attach_process", {**identity, "created": "stale"})["ok"]
 live = require("attach_process", {**identity, "budget_mib": 4})["live"]
 assert live["process"]["pid"] == pid and live["sample_count"] == 0

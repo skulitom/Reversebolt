@@ -4,6 +4,7 @@ use crate::{
     Result,
     coverage::{self, BatchSummary, Chunk, Coverage, Ranges},
     discovery::{Candidate, discover},
+    prediction::{self, FrozenCandidate, PredictionCheck},
     visual::{self, FrameRef, ObservationInput, VisualTrack},
 };
 use serde::{Deserialize, Serialize};
@@ -151,6 +152,8 @@ pub struct MemoryRead {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
     #[serde(default)]
+    pub prediction_check: Option<PredictionCheck>,
+    #[serde(default)]
     pub coverage: Coverage,
     #[serde(default)]
     pub investigation_id: String,
@@ -191,6 +194,10 @@ impl LiveSession {
     pub fn refresh_connection(&mut self) -> bool {
         if self.view.connected && !self.target.alive() {
             self.view.connected = false;
+            if let Some(check) = &mut self.view.prediction_check {
+                check.invalidated = Some("The original process exited.".into());
+            }
+            let _ = self.save_prediction_check();
             self.view.phase =
                 "The application closed. Connect again to start a new investigation.".into();
             for track in &mut self.view.tracks {
@@ -222,6 +229,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            prediction_check: None,
             coverage: Coverage {
                 batch: 1,
                 selected_unique_bytes: planned_bytes as u64,
@@ -459,6 +467,20 @@ impl LiveSession {
             "Captured {number} moments. {} screen-number tracks. Correlation needs at least 12 varied observations.",
             self.view.tracks.len()
         );
+        self.update_prediction_check(true);
+        Ok(())
+    }
+
+    /// Automatic first-pass reporting uses the same captures and matcher.
+    /// Insufficient variation is a normal observation result, not a failed capture.
+    pub fn capture_for_report(&mut self) -> Result<()> {
+        self.capture()?;
+        if self.view.sample_count >= 12
+            && self.view.prediction_check.is_none()
+            && let Err(reason) = self.correlate()
+        {
+            self.view.phase = format!("Observations collected; no comparison yet. {reason}");
+        }
         Ok(())
     }
 
@@ -622,6 +644,7 @@ impl LiveSession {
         self.view.frames.clear();
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
+        self.view.prediction_check = None;
         self.image_epoch += 1;
         self.screen_size = None;
         self.view.phase = format!(
@@ -677,6 +700,7 @@ impl LiveSession {
         if changed {
             self.save_visual_evidence(&tracks)?;
             self.view.visual_tracks = tracks;
+            self.update_prediction_check(false);
         }
         Ok(changed)
     }
@@ -697,7 +721,201 @@ impl LiveSession {
         write_evidence(&self.directory.join("evidence.json"), &bytes)
     }
 
+    /// Freeze one series' existing candidates before any prospective samples.
+    /// A stale call cannot freeze a different series, batch or fitting interval.
+    pub fn start_prediction_check(
+        &mut self,
+        investigation: &str,
+        batch: usize,
+        after_frame: usize,
+        source: prediction::Source,
+        track_id: usize,
+    ) -> Result<()> {
+        if self.refresh_connection() || !self.view.connected {
+            return Err("The selected process closed.".into());
+        }
+        if investigation != self.view.investigation_id
+            || batch != self.view.coverage.batch
+            || after_frame != self.view.sample_count
+        {
+            return Err(
+                "The investigation, batch or capture count changed. Read status again.".into(),
+            );
+        }
+        if self.view.prediction_check.is_some() {
+            return Err("This batch already has frozen predictions. Keep collecting evidence or move to another memory batch.".into());
+        }
+        let last_frame = MAX_SAMPLES.min(RETAINED_MEMORY_BUDGET / self.view.planned_bytes.max(1));
+        if after_frame < 12 || last_frame.saturating_sub(after_frame) < prediction::MIN_FRESH {
+            return Err("A prediction check needs at least four captures remaining after comparison. Compare after 12 moments in a fresh batch.".into());
+        }
+        let (label, matches) = match source {
+            prediction::Source::Ocr => self
+                .view
+                .tracks
+                .iter()
+                .find(|t| t.id == track_id && t.active)
+                .map(|t| (t.label.clone(), t.matches.clone())),
+            prediction::Source::External => self
+                .view
+                .visual_tracks
+                .iter()
+                .find(|t| t.id == track_id && t.active)
+                .map(|t| (t.label.clone(), t.matches.clone())),
+        }
+        .ok_or("That observation series is not active.")?;
+        if matches.is_empty() || matches.len() > 200 {
+            return Err("Compare changes to obtain candidates for this series first.".into());
+        }
+        let mut candidates = vec![];
+        for candidate in matches {
+            let address = u64::from_str_radix(candidate.address.trim_start_matches("0x"), 16)
+                .map_err(|_| "Invalid candidate address.")?;
+            let chunk = self
+                .plan
+                .iter()
+                .find(|c| c.address <= address && address < c.address + c.length as u64)
+                .ok_or("Candidate is outside its memory batch.")?;
+            let offset = (address - chunk.address) as usize;
+            if offset + candidate.mapping.kind.width() > chunk.length
+                || self.invalid_chunks.contains(&chunk.address)
+            {
+                return Err("Candidate memory is no longer available in this batch.".into());
+            }
+            candidates.push(FrozenCandidate {
+                address: candidate.address,
+                chunk_address: chunk.address,
+                offset_in_chunk: offset,
+                mapping: candidate.mapping,
+                invalidated: None,
+                samples: vec![],
+            });
+        }
+        let check = PredictionCheck {
+            id: uuid::Uuid::new_v4().to_string(),
+            investigation_id: investigation.into(),
+            batch,
+            epoch: self.image_epoch,
+            source,
+            track: track_id,
+            label,
+            after_frame,
+            last_frame,
+            tolerance: prediction::TOLERANCE,
+            basis: self.view.frames.clone(),
+            invalidated: None,
+            candidates,
+        };
+        // Prepare the frozen evidence before publishing it. A failed save cannot
+        // silently start a new prospective interval on a later retry.
+        self.persist_prediction_check(&check)?;
+        self.view.prediction_check = Some(check);
+        self.view.phase = "Predictions frozen. Capture at least four more moments: include a value staying still and a distinct change. Continue normal gameplay; no memory edits are made.".into();
+        Ok(())
+    }
+
+    fn persist_prediction_check(&self, check: &PredictionCheck) -> Result<()> {
+        let bytes = serde_json::to_vec_pretty(&serde_json::json!({"schema_version":1,
+            "process":self.view.process, "check":check,
+            "scope":"Historical frozen predictions. Non-atomic captures, provisional observations and unverified allocation continuity. Never editing authority."}))
+            .map_err(|e| e.to_string())?;
+        write_evidence(&self.directory.join("prediction-check.json"), &bytes)
+    }
+
+    fn save_prediction_check(&self) -> Result<()> {
+        if let Some(check) = &self.view.prediction_check {
+            self.persist_prediction_check(check)?;
+        }
+        Ok(())
+    }
+
+    fn update_prediction_check(&mut self, captured: bool) {
+        let Some(check) = &mut self.view.prediction_check else {
+            return;
+        };
+        if check.epoch != self.image_epoch {
+            check.invalidated = Some(
+                "Image geometry changed; observation identity is no longer comparable.".into(),
+            );
+        }
+        let number = self.view.sample_count;
+        if captured && number > check.after_frame && number <= check.last_frame {
+            for candidate in &mut check.candidates {
+                if self.invalid_chunks.contains(&candidate.chunk_address) {
+                    candidate.invalidated =
+                        Some("Memory mapping changed or became unavailable.".into());
+                }
+                let bytes = self
+                    .snapshots
+                    .last()
+                    .and_then(|s| s.get(&candidate.chunk_address))
+                    .and_then(|b| {
+                        b.get(
+                            candidate.offset_in_chunk
+                                ..candidate.offset_in_chunk + candidate.mapping.kind.width(),
+                        )
+                    })
+                    .map(|b| b.to_vec());
+                let predicted = bytes
+                    .as_ref()
+                    .and_then(|b| candidate.mapping.kind.read(b))
+                    .map(|x| candidate.mapping.slope * x + candidate.mapping.intercept)
+                    .filter(|p| p.is_finite());
+                let read = self
+                    .receipts
+                    .last()
+                    .and_then(|reads| {
+                        reads
+                            .iter()
+                            .find(|r| r.address == format!("0x{:X}", candidate.chunk_address))
+                    })
+                    .cloned();
+                candidate.samples.push(prediction::Sample {
+                    frame: number,
+                    image: self
+                        .view
+                        .frames
+                        .iter()
+                        .find(|f| f.number == number)
+                        .cloned(),
+                    bytes,
+                    read,
+                    predicted,
+                    observed: None,
+                    outcome: prediction::Outcome::Pending,
+                });
+            }
+        }
+        let values = match check.source {
+            prediction::Source::Ocr => self
+                .view
+                .tracks
+                .iter()
+                .find(|t| t.active && t.id == check.track)
+                .map(|t| t.samples.clone()),
+            prediction::Source::External => self
+                .view
+                .visual_tracks
+                .iter()
+                .find(|t| t.active && t.id == check.track)
+                .map(VisualTrack::numeric_samples),
+        };
+        check.observe(&values.unwrap_or_default());
+        self.view.phase = check.summary();
+        if let Err(error) = self.save_prediction_check() {
+            if let Some(check) = &mut self.view.prediction_check {
+                check.invalidated =
+                    Some(format!("Prediction evidence could not be saved: {error}"));
+            }
+            self.view.phase =
+                format!("Prediction check invalidated: evidence could not be saved. {error}");
+        }
+    }
+
     pub fn correlate(&mut self) -> Result<()> {
+        if self.view.prediction_check.is_some() {
+            return Err("Predictions are frozen in this batch. New captures challenge them without refitting. Search more memory for a new discovery batch.".into());
+        }
         if self.refresh_connection() || !self.view.connected {
             return Err("The selected process has exited.".into());
         }
@@ -736,7 +954,7 @@ impl LiveSession {
             track.matches.clear();
         }
         if varying.is_empty() {
-            return Err("Reversebolt could not follow a changing number across enough captures. Review missing or uncertain readings, or add image-grounded observations, then capture more moments.".into());
+            return Err("No reliable changing number has been observed yet. More varied observations are needed before comparison.".into());
         }
         let mut analyzed = 0usize;
         for chunk in &self.plan {

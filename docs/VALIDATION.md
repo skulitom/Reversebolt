@@ -1,6 +1,45 @@
 # Preview 0.1.0 validation — 2026-10-20
 
-## Current observation jobs preview: 0.1.0-20261020-214537
+## Automatic discovery, control cards and frozen predictions
+
+Sixty-seven workspace tests pass, including automatic connection scheduling,
+failed connection and explicit opt-out behavior, fixed predictions, late
+observations and invalidation. Strict Clippy and formatting pass. Application
+and prediction integration tests were rerun after the initial presentation
+change; the final card layout passed strict Clippy and native UI checks. The
+release practice and real MCP suite passes with 21 tools.
+
+One real MCP connection to an owned WinForms fixture collected 16/16 expected
+values and compared 3.9 MiB, without a capture, start-job or correlate command.
+It found zero hypotheses. Pause, resume, cancel, completion limits and manual
+opt-out passed. The desktop picker independently started its own automatic pass;
+UI Automation confirmed automatic observation and secondary manual controls. This is
+orchestration evidence, not game discovery. See
+[the detailed report](research/FROZEN_PREDICTIONS.md).
+
+Blue Prince's four initial correlations all contradicted later observations
+under the frozen mappings. Its selected OCR counter scored 12 correct, 2 missing
+and 2 wrong across 16 captures. Agent image interpretations remained separate.
+No gameplay control or write was verified. Saved artifacts retain the failures.
+
+Testing preference: prioritize automated checks, recorded-input replay and owned
+windows. Live-game interaction and manual image inspection should resolve a
+specific unresolved question, not substitute for automated regression coverage.
+
+The final native UI check verified a Quantity card with its observed value,
+Learning state and Inspect explanation. UI Automation changed a verified
+practice value to 123 through the numeric widget and Apply; the engine confirmed
+the change and Undo restored 34. No game writes occurred. Evidence:
+`test-results/automatic-report-v1/cards-final/ui-check.json`.
+
+Preview `0.1.0-20261020-233851` is running on the normal desktop. All seven prior
+activity entries were preserved. Published executable hashes match the tested
+release, model hashes match their manifest, and the desktop shortcut resolves
+to this version. The final published-build smoke passed:
+`test-results/smoke-3e6cd17d/report.json`. Delivery evidence is
+`test-results/automatic-report-v1/desktop-delivery.json`.
+
+## Previous observation jobs preview: 0.1.0-20261020-214537
 
 Fifty-three workspace tests, strict Clippy and formatting pass. Seven app tests
 and the release practice/MCP suite were rerun after the final UI wording change.
