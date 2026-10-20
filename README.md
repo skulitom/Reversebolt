@@ -112,6 +112,9 @@ overwritten. No global MCP client settings are changed.
   and human takeover; production plans currently contain captures only.
 - `reversebolt-vision`: local PP-OCRv6 inference, word geometry and bounded
   temporal regions through the Rust RTen runtime.
+- `reversebolt-observer`: experimental image-only local model adapter and
+  offline replay runner; not enabled in the desktop or MCP. See its
+  [measured results and limits](docs/research/LOCAL_OBSERVER.md).
 
 The current practice adapter is deliberately separate from the discovery
 algorithm. Native capture uses Windows Graphics Capture with a PrintWindow

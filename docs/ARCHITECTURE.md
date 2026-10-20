@@ -172,6 +172,15 @@ uncertainty remain required work. Memory coverage and capture-only jobs use
 reviewed integrations of their isolated prototypes; neither implies semantic
 understanding or general causal experiments.
 
+The experimental `reversebolt-observer` crate tests a bounded local Ollama
+adapter independently of the live engine. It accepts only ordered images,
+uses an installed vision model, retains provenance and validates structured
+proposals. It has no target handle, tools or write authority. Replay shows useful
+actor/component proposals alongside frequent false categories and poor small
+object localization. It is not yet wired into automatic observation or MCP;
+that requires proposal verification and durable model-job ownership. See
+[local-model evaluation](research/LOCAL_OBSERVER.md).
+
 ## Observation job controller
 
 The `reversebolt-session-jobs` crate supplies bounded durable state transitions,

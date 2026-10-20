@@ -1,0 +1,464 @@
+{
+  "schema_version": 1,
+  "scope": "Replay of existing annotated clips; no fresh or unseen-game claim. Score original dynamic actor/component boxes PLUS supplied static_reference boxes. This differs from the prior activity benchmark; static actors are valid here. Single-rater +/-2 processing pixels. Rejected outputs count as no detections. Other unlabeled object types cannot establish precision for all useful gameplay objects.",
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "server_version": "0.40.6",
+  "options": {
+    "num_ctx": 8192,
+    "num_predict": 1500,
+    "seed": 42,
+    "temperature": 0
+  },
+  "thinking_disabled": true,
+  "pairs": 53,
+  "accepted": 50,
+  "negative_pairs": 5,
+  "negative_pairs_with_proposals": 2,
+  "median_ms": 4864,
+  "scores": {
+    "0.3": {
+      "tp": 51,
+      "fp": 38,
+      "fn": 7,
+      "ignored": 1,
+      "actor_tp": 23,
+      "actor_total": 29,
+      "component_tp": 21,
+      "component_total": 22,
+      "static_reference_tp": 7,
+      "static_reference_total": 7,
+      "precision": 0.5730337078651685,
+      "recall": 0.8793103448275862
+    },
+    "0.5": {
+      "tp": 45,
+      "fp": 44,
+      "fn": 13,
+      "ignored": 1,
+      "actor_tp": 19,
+      "actor_total": 29,
+      "component_tp": 19,
+      "component_total": 22,
+      "static_reference_tp": 7,
+      "static_reference_total": 7,
+      "precision": 0.5056179775280899,
+      "recall": 0.7758620689655172
+    }
+  },
+  "clips": [
+    {
+      "clip": "dev_c_idle",
+      "pairs": 7,
+      "metrics": {
+        "0.3": {
+          "tp": 7.0,
+          "fp": 8.0,
+          "fn": 0.0,
+          "actor_tp": 0.0,
+          "actor_total": 0.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 7.0,
+          "static_reference_total": 7.0
+        },
+        "0.5": {
+          "tp": 7.0,
+          "fp": 8.0,
+          "fn": 0.0,
+          "actor_tp": 0.0,
+          "actor_total": 0.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 7.0,
+          "static_reference_total": 7.0
+        }
+      }
+    },
+    {
+      "clip": "dev_c_move",
+      "pairs": 11,
+      "metrics": {
+        "0.3": {
+          "tp": 8.0,
+          "fp": 14.0,
+          "fn": 2.0,
+          "actor_tp": 8.0,
+          "actor_total": 10.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        },
+        "0.5": {
+          "tp": 7.0,
+          "fp": 15.0,
+          "fn": 3.0,
+          "actor_tp": 7.0,
+          "actor_total": 10.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        }
+      }
+    },
+    {
+      "clip": "dev_q_demo",
+      "pairs": 11,
+      "metrics": {
+        "0.3": {
+          "tp": 15.0,
+          "fp": 3.0,
+          "fn": 0.0,
+          "actor_tp": 4.0,
+          "actor_total": 4.0,
+          "component_tp": 11.0,
+          "component_total": 11.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        },
+        "0.5": {
+          "tp": 14.0,
+          "fp": 4.0,
+          "fn": 1.0,
+          "actor_tp": 3.0,
+          "actor_total": 4.0,
+          "component_tp": 11.0,
+          "component_total": 11.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        }
+      }
+    },
+    {
+      "clip": "test_c_transition",
+      "pairs": 13,
+      "metrics": {
+        "0.3": {
+          "tp": 7.0,
+          "fp": 9.0,
+          "fn": 2.0,
+          "actor_tp": 7.0,
+          "actor_total": 9.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        },
+        "0.5": {
+          "tp": 6.0,
+          "fp": 10.0,
+          "fn": 3.0,
+          "actor_tp": 6.0,
+          "actor_total": 9.0,
+          "component_tp": 0.0,
+          "component_total": 0.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        }
+      }
+    },
+    {
+      "clip": "test_q_demo",
+      "pairs": 11,
+      "metrics": {
+        "0.3": {
+          "tp": 14.0,
+          "fp": 4.0,
+          "fn": 3.0,
+          "actor_tp": 4.0,
+          "actor_total": 6.0,
+          "component_tp": 10.0,
+          "component_total": 11.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        },
+        "0.5": {
+          "tp": 11.0,
+          "fp": 7.0,
+          "fn": 6.0,
+          "actor_tp": 3.0,
+          "actor_total": 6.0,
+          "component_tp": 8.0,
+          "component_total": 11.0,
+          "static_reference_tp": 0.0,
+          "static_reference_total": 0.0
+        }
+      }
+    }
+  ],
+  "paired_scope": "Conditional on BOTH image boxes matching the same annotated visible entity at IoU >=0.3. Units are 320x180 annotation pixels, with about +/-2 pixel label uncertainty. No continuous identity, world speed or animation rule is established. Static references lacking earlier labels are excluded, not copied backward.",
+  "paired_matches": 43,
+  "paired_candidates": 44,
+  "mean_endpoint_error_px": 1.3041935135345082,
+  "stationary_pairs": 32,
+  "stationary_mean_predicted_displacement_px": 0.32790880419788515,
+  "moving_pairs": 11,
+  "moving_mean_endpoint_error_px": 4.144294486150138,
+  "moving_max_endpoint_error_px": 7.868170054084984,
+  "rejections": [
+    {
+      "clip": "test_c_transition",
+      "frame": 10,
+      "rejection": "Invalid observation size or summary."
+    },
+    {
+      "clip": "test_c_transition",
+      "frame": 20,
+      "rejection": "Invalid observation size or summary."
+    },
+    {
+      "clip": "test_c_transition",
+      "frame": 30,
+      "rejection": "Invalid observation size or summary."
+    }
+  ],
+  "measured_run": {
+    "model": "qwen3.8:latest",
+    "binary_sha256": "7499a00ac854562d37f489a63d172d1a575b4a41fb00b219285c3275c71878b1",
+    "source_sha256": {
+      "crates\\reversebolt-observer\\src\\lib.rs": "7bfc956f9f48acc552a970a52fd789056ddec13e4110b255252f69dcda0fbcda",
+      "crates\\reversebolt-observer\\src\\main.rs": "04e70c2c2b55ebaaa64cc52dd9f9a990dc57bfba291d1059b13cfad6cbad92c2"
+    },
+    "clips": [
+      "dev_q_demo",
+      "dev_c_idle",
+      "dev_c_move",
+      "test_q_demo",
+      "test_c_transition"
+    ],
+    "first": 0,
+    "script_sha256": "3618c8855a914c41d4d227b132f4b17dff4169b6e164ec11d3b30a6e769302bb"
+  },
+  "final_binary_sha256": "af2532c7edd97ea8c5563cb90f6d9e9a3791914a678cfa4f0cde2dd9e4ae879a",
+  "final_change": "CLI input/output guards and metadata HTTP timeout only; prompt/schema/options unchanged. Final real-model smoke matched the measured first-pair interpretation exactly.",
+  "results_sha256": "2fdf14d996cdf15bb4eec6546a90713e686bccf2721161a2bf6ddef42f6b0119",
+  "paired_results_sha256": "e8a399df4bd3431e342ad5a2ae42d96c35d6c9a6ded991289e69bab65b5f630c",
+  "raw_receipts": [
+    {
+      "file": "dev_c_idle-00010.receipt.json",
+      "sha256": "317b3174f01be273e66f8333b8e444be4204911d23011ed9008265c2e11297a6"
+    },
+    {
+      "file": "dev_c_idle-00020.receipt.json",
+      "sha256": "9f7dfaa2c271afe12d94ee1e806513b58c4fe98ee6166bd420d8c4f48605647d"
+    },
+    {
+      "file": "dev_c_idle-00030.receipt.json",
+      "sha256": "3e4d69ef2b9353b35892e026c002d3cd94db34ab4c7bba2c4fe2a0ae04f340c8"
+    },
+    {
+      "file": "dev_c_idle-00040.receipt.json",
+      "sha256": "d07a949a38828ff1fb4d85e3312f874956db5723c6a6f98c0fbee63d3a9dbdb2"
+    },
+    {
+      "file": "dev_c_idle-00050.receipt.json",
+      "sha256": "56f9a58b14b47b93f946b116c6f7a79fe0c978fd4bf5bdd7ad4f07056dd0eafb"
+    },
+    {
+      "file": "dev_c_idle-00060.receipt.json",
+      "sha256": "0439f52f3ed7e49137781ebdb8df34c957d4ab668d3064c1737a6f390c43c3b9"
+    },
+    {
+      "file": "dev_c_idle-00070.receipt.json",
+      "sha256": "ad8b5ad88ba6a87ae35fa6e33035562212f4c44db43a3210505c794aa1af84c9"
+    },
+    {
+      "file": "dev_c_move-00010.receipt.json",
+      "sha256": "2160d64f7b01693f8c5a4ae072289f80e1bbfeebd92a9665daf8a69ea258e03e"
+    },
+    {
+      "file": "dev_c_move-00020.receipt.json",
+      "sha256": "99cd641fc8b322e68d90c36802ab4dc1d3e3460136a3f481e2d84dbbeb960633"
+    },
+    {
+      "file": "dev_c_move-00030.receipt.json",
+      "sha256": "47c368de44b41c91ef9ba583ba4ba2f72a53408b26074acb3b097b9120c02295"
+    },
+    {
+      "file": "dev_c_move-00040.receipt.json",
+      "sha256": "497225be335d3b0a327d8ce707a890691ca2514515c91a7bca2cfb44fe22e637"
+    },
+    {
+      "file": "dev_c_move-00050.receipt.json",
+      "sha256": "c2cf67f445627dd3778136473261e8ef6c3c7f357be6d103867b7d45286004f6"
+    },
+    {
+      "file": "dev_c_move-00060.receipt.json",
+      "sha256": "9dad946605cad8abffa76c6a4fa0ea2a26459439570f01232939519660f44ca4"
+    },
+    {
+      "file": "dev_c_move-00070.receipt.json",
+      "sha256": "9ffee10f4577892ccc563c797e3bd849a08045b88dd523c2affa668a175cb344"
+    },
+    {
+      "file": "dev_c_move-00080.receipt.json",
+      "sha256": "c05cc20b9cda06a8809bf2e3f57a30055ad8cf39fb39de120c0a9244343c275e"
+    },
+    {
+      "file": "dev_c_move-00090.receipt.json",
+      "sha256": "06b806eff47631c761cf1d0e3e6d1f4e89a1cd9b2a076c6f517023b4dbc1d4eb"
+    },
+    {
+      "file": "dev_c_move-00100.receipt.json",
+      "sha256": "edb85ad9a5a81dbc8fcfa55661e833074b148f9c643a401ddc3f41f239bf46d7"
+    },
+    {
+      "file": "dev_c_move-00110.receipt.json",
+      "sha256": "39dc2fc9246c99278491dba0e597ea8b77afc436d8d737649e82285be66f854c"
+    },
+    {
+      "file": "dev_q_demo-00010.receipt.json",
+      "sha256": "f81e2910bb394c3cd549338a686ff2f0b10af7b085bc48d8bf3c8cbd33975e17"
+    },
+    {
+      "file": "dev_q_demo-00020.receipt.json",
+      "sha256": "961d26ad41dc5482d30d4fa453895f81633676f93f6055662ef0726b68fb661d"
+    },
+    {
+      "file": "dev_q_demo-00030.receipt.json",
+      "sha256": "eea42012d19e7299e4b8b815ed4221e11d3bfa0aabc70fd6786f82fb2ce0063a"
+    },
+    {
+      "file": "dev_q_demo-00040.receipt.json",
+      "sha256": "c09d74eb59794e4ed5a45434088761d552b597376b1df1015875dd77200e3f37"
+    },
+    {
+      "file": "dev_q_demo-00050.receipt.json",
+      "sha256": "82c656107dc777a0724cf5d643fb53801f45b06b8372d8672cf63497f19196ef"
+    },
+    {
+      "file": "dev_q_demo-00060.receipt.json",
+      "sha256": "28d1bccc3a9484189ef45f3311d7667fa3a9af9fc95a3c2f8f71574df33194f8"
+    },
+    {
+      "file": "dev_q_demo-00070.receipt.json",
+      "sha256": "20fcff5070f2302685b65cc44e77714fafc8d038337a79de2572dc43616ccb26"
+    },
+    {
+      "file": "dev_q_demo-00080.receipt.json",
+      "sha256": "6235d6d8df0f028b4820ca615288849c915caab528fe0de11764d32639271876"
+    },
+    {
+      "file": "dev_q_demo-00090.receipt.json",
+      "sha256": "3a85664d69f7761c0e13c216b246b2ec9fc4cdbd5c4af61f016c70780b015075"
+    },
+    {
+      "file": "dev_q_demo-00100.receipt.json",
+      "sha256": "5e72b9d22fca080eeb4ebcbc12530b290bc07c8e10cd735d854039f395a1874f"
+    },
+    {
+      "file": "dev_q_demo-00110.receipt.json",
+      "sha256": "3e4d6303d4c78092137dadf9ebc5f32023469021398c5820b27eddebee94a3d8"
+    },
+    {
+      "file": "test_c_transition-00010.receipt.json",
+      "sha256": "163a679057efebef97e2fad3ccebd7c122c6842901c7ce3013217e5b720ec3f7"
+    },
+    {
+      "file": "test_c_transition-00020.receipt.json",
+      "sha256": "115e3dfec1aefcabac3cad8330d113cff0aef1de1c4cb68b3c5e11de2e1adf29"
+    },
+    {
+      "file": "test_c_transition-00030.receipt.json",
+      "sha256": "2b10f745a4005eeab140f1d247b1e1d9b70e230e814b3b8653dae5298b342eec"
+    },
+    {
+      "file": "test_c_transition-00040.receipt.json",
+      "sha256": "8e13585a581f0a7d29bcfbb3303c0c46f7bdbc97f8c01953db2975cd5c10903c"
+    },
+    {
+      "file": "test_c_transition-00050.receipt.json",
+      "sha256": "574ff29309309e6b466a575e3bb643bcefc0e5c6601cca9b87826f88b705ddfb"
+    },
+    {
+      "file": "test_c_transition-00060.receipt.json",
+      "sha256": "59e57c8137a148a1c12ee6fffdc66d8569d0733d508a892fde62395f3296b303"
+    },
+    {
+      "file": "test_c_transition-00070.receipt.json",
+      "sha256": "de65a2403dc5f4b97df4fb8ea69c7305115db589539c4bee6a848afdee1b4b74"
+    },
+    {
+      "file": "test_c_transition-00080.receipt.json",
+      "sha256": "7d09c6a3b8498366ba7dd37ce99b20cd477c769a84e4646fd4b0e9e8304053b2"
+    },
+    {
+      "file": "test_c_transition-00090.receipt.json",
+      "sha256": "796f6339d034c9d2add69aad01e5ab117375bf60b4161ee0730d7576646d39aa"
+    },
+    {
+      "file": "test_c_transition-00100.receipt.json",
+      "sha256": "44c0d64210d56b3989e8d2bc0ea40b87c3668c1a73989fc6f668a657cf04e2e8"
+    },
+    {
+      "file": "test_c_transition-00110.receipt.json",
+      "sha256": "78559b2fc048adccf924b0c122e5f1245b914ecda2f46a9ccb981099b55e3b0e"
+    },
+    {
+      "file": "test_c_transition-00120.receipt.json",
+      "sha256": "d6ffb8f9031bb4a10f435bce4a83cc85c4f93bbcda6bbaccfb69ef37d142c4d4"
+    },
+    {
+      "file": "test_c_transition-00130.receipt.json",
+      "sha256": "b55ec4bdd37f319ffe17cdc1269cb3a6350293235a4f6553861aab0c30057b0c"
+    },
+    {
+      "file": "test_q_demo-00010.receipt.json",
+      "sha256": "6b00f329d065aa77fb5bdef42fea44668f8a5ab8912159d5468407f8e31d82b5"
+    },
+    {
+      "file": "test_q_demo-00020.receipt.json",
+      "sha256": "a8fb6756e624ec6377672b52287db4cef0f6422f068b88b01b9f303715e4f312"
+    },
+    {
+      "file": "test_q_demo-00030.receipt.json",
+      "sha256": "9925fe5ecf9225e5c76e48c4a9c96d70a13abfefb67cbb7c33cfec947f4c13a4"
+    },
+    {
+      "file": "test_q_demo-00040.receipt.json",
+      "sha256": "08ed092872540db4c8d334e712186297088f5fbfbd35dc7f31b2be0e322bb801"
+    },
+    {
+      "file": "test_q_demo-00050.receipt.json",
+      "sha256": "5cb86e9c7fee049dd945cd2814a98c836de6b54a124fc5f8c3b17574ddd22566"
+    },
+    {
+      "file": "test_q_demo-00060.receipt.json",
+      "sha256": "ba72d308c10b70ef8617e181a7d29b749d89fe9367a7e14c67634a508615c7de"
+    },
+    {
+      "file": "test_q_demo-00070.receipt.json",
+      "sha256": "4254624ae50d16b09a2f3d42f6fc51485e299e4c3d7a817a5fe41cfaa62477ff"
+    },
+    {
+      "file": "test_q_demo-00080.receipt.json",
+      "sha256": "80e4d2fda527968faa1b2a942cd7d48d0293d241f16231b1121f95117fd5f80d"
+    },
+    {
+      "file": "test_q_demo-00090.receipt.json",
+      "sha256": "31cf7355a6d1380b80ed633fe11a98a4e818120922aa84973e02cee84a96cd0a"
+    },
+    {
+      "file": "test_q_demo-00100.receipt.json",
+      "sha256": "9924be713da06e96dc6a58e11ff7174e837bd92c1ec6c6051a05c35713a0f931"
+    },
+    {
+      "file": "test_q_demo-00110.receipt.json",
+      "sha256": "810db971351b3e60be6c4f9781afe48ddff607e562a099997181eb4e4c4126c6"
+    }
+  ],
+  "raw_root": "test-results/local-observer-v1/qwen-categorized-all",
+  "manual_source_images_viewed": 1,
+  "new_game_inputs": 0,
+  "new_game_captures": 0,
+  "automatic_desktop_enabled": false,
+  "limitations": [
+    "Replay of previously seen clips and labels; prompt revised after first-ten-pair feasibility.",
+    "Labels cover actors/components/static references, not all useful game objects.",
+    "Three negative title frames were structurally rejected for summary length; these are not semantic abstentions.",
+    "Geometry accuracy does not validate descriptions, object identity, memory matching or editability.",
+    "No model weights or commercial images are redistributed."
+  ]
+}

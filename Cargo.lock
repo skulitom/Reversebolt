@@ -2857,6 +2857,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "reversebolt-observer"
+version = "0.1.0"
+dependencies = [
+ "base64 0.22.1",
+ "image",
+ "reqwest",
+ "reversebolt-core",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "reversebolt-session-jobs"
 version = "0.1.0"
 dependencies = [

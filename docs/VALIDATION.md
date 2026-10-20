@@ -1,5 +1,18 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Experimental local semantic observer — 2026-10-21
+
+The 78-test workspace suite, the subsequently added CLI resource-limit test and
+all observer tests pass (79 total); strict workspace and final observer Clippy
+pass. A real local model completed 53 archived image pairs: 50 accepted
+structures, 3 rejected overlong summaries. Strict localization matched 45 of 58
+annotated targets with 44 unmatched proposals. The full replay, corrected scope
+for static actors, conditional movement errors and model/source hashes are in
+[local observer validation](research/LOCAL_OBSERVER.md). One final real-model
+smoke after transport/CLI guards reproduced its matching measured interpretation.
+The observer is not enabled as an automatic desktop source. No new game input
+or capture was used, and the running desktop preview was left available.
+
 ## Faster visual sampling — 2026-10-21
 
 The 75-test workspace suite plus a newly added visual-mode matching integration

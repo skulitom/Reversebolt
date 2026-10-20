@@ -341,3 +341,21 @@ Desktop preview `0.1.0-20261021-000945` was delivered with all seven history
 entries preserved exactly. Executable/model hashes and the launcher were
 verified; its 23-tool published-build smoke passed. Delivery proof is
 `test-results/visual-sampling-v1/desktop-delivery.json`.
+
+## 2026-10-21 — local semantic observer replay: still 20%
+
+A new Rust observer can run already installed local vision models over ordered
+images, retaining model/image/prompt provenance and rejecting invalid outputs.
+It does not receive game identities, labels, memory or game-specific layouts.
+The categorized full replay covers 53 previously annotated pairs from five
+Quake/Celeste clips. At strict IoU 0.5 it matches 45/58 visible targets with 44
+unmatched proposals; 3/53 outputs fail the structural contract. Conditional
+motion error on the 11 moving matched pairs is 4.14 annotation pixels.
+
+This is meaningful semantic-proposal research but insufficient for automatic
+control publication. The observer remains experimental, with no causal/editing
+or unseen-game claim. All 79 tests pass (78 workspace tests plus the final CLI
+guard test); strict Clippy passes. The desktop preview remains available.
+The stable weighted goal estimate stays **20 / 100**. Next: independent proposal
+verification and tighter grounding before automatic shared-session integration.
+See [local observer evidence and scoring corrections](research/LOCAL_OBSERVER.md).
