@@ -138,6 +138,7 @@ impl EngineHandle {
                         | "list_memory_processes"
                         | "read_capture"
                         | "read_sequence"
+                        | "read_play_evidence"
                         | "read_change_evidence"
                         | "read_runtime_test"
                 );
@@ -169,6 +170,7 @@ impl EngineHandle {
                             | "read_capture"
                             | "submit_observation"
                             | "read_sequence"
+                            | "read_play_evidence"
                             | "read_change_evidence"
                             | "submit_temporal_observation"
                             | "set_observed_value"
@@ -227,6 +229,7 @@ impl EngineHandle {
                                 | "capture"
                                 | "submit_observation"
                                 | "read_sequence"
+                                | "read_play_evidence"
                                 | "read_change_evidence"
                                 | "submit_temporal_observation"
                                 | "set_observed_value"
@@ -637,6 +640,12 @@ fn native_command(
                 "Updated the local visual observer for future automatic jobs.",
             );
         }
+        "read_play_evidence" => {
+            return crate::play_evidence::read(
+                engine.live.as_ref().ok_or("Capture play first.")?,
+                &command.args,
+            );
+        }
         "read_sequence" => {
             let session = engine
                 .live
@@ -818,11 +827,9 @@ fn native_command(
                 .get("mode")
                 .map(|value| serde_json::from_value(value.clone()))
                 .transpose()
-                .map_err(|_| "Choose capture mode full or visual.")?
+                .map_err(|_| "Choose capture mode full, visual or play.")?
                 .unwrap_or_default();
-            if mode == reversebolt_core::live::CaptureMode::Visual
-                && command.args["compare"] == true
-            {
+            if !mode.is_full() && command.args["compare"] == true {
                 return Err("Visual sampling skips text recognition; compare observations separately when enough evidence exists.".into());
             }
             let session = engine

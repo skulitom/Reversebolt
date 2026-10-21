@@ -168,6 +168,7 @@ impl Session {
                     | "read_runtime_inventory"
                     | "read_capture"
                     | "read_sequence"
+                    | "read_play_evidence"
                     | "read_change_evidence"
             )
         {

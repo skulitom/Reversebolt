@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "artifact_root": "test-results\\play-evidence-v2",
+  "frozen_sha256": "109d824aedb56ede72449b1e4c311a0e601843d226e62c4d7a646d499db4d362",
+  "native_checks": 18,
+  "workspace_tests": 268,
+  "mcp_tools": 52,
+  "frames": 30,
+  "evaluator_holds": 6,
+  "manual_screenshots": 0,
+  "observed_key": {
+    "bounded_episodes": [
+      1,
+      3,
+      7,
+      9
+    ],
+    "episodes": [
+      1,
+      3,
+      7,
+      9
+    ],
+    "key": 68,
+    "key_label": "D",
+    "median_difference": 138.8918918918919,
+    "next_observation": "Inspect the cited before/after images to identify what changed and test whether that consequence fits a grounded hypothesis. Do not infer the key's meaning from its name or this metric.",
+    "quiet_median_difference": 0.0
+  },
+  "unknown_intervals": 1,
+  "helper_operations": 3,
+  "helper_receipts": [
+    {
+      "receipt": "case\\data\\runtime\\9928-01dd61a23b6d5c44\\c5355642-d463-4188-8979-600c54d37646\\stdout.jsonl",
+      "sha256": "8a4399a9a4bf496b6ca3d30cfd704468e000a528a315bedbf3c84e613d81adc9",
+      "report_sha256": "334f8917678ed92e21d2f425fa55013e67dc8bc32f7512db2170dfc81b91c98b"
+    },
+    {
+      "receipt": "case\\data\\runtime\\9928-01dd61a23b6d5c44\\c755950e-6dbb-4b02-8267-ca8efeff007c\\stdout.jsonl",
+      "sha256": "3e93765e7d1c9e362bb08e28f083b6aadc9b226113f3714391068e10ebde019a",
+      "report_sha256": "eaa83c84116d556a1418df33891c1704155e5d7489fba3da5f8b3402409d26b1"
+    },
+    {
+      "receipt": "case\\data\\runtime\\9928-01dd61a23b6d5c44\\d9e37b35-ca4b-4c3d-95d6-dd6994c37840\\stdout.jsonl",
+      "sha256": "fecea18a3238e6b08ec42cea2afb4207150259eb1e697db10f1a6ef96a8b182c",
+      "report_sha256": "d74fbb1b6c320cc81402a82ad2d1d8537d854a49d5b445db289f06d779d36fb5"
+    }
+  ],
+  "balanced_pauses": 12,
+  "maximum_stop_to_resume_us": 62,
+  "helper_heap_while_paused": 0,
+  "writes": 0,
+  "children": [
+    {
+      "pid": 9928,
+      "exit_code": 0
+    },
+    {
+      "pid": 85572,
+      "exit_code": 1
+    },
+    {
+      "pid": 50452,
+      "exit_code": 1
+    }
+  ],
+  "preview": "0.1.0-20261021-222348",
+  "desktop_pid": 69200,
+  "history_preserved": 44,
+  "failed_attempt": "test-results/play-evidence-v1/case/failure.json",
+  "limitations": [
+    "Owned explicitly configured renderer; no independent game, semantic, causal or executable-plan claim.",
+    "Automatic first pass is fifteen captures with 500 ms delays after completion, not continuous learning or a promised frame rate.",
+    "Passive response evidence is exposed to agents; local metadata inference does not yet consume it.",
+    "Initial native attempt stopped at an evaluator path error before input; corrected under a new frozen root.",
+    "One repeated suite run failed a storage fault test; unique test directories now prevent PID-reuse collisions, and the final suite passes. The exact prior failure cause was not proven.",
+    "Audit authored after execution; no product thresholds or evaluator input plan changed."
+  ]
+}

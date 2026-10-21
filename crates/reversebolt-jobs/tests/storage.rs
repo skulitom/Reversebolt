@@ -15,16 +15,22 @@ use std::{
 
 fn directory(name: &str) -> PathBuf {
     static NEXT: AtomicUsize = AtomicUsize::new(0);
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("results/test-journals")
-        .join(format!(
+    let parent = Path::new(env!("CARGO_MANIFEST_DIR")).join("results/test-journals");
+    fs::create_dir_all(&parent).unwrap();
+    // Windows can reuse a PID from an earlier test run. Never reopen its journal.
+    loop {
+        let path = parent.join(format!(
             "{}-{}-{}",
             std::process::id(),
             NEXT.fetch_add(1, Ordering::Relaxed),
             name
         ));
-    fs::create_dir_all(&path).unwrap();
-    path
+        match fs::create_dir(&path) {
+            Ok(()) => return path,
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(error) => panic!("Could not create an isolated test journal: {error}"),
+        }
+    }
 }
 
 fn command<J: Journal>(j: &Jobs<J>, action: Action) -> Command {

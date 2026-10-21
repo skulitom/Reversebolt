@@ -122,6 +122,7 @@ fn read_only(action: &str) -> bool {
             | "job_events"
             | "read_capture"
             | "read_sequence"
+            | "read_play_evidence"
             | "read_change_evidence"
             | "read_runtime_test"
             | "search_runtime_values"
@@ -650,7 +651,7 @@ impl Controller {
             .into(),
             source: source.clone(),
             args: json!({"count":if runtime {1} else if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
-                "local_model":model,"task":{"operation":"discover"},
+                "local_model":model,"task":{"operation":"discover"},"observe_play":runtime,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
         };
@@ -1062,6 +1063,17 @@ impl Controller {
                     .filter(|n| (1..=16).contains(n))
                     .ok_or("Use one to sixteen internal-value checks.")
             })? as usize;
+            let observe_play = command
+                .args
+                .get("observe_play")
+                .map(|v| v.as_bool().ok_or("observe_play must be true or false."))
+                .transpose()?
+                .unwrap_or(false);
+            if observe_play
+                && (!matches!(task, reversebolt_core::runtime::Task::Discover) || count != 1)
+            {
+                return Err("Play observation can precede one discovery pass only.".into());
+            }
             let tasks = task.sequence(count)?;
             let interval = command.args.get("interval_ms").map_or(Ok(1000), |v| {
                 v.as_u64()
@@ -1095,9 +1107,36 @@ impl Controller {
                     return Err("No supported runtime is available.".into());
                 }
                 live.runtime.paths(&task)?;
+                if observe_play && live.sample_count + 15 > 20 {
+                    return Err(
+                        "The initial play observation needs fifteen available capture slots."
+                            .into(),
+                    );
+                }
             }
-            job::Action::Submit {
-                steps: tasks
+            let mut steps = vec![];
+            if observe_play {
+                for index in 0..15 {
+                    steps.push(job::Step {
+                        kind: job::Kind::Observe,
+                        payload: serde_json::to_string(&CaptureStep {
+                            runtime: None,
+                            scope: scope.clone(),
+                            delay_ms: if index == 0 { 0 } else { 500 },
+                            source: command.source.clone(),
+                            compare: false,
+                            remaining: 0,
+                            mode: reversebolt_core::live::CaptureMode::Play,
+                            local_model: None,
+                            background_model: false,
+                            change: None,
+                        })
+                        .map_err(|e| e.to_string())?,
+                    });
+                }
+            }
+            steps.extend(
+                tasks
                     .iter()
                     .enumerate()
                     .map(|(index, next_task)| {
@@ -1123,6 +1162,9 @@ impl Controller {
                         })
                     })
                     .collect::<Result<Vec<_>>>()?,
+            );
+            job::Action::Submit {
+                steps,
                 consent: false,
             }
         } else if command.action == "start_observation_job" {
@@ -1131,7 +1173,7 @@ impl Controller {
                 .get("mode")
                 .map(|value| serde_json::from_value(value.clone()))
                 .transpose()
-                .map_err(|_| "Choose capture mode full or visual.")?
+                .map_err(|_| "Choose capture mode full, visual or play.")?
                 .unwrap_or_default();
             let count = command.args["count"].as_u64().unwrap_or(12) as usize;
             let local_model = command
@@ -1198,8 +1240,27 @@ impl Controller {
                     .filter(|j| !j.phase.terminal() && j.binding == binding)
                     .map(|j| j.steps.len() - j.next_step)
                     .sum();
+                let reserved_memory: usize = snapshot
+                    .jobs
+                    .values()
+                    .filter(|j| !j.phase.terminal() && j.binding == binding)
+                    .flat_map(|j| j.steps.iter().skip(j.next_step))
+                    .filter(|s| {
+                        serde_json::from_str::<CaptureStep>(&s.payload).is_ok_and(|s| {
+                            s.runtime.is_none()
+                                && s.mode != reversebolt_core::live::CaptureMode::Play
+                        })
+                    })
+                    .count();
                 if live.sample_count + count + reserved > 20
-                    || (live.sample_count + count + reserved) * live.planned_bytes
+                    || live.retained_bytes
+                        + (reserved_memory
+                            + if mode == reversebolt_core::live::CaptureMode::Play {
+                                0
+                            } else {
+                                count
+                            })
+                            * live.planned_bytes
                         > 512 * 1024 * 1024
                 {
                     return Err("The requested captures exceed this batch's remaining retention budget, including queued jobs.".into());
@@ -2078,7 +2139,7 @@ mod tests {
     }
 
     #[test]
-    fn supported_runtime_automatic_discovery_uses_one_managed_step() {
+    fn supported_runtime_automatic_discovery_watches_play_before_one_managed_step() {
         let mut view = initial_view();
         view.live.as_mut().unwrap().runtime.available = true;
         view.live.as_mut().unwrap().runtime.phase = "available".into();
@@ -2090,8 +2151,13 @@ mod tests {
         let id = receipt["ack"]["job"].as_u64().unwrap();
         let snapshot = c.jobs.snapshot();
         let plan = &snapshot.jobs[&id];
-        assert_eq!(plan.steps.len(), 1);
-        let step: CaptureStep = serde_json::from_str(&plan.steps[0].payload).unwrap();
+        assert_eq!(plan.steps.len(), 16);
+        for raw in &plan.steps[..15] {
+            let step: CaptureStep = serde_json::from_str(&raw.payload).unwrap();
+            assert_eq!(step.mode, reversebolt_core::live::CaptureMode::Play);
+            assert!(step.runtime.is_none() && step.local_model.is_none());
+        }
+        let step: CaptureStep = serde_json::from_str(&plan.steps[15].payload).unwrap();
         assert!(matches!(
             crate::runtime_bridge::load_task(
                 &c.runtime_directory,
@@ -2115,7 +2181,8 @@ mod tests {
         let response = c.start_automatic_observation("agent".into()).unwrap();
         let id = response["ack"]["job"].as_u64().unwrap();
         let snapshot = c.jobs.snapshot();
-        let step: CaptureStep = serde_json::from_str(&snapshot.jobs[&id].steps[0].payload).unwrap();
+        let step: CaptureStep =
+            serde_json::from_str(&snapshot.jobs[&id].steps.last().unwrap().payload).unwrap();
         assert!(step.local_model.is_none());
         assert_eq!(
             crate::runtime_bridge::load_plan(

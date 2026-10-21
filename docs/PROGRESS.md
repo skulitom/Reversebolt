@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Passive play evidence (2026-10-21): **34% unchanged**. Supported-runtime automatic
+attach now records fifteen image/input moments before discovery. Play capture
+skips memory reads and OCR; agents can read hash-bound response intervals and
+key episodes through the shared API. Chords, missing coverage and failed images
+remain explicit unknowns. This is evidence for choosing a test, not an executable
+plan or a semantic name; the metadata model does not consume it yet.
+
+The owned native fixture passed 18 checks over 30 captures and six evaluator
+inputs, with four bounded response episodes and one unknown chord interval.
+No manual screenshot review or writes were needed. All three helpers unloaded;
+twelve pauses balanced. The initial evaluator path error and one subsequent
+storage-test failure remain retained. The corrected native run, 268-test suite,
+strict Clippy, formatting, release build and 52-tool smoke pass.
+
+Preview `0.1.0-20261021-222348` is running with all 44 history entries, model,
+changes, trials, tests and Freeze records preserved. All weighted credits remain
+foundation 4/10, native 6/10, observation 5/15, discovery 8/20, validation 4/15,
+intent 1/10, agent collaboration 6/10 and generalization 0/10. Next: connect these
+observed consequences to grounded hypotheses and test that planning policy on
+independent games. The full goal remains active.
+[Implementation, failed attempt and verification](../research/play-evidence/README.md).
+
 Fresh-model real-game investigator (2026-10-21): **34% unchanged**. The unchanged
 desktop binaries completed automatic discovery and local metadata review in
 Manifold Garden's existing evaluator save. Twelve cited questions were accepted,

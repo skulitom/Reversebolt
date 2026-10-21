@@ -10,6 +10,7 @@ mod local_observer;
 mod native;
 mod observation_pipeline;
 mod ocr;
+mod play_evidence;
 mod runtime_bridge;
 mod runtime_naming_bridge;
 mod runtime_test_bridge;

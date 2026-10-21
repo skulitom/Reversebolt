@@ -32,6 +32,8 @@ pub enum CaptureMode {
     #[default]
     Full,
     Visual,
+    /// Images and sampled inputs only. No memory reads or text recognition.
+    Play,
 }
 
 impl CaptureMode {
@@ -1090,14 +1092,28 @@ impl LiveSession {
             );
         }
         if self.snapshots.len() >= MAX_SAMPLES
-            || (self.snapshots.len() + 1) * self.view.planned_bytes > RETAINED_MEMORY_BUDGET
+            || self.view.retained_bytes
+                + if mode == CaptureMode::Play {
+                    0
+                } else {
+                    self.view.planned_bytes
+                }
+                > RETAINED_MEMORY_BUDGET
         {
             return Err("This memory batch reached its capture budget. Compare its observations, then search more memory.".into());
         }
-        let prediction_plan = self.prediction_read_plan();
+        let prediction_plan = if mode == CaptureMode::Play {
+            vec![]
+        } else {
+            self.prediction_read_plan()
+        };
         let prediction_bytes: usize = prediction_plan.iter().map(|(_, c)| c.length).sum();
         if self.view.coverage.attempted_bytes
-            + self.view.planned_bytes as u64
+            + if mode == CaptureMode::Play {
+                0
+            } else {
+                self.view.planned_bytes as u64
+            }
             + prediction_bytes as u64
             > coverage::MAX_READ_BYTES
         {
@@ -1147,7 +1163,7 @@ impl LiveSession {
         let mut unreadable = 0;
         let mut changed = 0;
         let mut receipts = vec![];
-        for chunk in &self.plan {
+        for chunk in self.plan.iter().filter(|_| mode != CaptureMode::Play) {
             let (address, length) = (chunk.address, chunk.length);
             let begin_us = self.capture_clock.elapsed().as_micros() as u64;
             let begin_ms = start.elapsed().as_millis();
@@ -1203,7 +1219,7 @@ impl LiveSession {
         self.view.coverage.changed_or_unavailable_bytes += (changed + unreadable) as u64;
         self.view.coverage.analyzed_current_bytes = 0;
         let recognition_start = Instant::now();
-        if mode == CaptureMode::Visual {
+        if !mode.is_full() {
             // Even adapters which supply text with screen() must not turn an
             // unrecognized capture into a numeric observation.
             if let Ok(frame) = &mut screen {
@@ -1335,7 +1351,9 @@ impl LiveSession {
                 None => warning,
             });
         }
-        self.view.phase = if mode == CaptureMode::Visual {
+        self.view.phase = if mode == CaptureMode::Play {
+            format!("Watching play · {number} moments captured. Images and input context only.")
+        } else if mode == CaptureMode::Visual {
             format!(
                 "Captured {number} moments. Visual sampling keeps image and memory evidence; text recognition was skipped."
             )
@@ -2829,6 +2847,16 @@ mod tests {
             session.view.tracks[0].samples,
             vec![Some(20.), None, Some(34.)]
         );
+        let attempted = session.view.coverage.attempted_bytes;
+        let retained = session.view.retained_bytes;
+        session.capture_mode(CaptureMode::Play).unwrap();
+        let latest = session.view.latest.as_ref().unwrap();
+        assert_eq!(latest.captured_bytes, 0);
+        assert!(latest.memory_reads.is_empty() && latest.prediction_reads.is_empty());
+        assert_eq!(session.view.coverage.attempted_bytes, attempted);
+        assert_eq!(session.view.retained_bytes, retained);
+        assert_eq!(recognized.get(), 3);
+        assert_eq!(session.view.tracks[0].samples.last(), Some(&None));
         assert!(directory.starts_with(std::env::temp_dir()));
         std::fs::remove_dir_all(directory).unwrap();
     }

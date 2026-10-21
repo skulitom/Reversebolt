@@ -23,6 +23,22 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+`capture` and `start_observation_job` support `mode: "play"`: images and sampled
+input without OCR or memory reads. Supported-runtime automatic attach collects
+fifteen such moments before discovery. `start_runtime_job` can request the same
+initial sequence with `observe_play: true` for one discovery operation. Delays
+are after completion; capture slots and stop/pause rules still apply.
+
+`read_play_evidence` takes the exact `investigation_id`, `batch` and 2–20 ordered
+`frame_ids`. It reads retained, hash-checked images and input metadata, returning
+rendered differences, key episodes, quiet medians and explicit unknown intervals.
+It returns no pixels or executable plan and performs no capture, target read,
+model call, input or write. Use the cited frames through `read_capture` or
+`read_sequence` when interpreting what changed; then link a grounded hypothesis
+to an appropriate comparison. These associations establish no button meaning,
+gameplay property, numeric bound or edit authority. The metadata model does not
+yet use this evidence automatically.
+
 ## Direct edits
 
 `reversebolt_set_runtime_freeze` enables a periodically checked hold. Pass a fresh
