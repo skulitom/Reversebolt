@@ -193,6 +193,8 @@ pub struct MemoryRead {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
     #[serde(default)]
+    pub action_patterns: Vec<crate::action_patterns::Evidence>,
+    #[serde(default)]
     pub prediction_check: Option<PredictionCheck>,
     #[serde(default)]
     pub coverage: Coverage,
@@ -590,6 +592,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            action_patterns: vec![],
             prediction_check: None,
             coverage: Coverage {
                 batch: 1,
@@ -845,6 +848,11 @@ impl LiveSession {
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
         });
+        self.view.action_patterns = crate::action_patterns::analyze(
+            &self.view.frames,
+            &self.view.tracks,
+            &self.view.visual_tracks,
+        );
         if !self.view.frames.is_empty()
             && let Err(error) = self.save_visual_evidence(&self.view.visual_tracks)
             && let Some(screen) = self.view.latest.as_mut().and_then(|c| c.screen.as_mut())
@@ -1051,6 +1059,7 @@ impl LiveSession {
         self.view.retained_bytes = 0;
         self.view.latest = None;
         self.view.frames.clear();
+        self.view.action_patterns.clear();
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
         self.view.temporal_tracks.clear();
@@ -1134,6 +1143,11 @@ impl LiveSession {
         if changed != 0 {
             self.save_visual_evidence(&tracks)?;
             self.view.visual_tracks = tracks;
+            self.view.action_patterns = crate::action_patterns::analyze(
+                &self.view.frames,
+                &self.view.tracks,
+                &self.view.visual_tracks,
+            );
             self.update_prediction_check(false);
         }
         Ok(changed)
@@ -1203,6 +1217,8 @@ impl LiveSession {
             "process":self.view.process,
             "frames":self.view.frames,
             "visual_tracks":tracks,
+            "number_tracks":self.view.tracks,
+            "action_patterns":crate::action_patterns::analyze(&self.view.frames, &self.view.tracks, tracks),
             "memory_batch":self.view.coverage.batch,
             "scope":"Historical image interpretations; no current address or editing authority."
         }))

@@ -569,3 +569,31 @@ windows remain. See [input evidence and limits](research/INPUT_CONTEXT.md).
 Next: controlled action/context contrasts that use this evidence to challenge
 candidate relationships, including the same input producing different or no
 effects; appearance/motion reliability and hidden rules remain unfinished.
+
+## 2026-10-21 — automatic input/value contrasts: 24%
+
+General discovery increases from **2 / 20 to 3 / 20** for integrated generic
+input/value relationship hypotheses, counterexamples and suggested follow-up
+observations. Other credits remain foundation 4, native access 5, multimodal
+observation 5, validation 2, intent 0, agent collaboration 5 and generalization 0.
+Total: **24 / 100**. The denominator and full goal remain unchanged and active.
+
+The shared engine now compares bounded sampled-key episodes with OCR numbers
+and provisional image values. Simple cards can show a short tentative pattern;
+Inspect and MCP retain later disagreements, changes without detected keys and
+excluded intervals. Sustained holds count as one episode. Missing/focus-lost
+observations and mixed keys cannot become evidence of inactivity. Earlier
+input generations and image geometry do not carry patterns into a fresh scope.
+
+An unchanged native four-mode algorithm distinguishes a repeated decrease,
+no response, a third-action counterexample, and independent drift. A separate
+published coupled run, accessibility-only UI check, persistence/restart checks,
+120 workspace tests, strict Clippy and the 29-tool smoke pass. The boolean path
+uses declared fixture observations and earns no visual-understanding credit.
+
+This is descriptive relationship discovery, not prospective experimental
+validation, learned gameplay semantics or causal control authority. No independent
+game acceptance credit is added. Preview `0.1.0-20261021-042809` is running with
+prior history and model selection preserved. See [the evidence and limits](research/ACTION_PATTERNS.md).
+Next: use candidate patterns to select state-conditioned, prospective contrasts,
+including delayed or hidden effects, and connect them to nonnumeric behavior.

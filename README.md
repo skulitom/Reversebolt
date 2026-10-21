@@ -48,6 +48,12 @@ agents receive the same timed samples with recorded frames. Pausing, stopping,
 completion and disconnect stop sampling. These samples do not tell us which
 inputs the game accepted or what they mean. See [input scope and evidence](docs/research/INPUT_CONTEXT.md).
 
+Repeated input/value contrasts can add a short tentative card description.
+**Inspect → Observed control patterns** shows later agreements, counterexamples,
+and changes without detected keys. Agents receive the same evidence and suggested
+follow-up through MCP. These are associations, not verified button meanings;
+see [the method and limits](docs/research/ACTION_PATTERNS.md).
+
 Open **Local vision**, enter the name of a vision model already installed in
 local Ollama, and choose **Use model**. Future connections and **Keep looking**
 review image pairs after moments 2 and 16. The first review runs while capture

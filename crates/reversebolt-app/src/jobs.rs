@@ -922,6 +922,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                action_patterns: vec![],
                 temporal_tracks: vec![],
                 prediction_check: None,
                 coverage: reversebolt_core::coverage::Coverage {

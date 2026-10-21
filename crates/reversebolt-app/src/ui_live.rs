@@ -23,6 +23,23 @@ type FindingCard = (
     Option<String>,
 );
 
+fn action_evidence(
+    live: &reversebolt_core::live::LiveView,
+    source: CardSource,
+    id: usize,
+) -> Option<&reversebolt_core::action_patterns::Evidence> {
+    use reversebolt_core::action_patterns::{self, Source};
+    action_patterns::find(
+        live,
+        match source {
+            CardSource::Ocr => Source::Ocr,
+            CardSource::Image => Source::External,
+            CardSource::Temporal => return None,
+        },
+        id,
+    )
+}
+
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
     let words = sentence
@@ -443,7 +460,8 @@ impl LivePane {
                                 ui.set_width(ui.available_width());
                                 ui.set_min_height(148.0);
                                 ui.label(RichText::new(title).size(19.0).strong());
-                                ui.label(RichText::new(description).size(13.0).color(MUTED));
+                                let pattern = action_evidence(live,*external,*id).and_then(|e|e.patterns.iter().find_map(|p|p.brief()));
+                                ui.label(RichText::new(pattern.as_deref().unwrap_or(description)).size(13.0).color(MUTED));
                                 if let Some(age) = age {
                                     ui.label(RichText::new(age).size(12.).color(MUTED));
                                 }
@@ -560,6 +578,20 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if let Some(evidence)=action_evidence(live,external,id) && !evidence.patterns.is_empty() {
+                        egui::CollapsingHeader::new("Observed control patterns").show(ui,|ui| {
+                            egui::ScrollArea::vertical().id_salt("control_pattern_details").max_height(190.).show(ui,|ui| {
+                            for pattern in &evidence.patterns {
+                                ui.strong(reversebolt_core::inputs::key_name(pattern.key));
+                                ui.label(format!("{} initial episodes · {} later agreed · {} differed",pattern.first_episodes.len(),pattern.later_agree.len(),pattern.later_disagree.len()));
+                                ui.label(format!("Without detected keys: {} unchanged · {} changed",pattern.no_keys_unchanged.len(),pattern.no_keys_changed.len()));
+                                ui.label(&pattern.next_observation);
+                            }
+                            let excluded=evidence.intervals.iter().filter(|i|matches!(i.exposure,reversebolt_core::action_patterns::Exposure::Unknown(_))).count();
+                            ui.label(format!("{excluded} intervals could not be compared. These patterns do not prove what a control does."));
+                            });
+                        });
+                    }
                     let input_frame=match external {
                         CardSource::Ocr=>live.frames.last(),
                         CardSource::Image=>live.visual_tracks.iter().find(|t|t.id==id).and_then(|t|t.observations.iter().rev().flatten().next()).and_then(|o|live.frames.iter().find(|f|f.id==o.input.frame_id)),

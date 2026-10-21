@@ -464,3 +464,23 @@ receipt is `test-results/input-context-v1/desktop/desktop-delivery.json`.
 The selected-window sampling capability earns observation credit only. It does
 not establish accepted game input, input meaning, causal relationships or a
 reliable gameplay control. See [the contract](research/INPUT_CONTEXT.md).
+
+## Automatic input/value contrasts — 2026-10-21
+
+All 120 workspace tests, strict Clippy, formatting and release build pass.
+The new checks cover consistent versus conflicting later episodes, zero response,
+drift, sustained holds, reversing changes, unknown observations, focus/sampling
+gaps, mixed keys, generation changes and nonnumeric values. Raw logs are under
+`test-results/action-patterns-v1/`.
+
+The owned native four-mode matrix passed with actual fixture-delivered input
+and production OCR: tentative decrease, no pattern, later contradiction, and
+no contrast under independent drift. A separate published coupled test passed
+with saved evidence/session parity and restart invalidation. UI Automation
+verified card descriptions and Inspect counts without screenshots. No game was
+controlled. The published 29-tool smoke is `test-results/smoke-2f0618e8/report.json`.
+
+Preview `0.1.0-20261021-042809` is responding in the user's desktop session with
+eight history entries and the local model selection retained. The compact
+record is `research/action-patterns/evidence/native-v1.json`. Full paths, numeric
+outcomes, reproduction and limits are in [input/value contrasts](research/ACTION_PATTERNS.md).

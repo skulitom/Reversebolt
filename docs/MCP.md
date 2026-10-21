@@ -438,6 +438,20 @@ timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Frozen prediction checks
 
+`live.action_patterns` separately contains automatic descriptive input/value
+contrasts for active `ocr` and `external` series. Intervals reference exact frame
+IDs and retain endpoint values, elapsed-time ranges and exclusion reasons.
+Episodes merge contiguous sampled exposures; a bounded key episode needs
+no-key-detected observations on both sides. Pattern indices refer to the containing
+evidence's episodes, and episode interval indices refer to its intervals.
+`first_episodes`, `later_agree`, `later_disagree`, `no_keys_unchanged`,
+`no_keys_changed` and `unbounded_key_episodes` preserve the comparison counts.
+`next_observation` suggests a follow-up; it is not an automatic action or permission
+to inject input. These comparisons can be revised by late image declarations;
+they are not the frozen prospective memory checks below. New input generations,
+geometry and memory batches require fresh patterns. No state grants edit authority.
+See [input/value contrasts](research/ACTION_PATTERNS.md).
+
 After comparison, call `reversebolt_start_prediction_check` with the current
 `investigation_id`, `batch`, `after_frame` equal to `sample_count`, `source`
 (`ocr` or `external`) and the series' `track` ID. At least four capture slots

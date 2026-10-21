@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "scope": "Descriptive sampled-input/value contrasts in owned fixtures, not gameplay semantics or causal validation. Boolean values are declared fixture annotations.",
+  "source_sha256": {
+    "crates/reversebolt-core/src/action_patterns.rs": "4aa747bbff82f8e174b46b2da6b155133f8a3d13ba1fb4dee3381a132b319119",
+    "crates/reversebolt-core/src/live.rs": "bb648f3f3f048c8505bccd37e9252f64ba0777c19da11c6a785a7f94793515d4",
+    "crates/reversebolt-app/src/ui_live.rs": "faf2926d0d69fa110e069663f9db74bd880257a3034071557ac6c15c56450f8f",
+    "crates/reversebolt-app/src/jobs.rs": "bf0bf886a9dc259e119693a2667a2aa7956d5fb73cb04f2ccae96978813a68ca",
+    "crates/reversebolt-mcp/src/main.rs": "6955e6d733527227c56464eb8257e8f71876589d052f2977e017c573cc217ed1",
+    "scripts/action-pattern-smoke.py": "73506d2c1fa0561c211e4c62ab884ae309778b1309d75916e5e010bb98397946",
+    "scripts/action-pattern-fixture.ps1": "fbdb58885ad839cf289768fcf2d20646652c313df11a9f1fbb695b56dda7dd53"
+  },
+  "workspace_tests": 120,
+  "log_sha256": {
+    "workspace-tests.log": "917efacaf6888010a0b4f6b3ce82da7a767901cfa043ab404f8d6f2c1eff0398",
+    "clippy.log": "b835e0f8ed469e610158851b3a689319661fbddf7863d285d18ea5e9a4f96b8c",
+    "release-build.log": "7d06d33fac079b37c55f7bac30e53f181c1a22a4f188789757ec91380a5dc72e"
+  },
+  "runs": [
+    {
+      "path": "test-results\\action-patterns-v1\\native-01\\coupled\\report.json",
+      "sha256": "47c5060a7939518604341e04a67caad657f583d397929e86c226280dd327384b",
+      "mode": "coupled",
+      "state": "tentative",
+      "first_episodes": 2,
+      "later_agree": 1,
+      "later_disagree": 0,
+      "no_keys_unchanged": 4,
+      "no_keys_changed": 0,
+      "samples": [
+        500.0,
+        500.0,
+        499.0,
+        499.0,
+        499.0,
+        498.0,
+        498.0,
+        498.0,
+        497.0,
+        497.0,
+        497.0,
+        497.0
+      ],
+      "archive_sha256": "7b12ed39357747a8d4d8673fdb256e2955591cf24a67fe4937b064623b67d95f",
+      "binary_sha256": {
+        "Reversebolt.exe": "0afecb5d16962bcf4de8d00a4f52d7d19bb45522d8a1bc6fe49be79626604b9a",
+        "reversebolt-mcp.exe": "3bca71061b6040871c8eb7797edd3776a7a115f3037afee8768529587ab16c74"
+      },
+      "restart_verified": true
+    },
+    {
+      "path": "test-results\\action-patterns-v1\\native-01\\none\\report.json",
+      "sha256": "9a240885af274b40a6870c3274932b610afa6bd0f4b709e151a3b4c659d2a24e",
+      "mode": "none",
+      "state": "no_pattern",
+      "first_episodes": 2,
+      "later_agree": 0,
+      "later_disagree": 0,
+      "no_keys_unchanged": 4,
+      "no_keys_changed": 0,
+      "samples": [
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0
+      ],
+      "archive_sha256": "3151262412380d3e4d03078908012204723ec0054103ee4268b8861d6e745a64",
+      "binary_sha256": {
+        "Reversebolt.exe": "0afecb5d16962bcf4de8d00a4f52d7d19bb45522d8a1bc6fe49be79626604b9a",
+        "reversebolt-mcp.exe": "3bca71061b6040871c8eb7797edd3776a7a115f3037afee8768529587ab16c74"
+      },
+      "restart_verified": true
+    },
+    {
+      "path": "test-results\\action-patterns-v1\\native-01\\conditional\\report.json",
+      "sha256": "2cc1cd319f435f62ca152eb6c8822c5e696f988b003c76d42e86d51b3e23acae",
+      "mode": "conditional",
+      "state": "contradicted",
+      "first_episodes": 2,
+      "later_agree": 0,
+      "later_disagree": 1,
+      "no_keys_unchanged": 4,
+      "no_keys_changed": 0,
+      "samples": [
+        500.0,
+        500.0,
+        499.0,
+        499.0,
+        499.0,
+        498.0,
+        498.0,
+        498.0,
+        498.0,
+        498.0,
+        498.0,
+        498.0
+      ],
+      "archive_sha256": "76f5e2acac99d1930585c21dfa3f22ace441b560c544e157d685ae09acbe8b1d",
+      "binary_sha256": {
+        "Reversebolt.exe": "0afecb5d16962bcf4de8d00a4f52d7d19bb45522d8a1bc6fe49be79626604b9a",
+        "reversebolt-mcp.exe": "3bca71061b6040871c8eb7797edd3776a7a115f3037afee8768529587ab16c74"
+      },
+      "restart_verified": true
+    },
+    {
+      "path": "test-results\\action-patterns-v1\\native-01\\drift\\report.json",
+      "sha256": "f96e6c48ff4373393633a4a4c2d35aba99e17658eae81b1c1e802d3fbd7bd5a7",
+      "mode": "drift",
+      "state": "no_contrast",
+      "first_episodes": 2,
+      "later_agree": 1,
+      "later_disagree": 0,
+      "no_keys_unchanged": 0,
+      "no_keys_changed": 4,
+      "samples": [
+        492.0,
+        489.0,
+        485.0,
+        482.0,
+        478.0,
+        474.0,
+        471.0,
+        468.0,
+        464.0,
+        461.0,
+        458.0,
+        454.0
+      ],
+      "archive_sha256": "8d619d3e7cf52b6feb23d3f798e39605ca1dbaaf485d519cbce7ea90886f4dd7",
+      "binary_sha256": {
+        "Reversebolt.exe": "0afecb5d16962bcf4de8d00a4f52d7d19bb45522d8a1bc6fe49be79626604b9a",
+        "reversebolt-mcp.exe": "3bca71061b6040871c8eb7797edd3776a7a115f3037afee8768529587ab16c74"
+      },
+      "restart_verified": true
+    },
+    {
+      "path": "test-results\\action-patterns-v1\\published-01\\coupled\\report.json",
+      "sha256": "d752e920e5575797becf8b79ef6b26bafebd0a5c2d4a83bcb7d21626ee259e91",
+      "mode": "coupled",
+      "state": "tentative",
+      "first_episodes": 2,
+      "later_agree": 1,
+      "later_disagree": 0,
+      "no_keys_unchanged": 4,
+      "no_keys_changed": 0,
+      "samples": [
+        500.0,
+        500.0,
+        499.0,
+        499.0,
+        499.0,
+        498.0,
+        498.0,
+        498.0,
+        497.0,
+        497.0,
+        497.0,
+        497.0
+      ],
+      "archive_sha256": "52a962f9867d1aeb61c0df008dcea327c4fbcff036bd1c436c9fd3ee3afebb6b",
+      "binary_sha256": {
+        "Reversebolt.exe": "05e74d9b3a39e9f835bb36120ad870d17e06378587eb53f3b33690d3ab823079",
+        "reversebolt-mcp.exe": "573097eb76ab6bb3fc5e8a414d7368ca9bff3675db12ce0f49503fa493f63b55"
+      },
+      "restart_verified": true
+    }
+  ],
+  "ui": {
+    "path": "test-results\\action-patterns-v1\\published-01\\coupled\\ui-evidence.json",
+    "sha256": "ac17e51e073d5647ada64f29a20fb1b0593b748ebb10a6cc7ce8f4bb531c8eb6",
+    "screenshots": 0
+  },
+  "desktop": {
+    "path": "test-results\\action-patterns-v1\\desktop\\desktop-delivery.json",
+    "sha256": "e006fd3a02b75813d0ca49f887b099068065a6d53218206af7cf87e304d9cf24",
+    "pid": 74340,
+    "preview": "dist\\0.1.0-20261021-042809",
+    "history_entries": 8,
+    "history_preserved": true,
+    "observer_model_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "binary_sha256": {
+      "Reversebolt.exe": "05e74d9b3a39e9f835bb36120ad870d17e06378587eb53f3b33690d3ab823079",
+      "reversebolt-mcp.exe": "573097eb76ab6bb3fc5e8a414d7368ca9bff3675db12ce0f49503fa493f63b55"
+    }
+  },
+  "practice_smoke": {
+    "path": "test-results/smoke-2f0618e8/report.json",
+    "sha256": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+  },
+  "failed_test_runs": [],
+  "progress": {
+    "total": 24,
+    "changed": "general discovery 2/20 to 3/20",
+    "generalization": 0
+  },
+  "limits": [
+    "No independent-game evaluation",
+    "No prospective/randomized or duration-matched contrasts",
+    "No causal meaning or editing authority",
+    "Late declared image observations may revise chronological comparisons",
+    "No automatic action delivery",
+    "No hidden/delayed effects inferred"
+  ]
+}

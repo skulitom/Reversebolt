@@ -1,3 +1,4 @@
+pub mod action_patterns;
 pub mod changes;
 pub mod coverage;
 pub mod discovery;
