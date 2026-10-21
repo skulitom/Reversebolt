@@ -1,5 +1,22 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Capture alongside local image review — 2026-10-21
+
+All 94 workspace tests, strict Clippy and formatting pass. The native/MCP fixture
+captured ten additional moments while the first model review was pending, with
+source-bound late publication. Pause acknowledged in 47 ms, stopped capture at
+two moments and suppressed publication; resume waited for that worker and then
+finished all four moments. A missing-model job failed without its third capture.
+Restart preserved settings/history, revoked live scope and resumed no analysis.
+Accessibility checks verified card age and the original observed moment.
+See [detailed evidence](research/BACKGROUND_OBSERVER.md). No gameplay or manual
+screenshot inspection was used.
+
+Published preview `0.1.0-20261021-015824` passes a fresh native model/failure check
+and the 24-tool release smoke (`test-results/smoke-569a837b/report.json`). It is
+running on the user's desktop with verified binaries/models and all eight earlier
+history entries preserved. The owned Anode test windows were closed.
+
 ## Seeded patch tracking experiment — 2026-10-21
 
 All 91 workspace tests, strict Clippy and formatting pass. The frozen automated

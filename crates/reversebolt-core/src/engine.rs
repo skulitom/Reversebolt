@@ -63,6 +63,19 @@ pub struct Patch {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AnalysisStatus {
+    pub job: u64,
+    pub evidence_id: String,
+    pub model: String,
+    pub investigation_id: String,
+    pub batch: usize,
+    pub frame_ids: Vec<String>,
+    pub observed_unix_ms: u128,
+    pub started_unix_ms: u128,
+    pub stopping: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct View {
     pub schema_version: u32,
     pub session: String,
@@ -81,6 +94,9 @@ pub struct View {
     /// Explicitly selected, already-installed local model for future automatic jobs.
     #[serde(default)]
     pub observer_model: Option<String>,
+    /// An owned read-only worker; never resumed from persisted UI state.
+    #[serde(default)]
+    pub analysis: Option<AnalysisStatus>,
 }
 
 impl Default for View {
@@ -99,6 +115,7 @@ impl Default for View {
             processes: vec![],
             live: None,
             observer_model: None,
+            analysis: None,
         }
     }
 }
@@ -128,6 +145,7 @@ impl Engine {
         view.tracks.clear();
         view.processes.clear();
         view.live = None;
+        view.analysis = None;
         view.error = None;
         view.phase =
             "Open the practice environment to begin. Previous history is preserved.".into();

@@ -43,14 +43,15 @@ application running. The connection invalidates when the original process exits.
 
 Open **Local vision**, enter the name of a vision model already installed in
 local Ollama, and choose **Use model**. Future connections and **Keep looking**
-review image pairs after moments 2 and 16. Each pass uses full images followed
-by crop checks; it can add latency and still misidentify things. Short named
-cards appear automatically. **Earlier** distinguishes an old image finding from
+review image pairs after moments 2 and 16. The first review runs while capture
+continues; each pass uses full images followed by crop checks and can still
+misidentify things. Short named cards appear automatically and show when they
+were seen. **Earlier** distinguishes an old image finding from
 a current reading; **Inspect** retains its full explanation. No models are
 downloaded and no images are uploaded. **Disable** turns this off for future
 jobs. Stop or pause waits for the active request and prevents subsequent model
 calls. A failed pass stops its job, retaining evidence. See
-[integration evidence and limits](docs/research/LOCAL_OBSERVER_INTEGRATION.md).
+[integration evidence and limits](docs/research/BACKGROUND_OBSERVER.md).
 
 For a series with matches, **Challenge these matches** freezes its predictions
 and checks them against fresh observations. Agreement is limited evidence;

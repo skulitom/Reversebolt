@@ -1,5 +1,5 @@
 //! Responsive job control around the sole engine-owning worker.
-use crate::service::EngineHandle;
+use crate::service::{EngineHandle, OperationOwner};
 use reversebolt_core::{Command, Result, engine::View as EngineView};
 use reversebolt_session_jobs::{
     self as job,
@@ -22,6 +22,7 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
     use crate::theme::{ACCENT, ERROR, MUTED, SURFACE};
     use eframe::egui::{self, RichText};
     let error = handle.job_error.read().unwrap().clone();
+    let analysis = handle.view.read().unwrap().analysis.clone();
     if state.history.jobs.is_empty()
         && error.is_none()
         && state.fence.is_none()
@@ -32,7 +33,8 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
     let only_history = state.history.jobs.values().all(|j| j.phase.terminal())
         && state.history.human_hold.is_none()
         && error.is_none()
-        && state.fence.is_none();
+        && state.fence.is_none()
+        && analysis.is_none();
     if only_history {
         egui::CollapsingHeader::new("Observation history").show(ui, |ui| {
             for job in state.history.jobs.values().rev().take(6) {
@@ -66,6 +68,11 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
                 if state.history.human_hold.is_none() && job.controller.role==job::Role::Agent
                     && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
             });
+        }
+        if let Some(analysis)=&analysis {
+            let now=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis();
+            ui.label(if analysis.stopping {"Finishing the active image request; further model calls and findings are stopped."} else {"Reading captured images locally."});
+            ui.label(RichText::new(crate::ui_live::observation_age(analysis.observed_unix_ms,now)).size(12.).color(MUTED));
         }
         if state.history.human_hold.is_some() {
             ui.horizontal_wrapped(|ui| {
@@ -244,6 +251,8 @@ struct CaptureStep {
     mode: reversebolt_core::live::CaptureMode,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     local_model: Option<String>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    background_model: bool,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -261,6 +270,7 @@ struct CaptureExecutor {
     flight: Option<Flight>,
     ready: Option<Value>,
     next_poll: Instant,
+    owner: Option<OperationOwner>,
 }
 impl CaptureExecutor {
     fn new(engine: EngineHandle) -> Self {
@@ -269,6 +279,7 @@ impl CaptureExecutor {
             flight: None,
             ready: None,
             next_poll: Instant::now(),
+            owner: None,
         }
     }
     fn outcome(success: bool, note: &str, data: Value) -> job::Poll {
@@ -336,15 +347,24 @@ impl job::Executor for CaptureExecutor {
         }
         let command = Command {
             action: "capture".into(),
-            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode,"local_model":step.local_model}),
+            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model}),
             source: step.source,
         };
-        let cancel = Arc::new(AtomicBool::new(false));
-        let poll_interval = Duration::from_secs(if step.local_model.is_some() { 15 } else { 1 });
-        match self
-            .engine
-            .start_owned_command(command, Some(cancel.clone()))
+        if self
+            .owner
+            .as_ref()
+            .is_none_or(|o| o.job != operation.job || o.cancel.load(Ordering::SeqCst))
         {
+            self.owner = Some(OperationOwner {
+                job: operation.job,
+                cancel: Arc::new(AtomicBool::new(false)),
+            });
+        }
+        let owner = self.owner.as_ref().unwrap().clone();
+        let cancel = owner.cancel.clone();
+        // The final step can drain the first review and then run its own review.
+        let poll_interval = Duration::from_secs(if step.local_model.is_some() { 30 } else { 1 });
+        match self.engine.start_owned_command(command, Some(owner)) {
             Ok(response) => {
                 self.flight = Some(Flight {
                     id: operation.id,
@@ -385,7 +405,7 @@ impl job::Executor for CaptureExecutor {
                         value["error"].as_str().unwrap_or(
                             "Observation finished; see the shared investigation for evidence.",
                         ),
-                        json!({"captured":if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
+                        json!({"captured":if value["data"]["captured"]==false {Some(false)} else if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
                             "batch":live["coverage"]["batch"],"capture":live["sample_count"],
                             "frame":live["frames"].as_array().and_then(|f| f.last()).map(|f|&f["id"]),
                             "local_observation":value["data"]["local_observation"]}),
@@ -547,6 +567,15 @@ impl Controller {
             {
                 return Err("An observation job owns the investigation. Pause or cancel it, or take control from the desktop.".into());
             }
+            if self.engine.view.read().unwrap().analysis.is_some()
+                && !read_only(&command.action)
+                && !matches!(
+                    command.action.as_str(),
+                    "submit_observation" | "submit_temporal_observation"
+                )
+            {
+                return Err("An earlier image review is still settling. Status and job controls remain available.".into());
+            }
             if self.manual.is_some() || self.executor.flight.is_some() {
                 return Err("A capture or engine command is still in progress. Status and job controls remain available.".into());
             }
@@ -595,6 +624,27 @@ impl Controller {
             }
         }
     }
+    fn stop_revoked_analysis(&self) {
+        if let Some(owner) = &self.executor.owner {
+            let snapshot = self.jobs.snapshot();
+            if self.draining
+                || self.jobs.view().fence.is_some()
+                || snapshot.jobs.get(&owner.job).is_none_or(|j| {
+                    j.invalidated
+                        || matches!(
+                            j.phase,
+                            job::Phase::Paused
+                                | job::Phase::Pausing
+                                | job::Phase::Cancelling
+                                | job::Phase::Cancelled
+                                | job::Phase::Failed
+                        )
+                })
+            {
+                owner.cancel.store(true, Ordering::SeqCst);
+            }
+        }
+    }
     fn job_command(&mut self, command: &Command) -> Result<Value> {
         if serde_json::to_vec(&command.args)
             .map_err(|e| e.to_string())?
@@ -639,6 +689,14 @@ impl Controller {
             serde_json::from_value::<job::Binding>(command.args["binding"].clone())
                 .map_err(|_| "Supply the exact job binding from status.")?
         };
+        if command.action == "job_control"
+            && command.args["operation"] == "resume"
+            && self.engine.view.read().unwrap().analysis.is_some()
+        {
+            return Err(
+                "Wait for the paused image review to finish before resuming capture.".into(),
+            );
+        }
         let action = if command.action == "start_observation_job" {
             let mode: reversebolt_core::live::CaptureMode = command
                 .args
@@ -725,6 +783,7 @@ impl Controller {
                         source: command.source.clone(),
                         compare,
                         mode,
+                        background_model: local_model.is_some() && index == 1 && index != count - 1,
                         local_model: if index == 1 || index == count - 1 {
                             local_model.clone()
                         } else {
@@ -763,6 +822,7 @@ impl Controller {
             binding,
             action,
         })?;
+        self.stop_revoked_analysis();
         *self.errors.write().unwrap() = None;
         Ok(json!(reply))
     }
@@ -770,7 +830,20 @@ impl Controller {
         if self.manual.is_some() {
             return;
         }
+        self.stop_revoked_analysis();
         let view = self.jobs.view();
+        // A stopped capture sequence may still have one pure image request draining.
+        // Never give another job or target ownership while that worker is present.
+        if view.in_flight.is_none()
+            && let Some(analysis) = self.engine.view.read().unwrap().analysis.as_ref()
+            && view
+                .history
+                .jobs
+                .get(&analysis.job)
+                .is_none_or(|j| j.phase != job::Phase::Running || j.invalidated)
+        {
+            return;
+        }
         if view.in_flight.is_none() && crate::native::renderer_busy() {
             return;
         }
@@ -1245,7 +1318,7 @@ mod tests {
         assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 1);
         assert_eq!(
             c.executor.flight.as_ref().unwrap().poll_interval,
-            Duration::from_secs(15)
+            Duration::from_secs(30)
         );
         let queued = request(
             &c,
@@ -1317,6 +1390,18 @@ mod tests {
             models,
             vec![(1, "chosen:local".into()), (15, "chosen:local".into())]
         );
+        let background: Vec<_> = c.jobs.snapshot().jobs[&id]
+            .steps
+            .iter()
+            .enumerate()
+            .filter_map(|(i, s)| {
+                serde_json::from_str::<CaptureStep>(&s.payload)
+                    .unwrap()
+                    .background_model
+                    .then_some(i)
+            })
+            .collect();
+        assert_eq!(background, vec![1]);
         for args in [
             json!({"count":1,"local_model":"x"}),
             json!({"local_model":true}),
@@ -1325,6 +1410,89 @@ mod tests {
             let command = request(&c, "start_observation_job", args);
             assert!(c.job_command(&command).is_err());
         }
+    }
+
+    #[test]
+    fn pause_between_captures_stops_background_owner_and_waits_before_resume() {
+        let (sent, received) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            sent.send(command).unwrap();
+            view.live.as_mut().unwrap().sample_count += 1;
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":4,"interval_ms":50,"mode":"visual","local_model":"fixture:model"}),
+        );
+        let id = c.job_command(&command).unwrap()["ack"]["job"]
+            .as_u64()
+            .unwrap();
+        for _ in 0..200 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].next_step == 2 {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(2));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 2);
+        assert!(c.executor.flight.is_none());
+        let commands: Vec<_> = received.try_iter().collect();
+        assert_eq!(commands.len(), 2);
+        assert_eq!(commands[1].args["background_model"], true);
+        c.engine.view.write().unwrap().analysis = Some(reversebolt_core::engine::AnalysisStatus {
+            job: id,
+            evidence_id: "pending".into(),
+            model: "fixture:model".into(),
+            investigation_id: "fixture-investigation".into(),
+            batch: 1,
+            frame_ids: vec![],
+            observed_unix_ms: 0,
+            started_unix_ms: 0,
+            stopping: false,
+        });
+        let old_signal = c.executor.owner.as_ref().unwrap().cancel.clone();
+        let pause = request(&c, "job_control", json!({"operation":"pause","job":id}));
+        c.job_command(&pause).unwrap();
+        assert!(old_signal.load(Ordering::SeqCst));
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Paused);
+        c.tick();
+        assert!(received.try_recv().is_err());
+        let resume = request(&c, "job_control", json!({"operation":"resume","job":id}));
+        assert!(c.job_command(&resume).is_err());
+        let (reply, answer) = mpsc::channel();
+        c.command((
+            Command {
+                action: "detach_process".into(),
+                args: json!({}),
+                source: "desktop".into(),
+            },
+            Some(reply),
+        ));
+        assert_eq!(answer.recv().unwrap()["ok"], false);
+        c.engine.view.write().unwrap().analysis = None;
+        c.job_command(&resume).unwrap();
+        for _ in 0..100 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].next_step >= 3 {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(2));
+        }
+        assert!(c.jobs.snapshot().jobs[&id].next_step >= 3);
+        assert!(
+            !c.executor
+                .owner
+                .as_ref()
+                .unwrap()
+                .cancel
+                .load(Ordering::SeqCst)
+        );
+        assert!(
+            old_signal.load(Ordering::SeqCst),
+            "Resume must not clear the old worker's cancellation signal"
+        );
     }
 
     #[test]

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "scope": "Automated owned native replay; shared capture/model concurrency, control and source-freshness evidence. No new game accuracy, tracking or generalization result.",
+  "native": {
+    "scope": "Owned saved-image fixture; concurrency/publication evidence, not new object accuracy or generalization.",
+    "model": "qwen3.8:latest",
+    "automatic_capture_count": 16,
+    "maximum_capture_while_first_review_pending": 12,
+    "first_review_frame": "b32a5000-ac61-4f76-b9aa-3a1ac9b7e6ba",
+    "earlier_cards_keep_original_frame": true,
+    "pause_ack_ms": 46.999999991385266,
+    "paused_capture_count": 2,
+    "resumed_capture_count": 4,
+    "no_publication_after_pause": true,
+    "resume_waits_for_old_worker": true,
+    "no_memory_matches_or_writes": true,
+    "maximum_status_ms": 32.00000000651926,
+    "cancelled_reviews": 0,
+    "receipts": {
+      "2e4ac10a-e36a-46f8-a10f-ebf9d3575341.json": "0ce9a26ae1793a9e9d9f8fc7308728a05d658d47aa597a903340d98641c6b2bb",
+      "3fcfb825-a307-46c9-82f9-e3a785748b85.json": "5d28b456dfccf4cab4a83efcc66c90ae90aad3ea548864b615503c0956609658",
+      "5a97bff6-ccc3-4b6e-9774-c921b91d1707.json": "a81fe4e9f6fe6b9309eb8e5bc7a44bd366a537d334d996e11f33dde2cf7c5cd2",
+      "73062594-9be2-48d4-a8f2-b546c0d74047.json": "c9796dbd00f9bfc0a2e20c2053a70388f39420e5bae3b395bf21256ee08c8bb4"
+    },
+    "binaries": {
+      "Reversebolt.exe": "733cc88c1b8144b348c45ded4f08cf03fd129d9856f19813cc9d6cf3c0d5e03e",
+      "reversebolt-mcp.exe": "f5ff36382cbd35f8dbaa8e59644eac98f97e545f3ab13e3cade1b63cf8b9deb1"
+    }
+  },
+  "failure": {
+    "job": 3,
+    "phase": "Failed",
+    "captures_before": 4,
+    "captures_after": 6,
+    "no_third_capture": true,
+    "earlier_findings_preserved": true,
+    "analysis_drained": true,
+    "error": "Local observation stopped: The requested model is not installed locally. Evidence: f2ed76ca-99b0-4dbc-96d9-d33c48c7a5d9."
+  },
+  "restart": {
+    "history_preserved": true,
+    "model_preserved": true,
+    "live_revoked": true,
+    "analysis_not_resumed": true,
+    "boot": 2,
+    "pid": 77404
+  },
+  "published_native_check": {
+    "published_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-015824",
+    "completed_model_pass": true,
+    "missing_model_stops_after_second_capture": true,
+    "earlier_findings_preserved": true,
+    "source_frame_ids": [
+      "136e7522-7bb7-4d5d-b6f2-f5b19170572b",
+      "21e7ca3f-802d-49f6-80f9-b1d0150bb947",
+      "f687e386-70b1-4bb3-a677-83aec9e75a90",
+      "8a99daa5-db9f-4ea9-81d9-aee3d1bfd4d3"
+    ],
+    "maximum_status_ms": 32.00000000651926,
+    "binary_sha256": "3b6686b0007464176f62c1abd8e7738c3e8fd92fa23409f32baac5b13b59cf34"
+  },
+  "desktop": {
+    "version": "0.1.0-20261021-015824",
+    "pid": 85520,
+    "session": 1,
+    "history_entries_preserved": 8,
+    "model": "qwen3.8:latest",
+    "idle_restart": true,
+    "no_automatic_inference": true,
+    "binaries_and_ocr_model_hashes_verified": true,
+    "executable_sha256": "3b6686b0007464176f62c1abd8e7738c3e8fd92fa23409f32baac5b13b59cf34",
+    "mcp_sha256": "f5ff36382cbd35f8dbaa8e59644eac98f97e545f3ab13e3cade1b63cf8b9deb1",
+    "smoke": "test-results/smoke-569a837b/report.json",
+    "smoke_sha256": "a8da5677b28a20dc99a3fe984db51d55afe7c98f73ba7c6f1abd31c44504b277"
+  },
+  "capture_start_gaps_ms": {
+    "median": 1353.351,
+    "max": 1579.271,
+    "between_2_and_3": 1360.652
+  },
+  "validation": {
+    "workspace_tests_passed": 94,
+    "final_app_tests_passed": 18,
+    "strict_workspace_clippy": "passed",
+    "formatting": "passed",
+    "published_mcp_tools": 24,
+    "ui_age_and_original_moment": "verified using accessibility text",
+    "owned_test_windows_closed": true,
+    "anode_lease_released": true
+  },
+  "final_source_sha256": {
+    "crates\\reversebolt-app\\src\\jobs.rs": "f7ca961b25824f17c2a98f17d53563945dc18b94653dd28b4616a69ea5f39508",
+    "crates\\reversebolt-app\\src\\local_observer.rs": "c877817a0d652f73bede63d525f1c3c6c653c7e1b9a795eb9a3227b975248291",
+    "crates\\reversebolt-app\\src\\observation_pipeline.rs": "af583c109d3e8c06a48b7173fd6793c1312dbc410a7bdd6ba8272152289fac3b",
+    "crates\\reversebolt-app\\src\\service.rs": "0754e8679f3100b1511de01ff53fd89407020e6fe73712ff2b45a673fded3936",
+    "crates\\reversebolt-app\\src\\ui_live.rs": "652dc104a7139a33c11aaf0fe289ab76e62abd503ac6ec33e5d9d0ee02106d7f",
+    "crates\\reversebolt-app\\src\\main.rs": "1e180ebf481a991a406ee1f1fb1bbf42c9480867ca1364388d31398a1cc8239e",
+    "crates\\reversebolt-core\\src\\engine.rs": "3d6368077afad30704177f53fb75c6a2314ad487b77fc511dbea3b86df18e3ae",
+    "scripts\\background-observer-smoke.py": "ff793605d7ac1903d834c5bc6ca31f67e9a496c99f75209f58e82cd435df3aac"
+  },
+  "evidence_sha256": {
+    "test-results\\background-observer-v1\\workspace-tests.log": "ceab61bd9e51d00fe0425341c520d828f613d509aaefcc507af7f3d50ebd55f4",
+    "test-results\\background-observer-v1\\clippy.log": "b05f865e7299a363d95d356d12eedc44f33aaeb1a61537f92f2a4b91fb67b4de",
+    "test-results\\background-observer-v1\\final-app-tests.log": "14319f78bef774a1d5c753e3937c2cd336be2a69a24e7248d0e7bba47b71f532",
+    "test-results\\background-observer-v1\\final-clippy.log": "6b06ebf71c0bfe47728772676fa4a9b5c1a1f41f3484f67b12f625aaa54d4d90",
+    "test-results\\background-observer-v1\\ui-inspection.json": "742fe56d9fcce96cac8f192c1c2c7845d892a76ad39ab8412de74b1415718ec9",
+    "test-results\\background-observer-v1\\session\\background-trace.json": "766d98442a129e1d4b45814689c71f26f25faa17f3653b8b781ba6e25a5c8a9d",
+    "test-results\\background-observer-v1\\session\\complete-state.json": "2058155b337853dfe496b2933c968f3ebb951ee9a5692b29f5e9c026aa39b1b9",
+    "test-results\\background-observer-v1\\session\\cards-state.json": "0b351eb2b9aef16376420c90ac52f06dc6490f53b6429ab734b2718cb3f2072a",
+    "test-results\\background-observer-v1\\session\\failure-result.json": "628e5d45ffc3862087df49efeb7b374ad14860e45030c6b377ab94314fe53d4d",
+    "test-results\\background-observer-v1\\session\\restart-result.json": "3feb6724222b27f0d1a337c3ced63bc255660ea1d993f7a8d13e672fbdee4c05",
+    "test-results\\background-observer-v1\\session\\background-result.json": "9e5d86d43a9ed0bad93f58c1c5e73aeb3f036337f572f45d49562a87a06984eb",
+    "test-results\\background-observer-v1\\session\\published-result.json": "a23b4378db284bb25c68f61a6c0ffdd6101b3b46f8dc56a6cae10c1ab40d5bb6",
+    "test-results\\background-observer-v1\\desktop-delivery.json": "2582bef95e443eadea79f73e5a24beb983e64fc0b4caa1bd877c752e871f2bb8"
+  },
+  "remaining_limits": [
+    "No persistent object identity or motion quantities",
+    "No new causal validation or arbitrary-game editing",
+    "Acquisition cadence remains dependent on rendering, memory reads, OCR and configured interval",
+    "Capture job can pause while a visible owned model request drains; scope changes and resume wait",
+    "An HTTP timeout cannot prove external server computation stopped"
+  ],
+  "progress_percent": 21
+}

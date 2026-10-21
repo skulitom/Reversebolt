@@ -1,4 +1,4 @@
-//! Local model work runs inside an owned capture job. It cannot write game memory.
+//! Owned local model workers use immutable image copies. Only the engine publishes findings.
 use reversebolt_core::{
     Result,
     live::LiveSession,
@@ -9,7 +9,6 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use std::{
     io::Write,
-    path::Path,
     sync::atomic::{AtomicBool, Ordering},
     time::{Duration, Instant},
 };
@@ -152,90 +151,365 @@ fn observations(
         .collect()
 }
 
-pub fn run(
-    session: &mut LiveSession,
-    model: &str,
-    cancel: &AtomicBool,
-    directory: &Path,
-) -> Result<Value> {
-    let ids: Vec<_> = session
-        .view
-        .frames
-        .iter()
-        .rev()
-        .take(2)
-        .map(|f| f.id.clone())
-        .collect::<Vec<_>>()
-        .into_iter()
-        .rev()
-        .collect();
-    let (sequence, images) = session.read_sequence(&session.view.investigation_id, &ids)?;
-    let latest = sequence
-        .frames
-        .last()
-        .ok_or("No images for the local observer.")?;
-    if latest.number != session.view.sample_count {
-        return Err("The latest capture has no usable image.".into());
-    }
-    let frames = images
-        .into_iter()
-        .zip(&sequence.frames)
-        .map(|(image, reference)| {
-            let timestamp = reference
-                .capture_interval
-                .as_ref()
-                .ok_or("Missing capture timing.")?
-                .begin_us
-                .checked_mul(1000)
-                .ok_or("Capture timestamp overflow.")?;
-            let frame = Frame::from_png(image, timestamp)?;
-            if frame.evidence.sha256 != reference.sha256
-                || frame.evidence.width != reference.width
-                || frame.evidence.height != reference.height
-            {
-                return Err("Local observer image differs from its capture evidence.".into());
-            }
-            Ok(frame)
+/// Immutable, verified image copies; the worker never borrows the live session.
+pub struct Prepared {
+    frames: Vec<Frame>,
+    sequence: reversebolt_core::temporal::Sequence,
+    investigation: String,
+    batch: usize,
+    process: reversebolt_core::live::ProcessInfo,
+}
+impl Prepared {
+    pub fn from_session(session: &LiveSession) -> Result<Self> {
+        let ids: Vec<_> = session
+            .view
+            .frames
+            .iter()
+            .rev()
+            .take(2)
+            .map(|f| f.id.clone())
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .collect();
+        let (sequence, images) = session.read_sequence(&session.view.investigation_id, &ids)?;
+        let latest = sequence
+            .frames
+            .last()
+            .ok_or("No images for the local observer.")?;
+        if latest.number != session.view.sample_count {
+            return Err("The latest capture has no usable image.".into());
+        }
+        let frames = images
+            .into_iter()
+            .zip(&sequence.frames)
+            .map(|(image, reference)| {
+                let timestamp = reference
+                    .capture_interval
+                    .as_ref()
+                    .ok_or("Missing capture timing.")?
+                    .begin_us
+                    .checked_mul(1000)
+                    .ok_or("Capture timestamp overflow.")?;
+                let frame = Frame::from_png(image, timestamp)?;
+                if frame.evidence.sha256 != reference.sha256
+                    || frame.evidence.width != reference.width
+                    || frame.evidence.height != reference.height
+                {
+                    return Err("Local observer image differs from its capture evidence.".into());
+                }
+                Ok(frame)
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        Ok(Self {
+            frames,
+            sequence,
+            investigation: session.view.investigation_id.clone(),
+            batch: session.view.coverage.batch,
+            process: session.view.process.clone(),
         })
-        .collect::<Result<Vec<_>>>()?;
-    let id = uuid::Uuid::new_v4().to_string();
-    let mut pass = Pass::default();
-    let result = tokio::runtime::Runtime::new()
-        .map_err(|e| e.to_string())?
-        .block_on(infer(model, &frames, cancel, &mut pass));
-    pass.error = result.err();
-    pass.cancelled |= cancel.load(Ordering::SeqCst);
-    let inputs = observations(&pass, latest, &session.view.investigation_id, &id);
-    let evidence = json!({"schema_version":1,"id":id,"investigation_id":session.view.investigation_id,
-        "batch":session.view.coverage.batch,"process":session.view.process,"sequence":sequence,"pass":pass,
-        "proposed_observations":inputs,"limitation":"Same-model image judgments, not independent validation, persistent identities or editable controls. Proposed observations are not a publication receipt."});
-    let folder = directory.join("model-observations");
-    std::fs::create_dir_all(&folder).map_err(|e| e.to_string())?;
-    let mut file = std::fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(folder.join(format!("{id}.json")))
-        .map_err(|e| e.to_string())?;
-    file.write_all(&serde_json::to_vec_pretty(&evidence).map_err(|e| e.to_string())?)
-        .map_err(|e| e.to_string())?;
-    file.sync_all().map_err(|e| e.to_string())?;
-    if let Some(error) = pass.error {
-        return Err(format!(
-            "Local observation stopped: {error} Evidence: {id}."
-        ));
     }
-    let cancelled = pass.cancelled || cancel.load(Ordering::SeqCst);
-    let count = if cancelled {
-        0
-    } else {
-        session.submit_observations(inputs, "local-model")?
-    };
-    Ok(json!({"evidence_id":id,"recorded":count,"cancelled":cancelled,"provisional":true}))
+}
+
+pub struct Completed {
+    pub id: String,
+    prepared: Prepared,
+    pass: Pass,
+    inputs: Vec<ObservationInput>,
+}
+impl Completed {
+    pub fn publish(self, session: &mut LiveSession, cancel: &AtomicBool) -> Result<Value> {
+        if let Some(error) = self.pass.error {
+            return Err(format!(
+                "Local observation stopped: {error} Evidence: {}.",
+                self.id
+            ));
+        }
+        let cancelled = self.pass.cancelled || cancel.load(Ordering::SeqCst);
+        let count = if cancelled {
+            0
+        } else {
+            if session.view.investigation_id != self.prepared.investigation
+                || session.view.coverage.batch != self.prepared.batch
+                || session.view.process.pid != self.prepared.process.pid
+                || session.view.process.created != self.prepared.process.created
+                || session.view.process.window != self.prepared.process.window
+            {
+                return Err(
+                    "Local observation belongs to a replaced investigation or memory batch.".into(),
+                );
+            }
+            session.submit_observations(self.inputs, "local-model")?
+        };
+        Ok(
+            json!({"evidence_id":self.id,"recorded":count,"cancelled":cancelled,"provisional":true,
+            "observed_frame":self.prepared.sequence.frames.last().map(|f|&f.id)}),
+        )
+    }
+}
+
+pub struct Worker {
+    pub status: reversebolt_core::engine::AnalysisStatus,
+    pub cancel: std::sync::Arc<AtomicBool>,
+    receiver: std::sync::mpsc::Receiver<Result<Completed>>,
+    thread: Option<std::thread::JoinHandle<()>>,
+}
+impl Worker {
+    pub fn start(
+        prepared: Prepared,
+        model: String,
+        job: u64,
+        cancel: std::sync::Arc<AtomicBool>,
+        directory: std::path::PathBuf,
+    ) -> Result<Self> {
+        Self::start_with(
+            prepared,
+            model,
+            job,
+            cancel,
+            directory,
+            |model, frames, cancel, pass| {
+                tokio::runtime::Runtime::new()
+                    .map_err(|e| e.to_string())?
+                    .block_on(infer(model, frames, cancel, pass))
+            },
+        )
+    }
+    fn start_with(
+        prepared: Prepared,
+        model: String,
+        job: u64,
+        cancel: std::sync::Arc<AtomicBool>,
+        directory: std::path::PathBuf,
+        execute: impl FnOnce(&str, &[Frame], &AtomicBool, &mut Pass) -> Result<()> + Send + 'static,
+    ) -> Result<Self> {
+        let id = uuid::Uuid::new_v4().to_string();
+        let status = reversebolt_core::engine::AnalysisStatus {
+            job,
+            evidence_id: id.clone(),
+            model: model.clone(),
+            investigation_id: prepared.investigation.clone(),
+            batch: prepared.batch,
+            frame_ids: prepared
+                .sequence
+                .frames
+                .iter()
+                .map(|f| f.id.clone())
+                .collect(),
+            observed_unix_ms: prepared.sequence.frames.last().unwrap().started_unix_ms,
+            started_unix_ms: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis(),
+            stopping: false,
+        };
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let signal = cancel.clone();
+        let thread=std::thread::Builder::new().name("local-vision".into()).spawn(move || {
+            let result=(|| {
+                let mut pass=Pass::default();
+                pass.error=execute(&model,&prepared.frames,&signal,&mut pass).err();
+                pass.cancelled|=signal.load(Ordering::SeqCst);
+                let inputs=observations(&pass,prepared.sequence.frames.last().unwrap(),&prepared.investigation,&id);
+                let evidence=json!({"schema_version":2,"id":id,"job":job,"investigation_id":prepared.investigation,
+                    "batch":prepared.batch,"process":prepared.process,"sequence":prepared.sequence,"pass":pass,
+                    "proposed_observations":inputs,"limitation":"Same-model image judgments, not independent validation, persistent identities or editable controls. Proposed observations are not a publication receipt."});
+                let folder=directory.join("model-observations");
+                std::fs::create_dir_all(&folder).map_err(|e|e.to_string())?;
+                let mut file=std::fs::OpenOptions::new().write(true).create_new(true).open(folder.join(format!("{id}.json"))).map_err(|e|e.to_string())?;
+                file.write_all(&serde_json::to_vec_pretty(&evidence).map_err(|e|e.to_string())?).map_err(|e|e.to_string())?;
+                file.sync_all().map_err(|e|e.to_string())?;
+                Ok(Completed{id,prepared,pass,inputs})
+            })();
+            let _=sender.send(result);
+        }).map_err(|e|e.to_string())?;
+        Ok(Self {
+            status,
+            cancel,
+            receiver,
+            thread: Some(thread),
+        })
+    }
+    pub fn poll(&mut self) -> Option<Result<Completed>> {
+        let result = match self.receiver.try_recv() {
+            Ok(result) => result,
+            Err(std::sync::mpsc::TryRecvError::Empty) => return None,
+            Err(std::sync::mpsc::TryRecvError::Disconnected) => {
+                Err("Local observation worker ended without an outcome.".into())
+            }
+        };
+        if self.thread.take().is_some_and(|t| t.join().is_err()) {
+            return Some(Err(
+                "Local observation worker failed. No findings were published.".into(),
+            ));
+        }
+        Some(result)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use reversebolt_core::live::{NativeTarget, ProcessInfo, Region, Screen};
+    use std::sync::{Arc, Mutex, mpsc};
+
+    struct Target {
+        info: ProcessInfo,
+        size: Arc<Mutex<(u32, u32)>>,
+    }
+    impl NativeTarget for Target {
+        fn info(&self) -> &ProcessInfo {
+            &self.info
+        }
+        fn regions(&self) -> Result<Vec<Region>> {
+            Ok(vec![Region {
+                base: 4096,
+                length: 4096,
+                ..Default::default()
+            }])
+        }
+        fn read(&self, _: u64, length: usize) -> Result<Vec<u8>> {
+            Ok(vec![0; length])
+        }
+        fn alive(&self) -> bool {
+            true
+        }
+        fn screen(&self, path: &std::path::Path) -> Result<Screen> {
+            let (width, height) = *self.size.lock().unwrap();
+            image::RgbImage::from_pixel(width, height, image::Rgb([15, 50, 100]))
+                .save(path)
+                .map_err(|e| e.to_string())?;
+            Ok(Screen {
+                path: path.to_string_lossy().into(),
+                width,
+                height,
+                text: String::new(),
+                words: vec![],
+                warning: None,
+                method: "fixture".into(),
+            })
+        }
+    }
+
+    fn session() -> (LiveSession, std::path::PathBuf, Arc<Mutex<(u32, u32)>>) {
+        let directory =
+            std::env::temp_dir().join(format!("reversebolt-observer-{}", uuid::Uuid::new_v4()));
+        let size = Arc::new(Mutex::new((128, 96)));
+        let target = Target {
+            info: ProcessInfo {
+                pid: 1,
+                created: "fixture-creation".into(),
+                window: 2,
+                ..Default::default()
+            },
+            size: size.clone(),
+        };
+        let mut session = LiveSession::attach(Box::new(target), 1, directory.clone()).unwrap();
+        session.capture().unwrap();
+        session.capture().unwrap();
+        (session, directory, size)
+    }
+    fn finish(worker: &mut Worker) -> Completed {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            if let Some(result) = worker.poll() {
+                return result.unwrap();
+            }
+            assert!(Instant::now() < deadline, "Owned worker did not settle");
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    }
+    fn successful_pass(frames: &[Frame], pass: &mut Pass) {
+        *pass = proposed().0;
+        pass.proposal.as_mut().unwrap().frames =
+            frames.iter().map(|f| f.evidence.clone()).collect();
+    }
+
+    #[test]
+    fn capture_continues_while_review_waits_and_late_results_keep_original_frame() {
+        let (mut session, directory, _) = session();
+        let captured = session.view.frames[1].clone();
+        let cancel = Arc::new(AtomicBool::new(false));
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let mut worker = Worker::start_with(
+            Prepared::from_session(&session).unwrap(),
+            "fixture".into(),
+            7,
+            cancel.clone(),
+            directory.clone(),
+            move |_, frames, _, pass| {
+                started_tx.send(()).unwrap();
+                release_rx.recv().unwrap();
+                successful_pass(frames, pass);
+                Ok(())
+            },
+        )
+        .unwrap();
+        started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        session.capture().unwrap();
+        session.capture().unwrap();
+        assert!(worker.poll().is_none());
+        assert_eq!(session.view.sample_count, 4);
+        release_tx.send(()).unwrap();
+        let result = finish(&mut worker).publish(&mut session, &cancel).unwrap();
+        assert_eq!(result["recorded"], 1);
+        let observations = &session.view.visual_tracks[0].observations;
+        assert_eq!(observations.len(), 4);
+        assert_eq!(
+            observations[1].as_ref().unwrap().input.frame_id,
+            captured.id
+        );
+        assert!(observations[2..].iter().all(Option::is_none));
+        let raw: Value = serde_json::from_slice(
+            &std::fs::read(
+                directory
+                    .join("model-observations")
+                    .join(format!("{}.json", result["evidence_id"].as_str().unwrap())),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(raw["sequence"]["frames"][1]["sha256"], captured.sha256);
+        assert_eq!(raw["job"], 7);
+    }
+
+    #[test]
+    fn late_review_cannot_publish_after_stop_replacement_or_resize() {
+        for failure in ["cancel", "scope", "geometry"] {
+            let (mut session, directory, size) = session();
+            let cancel = Arc::new(AtomicBool::new(false));
+            let mut worker = Worker::start_with(
+                Prepared::from_session(&session).unwrap(),
+                "fixture".into(),
+                1,
+                cancel.clone(),
+                directory,
+                |_, frames, _, pass| {
+                    successful_pass(frames, pass);
+                    Ok(())
+                },
+            )
+            .unwrap();
+            let completed = finish(&mut worker);
+            match failure {
+                "cancel" => cancel.store(true, Ordering::SeqCst),
+                "scope" => session.view.investigation_id = "replaced".into(),
+                _ => {
+                    *size.lock().unwrap() = (192, 96);
+                    session.capture().unwrap();
+                }
+            }
+            let result = completed.publish(&mut session, &cancel);
+            if failure == "cancel" {
+                assert_eq!(result.unwrap()["recorded"], 0);
+            } else {
+                assert!(result.is_err());
+            }
+            assert!(session.view.visual_tracks.is_empty());
+        }
+    }
 
     fn proposed() -> (Pass, visual::FrameRef) {
         let frame = visual::FrameRef {

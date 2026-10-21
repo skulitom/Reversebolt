@@ -127,6 +127,10 @@ limit. Successful replay at 10 Hz would therefore not establish compatibility
 with the default live capture cadence. This experiment fails even before that
 integration obstacle.
 
+Subsequent [background interpretation work](BACKGROUND_OBSERVER.md) removed the
+model-inference pause from capture. The default acquisition cadence still needs
+measurement on real targets, and this tracker's moving-target failure remains.
+
 Keep the existing provisional appearance cards. Further work needs acquisition
 independent of slow interpretation, explicit observation freshness and a method
 that retains moving/animated objects without following scenery. Repeated model

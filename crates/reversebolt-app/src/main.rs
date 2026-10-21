@@ -5,6 +5,7 @@ mod graphics;
 mod jobs;
 mod local_observer;
 mod native;
+mod observation_pipeline;
 mod ocr;
 mod service;
 mod target;

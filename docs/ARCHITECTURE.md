@@ -217,15 +217,26 @@ outcome is unknown even for read-only captures. Journal checkpoints and evidence
 files are separate writes, not an atomic cross-file transaction. The library's
 generic effect/consent tests do not expose production write operations.
 
-Local-model steps keep the same worker and ownership through inference and
-evidence publication. They check a shared cancellation flag between model calls,
-save full source-bound receipts before publication, and validate/save an entire
-observation group before exposing any item. Status and job controls stay on the
-controller thread. Model work has separate poll cadence so normal inference
-latency does not exhaust the native-capture poll budget. A server timeout stops
-the job without retries; it does not prove an independently running Ollama
-server has stopped computation. Restart never resumes inference. See
-[model integration](research/LOCAL_OBSERVER_INTEGRATION.md).
+The first local-model pass of a new multi-capture job uses a separate worker with
+immutable verified PNG copies. It cannot access the target or publish findings.
+The sole engine worker continues capture and serializes result publication,
+checking original investigation, batch, process identity, image hash and geometry.
+At most one model worker exists; the final capture drains it before starting the
+final pass. That last ledger operation remains pending until analysis settles.
+
+The controller retains a cancellation signal for the entire capture job, including
+the gaps between steps. A paused/cancelled capture sequence can still own a draining
+image request, explicitly exposed by `View.analysis`. Resume, scope replacement and
+queued jobs wait for that request. Resume allocates a new signal without clearing
+the old one. Failed background work stops later captures; an in-flight capture can
+finish before the engine handles the failure. Source-bound raw receipts precede
+publication; the complete observation group is validated/saved before exposure.
+
+Status/control replies remain on the controller thread. Model steps use a 30-second
+ledger poll cadence, separate from the 25 ms readiness/cancellation checks, to cover
+two sequential passes at the final capture. HTTP timeout is not proof that the
+separate Ollama server stopped computation. Restart resumes no inference. See
+[background observation evidence](research/BACKGROUND_OBSERVER.md).
 
 See [MCP contract](MCP.md#durable-observation-jobs) and
 [integration evidence](research/OBSERVATION_JOBS.md) for limits and failure cases.

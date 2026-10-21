@@ -261,20 +261,38 @@ digests, prompt/schema/options, image hashes and crop transforms are retained in
 each pass receipt. Automatic 16-moment jobs use the configured choice at moments
 2 and 16. No target identity, memory or annotations enter the model prompt.
 
-Model work runs within the owned engine operation, while status/control replies
-remain responsive. Pause, cancel and desktop takeover signal the active pass;
-the current HTTP request may finish, but later calls and publication are skipped
-when the flag is observed. Already completed publication is not undone. A pass
+The first pass of a new job with more than two captures runs on one background
+worker using immutable image copies; later captures continue on the engine
+worker. The final capture drains any first pass, then runs its own pass before
+the job completes. Two-capture jobs wait for their single pass. Legacy serialized
+plans without `background_model` retain their blocking behavior.
+
+`state.analysis` identifies the outstanding worker's job, evidence id, model,
+investigation, batch, source frame ids and observation/start times. It is null
+once the worker settles. Capture progress and analysis progress are distinct:
+a job may be `Paused` or `Cancelled` while `state.analysis.stopping` is true.
+Resume, target replacement and other mutations wait for that worker to settle;
+read-only requests and declared image-observation submissions remain available
+between engine operations. No queued job takes over a draining worker's scope.
+
+Pause, cancel and desktop takeover signal the active pass even between capture
+steps. The current HTTP request may finish, but later calls and publication are
+skipped when the flag is observed. Already completed publication is not undone. A pass
 checks a 90-second budget between requests (an active request can add up to
 90 seconds plus bounded metadata checks). Failed passes stop the job, with no
-automatic retry. HTTP timeout means the client stopped waiting, not proof of
+automatic retry; background failure is checked before the next capture starts.
+An already-running capture can finish before the failure is handled.
+HTTP timeout means the client stopped waiting, not proof of
 server quiescence. Raw receipts are saved under `captures/model-observations/`.
 
 Accepted items are image-bound `provisional` text observations from engine source
 `local-model`, with generic names and original proposal coordinates. They receive
-new keys per pass, making no persistent identity claim. They do not generate
+new keys per pass, making no persistent identity claim. Late findings retain
+their original frame slot; later slots remain missing. The desktop shows their
+capture age. Restart discards the transient worker state and resumes no inference.
+They do not generate
 numeric memory matches or enable writes. See
-[native integration evidence](research/LOCAL_OBSERVER_INTEGRATION.md).
+[background integration evidence](research/BACKGROUND_OBSERVER.md).
 
 The job ledger retains at most 24 jobs, 8 queued jobs, 8 receipts per client and
 128 events. `job_events` returns up to 64 events after its `cursor`; use `next`

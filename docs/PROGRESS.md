@@ -426,3 +426,21 @@ is research-only; no new capture, game control or model inference was needed.
 Next: independent acquisition and observation freshness, then a tracking method
 that passes moving/animated-object retention before internal-state comparison.
 See [the failed approach and evidence](research/SEEDED_TRACKING.md).
+
+## 2026-10-21 — capture alongside image review: remains 21%
+
+The first image interpretation now runs on a separate worker while ordinary
+capture continues. Its source is immutable and late results fill only their
+original image slots. The native fixture captured ten additional moments while
+the first review remained pending. Pause/resume, failed-model handling, restart
+and visible card ages were checked automatically. All 94 tests and strict Clippy
+pass. This refines the existing observation capability; category credits and the
+fixed denominator remain unchanged. The full goal stays active.
+
+Desktop preview `0.1.0-20261021-015824` is running, with the prior eight history
+entries and model selection preserved. Its 24-tool smoke and final native model
+pass/failure checks passed; test windows were closed afterward.
+
+See [concurrency evidence and limits](research/BACKGROUND_OBSERVER.md). Next:
+improve observation cadence and moving-object measurements before comparing
+them with internal state; retain explicit source freshness and uncertainty.

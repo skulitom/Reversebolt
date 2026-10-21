@@ -1,4 +1,7 @@
-"""MCP/native-window/local-model integration, using saved imagery without gameplay.
+"""Historical smoke for the blocking first-pass build (f2b5dd1).
+For current builds use background-observer-smoke.py; pause now has a separate
+analysis-drain state, so this older check's receipt-count assumptions do not apply.
+MCP/native-window/local-model integration, using saved imagery without gameplay.
 Run a desktop engine and image-fixture.ps1 in Anode, then provide DATA_DIR PID MODEL.
 Leaves the engine showing its provisional findings for a separate UIA check.
 """

@@ -20,11 +20,13 @@ use std::{
     },
 };
 
-type Job = (
-    Command,
-    Option<mpsc::Sender<Value>>,
-    Option<Arc<AtomicBool>>,
-);
+#[derive(Clone)]
+pub(crate) struct OperationOwner {
+    pub job: u64,
+    pub cancel: Arc<AtomicBool>,
+}
+
+type Job = (Command, Option<mpsc::Sender<Value>>, Option<OperationOwner>);
 pub use crate::jobs::Handle;
 
 #[derive(Clone)]
@@ -84,8 +86,16 @@ impl EngineHandle {
             };
             *published.write().unwrap() = engine.view.clone();
             let _ = ready_tx.send(Ok(()));
+            let mut analysis = crate::observation_pipeline::Pipeline::default();
             loop {
-                let job = receiver.recv_timeout(std::time::Duration::from_millis(300));
+                analysis.poll(&mut engine, &published);
+                working.store(analysis.busy(), Ordering::SeqCst);
+                let job =
+                    receiver.recv_timeout(std::time::Duration::from_millis(if analysis.busy() {
+                        25
+                    } else {
+                        300
+                    }));
                 if let Some(session) = engine.live.as_mut()
                     && session.refresh_connection()
                 {
@@ -95,7 +105,14 @@ impl EngineHandle {
                 let (command, reply, cancel) = match job {
                     Ok(job) => job,
                     Err(mpsc::RecvTimeoutError::Timeout) => continue,
-                    Err(mpsc::RecvTimeoutError::Disconnected) => break,
+                    Err(mpsc::RecvTimeoutError::Disconnected) => {
+                        analysis.stop();
+                        while analysis.busy() {
+                            analysis.poll(&mut engine, &published);
+                            std::thread::sleep(std::time::Duration::from_millis(25));
+                        }
+                        break;
+                    }
                 };
                 working.store(true, Ordering::SeqCst);
                 let read_only = matches!(
@@ -127,7 +144,14 @@ impl EngineHandle {
                         | "submit_temporal_observation"
                 ) {
                     engine.view.error = None;
-                    native_command(&mut engine, &command, &live_directory, cancel.as_deref())
+                    native_command(
+                        &mut engine,
+                        &command,
+                        &live_directory,
+                        cancel.as_ref(),
+                        &mut analysis,
+                        &published,
+                    )
                 } else {
                     engine.execute(&command)
                 };
@@ -162,7 +186,7 @@ impl EngineHandle {
                     engine.view.error.clone_from(&error);
                 }
                 *published.write().unwrap() = engine.view.clone();
-                working.store(false, Ordering::SeqCst);
+                working.store(analysis.busy(), Ordering::SeqCst);
                 if let Some(reply) = reply {
                     let _ = reply.send(
                         json!({"ok":error.is_none(),"error":error,"state":engine.view,"data":data}),
@@ -180,7 +204,7 @@ impl EngineHandle {
     pub fn start_owned_command(
         &self,
         command: Command,
-        cancel: Option<Arc<AtomicBool>>,
+        cancel: Option<OperationOwner>,
     ) -> Result<mpsc::Receiver<Value>> {
         let (tx, rx) = mpsc::channel();
         self.sender
@@ -194,7 +218,9 @@ fn native_command(
     engine: &mut Engine,
     command: &Command,
     directory: &std::path::Path,
-    cancel: Option<&AtomicBool>,
+    owner: Option<&OperationOwner>,
+    analysis: &mut crate::observation_pipeline::Pipeline,
+    published: &Arc<RwLock<View>>,
 ) -> Result<Value> {
     if let Some(scope) = command.args.get("scope") {
         let live = engine
@@ -332,6 +358,8 @@ fn native_command(
             engine.live = Some(session);
         }
         "capture" => {
+            // Reconcile any result that arrived while the command queue was waiting.
+            analysis.poll(engine, published);
             let model = command
                 .args
                 .get("local_model")
@@ -341,8 +369,14 @@ fn native_command(
                         .ok_or("local_model must name an installed local vision model.")
                 })
                 .transpose()?;
-            if model.is_some() && cancel.is_none() {
+            if model.is_some() && owner.is_none() {
                 return Err("Local inference must belong to an observation job.".into());
+            }
+            if let Some(owner) = owner {
+                analysis.check(owner)?;
+                if owner.cancel.load(Ordering::SeqCst) {
+                    return Ok(json!({"local_observation":{"cancelled":true},"captured":false}));
+                }
             }
             let mode: reversebolt_core::live::CaptureMode = command
                 .args
@@ -368,19 +402,19 @@ fn native_command(
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
             if let Some(model) = model {
-                let result = crate::local_observer::run(
-                    engine.live.as_mut().unwrap(),
-                    model,
-                    cancel.unwrap(),
-                    directory,
-                )?;
-                engine.event(
-                    "local-model",
-                    format!(
-                        "Local visual review recorded {} provisional items. Evidence: {}.",
-                        result["recorded"], result["evidence_id"]
-                    ),
-                );
+                let owner = owner.unwrap();
+                crate::observation_pipeline::checkpoint(engine, published)?;
+                // The final pass waits for any first pass, then uses the latest two images.
+                let previous = analysis.drain(engine, owner, published)?;
+                if owner.cancel.load(Ordering::SeqCst) {
+                    return Ok(json!({"local_observation":previous,"cancelled":true}));
+                }
+                let started = analysis.start(engine, model, owner, directory, published)?;
+                let result = if command.args["background_model"] == true {
+                    started
+                } else {
+                    analysis.drain(engine, owner, published)?
+                };
                 return Ok(json!({"local_observation":result}));
             }
         }

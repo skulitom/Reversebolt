@@ -123,11 +123,12 @@ recovery and withheld-game evaluation remain incomplete. Observation credit
 increases from 3/15 to 4/15 for the integrated image-derived source; the full
 weighted goal is **21/100**, with no new causal or generalization credit.
 
-Reproduce the native check by running `scripts/image-fixture.ps1` and an isolated
-desktop engine in Anode, then:
+The original blocking-pass check is retained in `scripts/local-observer-smoke.py`
+for its historical build. For current builds, run `scripts/image-fixture.ps1`
+and an isolated desktop engine in Anode, then use the updated concurrency check:
 
 ```powershell
-python scripts/local-observer-smoke.py DATA_DIRECTORY FIXTURE_PID INSTALLED_MODEL
+python scripts/background-observer-smoke.py DATA_DIRECTORY FIXTURE_PID INSTALLED_MODEL
 ```
 
 The script leaves the owned engine/window available for UI Automation; close

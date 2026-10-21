@@ -13,6 +13,16 @@ enum CardSource {
     Temporal,
 }
 
+type FindingCard = (
+    CardSource,
+    usize,
+    String,
+    String,
+    String,
+    bool,
+    Option<String>,
+);
+
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
     let words = sentence
@@ -25,6 +35,22 @@ fn brief_description(text: &str) -> String {
         brief.push('…');
     }
     brief
+}
+
+pub(crate) fn observation_age(observed: u128, now: u128) -> String {
+    let Some(age) = now.checked_sub(observed) else {
+        return "Observation time unavailable".into();
+    };
+    let seconds = age / 1000;
+    if seconds < 2 {
+        "Seen just now".into()
+    } else if seconds < 60 {
+        format!("Seen {seconds}s ago")
+    } else if seconds < 3600 {
+        format!("Seen {}m ago", seconds / 60)
+    } else {
+        format!("Seen {}h ago", seconds / 3600)
+    }
 }
 
 #[derive(Default)]
@@ -253,7 +279,11 @@ impl LivePane {
             ui.colored_label(ERROR, error);
         }
         ui.add_space(16.0);
-        let mut cards: Vec<(CardSource, usize, String, String, String, bool)> = vec![];
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis();
+        let mut cards: Vec<FindingCard> = vec![];
         for track in live.tracks.iter().filter(|t| t.active) {
             let title = track
                 .label
@@ -269,15 +299,20 @@ impl LivePane {
                 value.map_or_else(|| "—".into(), |v| v.to_string()),
                 "Visible in the app. Still identifying what it controls.".into(),
                 value.is_some(),
+                live.frames
+                    .last()
+                    .map(|f| observation_age(f.started_unix_ms, now)),
             ));
         }
         for track in live.visual_tracks.iter().filter(|t| t.active) {
-            let latest = track.observations.last().and_then(Option::as_ref);
-            let readable = latest
-                .is_some_and(|o| o.input.quality != reversebolt_core::visual::Quality::Uncertain);
+            let latest = track.observations.iter().rev().flatten().next();
+            let readable = track.observations.last().is_some_and(Option::is_some)
+                && latest.is_some_and(|o| {
+                    o.input.quality != reversebolt_core::visual::Quality::Uncertain
+                });
             let value = latest
+                .filter(|o| o.input.quality != reversebolt_core::visual::Quality::Uncertain)
                 .and_then(|o| o.input.value.as_ref())
-                .filter(|_| readable)
                 .map_or_else(|| "—".into(), |v| v.display());
             cards.push((
                 CardSource::Image,
@@ -297,6 +332,9 @@ impl LivePane {
                     "Interpreted from the app. Its effect is not verified yet.".into()
                 },
                 readable,
+                latest
+                    .and_then(|o| live.frames.iter().find(|f| f.id == o.input.frame_id))
+                    .map(|f| observation_age(f.started_unix_ms, now)),
             ));
         }
         for track in live.temporal_tracks.iter().filter(|t| t.active) {
@@ -328,8 +366,15 @@ impl LivePane {
                 }
                 .into(),
                 readable,
+                latest
+                    .evidence
+                    .frames
+                    .last()
+                    .map(|f| observation_age(f.started_unix_ms, now)),
             ));
         }
+        ui.ctx()
+            .request_repaint_after(std::time::Duration::from_secs(1));
         if cards.is_empty() {
             egui::Frame::new()
                 .fill(SURFACE)
@@ -350,7 +395,7 @@ impl LivePane {
         let columns = if ui.available_width() >= 650.0 { 2 } else { 1 };
         for row in cards.chunks(columns) {
             ui.columns(columns, |cols| {
-                for (column, (external, id, title, value, description, readable)) in
+                for (column, (external, id, title, value, description, readable, age)) in
                     cols.iter_mut().zip(row)
                 {
                     column.push_id((external, id), |ui| {
@@ -363,6 +408,9 @@ impl LivePane {
                                 ui.set_min_height(148.0);
                                 ui.label(RichText::new(title).size(19.0).strong());
                                 ui.label(RichText::new(description).size(13.0).color(MUTED));
+                                if let Some(age) = age {
+                                    ui.label(RichText::new(age).size(12.).color(MUTED));
+                                }
                                 ui.add_space(12.0);
                                 ui.horizontal(|ui| {
                                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
@@ -425,8 +473,8 @@ impl LivePane {
         if let Some((_, external, id)) = self.detail.clone() {
             let card = cards
                 .iter()
-                .find(|(e, i, _, _, _, _)| *e == external && *i == id);
-            if let Some((_, _, title, value, _, _)) = card {
+                .find(|(e, i, _, _, _, _, _)| *e == external && *i == id);
+            if let Some((_, _, title, value, _, _, _)) = card {
                 let response=egui::Modal::new(egui::Id::new("control_details")).show(ui.ctx(),|ui| {
                     ui.set_width(440.0);
                     ui.heading(title);
