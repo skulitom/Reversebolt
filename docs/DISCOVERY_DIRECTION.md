@@ -142,6 +142,17 @@ rather than optimizing visible-counter matching as the sole route.
 
 ## Decision after the visual-only concern
 
+The user has now asked to switch away from Blue Prince and permits restarting
+Anode if its input path requires it. Blue Prince is no longer a prerequisite for
+progress. The next independent target is the installed **Manifold Garden**
+(Steam 473950): its installation contains GameAssembly.dll, and its movement and
+gravity mechanics make it a useful test of behaviour beyond visible number
+counters. Runtime compatibility and reachable gameplay objects remain untested;
+the installed module is only a target-selection signal. Use the same generic
+adapter and preserve existing saves. Do not introduce game-specific class names,
+offsets or layouts into production. The current accessibility-based product test
+works without restarting Anode; restart only when the next game's input requires it.
+
 Use runtime and memory evidence to propose candidates independently of screen
 numbers. Use selected images, movement, appearance and other observations when
 they can distinguish consequences. A model should propose hypotheses and tests

@@ -129,7 +129,7 @@ pub fn controls(
             && latest.is_none_or(|last| last.id != t.id)
     }) {
         ui.label(
-            RichText::new("An earlier edit remains applied")
+            RichText::new("An earlier trial has a restore option")
                 .size(12.)
                 .color(MUTED),
         );
