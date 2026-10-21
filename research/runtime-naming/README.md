@@ -80,3 +80,8 @@ competing candidates, then require independent observations or effect tests
 before promoting a guess to an identified gameplay control. A second model's
 agreement alone would not establish the meaning. Progress remains **32%**; the
 full goal and the requirement for unchanged independent-game evaluation remain.
+
+Follow-up (2026-10-21): a bounded, evidence-linked proposal contract and automatic
+engine/MCP review are now implemented. The retained replays still contain irrelevant
+settings and missed context, so proposals do not rename controls. See the
+[integration, failures and current limits](../runtime-hypotheses/README.md).

@@ -4,6 +4,34 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic metadata hypotheses (2026-10-21): **34% unchanged**. Runtime discovery
+can now retain a bounded local-model review in the same durable engine/MCP job.
+Exact report/path citations and separate alternatives are preserved; wrong
+references and ungrounded labels are rejected. Raw cards appear first. Missing
+models preserve discovery; cancellation and receipt-storage failure prevent
+publication. Proposals do not rename cards or establish gameplay meaning.
+
+Twelve iterative retained-data replays exposed selection and identifier failures.
+The final replay preserves the competing movement fields but still includes
+irrelevant settings and misses the context fixture. This adds no semantic or
+generalization credit. The native check exposed and fixed a real 263-byte job
+payload overflow by pinning model settings into the existing immutable request.
+Final evidence: 264 workspace tests, strict Clippy, formatting, release build,
+49-tool smoke and 14 native workflow checks. Four helpers unloaded, with 20
+balanced pauses, no helper heap operations while paused, no screenshots/input
+actions and no gameplay writes. The native fixture produced no accepted meanings.
+
+Credits remain foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent collaboration 6/10, generalization 0/10.
+The full goal remains active. Next: connect justified hypotheses to informative
+comparisons and supported control promotion, including meaningful same-object
+context at selection time. [Evidence and limits](../research/runtime-hypotheses/README.md).
+
+Preview `0.1.0-20261021-213624` is running on the desktop. Its four binaries match
+the frozen native test build. All 44 history entries, observer model, changes,
+runtime trials/tests and Freeze records were preserved. There is no active target,
+job, test or hold after the update; the named-card/direct-number/Freeze UI remains.
+
 Shared live response tests (2026-10-21): **34%**. The bounded comparison now runs
 through the shared engine and MCP with durable capture intents, engine-owned
 image/input evidence, guarded before/change/recovery reads, stop/replay rules

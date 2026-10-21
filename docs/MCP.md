@@ -307,6 +307,20 @@ readings. Newly shown cards retain their discovery age until refreshed.
 **Watch changes** uses six checks at 1000 ms. Successive revisions are pinned;
 the job does not silently adapt after another selection changes its catalogue.
 
+Discovery also accepts optional `local_model` (an installed model name, at most
+128 characters). Automatic attachment uses the configured observer model.
+The setting is pinned into the immutable task document; refresh jobs reject it.
+Raw cards publish first, then up to two local calls retain provisional metadata
+questions in `state.live.runtime.naming`. Its status is `pending`, `complete`,
+`unavailable`, `cancelled` or `failed`, with a report hash, evidence ID, optional
+batch and error. Accepted hypotheses contain exact candidate paths, quotations,
+separate alternatives and a question; rejected proposals retain their reasons.
+These are unverified investigation hints and do not rename cards or authorize edits.
+Cancellation prevents further calls/publication after a running request settles.
+A missing model preserves discovery; a receipt-storage failure fails the job.
+Job/status controls remain responsive, while other engine work waits for the review.
+Restart never resumes it. See [contract, replay results and limitations](../research/runtime-hypotheses/README.md).
+
 Each card retains at most 16 `readings`, with revision, operation start/end bounds,
 status, value, bytes and report path/digest. `readings_dropped` counts omitted older
 readings. Unavailable readings remain gaps, and difference counts compare only

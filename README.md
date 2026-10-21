@@ -10,6 +10,9 @@ bounded-memory observations to compare screen numbers with memory trajectories.
 Values appear as simple cards; their gameplay meaning remains unverified.
 Unnamed readings stay off the board. Named cards have short descriptions;
 runtime descriptions are provisional metadata labels, not verified game meanings.
+An installed local model can retain evidence-linked questions and competing
+fields after runtime discovery. These remain shared engine/MCP investigation
+hints and do not rename cards. See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
 Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.

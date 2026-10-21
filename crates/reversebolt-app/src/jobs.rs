@@ -54,7 +54,7 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
             let watching = plan.as_ref().is_some_and(|s| s.change.is_some());
             let title = if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
-            let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
+            let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.has_model());
             ui.horizontal_wrapped(|ui| {
                 if job.phase==job::Phase::Running { ui.spinner(); }
                 ui.label(RichText::new(if job.phase==job::Phase::Running {format!("{title}…")} else {phase.into()}).color(ACCENT))
@@ -280,6 +280,11 @@ struct CaptureStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     change: Option<change_watch::Cursor>,
 }
+impl CaptureStep {
+    fn has_model(&self) -> bool {
+        self.local_model.is_some() || self.runtime.as_ref().is_some_and(|r| r.starts_with("n:"))
+    }
+}
 
 fn is_false(value: &bool) -> bool {
     !value
@@ -382,6 +387,7 @@ impl job::Executor for CaptureExecutor {
                 Value::Null,
             );
         }
+        let model_step = step.has_model();
         let command = Command {
             action: if step.runtime.is_some() {
                 "inspect_runtime"
@@ -418,7 +424,7 @@ impl job::Executor for CaptureExecutor {
         let owner = self.owner.as_ref().unwrap().clone();
         let cancel = owner.cancel.clone();
         // The final step can drain the first review and then run its own review.
-        let poll_interval = Duration::from_secs(if step.local_model.is_some() {
+        let poll_interval = Duration::from_secs(if model_step {
             30
         } else if step.runtime.is_some() {
             5
@@ -432,7 +438,7 @@ impl job::Executor for CaptureExecutor {
                     response,
                     cancel,
                     poll_interval,
-                    runtime: step.runtime.is_some(),
+                    runtime: step.runtime.is_some() && !model_step,
                 });
                 self.next_poll = Instant::now() + poll_interval;
                 job::Poll::Pending
@@ -1024,10 +1030,32 @@ impl Controller {
         let action = if command.action == "start_change_watch" {
             self.plan_change_watch(command, &binding, request, &actor.client)?
         } else if command.action == "start_runtime_job" {
+            let local_model = command
+                .args
+                .get("local_model")
+                .filter(|v| !v.is_null())
+                .map(|v| {
+                    v.as_str()
+                        .filter(|s| {
+                            !s.is_empty()
+                                && s.len() <= 128
+                                && s.chars()
+                                    .all(|c| c.is_ascii_alphanumeric() || "-_.:/".contains(c))
+                        })
+                        .map(str::to_owned)
+                        .ok_or("Supply an installed local model name or null.")
+                })
+                .transpose()?;
             let task: reversebolt_core::runtime::Task =
                 serde_json::from_value(command.args["task"].clone())
                     .map_err(|_| "Supply a runtime discovery or refresh task.")?;
             task.validate()?;
+            if local_model.is_some() && !matches!(task, reversebolt_core::runtime::Task::Discover) {
+                return Err(
+                    "Metadata hypotheses require a discovery report, not repeated value refresh."
+                        .into(),
+                );
+            }
             let count = command.args.get("count").map_or(Ok(1), |v| {
                 v.as_u64()
                     .filter(|n| (1..=16).contains(n))
@@ -1075,9 +1103,10 @@ impl Controller {
                         Ok(job::Step {
                             kind: job::Kind::Observe,
                             payload: serde_json::to_string(&CaptureStep {
-                                runtime: Some(crate::runtime_bridge::store_task(
+                                runtime: Some(crate::runtime_bridge::store_plan(
                                     &self.runtime_directory,
                                     next_task,
+                                    local_model.as_deref(),
                                 )?),
                                 scope: scope.clone(),
                                 delay_ms: if index == 0 { 0 } else { interval },
@@ -2075,6 +2104,42 @@ mod tests {
     }
 
     #[test]
+    fn configured_model_is_bound_to_automatic_runtime_discovery() {
+        let mut view = initial_view();
+        view.observer_model = Some("local-model".into());
+        view.live.as_mut().unwrap().runtime.available = true;
+        view.live.as_mut().unwrap().runtime.phase = "available".into();
+        let engine = EngineHandle::test_worker(view, |_, _| panic!("No dispatch in plan test"));
+        let mut c = controller(engine);
+        let response = c.start_automatic_observation("agent".into()).unwrap();
+        let id = response["ack"]["job"].as_u64().unwrap();
+        let snapshot = c.jobs.snapshot();
+        let step: CaptureStep = serde_json::from_str(&snapshot.jobs[&id].steps[0].payload).unwrap();
+        assert!(step.local_model.is_none());
+        assert_eq!(
+            crate::runtime_bridge::load_plan(
+                &c.runtime_directory,
+                step.runtime.as_deref().unwrap()
+            )
+            .unwrap()
+            .1
+            .as_deref(),
+            Some("local-model")
+        );
+        assert!(step.runtime.is_some());
+        let refresh = request(
+            &c,
+            "start_runtime_job",
+            json!({"task":{"operation":"refresh","catalog_id":"test","after_revision":0,"ids":["a".repeat(64)]},"local_model":"local-model"}),
+        );
+        assert!(
+            c.job_command(&refresh)
+                .unwrap_err()
+                .contains("discovery report")
+        );
+    }
+
+    #[test]
     fn four_value_runtime_refresh_fits_real_journal_and_checks_its_document() {
         use crate::runtime_bridge::{load_task, store_task};
         let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No worker needed"));
@@ -2115,6 +2180,50 @@ mod tests {
         std::fs::write(path, b"{\"operation\":\"discover\"}").unwrap();
         assert!(load_task(&c.runtime_directory, &reference).is_err());
         assert!(store_task(&c.runtime_directory, &task).is_err());
+    }
+
+    #[test]
+    fn longest_naming_plan_fits_real_identity_and_detects_model_tampering() {
+        let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No dispatch"));
+        let c = controller(engine);
+        let model = "m".repeat(128);
+        let reference = crate::runtime_bridge::store_plan(
+            &c.runtime_directory,
+            &reversebolt_core::runtime::Task::Discover,
+            Some(&model),
+        )
+        .unwrap();
+        let step = CaptureStep {
+            runtime: Some(reference.clone()),
+            scope: Scope {
+                investigation_id: uuid::Uuid::new_v4().to_string(),
+                batch: 24,
+                created: "0123456789ABCDEF".into(),
+                window: u64::MAX,
+            },
+            delay_ms: 0,
+            source: "desktop".into(),
+            compare: false,
+            remaining: 0,
+            mode: Default::default(),
+            local_model: None,
+            background_model: false,
+            change: None,
+        };
+        assert!(step.has_model());
+        assert!(serde_json::to_vec(&step).unwrap().len() <= c.jobs.snapshot().limits.payload_bytes);
+        assert_eq!(
+            crate::runtime_bridge::load_plan(&c.runtime_directory, &reference)
+                .unwrap()
+                .1,
+            Some(model)
+        );
+        let path = c
+            .runtime_directory
+            .join("tasks")
+            .join(format!("{}.json", reference.strip_prefix("n:").unwrap()));
+        std::fs::write(path, b"{}").unwrap();
+        assert!(crate::runtime_bridge::load_plan(&c.runtime_directory, &reference).is_err());
     }
 
     #[test]

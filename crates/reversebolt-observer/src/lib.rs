@@ -1,4 +1,4 @@
-//! Local, image-only model observations. No process access, tools or edit authority.
+//! Local model observations and metadata hypotheses. No process access, tools or edit authority.
 //! Model output is untrusted and provisional, even when it passes this contract.
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use reversebolt_core::{Result, visual};
@@ -11,6 +11,7 @@ use std::{
 
 pub mod point_tracks;
 pub mod review;
+pub mod runtime_naming;
 pub mod tracking;
 
 const ENDPOINT: &str = "http://127.0.0.1:11434";
@@ -304,10 +305,7 @@ impl Observer {
         options: Value,
         images: &[&[u8]],
     ) -> Result<Value> {
-        if images.is_empty()
-            || images.len() > 4
-            || images.iter().map(|b| b.len()).sum::<usize>() > 16 * 1024 * 1024
-        {
+        if images.len() > 4 || images.iter().map(|b| b.len()).sum::<usize>() > 16 * 1024 * 1024 {
             return Err("Model request exceeds the four-image or 16 MiB limit.".into());
         }
         let mut request = json!({"model":self.model,"stream":false,"keep_alive":"2m","format":schema,

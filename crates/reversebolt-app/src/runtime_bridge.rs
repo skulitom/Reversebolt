@@ -47,30 +47,75 @@ fn save(path: &Path, value: &Value) -> Result<()> {
 
 /// Keep full immutable requests out of the job journal's 256-byte step budget.
 pub fn store_task(base: &Path, task: &reversebolt_core::runtime::Task) -> Result<String> {
-    use std::io::Write;
     task.validate()?;
     let bytes = serde_json::to_vec(task).map_err(|e| e.to_string())?;
+    store_document(base, &bytes)
+}
+fn store_document(base: &Path, bytes: &[u8]) -> Result<String> {
+    use std::io::Write;
     if bytes.len() > 1024 {
         return Err("Runtime task exceeds its document limit.".into());
     }
-    let digest = format!("{:x}", Sha256::digest(&bytes));
+    let digest = format!("{:x}", Sha256::digest(bytes));
     let dir = base.join("tasks");
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let path = dir.join(format!("{digest}.json"));
     match OpenOptions::new().write(true).create_new(true).open(path) {
         Ok(mut file) => {
-            file.write_all(&bytes).map_err(|e| e.to_string())?;
+            file.write_all(bytes).map_err(|e| e.to_string())?;
             file.sync_all().map_err(|e| e.to_string())?;
         }
         Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
-            load_task(base, &digest)?;
+            if read_bounded(&dir.join(format!("{digest}.json")), 1024)? != bytes {
+                return Err("Stored runtime task changed.".into());
+            }
         }
         Err(e) => return Err(e.to_string()),
     }
     Ok(digest)
 }
 
+#[cfg(test)]
 pub fn load_task(base: &Path, digest: &str) -> Result<reversebolt_core::runtime::Task> {
+    load_plan(base, digest).map(|(task, _)| task)
+}
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NamingPlan {
+    task: reversebolt_core::runtime::Task,
+    local_model: String,
+}
+fn valid_model(model: &str) -> bool {
+    !model.is_empty()
+        && model.len() <= 128
+        && model
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "-_.:/".contains(c))
+}
+pub fn store_plan(
+    base: &Path,
+    task: &reversebolt_core::runtime::Task,
+    model: Option<&str>,
+) -> Result<String> {
+    let Some(model) = model else {
+        return store_task(base, task);
+    };
+    if !matches!(task, reversebolt_core::runtime::Task::Discover) || !valid_model(model) {
+        return Err("A metadata review needs discovery and an installed model name.".into());
+    }
+    let bytes = serde_json::to_vec(&NamingPlan {
+        task: task.clone(),
+        local_model: model.into(),
+    })
+    .map_err(|e| e.to_string())?;
+    Ok(format!("n:{}", store_document(base, &bytes)?))
+}
+pub fn load_plan(
+    base: &Path,
+    reference: &str,
+) -> Result<(reversebolt_core::runtime::Task, Option<String>)> {
+    let naming = reference.starts_with("n:");
+    let digest = reference.strip_prefix("n:").unwrap_or(reference);
     if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err("Invalid runtime task reference.".into());
     }
@@ -78,10 +123,22 @@ pub fn load_task(base: &Path, digest: &str) -> Result<reversebolt_core::runtime:
     if format!("{:x}", Sha256::digest(&bytes)) != digest {
         return Err("Stored runtime task changed.".into());
     }
-    let task: reversebolt_core::runtime::Task =
-        serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+    let (task, model) = if naming {
+        let plan: NamingPlan = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+        if !matches!(plan.task, reversebolt_core::runtime::Task::Discover)
+            || !valid_model(&plan.local_model)
+        {
+            return Err("Invalid metadata review plan.".into());
+        }
+        (plan.task, Some(plan.local_model))
+    } else {
+        (
+            serde_json::from_slice(&bytes).map_err(|e| e.to_string())?,
+            None,
+        )
+    };
     task.validate()?;
-    Ok(task)
+    Ok((task, model))
 }
 struct Tools {
     loader: PathBuf,
@@ -288,6 +345,18 @@ pub fn catalog_command(
         .catalog_source
         .as_ref()
         .ok_or("Reconnect to build a searchable catalogue.")?;
+    let report = catalog_report(view)?;
+    let page = reversebolt_core::runtime::search(&report, query, offset)?;
+    let result = json!({"catalog_id":view.catalog_id,"revision":view.revision,"observed_unix_ms":source.observed_unix_ms,
+        "search":page,"limitation":"Historical discovery readings and untrusted object text; no new target read, persistent actor identity or verified gameplay meaning."});
+    view.search = Some(page);
+    Ok(result)
+}
+pub(crate) fn catalog_report(view: &reversebolt_core::runtime::View) -> Result<Value> {
+    let source = view
+        .catalog_source
+        .as_ref()
+        .ok_or("Discovery evidence unavailable.")?;
     let report = read_json(Path::new(&source.path), 64 * 1024 * 1024)?;
     let hash = format!(
         "{:x}",
@@ -296,11 +365,7 @@ pub fn catalog_command(
     if hash != source.document_sha256 {
         return Err("Retained discovery evidence changed. Reconnect before searching.".into());
     }
-    let page = reversebolt_core::runtime::search(&report, query, offset)?;
-    let result = json!({"catalog_id":view.catalog_id,"revision":view.revision,"observed_unix_ms":source.observed_unix_ms,
-        "search":page,"limitation":"Historical discovery readings and untrusted object text; no new target read, persistent actor identity or verified gameplay meaning."});
-    view.search = Some(page);
-    Ok(result)
+    Ok(report)
 }
 pub struct Outcome {
     pub report: Option<Value>,
@@ -318,7 +383,7 @@ pub fn command(
 ) -> Result<Value> {
     use reversebolt_core::runtime::{Card, Task};
     let owner = owner.ok_or("Runtime inspection must belong to a managed job.")?;
-    let task = load_task(
+    let (task, local_model) = load_plan(
         base,
         command.args["task_ref"]
             .as_str()
@@ -405,6 +470,7 @@ pub fn command(
             view.revision = 0;
             view.card_generation = 0;
             view.search = None;
+            view.naming = None;
             view.catalog_source = Some(reversebolt_core::runtime::CatalogSource {
                 path: outcome
                     .evidence
@@ -434,11 +500,17 @@ pub fn command(
     view.notice = Some(
         "Internal values are provisional. Their gameplay effects have not been tested.".into(),
     );
-    let result = json!({"runtime":{"catalog_id":view.catalog_id,"revision":view.revision,"cards":view.cards.len(),"edit_authority":false}});
+    let mut result = json!({"runtime":{"catalog_id":view.catalog_id,"revision":view.revision,"cards":view.cards.len(),"edit_authority":false}});
     engine.event(
         &command.source,
         "Inspected internal values. Gameplay meaning and effects remain unverified.",
     );
+    if matches!(task, Task::Discover)
+        && let Some(model) = local_model.as_deref()
+    {
+        result["runtime"]["naming"] =
+            crate::runtime_naming_bridge::review(engine, model, owner, base, published)?;
+    }
     Ok(result)
 }
 pub fn run(

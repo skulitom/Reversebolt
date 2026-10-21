@@ -172,6 +172,9 @@ pub struct View {
     pub search: Option<SearchPage>,
     #[serde(default)]
     pub card_generation: u64,
+    /// Questions for investigation, kept separate from editable card labels.
+    #[serde(default)]
+    pub naming: Option<crate::runtime_hypotheses::Review>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
