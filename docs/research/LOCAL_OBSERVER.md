@@ -1,5 +1,11 @@
 # Local model observations — 2026-10-21
 
+This is the original actor/held-component study. The observer is now integrated
+into automatic desktop jobs and also proposes discrete non-character objects.
+See [background integration](BACKGROUND_OBSERVER.md) and the later
+[selected-object evaluation](../../research/visual-objects/README.md). Historical
+methods and scores below retain their original scope.
+
 ## Purpose and implementation
 
 The earlier image-difference observer confused camera movement, lighting and

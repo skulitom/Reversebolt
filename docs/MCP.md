@@ -363,7 +363,11 @@ server quiescence. Raw receipts are saved under `captures/model-observations/`.
 
 Accepted items are image-bound `provisional` text observations from engine source
 `local-model`, with generic names and original proposal coordinates. They receive
-new keys per pass, making no persistent identity claim. Late findings retain
+text categories `Character`, `Held object` or `Object`. Discrete non-character
+objects and structures now pass through the same proposal/crop-review path;
+HUD text and diffuse backgrounds are not object findings. Categories and
+descriptions remain model claims. See the [selected-object checks](../research/visual-objects/README.md).
+They receive new keys per pass, making no persistent identity claim. Late findings retain
 their original frame slot; later slots remain missing. The desktop shows their
 capture age. Restart discards the transient worker state and resumes no inference.
 They do not generate

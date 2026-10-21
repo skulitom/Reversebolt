@@ -4,6 +4,15 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest visual-object coverage (2026-10-21): **25% unchanged**. Automatic
+observation can publish provisional named object cards alongside characters
+and held items. One fresh automated Tetris run produced seven object findings;
+three of four predeclared piece locations matched, with one missed preview.
+Three saved character pairs retained all four annotated entities after crop
+review. This small exposed evaluation verifies neither descriptions nor gameplay
+controls and earns no new generalization credit. See
+[evidence and limits](../research/visual-objects/README.md).
+
 Latest observation resilience (2026-10-21): **25% unchanged**. Unsupported text
 regions no longer discard unrelated readable values; archived optional-model
 failures leave warnings while other captures continue. Paired replay of 100

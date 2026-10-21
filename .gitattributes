@@ -10,3 +10,4 @@
 /research/independent-games/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/observation-resilience/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /crates/reversebolt-app/tests/fixtures/overlong-observation.json -text
+/research/visual-objects/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

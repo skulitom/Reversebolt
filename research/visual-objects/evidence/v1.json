@@ -1,0 +1,87 @@
+{
+  "scope": "Selected exposed-object locations; not semantics, identity, control authority or release acceptance.",
+  "protocol_sha256": "d30332297b3f3ced8f80292a29e139973307a3c67b8932af23e03d85b771ead9",
+  "binary_sha256": "0f7bf7180c13cc855534ddd86fdc94036fc16577a78743ee53aef54990d2b494",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "native": {
+    "captures": 16,
+    "oracle_samples": 1169,
+    "ordered_delivered_pulses": 48,
+    "published_objects": 7,
+    "first_visible_by_capture": 11,
+    "selected_target_matches": 3,
+    "selected_target_misses": 1,
+    "unscorable_targets": 0,
+    "passes": [
+      {
+        "file": "16d5a392-1d40-4da7-8373-8118988ffd3f.json",
+        "sha256": "878486f9f9a5b1588b890e0f3b5e660e253ed4b7b565bb989ab46a00c99af71f",
+        "source_frame": 2,
+        "published": 3
+      },
+      {
+        "file": "3baabb16-7518-47e2-89c1-c9e4ee0b6ff3.json",
+        "sha256": "a65586188e806f62df8107ce390c79046e4961d8dfff341c0df5f5bb5d356f36",
+        "source_frame": 16,
+        "published": 4
+      }
+    ]
+  },
+  "actor_regression": {
+    "original": {
+      "0.3": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0
+      },
+      "0.5": {
+        "tp": 4,
+        "fp": 1,
+        "fn": 0
+      }
+    },
+    "filtered": {
+      "0.3": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0
+      },
+      "0.5": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "refined": {
+      "0.3": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 1
+      },
+      "0.5": {
+        "tp": 3,
+        "fp": 1,
+        "fn": 1
+      }
+    }
+  },
+  "workspace_tests": 133,
+  "packaged_mcp_tools": 29,
+  "progress_percent": 25,
+  "artifacts": {
+    "test-results/visual-objects-v1/tetris-1-attempt-01/run.json": "a0429f12aa3f76c124666b63b224614997e5f9d04dd676fac709d0c8a2e81876",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/object-score.json": "ce6b5bc3e1574954a4a79cb2a3a68e7199498c1b1a27d1f896ebcd4f2e0ec11e",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/oracle.json": "acf2dee20ad205e00c4c585b60c63ba677c37716d839c53049401873e19679c1",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/final-status.json": "a9d440c958febf2cc02bd29227aeb208f36b8774fb3158d4b792b853ef8538a7",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/states.json": "f56822c01234d37aae7860fe43c0c577148d87a0db7ad277f797382ab9079fc7",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/input.jsonl": "b0d5d9d87879ab6c3292ce178a515c668ce814694440198dc0f33da8177a1a05",
+    "test-results/visual-objects-v1/tetris-1-attempt-01/delivered-keys.json": "793a077f380b0252c853d4d5d8b1cc958f9b73c27608a25e3fde5f37aa29777c",
+    "test-results/visual-objects-v1/actor-regression/results.json": "182f8dfd817824b488ba7a5581905623f7e51e2ba7617132cfa70a4aa4fce001",
+    "test-results/visual-objects-v1/actor-reviews/results.json": "6ecb6f97c92bbece254677065260d0ce0a9f5ac8cc1b1b898b844b522164c674",
+    "test-results/visual-objects-tests.log": "e6b68352ee625ad794b677a6b6692918740a28c801da718a3a4b649c4f6135ba",
+    "test-results/visual-objects-clippy.log": "dbd67b342afd33604f5067ddd3ebc08fb5d2294ca98419f1c65d8cd7aadb1a37",
+    "test-results/visual-objects-build-final.log": "cb3d827d7566025ca50528fbeee24727e6adc7d109603d246060311405412d50",
+    "test-results/visual-objects-desktop-delivery.json": "affc9538cac482f3a77f0fc455d7c20cb68223f670e01bccd451ef8beb64cf03",
+    "test-results/smoke-1cd8828b/report.json": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+  }
+}

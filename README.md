@@ -19,8 +19,10 @@ with the evidence; these interpretations do not establish editable controls.
 For shorter sequences, agents can use visual capture mode to skip text
 recognition while retaining images and memory. Actual cadence is measured;
 skipped screen numbers stay missing.
-An optional installed local vision model can now add provisional character and
-held-object cards automatically. General game understanding is not implemented.
+An optional installed local vision model can now add provisional character,
+held-item and object cards automatically, including discrete pieces and structures.
+These describe visible appearance; general game understanding is not implemented.
+See the [selected-object evaluation](research/visual-objects/README.md).
 Some screen-number findings can now support explicit experimental memory edits;
 these do not establish what the value controls in gameplay.
 The disposable practice environment supports tested edits. The destination is

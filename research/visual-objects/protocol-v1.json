@@ -1,0 +1,63 @@
+{
+  "frozen_at_utc": "2026-10-21T05:20:47.940726+00:00",
+  "product_commit": "956574a plus visual-object working changes",
+  "binary_directory": "C:\\DEV\\Reversebolt\\test-results\\visual-objects-v1\\binaries",
+  "binaries": {
+    "Reversebolt.exe": "0f7bf7180c13cc855534ddd86fdc94036fc16577a78743ee53aef54990d2b494",
+    "reversebolt-mcp.exe": "a6cf2eba38bbc02a01178854cf9a5d1b5d06f008edb6cedff76cd247502af977",
+    "reversebolt-observer.exe": "3674c42f7aee63993c17bd942fe27f69d3bbfc55e90955658c0cf20048002990",
+    "reversebolt-review.exe": "e6bf07e045f6f514403a3ee3a4efd12d4928d9e4ac377838a2ee726de81fdb66"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 300,
+  "order": [
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 1500
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "pre_capture_method_sha256": {
+    "PROTOCOL.md": "814a666a12a08372a7b43aa497be8d4b789ef47ad7e6d4101b427fa36868cfe6",
+    "run.mjs": "06224e123465f84796dc69f7855c850c131f6fbfd971e470ee25cc68d94a9f9d",
+    "score.py": "5d58b3b37ef790e92547bb0fe8347722e43d9104e505fc913d396a8d5a519fdf",
+    "../independent-games/input.py": "917191154e5958d20c9bfc13975251eeb9fdb8318f782d11119e10999e0df275"
+  },
+  "product_source_sha256": {
+    "crates\\reversebolt-observer\\src\\lib.rs": "dbf9e7ed6ebc74dc657cee2ba53b52b8ea129ce68454e50d44b2fd67b9f0d457",
+    "crates\\reversebolt-observer\\src\\review.rs": "a45c5e562cf144b6adff19fdcdb044aac416f269f9b7fce39bb842ac74a69c7a",
+    "crates\\reversebolt-app\\src\\local_observer.rs": "d9d4139a4bdb46e31f8c54ab7672cd8da289514c0e3bc74015b0b160b1134396"
+  }
+}

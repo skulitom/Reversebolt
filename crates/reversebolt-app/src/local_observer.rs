@@ -4,7 +4,7 @@ use reversebolt_core::{
     live::LiveSession,
     visual::{self, ObservationInput, Quality, VisualValue},
 };
-use reversebolt_observer::{Frame, Kind, Observer, Receipt, review::ReviewReceipt};
+use reversebolt_observer::{Frame, Observer, Receipt, review::ReviewReceipt};
 use serde::Serialize;
 use serde_json::{Value, json};
 use std::{
@@ -69,7 +69,7 @@ async fn infer(model: &str, frames: &[Frame], cancel: &AtomicBool, pass: &mut Pa
         .entities
         .clone();
     for (candidate, entity) in entities.iter().enumerate() {
-        if !matches!(entity.kind, Kind::Actor | Kind::HeldComponent)
+        if !entity.kind.is_entity()
             || !entity
                 .localizations
                 .iter()
@@ -108,9 +108,7 @@ fn observations(
         .filter_map(|reviewed| {
             let review = &reviewed.receipt;
             let judgment = review.judgment.as_ref()?;
-            if !matches!(judgment.kind, Kind::Actor | Kind::HeldComponent)
-                || !review.refined.iter().any(|l| l.frame == last)
-            {
+            if !judgment.kind.is_entity() || !review.refined.iter().any(|l| l.frame == last) {
                 return None;
             }
             let entity = interpretation.entities.get(reviewed.candidate)?;
@@ -132,14 +130,7 @@ fn observations(
                 key: format!("{id}-{}", reviewed.candidate),
                 label: judgment.name.clone(),
                 unit: String::new(),
-                value: Some(VisualValue::Text(
-                    if judgment.kind == Kind::Actor {
-                        "Character"
-                    } else {
-                        "Held object"
-                    }
-                    .into(),
-                )),
+                value: Some(VisualValue::Text(judgment.kind.display().into())),
                 quality: Quality::Provisional,
                 bounds: Some(bounds),
                 explanation: format!(
@@ -353,6 +344,7 @@ impl Worker {
 mod tests {
     use super::*;
     use reversebolt_core::live::{NativeTarget, ProcessInfo, Region, Screen};
+    use reversebolt_observer::Kind;
     use std::sync::{Arc, Mutex, mpsc};
 
     struct Target {
@@ -569,6 +561,32 @@ mod tests {
         pass.reviews[0].receipt.judgment.as_mut().unwrap().kind = Kind::Actor;
         pass.reviews[0].receipt.refined.clear();
         assert!(observations(&pass, &frame, "scope", "pass-a").is_empty());
+    }
+
+    #[test]
+    fn non_character_objects_require_reviewed_support_and_keep_the_review_category() {
+        let (mut pass, frame) = proposed();
+        pass.proposal
+            .as_mut()
+            .unwrap()
+            .interpretation
+            .as_mut()
+            .unwrap()
+            .entities[0]
+            .kind = Kind::Object;
+        pass.reviews[0].receipt.judgment.as_mut().unwrap().kind = Kind::Object;
+        let inputs = observations(&pass, &frame, "scope", "object-pass");
+        assert_eq!(inputs.len(), 1);
+        assert_eq!(inputs[0].value, Some(VisualValue::Text("Object".into())));
+        assert_eq!(inputs[0].quality, Quality::Provisional);
+        assert_eq!(inputs[0].bounds, Some([100., 100., 200., 100.]));
+        for kind in [Kind::Other, Kind::Uncertain] {
+            pass.reviews[0].receipt.judgment.as_mut().unwrap().kind = kind;
+            assert!(observations(&pass, &frame, "scope", "object-pass").is_empty());
+        }
+        pass.reviews[0].receipt.judgment.as_mut().unwrap().kind = Kind::Object;
+        pass.reviews[0].receipt.refined.clear();
+        assert!(observations(&pass, &frame, "scope", "object-pass").is_empty());
     }
 
     #[test]
