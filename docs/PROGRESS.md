@@ -4,6 +4,18 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Internal-value watch implementation checkpoint (2026-10-21): **31% unchanged**.
+Selected runtime paths now support bounded repeated checks through cards and MCP,
+with gaps, provenance and a capped history. In-flight pause/resume testing caught
+and repaired cancellation of the current read, which could invalidate later
+pinned revisions. Cancellation during a pending pause still stops later checks.
+All 213 workspace tests, strict Clippy, formatting and native-runner syntax checks
+pass. Native helper/GUI evaluation and desktop publication remain pending; these
+automated tests do not establish a useful gameplay control. Prioritize structured
+runtime/memory hypotheses and measured effects, including stable coefficients;
+use images when they answer a specific question. The full goal remains active.
+[Implementation checkpoint](../research/runtime-watch/README.md).
+
 Latest gameplay-state investigation (2026-10-21): **31% unchanged**. Retained
 runtime metadata identifies walking, running, jumping and gravity hypotheses in
 a first-person controller type. The menu snapshot read its Active reference as

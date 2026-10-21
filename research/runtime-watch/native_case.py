@@ -159,6 +159,32 @@ try:
         assert [r['revision'] for r in card['readings']]==list(range(5,21))
         assert all(r['status']=='read' for r in card['readings'])
         assert all(b['started_unix_ms']>=a['completed_unix_ms']+250 for a,b in zip(card['readings'],card['readings'][1:]))
+    _,inflight=start_watch(2,1000,'inflight-pause')
+    deadline=time.monotonic()+90
+    while time.monotonic()<deadline:
+        current=status();runtime=current['state']['live']['runtime']
+        if runtime['phase']=='inspecting' and runtime['revision']==20:break
+        assert runtime['revision']==20,'First check finished before in-flight pause could be tested'
+        assert current['jobs']['history']['jobs'][str(inflight)]['phase'] not in ('Failed','Cancelled','Interrupted')
+        time.sleep(.04)
+    assert runtime['phase']=='inspecting' and runtime['revision']==20
+    controls('pause',inflight)
+    deadline=time.monotonic()+90
+    while time.monotonic()<deadline:
+        current=status()
+        if current['jobs']['history']['jobs'][str(inflight)]['phase']=='Paused':break
+        time.sleep(.04)
+    assert current['jobs']['history']['jobs'][str(inflight)]['phase']=='Paused'
+    assert current['state']['live']['runtime']['revision']==21
+    save('inflight-paused',current)
+    controls('resume',inflight)
+    state=done('inflight-resumed');runtime=state['live']['runtime']
+    assert runtime['revision']==22
+    selected=[next(c for c in runtime['cards'] if c['candidate']['id']==id) for id in ids]
+    for card in selected:
+        assert len(card['readings'])==16 and card['readings_dropped']==6
+        assert [r['revision'] for r in card['readings']]==list(range(7,23))
+        assert all(r['status']=='read' for r in card['readings'])
     before=operation_count()
     _,cancelled=start_watch(3,1000,'cancelled')
     controls('pause',cancelled)
@@ -198,7 +224,7 @@ try:
             check=next(c for c in r['checks'] if c['path_id']==card['candidate']['id'])
             assert check['bytes']==reading['bytes'] and check['value']==reading['value']
     summary={'passed':True,'app_pid':engine.pid,'target_pid':target_pid,'cards':len(cards),'selected':[{'id':c['candidate']['id'],'name':c['candidate']['name'],'readings':len(c['readings']),'dropped':c['readings_dropped'],'differences':sum(a['bytes']!=b['bytes'] for a,b in zip(c['readings'],c['readings'][1:]))} for c in selected],
-        'watch_job':job,'rollover_job':rollover,'cancelled_job':cancelled,'operations':len(evidence),'pauses':pauses,'evidence':evidence,'screenshots':0,'gameplay_input':0,'gameplay_writes':0,'verified_controls':0}
+        'watch_job':job,'rollover_job':rollover,'inflight_pause_job':inflight,'cancelled_job':cancelled,'operations':len(evidence),'pauses':pauses,'evidence':evidence,'screenshots':0,'gameplay_input':0,'gameplay_writes':0,'verified_controls':0}
     save('summary',summary);(OUT/'ready').touch();print(json.dumps(summary),flush=True)
     deadline=time.monotonic()+480
     while not (OUT/'finish').exists() and time.monotonic()<deadline:

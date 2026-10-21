@@ -10,6 +10,9 @@ paths. Pin successive catalogue revisions at submission. Discovery remains one
 step, including automatic attachment. The first refresh starts immediately;
 later delays are measured after completion, not promised sampling rates. Pause,
 stop, takeover, exact replay and stale-cursor refusal remain shared with the UI.
+A pause lets an already-started runtime read finish and publish before settling;
+resuming must continue from its next pinned revision. Cancellation, invalidation
+and unresolved-operation fences still revoke the active operation.
 
 Each card retains the most recent 16 fresh readings with missing-value gaps,
 bytes, operation time bounds, exact report path/digest, revision and omitted
@@ -30,7 +33,10 @@ changes occupants/Identity every tick while Coefficient stays constant. Queue fo
 checks with two pauses: normal, null roots, restored roots, normal. Assert a real
 missing gap and differences only across adjacent successful checks. Replay the
 request and reject a new stale request without another helper. Run 16 more checks
-to verify a bounded history with four omitted readings. Cancel a paused queued
+to verify a bounded history with four omitted readings. Start a two-check watch,
+pause while its first helper is inspecting, and assert that exactly one new
+reading publishes before Paused. Resume and assert both pinned steps finish
+(22 refreshes total, with six omitted readings). Cancel a paused queued
 watch and verify no later helper starts. Check receipt identity/hash/unload,
 zero helper Rust heap operations while paused, timing bounds and report hashes.
 

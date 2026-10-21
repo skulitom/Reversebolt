@@ -143,6 +143,15 @@ not authorize a gameplay label or establish a successful edit. The same
 investigation operations and evidence must remain accessible through MCP and the
 desktop. This is a prioritization decision, not a claim of measured optimality.
 
+Value changes are one source of evidence, not a requirement for usefulness.
+A speed or damage coefficient may stay constant while position or damage outcomes
+vary. Keep stable parameters eligible through object context and relationships;
+test their predicted effect rather than ranking exclusively by activity. Likewise,
+a rapidly changing position or animation field is not automatically an editable
+speed control. The agent should work from these structured competing hypotheses
+and request observations that distinguish them, rather than repeatedly reading
+the entire screen or catalogue.
+
 The next product acceptance target is one useful hidden control with a verified
 effect. Finish the existing search delivery, then prioritize that experiment over
 more catalogue plumbing, card counts or broad screenshot collection. Test during

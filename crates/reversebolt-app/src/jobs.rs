@@ -288,6 +288,7 @@ struct Flight {
     response: mpsc::Receiver<Value>,
     cancel: Arc<AtomicBool>,
     poll_interval: Duration,
+    runtime: bool,
 }
 struct CaptureExecutor {
     engine: EngineHandle,
@@ -295,6 +296,8 @@ struct CaptureExecutor {
     ready: Option<Value>,
     next_poll: Instant,
     owner: Option<OperationOwner>,
+    /// Pausing must publish an already-started runtime read so later pinned cursors remain valid.
+    defer_runtime_cancel: bool,
 }
 impl CaptureExecutor {
     fn new(engine: EngineHandle) -> Self {
@@ -304,6 +307,7 @@ impl CaptureExecutor {
             ready: None,
             next_poll: Instant::now(),
             owner: None,
+            defer_runtime_cancel: false,
         }
     }
     fn outcome(success: bool, note: &str, data: Value) -> job::Poll {
@@ -318,9 +322,12 @@ impl CaptureExecutor {
     fn can_poll(&mut self, cancel_requested: bool) -> bool {
         match &self.flight {
             Some(Flight {
-                response, cancel, ..
+                response,
+                cancel,
+                runtime,
+                ..
             }) => {
-                if cancel_requested {
+                if cancel_requested && !(*runtime && self.defer_runtime_cancel) {
                     cancel.store(true, Ordering::SeqCst);
                 }
                 if self.ready.is_none() {
@@ -419,6 +426,7 @@ impl job::Executor for CaptureExecutor {
                     response,
                     cancel,
                     poll_interval,
+                    runtime: step.runtime.is_some(),
                 });
                 self.next_poll = Instant::now() + poll_interval;
                 job::Poll::Pending
@@ -428,7 +436,7 @@ impl job::Executor for CaptureExecutor {
     }
     fn poll(&mut self, id: u64, cancel_requested: bool) -> job::Poll {
         if let Some(flight) = &self.flight {
-            if cancel_requested {
+            if cancel_requested && !(flight.runtime && self.defer_runtime_cancel) {
                 flight.cancel.store(true, Ordering::SeqCst);
             }
             self.next_poll = Instant::now() + flight.poll_interval;
@@ -444,6 +452,7 @@ impl job::Executor for CaptureExecutor {
                 response,
                 cancel,
                 poll_interval,
+                runtime,
             }) if id == owned => {
                 let value = self.ready.take().or_else(|| response.try_recv().ok());
                 if let Some(value) = value {
@@ -472,6 +481,7 @@ impl job::Executor for CaptureExecutor {
                         response,
                         cancel,
                         poll_interval,
+                        runtime,
                     });
                     job::Poll::Pending
                 }
@@ -836,14 +846,15 @@ impl Controller {
     fn stop_revoked_analysis(&self) {
         if let Some(owner) = &self.executor.owner {
             let snapshot = self.jobs.snapshot();
+            let runtime_read = self.executor.flight.as_ref().is_some_and(|f| f.runtime);
             if self.draining
                 || self.jobs.view().fence.is_some()
                 || snapshot.jobs.get(&owner.job).is_none_or(|j| {
                     j.invalidated
+                        || (j.phase == job::Phase::Pausing && !runtime_read)
                         || matches!(
                             j.phase,
                             job::Phase::Paused
-                                | job::Phase::Pausing
                                 | job::Phase::Completed
                                 | job::Phase::Cancelling
                                 | job::Phase::Cancelled
@@ -1150,6 +1161,13 @@ impl Controller {
         if view.in_flight.is_none() && crate::native::renderer_busy() {
             return;
         }
+        self.executor.defer_runtime_cancel = !self.draining
+            && view.fence.is_none()
+            && view
+                .in_flight
+                .as_ref()
+                .and_then(|f| view.history.jobs.get(&f.operation.job))
+                .is_some_and(|j| !j.invalidated && j.phase == job::Phase::Pausing);
         let cancelled = self.draining
             || view.fence.is_some()
             || view

@@ -64,6 +64,12 @@ fn args(view: &EngineView, count: usize) -> Value {
 }
 
 fn tracking_controller() -> (Controller, mpsc::Receiver<Task>) {
+    tracking_controller_with_gate(None)
+}
+
+fn tracking_controller_with_gate(
+    mut gate: Option<mpsc::Receiver<()>>,
+) -> (Controller, mpsc::Receiver<Task>) {
     let directory = Arc::new(Mutex::new(PathBuf::new()));
     let worker_directory = directory.clone();
     let (sent, received) = mpsc::channel();
@@ -75,6 +81,9 @@ fn tracking_controller() -> (Controller, mpsc::Receiver<Task>) {
         )
         .unwrap();
         sent.send(task.clone()).unwrap();
+        if let Some(gate) = gate.take() {
+            gate.recv().unwrap();
+        }
         let runtime = &mut view.live.as_mut().unwrap().runtime;
         let candidate = &runtime.cards[0].candidate;
         let value = runtime.revision as i32 + 10;
@@ -89,6 +98,108 @@ fn tracking_controller() -> (Controller, mpsc::Receiver<Task>) {
     let c = controller(engine);
     *directory.lock().unwrap() = c.runtime_directory.clone();
     (c, received)
+}
+
+#[test]
+fn pausing_an_inflight_runtime_watch_keeps_its_read_and_can_resume_the_pinned_sequence() {
+    let (release, wait) = mpsc::channel();
+    let (mut c, received) = tracking_controller_with_gate(Some(wait));
+    let command = request(&c, "start_runtime_job", args(&runtime_view(), 3));
+    let id = c.job_command(&command).unwrap()["ack"]["job"]
+        .as_u64()
+        .unwrap();
+    for _ in 0..3 {
+        c.tick();
+    }
+    received.recv_timeout(Duration::from_secs(2)).unwrap();
+    let pause = request(&c, "job_control", json!({"job":id,"operation":"pause"}));
+    c.job_command(&pause).unwrap();
+    for _ in 0..3 {
+        c.tick();
+    }
+    assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Pausing);
+    assert!(
+        !c.executor
+            .flight
+            .as_ref()
+            .unwrap()
+            .cancel
+            .load(Ordering::SeqCst)
+    );
+    release.send(()).unwrap();
+    for _ in 0..100 {
+        drive_change(&mut c);
+        if c.jobs.snapshot().jobs[&id].phase == job::Phase::Paused {
+            break;
+        }
+    }
+    assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Paused);
+    assert_eq!(
+        c.engine
+            .view
+            .read()
+            .unwrap()
+            .live
+            .as_ref()
+            .unwrap()
+            .runtime
+            .revision,
+        1
+    );
+    let resume = request(&c, "job_control", json!({"job":id,"operation":"resume"}));
+    c.job_command(&resume).unwrap();
+    for _ in 0..100 {
+        drive_change(&mut c);
+        if c.jobs.snapshot().jobs[&id].phase.terminal() {
+            break;
+        }
+    }
+    assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Completed);
+    assert_eq!(received.try_iter().count(), 2);
+    assert_eq!(
+        c.engine
+            .view
+            .read()
+            .unwrap()
+            .live
+            .as_ref()
+            .unwrap()
+            .runtime
+            .revision,
+        3
+    );
+}
+
+#[test]
+fn cancelling_a_pausing_runtime_watch_revokes_the_read_and_stops_later_checks() {
+    let (release, wait) = mpsc::channel();
+    let (mut c, received) = tracking_controller_with_gate(Some(wait));
+    let command = request(&c, "start_runtime_job", args(&runtime_view(), 3));
+    let id = c.job_command(&command).unwrap()["ack"]["job"]
+        .as_u64()
+        .unwrap();
+    for _ in 0..3 {
+        c.tick();
+    }
+    received.recv_timeout(Duration::from_secs(2)).unwrap();
+    let pause = request(&c, "job_control", json!({"job":id,"operation":"pause"}));
+    c.job_command(&pause).unwrap();
+    c.tick();
+    let signal = c.executor.flight.as_ref().unwrap().cancel.clone();
+    assert!(!signal.load(Ordering::SeqCst));
+
+    let cancel = request(&c, "job_control", json!({"job":id,"operation":"cancel"}));
+    c.job_command(&cancel).unwrap();
+    assert!(signal.load(Ordering::SeqCst));
+    release.send(()).unwrap();
+    for _ in 0..100 {
+        drive_change(&mut c);
+        if c.jobs.snapshot().jobs[&id].phase.terminal() {
+            break;
+        }
+    }
+    assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
+    assert_eq!(received.try_iter().count(), 0);
 }
 
 #[test]
