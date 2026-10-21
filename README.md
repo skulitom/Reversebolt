@@ -15,6 +15,9 @@ fields after runtime discovery. These remain shared engine/MCP investigation
 hints and do not rename cards. See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
 Metadata discovery considers hidden and inactive properties before separately
 interpreting the current clip. See [the saved-evidence comparison](research/metadata-independence/README.md).
+Bounded same-object text examples now reach type selection with exact path
+bindings and explicit omissions. [The replay](research/object-label-selection/README.md)
+fixes a context-routing gap but also retains semantic-selection regressions.
 Agents can also submit their own cited hypotheses through MCP and connect an exact
 candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.

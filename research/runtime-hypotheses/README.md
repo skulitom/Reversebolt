@@ -17,7 +17,10 @@ limit and detects changes to the saved request. A refresh cannot request naming.
 
 The current implementation uses at most nine metadata calls to select eight
 observed types and propose twelve questions from 256 paths, with a per-type
-budget. It runs before the separate optional activity-image review, so hidden
+budget. Complete path-scoped text examples can now inform type selection within
+a shared byte budget; omitted examples remain explicit. The [context replay](../object-label-selection/README.md)
+retains its successful routing and semantic regressions. The metadata pass runs
+before the separate optional activity-image review, so hidden
 properties do not need to explain a visible response. See the subsequent
 [paired replay](../metadata-independence/README.md). The original two-call
 evaluation below remains historical evidence. All observed field labels are available to type selection; path
@@ -44,7 +47,8 @@ takes effect; subsequent requests and publication stop. Status and job controls
 remain responsive, while other engine operations wait for the owning job.
 
 Current bounds include 110,000 prompt bytes, 16 KiB model response content,
-32,768 context tokens, 600 selection tokens, 850 output tokens per allowed
+49,152 selection-context tokens, 32,768 per-group context tokens, 600 selection
+output tokens, 850 output tokens per allowed
 question in each group, and 12 MiB per archive document.
 The shared observer uses an already installed local vision-capable model; no
 model is downloaded. Archives do not yet have automatic retention pruning.

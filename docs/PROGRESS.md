@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Same-object context during type selection (2026-10-21): **35% unchanged**.
+A bounded index now shares complete path-scoped text examples across types,
+keeps every field label and reports omitted examples. The known context fixture
+now selects its labelled type and reaches field review; the model still returns
+no questions. The information-routing gap is fixed, not the semantic-selection
+problem. No card gains a model-derived name or edit permission.
+
+Five frozen development replays reuse the prior baseline. Gameplay results
+change from ten questions each to seven and eight. The menu adds two unwanted
+device-setting suggestions; the opaque case abstains. These limitations are
+retained, and no prompt is tuned after the run. The largest selection input is
+36,266 tokens in a 49,152-token context. All path/text bindings, byte budgets,
+field-label completeness and process exits pass the artifact audit. The 179
+core/observer tests, strict Clippy and offline build pass.
+
+No game, memory edit, input or manual image review was needed. The existing
+desktop preview remains unchanged; the blocked executable was not rebuilt or
+restored. Credits remain foundation 4/10, native 6/10, observation 5/15,
+discovery 8/20, validation 4/15, intent 1/10, agent collaboration 7/10 and
+generalization 0/10. The full goal remains active.
+[Implementation, paired results and limits](../research/object-label-selection/README.md).
+
 Metadata discovery independent of the current clip (2026-10-21): **35% unchanged**.
 The metadata pass now runs before the separate image interpretation and includes
 hidden/inactive properties. A saved clip no longer filters type/field discovery.

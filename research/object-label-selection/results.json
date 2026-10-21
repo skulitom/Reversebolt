@@ -1,0 +1,263 @@
+{
+  "artifact_audit_passed": true,
+  "artifact_root": "test-results\\object-label-selection-v1",
+  "model": [
+    "qwen3.8:latest",
+    "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "0.40.7"
+  ],
+  "baseline_reused": true,
+  "cases": [
+    {
+      "case": "latest",
+      "baseline_accepted": 10,
+      "baseline_rejected": 1,
+      "accepted": 7,
+      "rejected": 1,
+      "error": null,
+      "cancelled": false,
+      "types_selected": [
+        7,
+        16,
+        18,
+        32,
+        91,
+        112,
+        126,
+        129
+      ],
+      "type_count": 340,
+      "context_samples_available": 666,
+      "context_samples_included": 74,
+      "context_samples_omitted": 592,
+      "selection_prompt_bytes": 109980,
+      "prompt_tokens": [
+        36266,
+        2618,
+        1773,
+        1312,
+        1822,
+        6669,
+        1868,
+        1464,
+        834
+      ],
+      "names": [
+        "break distance",
+        "hold distance",
+        "light fill speed",
+        "require cube dropped",
+        "max screen shake",
+        "run speed",
+        "grow speed"
+      ],
+      "fields": [
+        "breakDistance",
+        "holdDistance",
+        "LightFillSpeed",
+        "RequireCubeDropped",
+        "MaxScreenShake",
+        "runSpeed",
+        "growSpeed"
+      ],
+      "distinct_fields": 7,
+      "object_text_citations": [],
+      "rejections": [
+        {
+          "name": "transition duration",
+          "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+        }
+      ],
+      "receipt_sha256": "6bc38b2273ad9d4423e5fc20cb91731fc9c314de0442ff59cbe1b8a53cf5abe6",
+      "baseline_receipt_sha256": "4a7cfa9670f109e27414a8dccc5a95a6f819315fdbd1f2ee0a1a53b0d127dd99",
+      "seconds": 80.15803813934326
+    },
+    {
+      "case": "manifold",
+      "baseline_accepted": 10,
+      "baseline_rejected": 1,
+      "accepted": 8,
+      "rejected": 0,
+      "error": null,
+      "cancelled": false,
+      "types_selected": [
+        7,
+        16,
+        33,
+        73,
+        95,
+        116,
+        121,
+        130
+      ],
+      "type_count": 345,
+      "context_samples_available": 748,
+      "context_samples_included": 64,
+      "context_samples_omitted": 684,
+      "selection_prompt_bytes": 109911,
+      "prompt_tokens": [
+        35796,
+        2788,
+        1771,
+        1822,
+        1013,
+        6857,
+        1865,
+        851,
+        1464
+      ],
+      "names": [
+        "spring",
+        "breakDistance",
+        "light fill speed",
+        "require cube dropped",
+        "fill speed",
+        "unfill speed",
+        "run speed",
+        "grow speed"
+      ],
+      "fields": [
+        "spring",
+        "breakDistance",
+        "LightFillSpeed",
+        "RequireCubeDropped",
+        "fillSpeed",
+        "unfillSpeed",
+        "runSpeed",
+        "growSpeed"
+      ],
+      "distinct_fields": 8,
+      "object_text_citations": [],
+      "rejections": [],
+      "receipt_sha256": "6fbd1bc1a9c4d611a38c74b0c1845da5509f14b458ba389052964c61cd7d52ac",
+      "baseline_receipt_sha256": "514917431f3ea43867e179b158cf40f6c906842a172b776f5912eb18538357ec",
+      "seconds": 72.57976579666138
+    },
+    {
+      "case": "menu",
+      "baseline_accepted": 0,
+      "baseline_rejected": 2,
+      "accepted": 2,
+      "rejected": 2,
+      "error": null,
+      "cancelled": false,
+      "types_selected": [
+        15,
+        19,
+        100,
+        93,
+        214,
+        12,
+        10,
+        13
+      ],
+      "type_count": 261,
+      "context_samples_available": 1316,
+      "context_samples_included": 95,
+      "context_samples_omitted": 1221,
+      "selection_prompt_bytes": 90144,
+      "prompt_tokens": [
+        32835,
+        742,
+        687,
+        1451,
+        5640,
+        3814,
+        1274,
+        3962,
+        520
+      ],
+      "names": [
+        "maxJoysticksPerPlayer",
+        "force4WayHats"
+      ],
+      "fields": [
+        "maxJoysticksPerPlayer",
+        "force4WayHats"
+      ],
+      "distinct_fields": 2,
+      "object_text_citations": [],
+      "rejections": [
+        {
+          "name": "digitalAxisSensitivity",
+          "reason": "Alternative is missing or repeats the same path."
+        },
+        {
+          "name": "buttonRepeatRate",
+          "reason": "Alternative is missing or repeats the same path."
+        }
+      ],
+      "receipt_sha256": "235c79c745b2a2ad16d6e986ab6780dc9edc623ef4ba6df105e1c6429a80a646",
+      "baseline_receipt_sha256": "5624960b972b64857641358bf08815a6ffaabe3b276190247831913f6e9acc61",
+      "seconds": 63.506954193115234
+    },
+    {
+      "case": "fixture",
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "error": null,
+      "cancelled": false,
+      "types_selected": [
+        2
+      ],
+      "type_count": 3,
+      "context_samples_available": 3,
+      "context_samples_included": 3,
+      "context_samples_omitted": 0,
+      "selection_prompt_bytes": 2121,
+      "prompt_tokens": [
+        565,
+        524
+      ],
+      "names": [],
+      "fields": [],
+      "distinct_fields": 0,
+      "object_text_citations": [],
+      "rejections": [],
+      "receipt_sha256": "5981689f1ba4a870689e1d2d25ae7f905ce2678edd924c1465dec0942f12997e",
+      "baseline_receipt_sha256": "3178a365a94769fcb3c615dcf2568c7ae4285113333cefa8ab1c4ea7b73da029",
+      "seconds": 25.45962142944336
+    },
+    {
+      "case": "opaque",
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "error": null,
+      "cancelled": false,
+      "types_selected": [],
+      "type_count": 345,
+      "context_samples_available": 0,
+      "context_samples_included": 0,
+      "context_samples_omitted": 0,
+      "selection_prompt_bytes": 52585,
+      "prompt_tokens": [
+        32828
+      ],
+      "names": [],
+      "fields": [],
+      "distinct_fields": 0,
+      "object_text_citations": [],
+      "rejections": [],
+      "receipt_sha256": "16900955721eafbefea70d5b97af110c18365bda75bac74bfd87ebddc07cf24f",
+      "baseline_receipt_sha256": "05401d0fe9684a943216b5d3b73bd4da2bf4b08cf15ad7fd9780c6165a80dfbb",
+      "seconds": 34.58533477783203
+    }
+  ],
+  "core_observer_tests": 179,
+  "strict_clippy": true,
+  "runner_processes_exited": 5,
+  "desktop_updated": false,
+  "progress_percent": 35,
+  "limits": [
+    "Previously explored saved reports and an owned labelled fixture; not held-out game evaluation.",
+    "Accepted questions establish reference/lexical grounding only; they do not establish semantic precision, controlling state or safe bounds.",
+    "The type index exposes at most four complete-text examples per type within its shared byte budget; omitted examples remain unknown.",
+    "Input token accounting is checked for headroom; the byte cap is not a universal tokenizer bound.",
+    "The selection prompt, path context and context size changed together; this comparison does not isolate their individual effects.",
+    "No native gameplay, input, write or manually reviewed image was needed. The blocked desktop executable was not rebuilt or restored."
+  ]
+}

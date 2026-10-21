@@ -24,6 +24,7 @@ pub mod runtime_planning;
 pub mod runtime_test_store;
 pub mod runtime_tests;
 pub mod runtime_trials;
+pub mod runtime_type_index;
 pub mod temporal;
 pub mod value_search;
 pub mod visual;
