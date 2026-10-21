@@ -2,9 +2,9 @@
 use std::{io::Read, path::Path};
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args().collect();
-    if args.len() != 4 {
+    if args.len() != 4 && args.len() != 5 {
         return Err(
-            "usage: reversebolt-runtime-candidates DISCOVERY_JSON NEW_OUTPUT_JSON LIMIT".into(),
+            "usage: reversebolt-runtime-candidates DISCOVERY_JSON NEW_OUTPUT_JSON LIMIT [SEARCH_QUERY]".into(),
         );
     }
     let mut bytes = Vec::new();
@@ -20,10 +20,16 @@ fn run() -> Result<(), String> {
         return Err("absolute new output required".into());
     }
     let report = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
-    let candidates = reversebolt_core::runtime::candidates(
-        &report,
-        args[3].parse().map_err(|_| "invalid limit")?,
-    )?;
+    let candidates = if let Some(query) = args.get(4) {
+        serde_json::to_value(reversebolt_core::runtime::search(&report, query, 0)?)
+            .map_err(|e| e.to_string())?
+    } else {
+        serde_json::to_value(reversebolt_core::runtime::candidates(
+            &report,
+            args[3].parse().map_err(|_| "invalid limit")?,
+        )?)
+        .map_err(|e| e.to_string())?
+    };
     let output = std::fs::OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -32,7 +38,7 @@ fn run() -> Result<(), String> {
     serde_json::to_writer(output, &candidates).map_err(|e| e.to_string())?;
     println!(
         "{}",
-        serde_json::json!({"candidates":candidates.len(),"edit_authority":false})
+        serde_json::json!({"candidates":candidates.as_array().map(Vec::len).or_else(||candidates["candidates"].as_array().map(Vec::len)),"edit_authority":false})
     );
     Ok(())
 }

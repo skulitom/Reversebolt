@@ -242,6 +242,57 @@ fn preflight(output: &Path, paths: &[Locator]) -> Result<()> {
     }
     Ok(())
 }
+
+pub fn catalog_command(
+    view: &mut reversebolt_core::runtime::View,
+    action: &str,
+    args: &Value,
+) -> Result<Value> {
+    let catalog = args["catalog_id"]
+        .as_str()
+        .ok_or("Supply the current catalogue identity.")?;
+    if catalog != view.catalog_id || catalog.is_empty() {
+        return Err("The internal-value catalogue changed. Refresh status.".into());
+    }
+    if action == "show_runtime_values" {
+        let revision = args["after_revision"]
+            .as_u64()
+            .ok_or("Supply the current catalogue revision.")?;
+        let ids: Vec<String> = serde_json::from_value(args["ids"].clone())
+            .map_err(|_| "Choose values from the current search.")?;
+        view.show_values(catalog, revision, &ids)?;
+        return Ok(json!({"catalog_id":view.catalog_id,"revision":view.revision,"shown":ids}));
+    }
+    let query = args["query"]
+        .as_str()
+        .ok_or("Supply search text, or an empty string to browse.")?;
+    let offset = args
+        .get("offset")
+        .map(|v| {
+            v.as_u64()
+                .and_then(|n| usize::try_from(n).ok())
+                .ok_or("Invalid search offset.")
+        })
+        .transpose()?
+        .unwrap_or(0);
+    let source = view
+        .catalog_source
+        .as_ref()
+        .ok_or("Reconnect to build a searchable catalogue.")?;
+    let report = read_json(Path::new(&source.path), 64 * 1024 * 1024)?;
+    let hash = format!(
+        "{:x}",
+        Sha256::digest(serde_json::to_vec(&report).map_err(|e| e.to_string())?)
+    );
+    if hash != source.document_sha256 {
+        return Err("Retained discovery evidence changed. Reconnect before searching.".into());
+    }
+    let page = reversebolt_core::runtime::search(&report, query, offset)?;
+    let result = json!({"catalog_id":view.catalog_id,"revision":view.revision,"observed_unix_ms":source.observed_unix_ms,
+        "search":page,"limitation":"Historical discovery readings and untrusted object text; no new target read, persistent actor identity or verified gameplay meaning."});
+    view.search = Some(page);
+    Ok(result)
+}
 pub struct Outcome {
     pub report: Option<Value>,
     pub evidence: PathBuf,
@@ -337,6 +388,20 @@ pub fn command(
                 .collect();
             view.catalog_id = uuid::Uuid::new_v4().to_string();
             view.revision = 0;
+            view.card_generation = 0;
+            view.search = None;
+            view.catalog_source = Some(reversebolt_core::runtime::CatalogSource {
+                path: outcome
+                    .evidence
+                    .join("report.json")
+                    .to_string_lossy()
+                    .into_owned(),
+                document_sha256: format!(
+                    "{:x}",
+                    Sha256::digest(serde_json::to_vec(&report).expect("JSON report"))
+                ),
+                observed_unix_ms: observed,
+            });
         }),
         Task::Refresh { .. } => view.apply_refresh(&task, &report, observed),
     };
@@ -480,6 +545,55 @@ pub fn run(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn catalogue_search_checks_its_original_document_and_cursor() {
+        let dir = std::env::temp_dir().join(uuid::Uuid::new_v4().to_string());
+        std::fs::create_dir(&dir).unwrap();
+        let path = dir.join("report.json");
+        let report = json!({"schema":4,"pid":1,"created":"0123456789abcdef","session":2,"edit_authority":false,"classes":[],"snapshots":[]});
+        save(&path, &report).unwrap();
+        let mut view = reversebolt_core::runtime::View {
+            catalog_id: "current".into(),
+            catalog_source: Some(reversebolt_core::runtime::CatalogSource {
+                path: path.to_string_lossy().into_owned(),
+                document_sha256: format!(
+                    "{:x}",
+                    Sha256::digest(serde_json::to_vec(&report).unwrap())
+                ),
+                observed_unix_ms: 1,
+            }),
+            ..Default::default()
+        };
+        assert!(
+            catalog_command(
+                &mut view,
+                "search_runtime_values",
+                &json!({"catalog_id":"old","query":""})
+            )
+            .is_err()
+        );
+        assert!(view.search.is_none());
+        let page = catalog_command(
+            &mut view,
+            "search_runtime_values",
+            &json!({"catalog_id":"current","query":""}),
+        )
+        .unwrap();
+        assert_eq!(page["search"]["matches"], 0);
+        save(&path, &json!({"schema":5})).unwrap();
+        assert!(
+            catalog_command(
+                &mut view,
+                "search_runtime_values",
+                &json!({"catalog_id":"current","query":"new"})
+            )
+            .unwrap_err()
+            .contains("evidence changed")
+        );
+        assert_eq!(view.search.as_ref().unwrap().query, "");
+        std::fs::remove_file(path).unwrap();
+        std::fs::remove_dir(dir).unwrap();
+    }
     #[test]
     fn pending_fence_requires_completion_but_preflight_errors_do_not_create_one() {
         let base = std::env::temp_dir().join(uuid::Uuid::new_v4().to_string());

@@ -104,7 +104,7 @@ try:
     send({"jsonrpc":"2.0","method":"notifications/initialized"})
     send({"jsonrpc":"2.0","id":2,"method":"tools/list"})
     listed = response(2)
-    assert len(listed["tools"])==37
+    assert len(listed["tools"])==39
     assert {"reversebolt_list_processes", "reversebolt_attach_process",
             "reversebolt_capture", "reversebolt_correlate",
             "reversebolt_detach_process", "reversebolt_read_capture",

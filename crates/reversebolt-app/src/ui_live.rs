@@ -121,6 +121,7 @@ pub(crate) fn observation_age(observed: u128, now: u128) -> String {
 #[derive(Default)]
 pub struct LivePane {
     runtime_catalog: String,
+    runtime_query: String,
     picker: bool,
     query: String,
     selected: Option<ProcessInfo>,
@@ -352,8 +353,12 @@ impl LivePane {
             }
         });
         ui.label(RichText::new("Your controls, as they are discovered.").color(MUTED));
-        if self.runtime_catalog != live.runtime.catalog_id {
-            self.runtime_catalog = live.runtime.catalog_id.clone();
+        let card_catalog = format!(
+            "{}:{}",
+            live.runtime.catalog_id, live.runtime.card_generation
+        );
+        if self.runtime_catalog != card_catalog {
+            self.runtime_catalog = card_catalog;
             self.detail = None;
             self.card_order
                 .retain(|(source, _)| *source != CardSource::Runtime);
@@ -373,6 +378,38 @@ impl LivePane {
             }
             if let Some(notice) = &live.runtime.notice {
                 ui.label(RichText::new(notice).size(12.).color(MUTED));
+            }
+            if live.runtime.catalog_source.is_some() {
+                egui::CollapsingHeader::new("Find more values").show(ui,|ui|{
+                    ui.horizontal(|ui|{
+                        ui.add(egui::TextEdit::singleline(&mut self.runtime_query).hint_text("Search names and nearby labels").char_limit(96));
+                        if ui.add_enabled(!busy,egui::Button::new("Search")).clicked() {
+                            handle.submit("search_runtime_values",json!({"catalog_id":live.runtime.catalog_id,"query":self.runtime_query,"offset":0}));
+                        }
+                    });
+                    if let Some(page)=&live.runtime.search {
+                        ui.label(RichText::new(format!("{} matches from discovery. Refresh a card for a new reading.",page.matches)).size(12.).color(MUTED));
+                        for candidate in &page.candidates {
+                            ui.horizontal_wrapped(|ui|{
+                                ui.label(runtime_name(&candidate.name));
+                                if let Some(hint)=candidate.context.first() {
+                                    ui.label(RichText::new(format!("First seen with “{}”",hint.text.chars().take(64).collect::<String>())).color(MUTED));
+                                }
+                                if ui.add_enabled(!busy,egui::Button::new("Show card")).clicked() {
+                                    handle.submit("show_runtime_values",json!({"catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[candidate.id]}));
+                                }
+                            });
+                        }
+                        ui.horizontal(|ui|{
+                            if ui.add_enabled(!busy && page.offset>0,egui::Button::new("Previous")).clicked() {
+                                handle.submit("search_runtime_values",json!({"catalog_id":live.runtime.catalog_id,"query":page.query,"offset":page.offset.saturating_sub(20)}));
+                            }
+                            if ui.add_enabled(!busy && page.offset+page.candidates.len()<page.matches && page.offset+20<=4096,egui::Button::new("Next")).clicked() {
+                                handle.submit("search_runtime_values",json!({"catalog_id":live.runtime.catalog_id,"query":page.query,"offset":page.offset+20}));
+                            }
+                        });
+                    }
+                });
             }
         }
         if !live.connected {
@@ -412,7 +449,13 @@ impl LivePane {
                 index,
                 runtime_name(&candidate.name),
                 value,
-                brief_description(&format!("Value in {context}. Effect untested.")),
+                brief_description(
+                    &candidate
+                        .context
+                        .first()
+                        .map(|h| format!("First seen with “{}”. Effect untested.", h.text))
+                        .unwrap_or_else(|| format!("Value in {context}. Effect untested.")),
+                ),
                 card.status == "read",
                 Some(observation_age(card.observed_unix_ms, now)),
             ));

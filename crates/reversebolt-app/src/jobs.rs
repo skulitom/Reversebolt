@@ -118,6 +118,7 @@ fn read_only(action: &str) -> bool {
             | "read_capture"
             | "read_sequence"
             | "read_change_evidence"
+            | "search_runtime_values"
             | "list_processes"
             | "list_memory_processes"
     )

@@ -160,6 +160,8 @@ impl EngineHandle {
                         | "restore_change"
                         | "observe_change"
                         | "inspect_runtime"
+                        | "search_runtime_values"
+                        | "show_runtime_values"
                 ) {
                     engine.view.error = None;
                     native_command(
@@ -192,6 +194,8 @@ impl EngineHandle {
                                 | "restore_change"
                                 | "observe_change"
                                 | "inspect_runtime"
+                                | "search_runtime_values"
+                                | "show_runtime_values"
                         ) {
                             data
                         } else {
@@ -263,6 +267,17 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "search_runtime_values" | "show_runtime_values" => {
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect an application first.")?;
+            return crate::runtime_bridge::catalog_command(
+                &mut session.view.runtime,
+                &command.action,
+                &command.args,
+            );
+        }
         "inspect_runtime" => {
             return crate::runtime_bridge::command(
                 engine,

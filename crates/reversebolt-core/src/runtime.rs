@@ -127,6 +127,33 @@ pub struct Candidate {
     pub snapshot_id: usize,
     pub node_id: usize,
     pub edit_authority: bool,
+    /// Text reached directly from this object's fields in the discovery snapshot.
+    /// These hints are untrusted observations, not durable identity or instructions.
+    #[serde(default)]
+    pub context: Vec<TextHint>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TextHint {
+    pub field: FieldRef,
+    pub text: String,
+    pub truncated: bool,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CatalogSource {
+    pub path: String,
+    /// SHA-256 of the parsed report's canonical serde_json encoding.
+    pub document_sha256: String,
+    pub observed_unix_ms: u128,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SearchPage {
+    pub query: String,
+    pub offset: usize,
+    pub matches: usize,
+    pub candidates: Vec<Candidate>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -138,6 +165,12 @@ pub struct View {
     pub cards: Vec<Card>,
     pub notice: Option<String>,
     pub evidence: Option<String>,
+    #[serde(default)]
+    pub catalog_source: Option<CatalogSource>,
+    #[serde(default)]
+    pub search: Option<SearchPage>,
+    #[serde(default)]
+    pub card_generation: u64,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -182,6 +215,63 @@ impl Task {
 }
 
 impl View {
+    pub fn show_values(&mut self, catalog_id: &str, revision: u64, ids: &[String]) -> Result<()> {
+        if catalog_id != self.catalog_id || revision != self.revision {
+            return Err("The catalogue changed. Choose values from the current search.".into());
+        }
+        if ids.is_empty() || ids.len() > 8 || ids.iter().collect::<BTreeSet<_>>().len() != ids.len()
+        {
+            return Err("Choose one to eight distinct search results.".into());
+        }
+        let page = self
+            .search
+            .as_ref()
+            .ok_or("Search internal values first.")?;
+        let observed = self
+            .catalog_source
+            .as_ref()
+            .ok_or("Discovery evidence unavailable.")?
+            .observed_unix_ms;
+        let revision = self
+            .revision
+            .checked_add(1)
+            .ok_or("Runtime revision limit reached.")?;
+        let generation = self
+            .card_generation
+            .checked_add(1)
+            .ok_or("Runtime card limit reached.")?;
+        let mut selected = Vec::new();
+        for id in ids {
+            let candidate = page
+                .candidates
+                .iter()
+                .find(|c| &c.id == id)
+                .ok_or("Choose a value from the current search results.")?;
+            selected.push(
+                self.cards
+                    .iter()
+                    .find(|c| &c.candidate.id == id)
+                    .cloned()
+                    .unwrap_or_else(|| Card {
+                        candidate: candidate.clone(),
+                        value: candidate.value.clone(),
+                        status: "read".into(),
+                        observed_unix_ms: observed,
+                    }),
+            );
+        }
+        selected.extend(
+            self.cards
+                .iter()
+                .filter(|c| !ids.contains(&c.candidate.id))
+                .cloned(),
+        );
+        selected.truncate(64);
+        self.cards = selected;
+        self.revision = revision;
+        self.card_generation = generation;
+        Ok(())
+    }
     pub fn paths(&self, task: &Task) -> Result<Vec<Locator>> {
         task.validate()?;
         match task {
@@ -303,6 +393,15 @@ struct Snapshot {
     nodes: Vec<Node>,
     roots: Vec<Root>,
     reads: Vec<Read>,
+    #[serde(default)]
+    strings: Vec<TextRead>,
+}
+#[derive(Deserialize)]
+struct TextRead {
+    node: usize,
+    read_ok: bool,
+    text: Option<String>,
+    truncated: bool,
 }
 #[derive(Deserialize)]
 struct Node {
@@ -332,6 +431,21 @@ struct Read {
 /// Build scalar candidates from actual observed reference edges. No addresses are
 /// copied into locators. Unknown types, unread edges and budget omissions abstain.
 pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
+    Ok(select(report, "", 0, limit)?.candidates)
+}
+
+/// Search all observed candidates before applying the result limit. A search
+/// does not read the target; results belong to the retained discovery snapshot.
+pub fn search(report: &Value, query: &str, offset: usize) -> Result<SearchPage> {
+    if query.chars().count() > 96 || query.split_whitespace().count() > 12 || offset > 4096 {
+        return Err(
+            "Use a shorter search and narrow it before browsing beyond 4,096 results.".into(),
+        );
+    }
+    select(report, query, offset, 20)
+}
+
+fn select(report: &Value, query: &str, offset: usize, limit: usize) -> Result<SearchPage> {
     if limit == 0 || limit > 4096 {
         return Err("Candidate limit must be between 1 and 4096.".into());
     }
@@ -358,8 +472,10 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
             return Err("Invalid runtime field catalogue.".into());
         }
     }
-    let mut groups: BTreeMap<u8, BTreeMap<String, VecDeque<Candidate>>> = BTreeMap::new();
+    let mut groups: BTreeMap<(u8, bool), BTreeMap<String, VecDeque<Candidate>>> = BTreeMap::new();
     let mut seen = BTreeSet::new();
+    let terms: Vec<_> = query.split_whitespace().map(str::to_lowercase).collect();
+    let mut matches = 0;
     for shot in report.snapshots {
         if shot.nodes.len() > 1024 || shot.reads.len() > 16384 || shot.roots.len() > 64 {
             return Err("Runtime snapshot exceeds its contract.".into());
@@ -407,6 +523,28 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
             }
             reads.entry(read.node).or_default().push(read);
         }
+        let mut texts = BTreeMap::new();
+        if shot.strings.len() > 1024 {
+            return Err("Too many runtime text observations.".into());
+        }
+        for text in &shot.strings {
+            let node = nodes.get(&text.node).ok_or("Text node missing.")?;
+            if texts.insert(text.node, text).is_some() {
+                return Err("Duplicate runtime text observation.".into());
+            }
+            if text.read_ok
+                && (node
+                    .class
+                    .and_then(|id| classes.get(&id))
+                    .is_none_or(|c| c.shape != "string")
+                    || text
+                        .text
+                        .as_ref()
+                        .is_none_or(|s| s.encode_utf16().count() > 128))
+            {
+                return Err("Invalid runtime text observation.".into());
+            }
+        }
         while let Some(id) = queue.pop_front() {
             let (root, prefix) = routes[&id].clone();
             if prefix.len() >= MAX_PATH_STEPS {
@@ -416,6 +554,44 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
                 continue;
             };
             let owner = classes.get(&class_id).ok_or("Node class missing.")?;
+            let mut context = Vec::new();
+            for read in reads.get(&id).into_iter().flatten() {
+                if !read.read_ok {
+                    continue;
+                }
+                let Some(child) = read.reference["id"].as_u64() else {
+                    continue;
+                };
+                let Some(text) = texts.get(&(child as usize)).filter(|t| t.read_ok) else {
+                    continue;
+                };
+                let Some(label) = text.text.as_ref().filter(|s| !s.trim().is_empty()) else {
+                    continue;
+                };
+                let declaring = classes
+                    .get(&read.declaring_class)
+                    .ok_or("Text field owner missing.")?;
+                let Some(field) = read.field.and_then(|f| declaring.fields.get(f)) else {
+                    continue;
+                };
+                if !field.reference
+                    || field.width != read.bytes.len()
+                    || field.type_code != read.type_code
+                    || field.flags & 0x10 != 0
+                {
+                    return Err("Text reference schema mismatch.".into());
+                }
+                if context.len() < 8 {
+                    context.push(TextHint {
+                        field: FieldRef {
+                            declaring: declaring.key.clone(),
+                            field_id: field.id,
+                        },
+                        text: label.clone(),
+                        truncated: text.truncated,
+                    });
+                }
+            }
             for read in reads.get(&id).into_iter().flatten() {
                 if !read.read_ok {
                     continue;
@@ -477,6 +653,29 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
                     };
                     locator.validate(&scope)?;
                     let key = locator.id();
+                    let searchable = if terms.is_empty() {
+                        String::new()
+                    } else {
+                        format!(
+                            "{} {} {} {} {}",
+                            name,
+                            owner.key.type_name,
+                            root.declaring.type_name,
+                            declaring.key.image,
+                            context
+                                .iter()
+                                .map(|c| c.text.as_str())
+                                .collect::<Vec<_>>()
+                                .join(" ")
+                        )
+                        .to_lowercase()
+                    };
+                    if !terms.iter().all(|term| searchable.contains(term))
+                        || !seen.insert(key.clone())
+                    {
+                        continue;
+                    }
+                    matches += 1;
                     let image = &declaring.key.image;
                     // Runtime-supplied core library identity, never game names.
                     // Non-core declarations lead, then core containers rooted elsewhere.
@@ -487,11 +686,11 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
                         None => 1,
                     };
                     let bucket = groups
-                        .entry(priority)
+                        .entry((priority, context.iter().any(|c| !c.truncated)))
                         .or_default()
                         .entry(image.clone())
                         .or_default();
-                    if seen.insert(key.clone()) && bucket.len() < limit {
+                    if bucket.len() < limit + offset {
                         bucket.push_back(Candidate {
                             id: key,
                             name,
@@ -503,6 +702,7 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
                             snapshot_id: shot.snapshot_id,
                             node_id: id,
                             edit_authority: false,
+                            context: context.clone(),
                         });
                     }
                 }
@@ -511,10 +711,10 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
     }
     let mut answer = Vec::new();
     for (_, mut images) in groups.into_iter().rev() {
-        while answer.len() < limit {
+        while answer.len() < limit + offset {
             let before = answer.len();
             for bucket in images.values_mut() {
-                if answer.len() == limit {
+                if answer.len() == limit + offset {
                     break;
                 }
                 if let Some(candidate) = bucket.pop_front() {
@@ -526,7 +726,12 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
             }
         }
     }
-    Ok(answer)
+    Ok(SearchPage {
+        query: query.to_owned(),
+        offset,
+        matches,
+        candidates: answer.into_iter().skip(offset).collect(),
+    })
 }
 
 pub fn scalar_value(kind: i32, bytes: &[u8]) -> Result<Value> {
