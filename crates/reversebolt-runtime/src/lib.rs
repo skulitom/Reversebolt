@@ -1,4 +1,4 @@
-//! Runtime-derived graph discovery. Not yet wired to automatic desktop attachment.
+//! Runtime-derived graph discovery, path reads and explicit guarded numeric trials.
 mod paths;
 pub mod win;
 use reversebolt_core::runtime::{Locator, Scope, TypeKey};
@@ -775,6 +775,8 @@ pub struct InspectionRequest {
     pub expected_root_catalog_sha256: Option<String>,
     #[serde(default)]
     pub paths: Vec<Locator>,
+    #[serde(default)]
+    pub patch: Option<reversebolt_core::runtime_patch::Patch>,
 }
 fn inspect(request: &InspectionRequest) -> Result<Value> {
     use sha2::{Digest, Sha256};
@@ -794,6 +796,15 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
     }
     for path in &request.paths {
         path.validate(&scope)?;
+    }
+    if let Some(patch) = &request.patch {
+        if !request.paths.is_empty()
+            || request.root_start != 0
+            || request.expected_root_catalog_sha256.is_some()
+        {
+            return Err("A runtime patch cannot be combined with discovery or path reads.".into());
+        }
+        patch.validate(&scope, reversebolt_core::changes::now_ms())?;
     }
     let matches: Vec<_> = win::modules(pid)?
         .into_iter()
@@ -832,8 +843,27 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
     let start = Instant::now();
     let mut c = catalog(&api, start)?;
     let catalog_ms = start.elapsed().as_millis() as u64;
+    if let Some(patch) = &request.patch {
+        return paths::refresh(
+            &api,
+            &mut c,
+            std::slice::from_ref(&patch.path),
+            &scope,
+            start,
+            catalog_ms,
+            Some(patch),
+        );
+    }
     if !request.paths.is_empty() {
-        return paths::refresh(&api, &mut c, &request.paths, &scope, start, catalog_ms);
+        return paths::refresh(
+            &api,
+            &mut c,
+            &request.paths,
+            &scope,
+            start,
+            catalog_ms,
+            None,
+        );
     }
     let descriptor: Vec<_> = c
         .roots

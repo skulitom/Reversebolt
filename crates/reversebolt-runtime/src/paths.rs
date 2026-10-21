@@ -1,6 +1,7 @@
 //! Follow a previously observed role/path through a fresh paused snapshot.
 use super::*;
 use reversebolt_core::runtime::{MAX_PATH_STEPS, Member};
+use reversebolt_core::runtime_patch::{Guard, Patch};
 
 #[derive(Clone, Copy, serde::Serialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -33,6 +34,7 @@ struct Evaluation {
     address: usize,
     visited: [usize; MAX_PATH_STEPS],
     visited_count: usize,
+    writable_field: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -107,7 +109,7 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             result.status = Status::TypeChanged;
             return result;
         }
-        let (offset, width, kind, reference) = match &step.member {
+        let (offset, width, kind, reference, writable) = match &step.member {
             Member::Field { field } => {
                 let mut found = None;
                 for &(declaring, field_id) in &class.flat {
@@ -123,7 +125,18 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
                     result.status = Status::FieldUnavailable;
                     return result;
                 };
-                (field.offset, field.width, field.kind, field.reference)
+                (
+                    field.offset,
+                    field.width,
+                    field.kind,
+                    field.reference,
+                    field.flags & 0x70 == 0
+                        && field.offset >= c.header
+                        && field
+                            .offset
+                            .checked_add(field.width)
+                            .is_some_and(|end| end <= class.size),
+                )
             }
             Member::Element { index } => {
                 let Shape::Array {
@@ -146,7 +159,7 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
                     result.status = Status::ArrayBounds;
                     return result;
                 };
-                (offset, stride, kind, reference)
+                (offset, stride, kind, reference, true)
             }
         };
         let terminal = index + 1 == path.steps.len();
@@ -170,12 +183,101 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             result.width = width;
             result.kind = kind;
             result.address = field_address;
+            result.writable_field = writable;
             result.status = Status::Read;
             return result;
         }
         address = usize::from_le_bytes(result.bytes);
     }
     result.status = Status::NotScalar;
+    result
+}
+
+#[derive(Clone, Copy, Default)]
+struct WriteResult {
+    attempted: bool,
+    transferred: usize,
+    after: [u8; 8],
+    after_ok: bool,
+    confirmed: bool,
+    reason: &'static str,
+    guard: Option<Guard>,
+}
+
+// No allocation or formatting while the managed world is paused. Path resolution,
+// expected-byte comparison and the single write share this same pause.
+fn write_patch(patch: &Patch, value: &Evaluation, stopped: Instant) -> WriteResult {
+    use windows_sys::Win32::System::{Diagnostics::Debug::WriteProcessMemory, Memory::*};
+    let mut result = WriteResult {
+        reason: "path_unavailable",
+        ..Default::default()
+    };
+    if value.status != Status::Read {
+        return result;
+    }
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
+    let guard = patch.check(
+        value.kind,
+        value.address as u64,
+        &value.visited[..value.visited_count],
+        &value.bytes[..value.width],
+        now,
+    );
+    result.guard = Some(guard);
+    if guard != Guard::Ready {
+        result.reason = "guard_refused";
+        return result;
+    }
+    if !value.writable_field {
+        result.reason = "readonly_field";
+        return result;
+    }
+    let mut region: MEMORY_BASIC_INFORMATION = unsafe { std::mem::zeroed() };
+    let queried = unsafe {
+        VirtualQuery(
+            value.address as *const c_void,
+            &mut region,
+            std::mem::size_of_val(&region),
+        )
+    };
+    let end = value.address.checked_add(value.width);
+    let region_end = (region.BaseAddress as usize).checked_add(region.RegionSize);
+    if queried != std::mem::size_of_val(&region)
+        || region.State != MEM_COMMIT
+        || !matches!(region.Protect & 0xff, PAGE_READWRITE | PAGE_WRITECOPY)
+        || region.Protect & (PAGE_GUARD | PAGE_NOACCESS) != 0
+        || !matches!((end, region_end), (Some(a), Some(b)) if value.address >= region.BaseAddress as usize && a <= b)
+    {
+        result.reason = "page_not_writable";
+        return result;
+    }
+    if stopped.elapsed() >= PAUSE_BUDGET {
+        result.reason = "pause_budget";
+        return result;
+    }
+    result.attempted = true;
+    let written = unsafe {
+        WriteProcessMemory(
+            GetCurrentProcess(),
+            value.address as *mut c_void,
+            patch.replacement.as_ptr().cast(),
+            value.width,
+            &mut result.transferred,
+        )
+    };
+    result.after_ok = read_into(value.address, &mut result.after[..value.width]);
+    result.confirmed = written != 0
+        && result.transferred == value.width
+        && result.after_ok
+        && result.after[..value.width] == patch.replacement;
+    result.reason = if result.confirmed {
+        "bytes_confirmed"
+    } else {
+        "write_outcome_uncertain"
+    };
     result
 }
 
@@ -186,12 +288,17 @@ pub(super) fn refresh(
     scope: &Scope,
     start: Instant,
     catalog_ms: u64,
+    patch: Option<&Patch>,
 ) -> Result<Value> {
     let roots: Vec<_> = paths.iter().map(|p| root_slot(c, p)).collect();
     let mut results = vec![Evaluation::default(); paths.len()];
     let mut pauses = Vec::new();
     let mut metadata_error = None;
     let mut added_classes = 0;
+    let mut write = WriteResult {
+        reason: "path_unavailable",
+        ..Default::default()
+    };
     for attempt in 0..=MAX_PATH_STEPS {
         if start.elapsed() > Duration::from_secs(18) {
             for result in &mut results {
@@ -212,6 +319,9 @@ pub(super) fn refresh(
         let stopped = Instant::now();
         for ((path, root), result) in paths.iter().zip(&roots).zip(&mut results) {
             *result = follow(api, c, path, *root, stopped);
+        }
+        if let Some(patch) = patch {
+            write = write_patch(patch, &results[0], stopped);
         }
         let held_us = stopped.elapsed().as_micros() as u64;
         drop(guard);
@@ -255,10 +365,19 @@ pub(super) fn refresh(
             "value":value,"field_address":if result.status == Status::Read { Some(format!("0x{:x}",result.address)) } else { None },
             "snapshot_object_addresses":result.visited[..result.visited_count].iter().map(|a|format!("0x{a:x}")).collect::<Vec<_>>()})
     }).collect();
-    Ok(
-        json!({"schema":1,"operation":"refresh_runtime_paths","scope":scope,"pid":scope.pid,"created":scope.created,"session":scope.session,"checks":checks,"pauses":pauses,
+    let mut report = json!({"schema":1,"operation":"refresh_runtime_paths","scope":scope,"pid":scope.pid,"created":scope.created,"session":scope.session,"checks":checks,"pauses":pauses,
         "catalog_ms":catalog_ms,"classes_added":added_classes,"metadata_error":metadata_error,
         "elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,
-        "identity_contract":"values belong to current path occupants in the final paused snapshot; no persistent object identity or edit authority"}),
-    )
+        "identity_contract":"values belong to current path occupants in the final paused snapshot; no persistent object identity or edit authority"});
+    if let Some(patch) = patch {
+        report["operation"] = json!("patch_runtime_path");
+        report["patch_id"] = json!(patch.id());
+        report["patch"] = json!({"state":if write.confirmed {"written"} else if write.attempted {"uncertain"} else {"refused"},
+            "attempted":write.attempted,"transferred":write.transferred,"reason":write.reason,"guard":write.guard,
+            "observed_after":if write.after_ok {Some(&write.after[..results[0].width])} else {None}});
+        report["identity_contract"] = json!(
+            "fresh path/type/address/byte guards in one managed pause; address reuse is not excluded; no persistent actor identity, verified gameplay effect or complete rollback"
+        );
+    }
+    Ok(report)
 }

@@ -155,17 +155,18 @@ fn run() -> Result<()> {
         return Ok(());
     }
     if a.len() != 7 && a.len() != 9 {
-        return Err("usage: reversebolt-runtime-loader PID CREATION_HEX SESSION HELPER_ABSOLUTE_PATH SHA256 OUTPUT_ABSOLUTE_PATH [ROOT_START EXPECTED_ROOT_CATALOG_SHA256 | --paths-file LOCATORS_JSON]".into());
+        return Err("usage: reversebolt-runtime-loader PID CREATION_HEX SESSION HELPER_ABSOLUTE_PATH SHA256 OUTPUT_ABSOLUTE_PATH [ROOT_START EXPECTED_ROOT_CATALOG_SHA256 | --paths-file LOCATORS_JSON | --patch-file PATCH_JSON]".into());
     }
     let pid: u32 = a[1].parse().map_err(|_| "invalid PID")?;
     let expected_session: u32 = a[3].parse().map_err(|_| "invalid session")?;
     let path_mode = a.len() == 9 && a[7] == "--paths-file";
-    let root_start: usize = if a.len() == 9 && !path_mode {
+    let patch_mode = a.len() == 9 && a[7] == "--patch-file";
+    let root_start: usize = if a.len() == 9 && !path_mode && !patch_mode {
         a[7].parse().map_err(|_| "invalid root start")?
     } else {
         0
     };
-    let expected = if a.len() == 9 && !path_mode {
+    let expected = if a.len() == 9 && !path_mode && !patch_mode {
         if a[8].len() != 64 || !a[8].bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err("invalid root catalog fingerprint".into());
         }
@@ -204,8 +205,33 @@ fn run() -> Result<()> {
     } else {
         Vec::new()
     };
+    let patch = if patch_mode {
+        use std::io::Read;
+        let mut bytes = Vec::new();
+        std::fs::File::open(&a[8])
+            .map_err(|e| e.to_string())?
+            .take(65537)
+            .read_to_end(&mut bytes)
+            .map_err(|e| e.to_string())?;
+        if bytes.len() > 65536 {
+            return Err("patch file exceeds 64 KiB".into());
+        }
+        let patch: reversebolt_core::runtime_patch::Patch =
+            serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+        patch.validate(
+            &reversebolt_core::runtime::Scope {
+                pid,
+                created: a[2].clone(),
+                session: expected_session,
+            },
+            reversebolt_core::changes::now_ms(),
+        )?;
+        Some(patch)
+    } else {
+        None
+    };
     let request =
-        json!({"output":a[6],"root_start":root_start,"expected_root_catalog_sha256":expected,"paths":paths})
+        json!({"output":a[6],"root_start":root_start,"expected_root_catalog_sha256":expected,"paths":paths,"patch":patch})
             .to_string();
     if request.encode_utf16().count() >= 32768 {
         return Err("request too long".into());
