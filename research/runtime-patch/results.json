@@ -1,0 +1,594 @@
+{
+  "audit": "passed",
+  "revision": "dc9a8b78f669915c78363432c96fef26cd0d7db0",
+  "frozen_sha256": "097adf3bb04d5f9469719ba24822a2176d0b6278bf00785a8fda94a79dd0cded",
+  "binaries": {
+    "reversebolt-mcp.exe": "51f9ab5416b4fe68684ddea873c3d0103ce6e85d24a26afd5bbcc8e547f8c485",
+    "reversebolt-runtime-candidates.exe": "d6b2a54eca5abd457f1670a02ca203d213127f21939696371114982bad92c2d6",
+    "reversebolt-runtime-loader.exe": "91cfac0cfbde95a91722aa35bf07c9dfce40c8d2e59585b948185958871b065e",
+    "reversebolt-runtime-patch.exe": "16e6841c8a10d1c3e8223ff10d91ce566305cd4e44998abb2e8806c0e728549d",
+    "Reversebolt.exe": "d1091816e6ce1eaa50c6098614c79b58d952b628b1db20ba2c5581c47c6ec70a",
+    "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+    "reversebolt_runtime.dll": "b4c87aec3cee10ff5615dd6bc509fdd139ba8f9be612a13c90ab1a616d0018d0"
+  },
+  "source_files": 132,
+  "target": {
+    "pid": 71800,
+    "session": 1,
+    "created": "01dd6179c9fc22ab"
+  },
+  "cases": 21,
+  "states": {
+    "write": {
+      "attempted": true,
+      "guard": "ready",
+      "observed_after": [
+        0,
+        0,
+        144,
+        64
+      ],
+      "reason": "bytes_confirmed",
+      "state": "written",
+      "transferred": 4
+    },
+    "duplicate-bytes": {
+      "attempted": false,
+      "guard": "value_changed",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "restore": {
+      "attempted": true,
+      "guard": "ready",
+      "observed_after": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "reason": "bytes_confirmed",
+      "state": "written",
+      "transferred": 4
+    },
+    "inverse-drift": {
+      "attempted": false,
+      "guard": "value_changed",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "wrong-type": {
+      "attempted": false,
+      "guard": "representation_changed",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "wrong-chain": {
+      "attempted": false,
+      "guard": "path_moved",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "wrong-address": {
+      "attempted": false,
+      "guard": "path_moved",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "replaced-root": {
+      "attempted": false,
+      "guard": "path_moved",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "write-replacement": {
+      "attempted": true,
+      "guard": "ready",
+      "observed_after": [
+        0,
+        0,
+        144,
+        64
+      ],
+      "reason": "bytes_confirmed",
+      "state": "written",
+      "transferred": 4
+    },
+    "restore-replaced-root": {
+      "attempted": false,
+      "guard": "path_moved",
+      "observed_after": null,
+      "reason": "guard_refused",
+      "state": "refused",
+      "transferred": 0
+    },
+    "explicit-cleanup": {
+      "attempted": true,
+      "guard": "ready",
+      "observed_after": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "reason": "bytes_confirmed",
+      "state": "written",
+      "transferred": 4
+    },
+    "null-root": {
+      "attempted": false,
+      "guard": null,
+      "observed_after": null,
+      "reason": "path_unavailable",
+      "state": "refused",
+      "transferred": 0
+    },
+    "changed-runtime-type": {
+      "attempted": false,
+      "guard": null,
+      "observed_after": null,
+      "reason": "path_unavailable",
+      "state": "refused",
+      "transferred": 0
+    },
+    "readonly-array": {
+      "attempted": false,
+      "guard": "ready",
+      "observed_after": null,
+      "reason": "page_not_writable",
+      "state": "refused",
+      "transferred": 0
+    }
+  },
+  "helper_operations": 19,
+  "balanced_pauses": 42,
+  "max_stop_to_resume_us": 63,
+  "confirmed_numeric_writes": 4,
+  "receipts": [
+    {
+      "case": "discovery",
+      "stdout_sha256": "07c3a107b297b19c7893d44b55ea507ce99a45fc4f0babf8eab386bd1d29c3a8",
+      "report_sha256": "f2986a169e57308d0e1251f647f648cff3eb2a9b035a9c83f5ca31ed3b3addc7"
+    },
+    {
+      "case": "read-initial",
+      "stdout_sha256": "7376e9c9cf2a36f950aa8fb3eac3adb2ec6390972773b3ecae6049984da505c6",
+      "report_sha256": "d9c28e25f352028a7f15eef0d9a35d6dd14d7363defbd92f9dfa82d01c475f19"
+    },
+    {
+      "case": "write",
+      "stdout_sha256": "7a6b5ea5f9488f9b2fae1d857336854804b277eb912eca4c89a0500db9637c77",
+      "report_sha256": "c83f84e6a1b69c88d5e4e917aec316902a88e7710fb797a608274af7f2cedea7"
+    },
+    {
+      "case": "duplicate-bytes",
+      "stdout_sha256": "b24337163f668d419520fb8caab8ea362810b8ecfbd415c871f81b8e7c4d79ea",
+      "report_sha256": "65a16107688ac1d62e1bc566cdd6683d29b7a63457e73a6f60cc4c18bd00ae8f"
+    },
+    {
+      "case": "restore",
+      "stdout_sha256": "b3c3973fa3cc5008439656942762329a2f2adcfe5d2a8472605eecb2a92adce0",
+      "report_sha256": "daba50332203a911a53e7c869a621f839cdf963721720a2ed6f3ebeedb4d4ae5"
+    },
+    {
+      "case": "inverse-drift",
+      "stdout_sha256": "227725edcc41db9fc567876916d9af45fe71f9047d3f4b4d4b3dac0e866d743b",
+      "report_sha256": "74bcbfefe6de6b11125a207c721c379a5c5ac7c72e7949126c17fdb95701137d"
+    },
+    {
+      "case": "wrong-type",
+      "stdout_sha256": "db39cb8fe0f26356f89bacf7552af3730b1582c31ebbc8694eede6b790603432",
+      "report_sha256": "ea6714ec8a0e310c7084f0c4d2654906504dd09f761714bfbcf17f187f16a67f"
+    },
+    {
+      "case": "wrong-chain",
+      "stdout_sha256": "7726b1706b10ca5b5bdc747724d6a6e6d408dc09a317bd4714702ab9bd9e2023",
+      "report_sha256": "e098a812258cfcfb37efa47ee92dbeb3e3f9d25fdfec245b88dd5d82cef0d928"
+    },
+    {
+      "case": "wrong-address",
+      "stdout_sha256": "e10528d262f30ffd9f9a0c9772f2f40b15aa608b8b000c64d3086d41cf5e8899",
+      "report_sha256": "83b83867545dc3dbadbf731b7e777a09d89a35d60e16668746e6553e266835fe"
+    },
+    {
+      "case": "replaced-root",
+      "stdout_sha256": "81091a961467f3327ae7af6f4f8be69bd47b336b6b5bcbd2ffbd1edee1724f5a",
+      "report_sha256": "1909af02289e211df0ea38b57515a8e8319c259326bd83a394375db212e5e34c"
+    },
+    {
+      "case": "read-replacement",
+      "stdout_sha256": "041c94765ff8616fa8b25678d72e660e0e458e14f8e19aeb18f50b4b3b0ba998",
+      "report_sha256": "f18484dccc9708fa6bf8cb28d28fd82a420441d9588a69b8bb46627509075961"
+    },
+    {
+      "case": "write-replacement",
+      "stdout_sha256": "155b7757d0331a07432e1382b53249c058ebd2341f1aa45f4db9b9d26360690f",
+      "report_sha256": "46e8e6b5f9e533e0fed84429301fe62aac396ade0a6ec96bf59f1ecc556a4ac3"
+    },
+    {
+      "case": "restore-replaced-root",
+      "stdout_sha256": "52b8f65b3e86184b335daf9d1dd67ce90b10458ed5c769ded5a20b11f258be5a",
+      "report_sha256": "320f34d90d4584010e326462866e773154e444e9368a2c0ffdfabdf82f1bb781"
+    },
+    {
+      "case": "read-cleanup",
+      "stdout_sha256": "29d26b1a170c20c4d562a56ccb2e7063d5bc67eb2f946f4c0fad38385140f763",
+      "report_sha256": "306a5636ab0fa63addfd22eb4efa191efaedaf64b937532b60238c8dde21d779"
+    },
+    {
+      "case": "explicit-cleanup",
+      "stdout_sha256": "1bb71f1645d96c27fc1d973bc526851c2c7f2b476c0bd43bcdd1e440ee0615ed",
+      "report_sha256": "7262b0a78925265d00a4c2a9b0f063030049e9510d788918fbec6630fa411120"
+    },
+    {
+      "case": "null-root",
+      "stdout_sha256": "54b1b35f9602a497335ab28d78d5758b8bae5ca8337a5815f48107214927938d",
+      "report_sha256": "bd5e095848cbbb81b540a81608c7d81fff74ef40e01d2214ceb6cb4a9c973a20"
+    },
+    {
+      "case": "changed-runtime-type",
+      "stdout_sha256": "977e73c094f67c4a3e5a9a505f5d99a55ea7612fe103931e17fab332085a810b",
+      "report_sha256": "4189a4549a8ba02ee927f080ee51303dcb12ef44d94fbfe7cb5ff4cef27d2ffe"
+    },
+    {
+      "case": "read-array",
+      "stdout_sha256": "1a616402f96305106adfc680a1a844b5a9cf6fe681108cab8badb8e252ede4e8",
+      "report_sha256": "8092db29376ada4602e8463af9bde9c053cc7f02de4cf925d1e50b9cea0c18d3"
+    },
+    {
+      "case": "readonly-array",
+      "stdout_sha256": "c51ec48dc57ca44097e458b82dc99b7c1426a7287eab314524509d9f78379589",
+      "report_sha256": "b7d7776edd1cb88717139def1729b5e43298bfcd7ac2e154cfaa0ec54d02a04e"
+    }
+  ],
+  "oracles": {
+    "before-oracle": {
+      "sha256": "0bd0508ee093a6630974eb6671ab93e69ebf4b5ffba1002e108eda98d8b82698",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "result": {
+        "id": 1,
+        "bytes": [
+          0,
+          0,
+          96,
+          64
+        ]
+      }
+    },
+    "cleanup-oracle": {
+      "sha256": "9645afe53e319d7daaeef5b5539bf538210ec92172650f657b2be3a32f76b18b",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "result": {
+        "id": 9,
+        "bytes": [
+          0,
+          0,
+          96,
+          64
+        ]
+      }
+    },
+    "duplicate-refused-oracle": {
+      "sha256": "531f49ffac60b291165c3d892f422cd7fa4c66430d9fca1dfbe8ff94cb3b9e74",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        144,
+        64
+      ],
+      "result": {
+        "id": 3,
+        "bytes": [
+          0,
+          0,
+          144,
+          64
+        ]
+      }
+    },
+    "final-oracle": {
+      "sha256": "73fecf7026becdee22c3173b22cbeeb024efa6d6e8469189d867e2ebd5302759",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "result": {
+        "id": 14,
+        "bytes": [
+          0,
+          0,
+          96,
+          64
+        ]
+      }
+    },
+    "readonly-refused-oracle": {
+      "sha256": "dd8b09b3b7b5f9b9e4de93234f5c7319ca92531b58d0129d13755e3e4bb16d3a",
+      "address": 140736254127488,
+      "expected": [
+        0,
+        0,
+        160,
+        63
+      ],
+      "result": {
+        "id": 13,
+        "bytes": [
+          0,
+          0,
+          160,
+          63
+        ]
+      }
+    },
+    "replacement-refused-oracle": {
+      "sha256": "c89032455ac460774e1db153351afddf60a3ed5cd659ee94f54d95c32953a679",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "result": {
+        "id": 6,
+        "bytes": [
+          0,
+          0,
+          96,
+          64
+        ]
+      }
+    },
+    "restore-refused-oracle": {
+      "sha256": "5d041aa082f314fe7fc7b92d89cebaae8ffec3c05ff617662ed5cdfdbe3694fe",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        144,
+        64
+      ],
+      "result": {
+        "id": 8,
+        "bytes": [
+          0,
+          0,
+          144,
+          64
+        ]
+      }
+    },
+    "restored-oracle": {
+      "sha256": "07f26fe0d8b82a820d5a438878ce0d4cc17201336cd9db4ca657003166d3bfdc",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        96,
+        64
+      ],
+      "result": {
+        "id": 4,
+        "bytes": [
+          0,
+          0,
+          96,
+          64
+        ]
+      }
+    },
+    "written-oracle": {
+      "sha256": "09d81fdd1b13c21836fcd1abd1881af8ecf92a847a6ae348e918cfa7cf75b8fe",
+      "address": 140736254185488,
+      "expected": [
+        0,
+        0,
+        144,
+        64
+      ],
+      "result": {
+        "id": 2,
+        "bytes": [
+          0,
+          0,
+          144,
+          64
+        ]
+      }
+    }
+  },
+  "execution": {
+    "host_pid": 71800,
+    "host_exit": 0,
+    "children": [
+      {
+        "pid": 89324,
+        "exit": 0
+      },
+      {
+        "pid": 63420,
+        "exit": 0
+      },
+      {
+        "pid": 84436,
+        "exit": 0
+      },
+      {
+        "pid": 87260,
+        "exit": 0
+      },
+      {
+        "pid": 94416,
+        "exit": 0
+      },
+      {
+        "pid": 70180,
+        "exit": 0
+      },
+      {
+        "pid": 98252,
+        "exit": 0
+      },
+      {
+        "pid": 65152,
+        "exit": 0
+      },
+      {
+        "pid": 69472,
+        "exit": 0
+      },
+      {
+        "pid": 37008,
+        "exit": 0
+      },
+      {
+        "pid": 94780,
+        "exit": 0
+      },
+      {
+        "pid": 95488,
+        "exit": 0
+      },
+      {
+        "pid": 89416,
+        "exit": 0
+      },
+      {
+        "pid": 84284,
+        "exit": 0
+      },
+      {
+        "pid": 73272,
+        "exit": 0
+      },
+      {
+        "pid": 12344,
+        "exit": 0
+      },
+      {
+        "pid": 92484,
+        "exit": 0
+      },
+      {
+        "pid": 96600,
+        "exit": 0
+      },
+      {
+        "pid": 89640,
+        "exit": 0
+      },
+      {
+        "pid": 82344,
+        "exit": 0
+      },
+      {
+        "pid": 87044,
+        "exit": 0
+      },
+      {
+        "pid": 90448,
+        "exit": 0
+      },
+      {
+        "pid": 28900,
+        "exit": 0
+      },
+      {
+        "pid": 98192,
+        "exit": 0
+      },
+      {
+        "pid": 93856,
+        "exit": 0
+      },
+      {
+        "pid": 12888,
+        "exit": 0
+      },
+      {
+        "pid": 85132,
+        "exit": 1
+      },
+      {
+        "pid": 95504,
+        "exit": 1
+      },
+      {
+        "pid": 90952,
+        "exit": 1
+      }
+    ]
+  },
+  "smoke": {
+    "sha256": "73fa97060c838199bfe2dc7293f72207db1dc5b073680992d3089e91a1a489fe",
+    "result": {
+      "practice": [
+        {
+          "seed": 8675309,
+          "matches": [
+            4,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 1001,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 20261020,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        }
+      ],
+      "mcp_tools": 39,
+      "shared_session": "passed",
+      "auth_and_origin": "passed",
+      "stale_restore": "rejected",
+      "restart": "history retained; controls invalidated"
+    }
+  },
+  "screenshots": 0,
+  "gameplay_input": 0,
+  "verified_controls": 0,
+  "scope": "Owned ABI fixture. No real-game effects, persistent object identity, crash recovery or app/MCP edit integration proven."
+}

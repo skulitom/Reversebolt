@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Runtime numeric patch primitive (2026-10-21): **31% unchanged**. The shared core
+prepares exact typed numeric plans and guarded inverses; the helper resolves and
+checks path/type/address/bytes in the same pause as one write and read-back. The
+frozen owned native fixture passed 21 cases, including four confirmed numeric
+writes, ten helper refusals and two preflight refusals. An old restoration refused
+after root replacement; cleanup used a fresh plan. Nine host-side oracle readings
+verified byte outcomes only. All 19 helpers unloaded and 42 pauses were balanced,
+with zero helper Rust heap operations while paused and 63 microseconds maximum
+stop-to-resume time. All 217 workspace tests, strict Clippy, release build, frozen
+39-tool smoke and artifact audit passed. The primitive is not yet exposed through
+runtime cards/MCP: durable effect intents, replay/recovery and review remain next.
+The desktop stays on the tested watcher preview. No real-game effect, persistent
+actor identity or generalization credit is earned; the full goal remains active.
+[Implementation and limits](../research/runtime-patch/README.md).
+
 Internal-value watch delivery (2026-10-21): **31% unchanged**.
 Selected runtime paths now support bounded repeated checks through cards and MCP,
 with gaps, provenance and a capped history. In-flight pause/resume testing caught

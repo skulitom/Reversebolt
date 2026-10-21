@@ -111,6 +111,13 @@ Next select by object context, relationships and behaviour, and validate useful
 effects. Neither snapshot
 addresses, stable path IDs nor field names establish
 persistent identity or edit authority.
+Bounded value histories now work through cards and MCP. A separate numeric patch
+primitive has passed write, inverse and refusal checks against the owned native
+fixture. Connect its explicit review and durable effect history before exposing
+runtime edits in those interfaces. These byte-level checks do not yet establish
+a useful hidden control or permanent actor identity. See the
+[watcher](../research/runtime-watch/README.md) and
+[patch evaluation](../research/runtime-patch/README.md).
 Static values may be defaults from uninitialized classes. Keep automatic reads
 separate from mechanisms that execute code in the target, and expose unsupported
 paths. Runtime structure should get priority when available; memory-change
