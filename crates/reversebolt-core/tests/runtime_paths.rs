@@ -149,6 +149,114 @@ fn labeled_report(ids: usize, label: &str) -> Value {
 }
 
 #[test]
+fn naming_inventory_checks_binding_and_preserves_object_local_text() {
+    use reversebolt_core::runtime_inventory::{build, resolve};
+    let mut r = labeled_report(0, "Harbor reserve");
+    // A second root reaches the same declared field on another observed path.
+    let mut other = labeled_report(10, "Market stock");
+    // Share the exact Actor field declaration rather than merging by its name.
+    other["classes"][2]["key"] = r["classes"][2]["key"].clone();
+    other["classes"][0]["key"]["type_name"] = json!("AnotherRoot");
+    r["classes"]
+        .as_array_mut()
+        .unwrap()
+        .extend(other["classes"].as_array().unwrap().clone());
+    r["snapshots"]
+        .as_array_mut()
+        .unwrap()
+        .extend(other["snapshots"].as_array().unwrap().clone());
+    let inventory = build(&r).unwrap();
+    assert_eq!(inventory.types.len(), 1);
+    let field = &inventory.types[0].fields[0];
+    assert_eq!(field.path_count, 2);
+    assert_eq!(field.values, vec![json!(50)]);
+    assert_eq!(field.samples[0].context[0].text, "Harbor reserve");
+    assert_eq!(field.samples[1].context[0].text, "Market stock");
+    assert_ne!(field.samples[0].path_id, field.samples[1].path_id);
+    let found = resolve(&r, &inventory.report_sha256, 0, 0, 1).unwrap();
+    assert_eq!(found.matches, 2);
+    assert_eq!(found.candidates.len(), 1);
+    assert!(!found.candidates[0].edit_authority);
+    assert!(resolve(&r, &inventory.report_sha256, 1, 0, 1).is_err());
+    assert!(resolve(&r, &inventory.report_sha256, 0, 1, 1).is_err());
+    r["snapshots"][0]["strings"][0]["text"] = json!("New occupant");
+    assert!(resolve(&r, &inventory.report_sha256, 0, 0, 1).is_err());
+    r["snapshots"][0]["reads"][1]["value"] = json!(51);
+    assert!(build(&r).is_err());
+}
+
+#[test]
+fn naming_inventory_keeps_similar_fields_separate_and_reaches_past_cards() {
+    use reversebolt_core::runtime_inventory::build;
+    let mut r = report(0, "0x100", 50);
+    for i in 1..80 {
+        r["classes"][2]["fields"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!({
+                "id":i,"name":if i == 79 {"walkSpeed"} else {"moveSpeed"},
+                "reference":false,"type_code":8,"width":4,"flags":0
+            }));
+        r["snapshots"][0]["reads"].as_array_mut().unwrap().push(json!({
+            "node":1,"declaring_class":2,"field":i,"element_index":null,
+            "type_code":8,"bytes":50_i32.to_le_bytes(),"value":50,"reference":null,"read_ok":true
+        }));
+    }
+    assert_eq!(runtime::candidates(&r, 64).unwrap().len(), 64);
+    let inventory = build(&r).unwrap();
+    assert_eq!(inventory.types[0].fields.len(), 80);
+    assert_eq!(inventory.types[0].fields[79].name, "walkSpeed");
+    assert_eq!(inventory.reachable_paths, 80);
+    r["core_image"] = json!("Example.dll");
+    let core = build(&r).unwrap();
+    assert!(core.types.is_empty());
+    assert_eq!(core.omitted_core_paths, 80);
+}
+
+#[test]
+fn naming_inventory_abstains_on_unread_unreachable_and_nonfinite_values() {
+    use reversebolt_core::runtime_inventory::build;
+    let original = report(0, "0x100", 50);
+    let mut r = original.clone();
+    r["snapshots"][0]["reads"][1]["read_ok"] = json!(false);
+    assert!(build(&r).unwrap().types.is_empty());
+    r = original.clone();
+    r["snapshots"][0]["roots"][0]["read_ok"] = json!(false);
+    assert!(build(&r).unwrap().types.is_empty());
+    r = original;
+    r["classes"][2]["fields"][0]["type_code"] = json!(12);
+    r["snapshots"][0]["reads"][1]["type_code"] = json!(12);
+    r["snapshots"][0]["reads"][1]["bytes"] = json!(f32::NAN.to_le_bytes());
+    r["snapshots"][0]["reads"][1]["value"] = json!("NaN");
+    let inventory = build(&r).unwrap();
+    assert!(inventory.types.is_empty());
+    assert_eq!(inventory.omitted_non_numeric_paths, 1);
+}
+
+#[test]
+fn naming_inventory_fails_instead_of_publishing_over_budget_evidence() {
+    let mut r = report(0, "0x100", 50);
+    let long_name = "x".repeat(100_000);
+    for i in 1..100 {
+        r["classes"][2]["fields"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!({
+                "id":i,"name":long_name,"reference":false,"type_code":8,"width":4,"flags":0
+            }));
+        r["snapshots"][0]["reads"].as_array_mut().unwrap().push(json!({
+            "node":1,"declaring_class":2,"field":i,"element_index":null,
+            "type_code":8,"bytes":50_i32.to_le_bytes(),"value":50,"reference":null,"read_ok":true
+        }));
+    }
+    assert!(
+        reversebolt_core::runtime_inventory::build(&r)
+            .unwrap_err()
+            .contains("8 MiB")
+    );
+}
+
+#[test]
 fn same_object_text_is_searchable_evidence_not_path_identity() {
     let r = labeled_report(0, "Harbor reserve");
     let a = runtime::search(&r, "harbor energy", 0).unwrap();

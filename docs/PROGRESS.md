@@ -4,6 +4,18 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic naming investigation (2026-10-21): **32% unchanged**. Six local text-only
+runs on retained scans found useful candidates but also incorrect references,
+omitted alternatives, menu/internal clutter, unfinished descriptions and invented
+meanings when names were opaque. None of these model proposals was published.
+A checked shared-core inventory now retains all reachable observed fields before
+card limits, exact report-bound references, alternative paths and object-local
+text. The offline evaluator preserves 1,893 fields in the Manifold report, 1,243
+in the menu report and five in the context fixture. This is evidence plumbing,
+not automatic gameplay understanding; desktop/MCP naming integration remains
+unfinished. The tested desktop controls remain available.
+[Findings, implementation and limits](../research/runtime-naming/README.md).
+
 Named direct controls and first real-game effect (2026-10-21): **32%**. Cards omit
 unidentified placeholders, use editable numbers with +/- controls by default, and
 reserve sliders for known small ranges. A Freeze checkbox periodically holds

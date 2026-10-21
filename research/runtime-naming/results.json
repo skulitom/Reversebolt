@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "model_runs": [
+    {
+      "version": "v1",
+      "case": "manifold",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\e16ab151-1999-4b16-af71-963def104364\\report.json",
+        "sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+        "schema": 4,
+        "catalog_observed_types": 554,
+        "retained_types": 345,
+        "core_types_omitted": 209,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 11,
+      "structurally_rejected": 1,
+      "result_sha256": "a81dbb1d884ca6043485e8438dc6e60083c9bad81a13c13aa150fb21492816aa",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 25.046999999991385,
+          "prompt_sha256": "85017ead8f63c3a54b5d7a82d3b5475bb9a089eec0359ab4ef434fc213dcc4fc",
+          "prompt_bytes": 70988,
+          "prompt_eval_count": 21893,
+          "eval_count": 77,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 10.171999999991385,
+          "prompt_sha256": "24d1ce73bc725da42b3750ea14f8d910f15e1f65f7a87d02b26b543ef73994c3",
+          "prompt_bytes": 25973,
+          "prompt_eval_count": 8041,
+          "eval_count": 736,
+          "done_reason": "stop"
+        }
+      ]
+    },
+    {
+      "version": "v1",
+      "case": "blue-prince-menu",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\game\\data\\runtime\\86048-01dd6170d2e43e52\\1d678759-872f-442c-add2-a258b225a26e\\report.json",
+        "sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7",
+        "schema": 4,
+        "catalog_observed_types": 541,
+        "retained_types": 261,
+        "core_types_omitted": 280,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 4,
+      "structurally_rejected": 0,
+      "result_sha256": "6d18d4d0444f6adde3f3f835b8fff832c5efe2f48d2d551775775e3a47f3ab00",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 8.921999999991385,
+          "prompt_sha256": "462f77f4405a1dfd0771859a606f5dbaf0e5a600f45fd76a1be5542c0e37e639",
+          "prompt_bytes": 55773,
+          "prompt_eval_count": 18723,
+          "eval_count": 78,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 4.703000000008615,
+          "prompt_sha256": "cbe55b87b990d62d3b132e0222d3b2a088d220fd423c6657ea70db25e8ed632d",
+          "prompt_bytes": 13826,
+          "prompt_eval_count": 4348,
+          "eval_count": 270,
+          "done_reason": "stop"
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "case": "manifold",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\e16ab151-1999-4b16-af71-963def104364\\report.json",
+        "sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+        "method": "named-field-v2",
+        "script_sha256": "88a3269919ad140e3fb7bf701a336df1227f5bfb664fa1df5aed1cfd731780fd",
+        "schema": 4,
+        "catalog_observed_types": 554,
+        "retained_types": 345,
+        "core_types_omitted": 209,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 12,
+      "structurally_rejected": 0,
+      "result_sha256": "10796d8749030b7688050c2197b25c2b40aaf18077a6286c3e4c937d82117003",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 1.672000000020489,
+          "prompt_sha256": "85017ead8f63c3a54b5d7a82d3b5475bb9a089eec0359ab4ef434fc213dcc4fc",
+          "prompt_bytes": 70988,
+          "prompt_eval_count": 21893,
+          "eval_count": 77,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 11.21899999998277,
+          "prompt_sha256": "70317e197878d648604c743f61864708c8d780e63fdcd7298d965d34acd4c624",
+          "prompt_bytes": 29313,
+          "prompt_eval_count": 8431,
+          "eval_count": 820,
+          "done_reason": "stop"
+        }
+      ]
+    },
+    {
+      "version": "v3",
+      "case": "manifold",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\e16ab151-1999-4b16-af71-963def104364\\report.json",
+        "sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+        "method": "alternative-groups-v3",
+        "names_blinded": false,
+        "script_sha256": "718fe7cae5bab5484251d70996b7285ae1c9b32ede1b5d55708609ebe4940f18",
+        "schema": 4,
+        "catalog_observed_types": 554,
+        "retained_types": 345,
+        "core_types_omitted": 209,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 2,
+      "structurally_rejected": 0,
+      "result_sha256": "bfc04efc75ebed3818c25097053c2b2bb29b43a1d0bc972a443063670d0a328f",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 17.01600000000326,
+          "prompt_sha256": "85017ead8f63c3a54b5d7a82d3b5475bb9a089eec0359ab4ef434fc213dcc4fc",
+          "prompt_bytes": 70988,
+          "prompt_eval_count": 21893,
+          "eval_count": 77,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 6.35899999999674,
+          "prompt_sha256": "9c2f1be32e806e06aee1cea7ed75c3d2654c3d92b4f9d3e8b270af24bd018ad3",
+          "prompt_bytes": 29685,
+          "prompt_eval_count": 8488,
+          "eval_count": 208,
+          "done_reason": "stop"
+        }
+      ]
+    },
+    {
+      "version": "v3",
+      "case": "blue-prince-menu",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\game\\data\\runtime\\86048-01dd6170d2e43e52\\1d678759-872f-442c-add2-a258b225a26e\\report.json",
+        "sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7",
+        "method": "alternative-groups-v3",
+        "names_blinded": false,
+        "script_sha256": "718fe7cae5bab5484251d70996b7285ae1c9b32ede1b5d55708609ebe4940f18",
+        "schema": 4,
+        "catalog_observed_types": 541,
+        "retained_types": 261,
+        "core_types_omitted": 280,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 8,
+      "structurally_rejected": 0,
+      "result_sha256": "a7227de88736afd6e9f1dd27d16d8d225f5bfd41388e67d68967fb555993a01a",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 14.09399999998277,
+          "prompt_sha256": "462f77f4405a1dfd0771859a606f5dbaf0e5a600f45fd76a1be5542c0e37e639",
+          "prompt_bytes": 55773,
+          "prompt_eval_count": 18723,
+          "eval_count": 78,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 9.90600000001723,
+          "prompt_sha256": "81b1a53deb7ab9b49691609213a40e9b63513aadd0960c3a208181b00c463ef6",
+          "prompt_bytes": 15505,
+          "prompt_eval_count": 4535,
+          "eval_count": 787,
+          "done_reason": "stop"
+        }
+      ]
+    },
+    {
+      "version": "v3",
+      "case": "manifold-opaque",
+      "source": {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\e16ab151-1999-4b16-af71-963def104364\\report.json",
+        "sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+        "method": "alternative-groups-v3",
+        "names_blinded": true,
+        "script_sha256": "718fe7cae5bab5484251d70996b7285ae1c9b32ede1b5d55708609ebe4940f18",
+        "schema": 4,
+        "catalog_observed_types": 554,
+        "retained_types": 345,
+        "core_types_omitted": 209,
+        "model": "qwen3.8:latest",
+        "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+        "server": {
+          "version": "0.40.7"
+        }
+      },
+      "structurally_accepted": 8,
+      "structurally_rejected": 0,
+      "result_sha256": "7c70fcd6f384ba2660ce2b4d937155b640a0a7a9e4357981e1e04607079753ab",
+      "stages": [
+        {
+          "name": "types",
+          "elapsed_seconds": 12.437000000005355,
+          "prompt_sha256": "b9eaed7ad38304ad76ee095899f34874bdf6aab39ae2b648ad1cc297740b4ab0",
+          "prompt_bytes": 54821,
+          "prompt_eval_count": 26004,
+          "eval_count": 77,
+          "done_reason": "stop"
+        },
+        {
+          "name": "controls",
+          "elapsed_seconds": 19.969000000011874,
+          "prompt_sha256": "d711a00be810080f07e05e93e52383aed3cb9fe3762e45ee29f850608be1734d",
+          "prompt_bytes": 35432,
+          "prompt_eval_count": 16915,
+          "eval_count": 1273,
+          "done_reason": "stop"
+        }
+      ]
+    }
+  ],
+  "inventories": [
+    {
+      "case": "manifold",
+      "source_sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+      "output_sha256": "9760dc75fd29a0f5b1d9742ab837b2c33eccce0db5616451857dfbcccd5ed19a",
+      "report_sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+      "types": 345,
+      "fields": 1893,
+      "reachable_paths": 46461,
+      "omitted_core_paths": 2488,
+      "omitted_array_elements": 7941,
+      "omitted_non_numeric_paths": 0,
+      "elapsed_seconds": 0.9839999999967404,
+      "exit_code": 0
+    },
+    {
+      "case": "menu",
+      "source_sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7",
+      "output_sha256": "668e707088333beff6c5ad2206787d2496a83e50c8e75874de6628450b513422",
+      "report_sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7",
+      "types": 261,
+      "fields": 1243,
+      "reachable_paths": 27052,
+      "omitted_core_paths": 3320,
+      "omitted_array_elements": 7379,
+      "omitted_non_numeric_paths": 1,
+      "elapsed_seconds": 0.6879999999946449,
+      "exit_code": 0
+    },
+    {
+      "case": "fixture",
+      "source_sha256": "f0bace316bb4f04d8b5a4658f489b59d206bc9dddac21795626e90f878726c36",
+      "output_sha256": "0f0c5f36b0aaeda5f98e17a3f8c8a6627e12d9d80eae4d39080c23ea2f97ab21",
+      "report_sha256": "f0bace316bb4f04d8b5a4658f489b59d206bc9dddac21795626e90f878726c36",
+      "types": 3,
+      "fields": 5,
+      "reachable_paths": 48,
+      "omitted_core_paths": 0,
+      "omitted_array_elements": 9,
+      "omitted_non_numeric_paths": 0,
+      "elapsed_seconds": 0.030999999988125637,
+      "exit_code": 0
+    }
+  ],
+  "inventory_executable_sha256": "d1433a36b806a79a469d38a830b71dc4bc4c0231a0289f819557ec66946e4a92",
+  "inventory_source_sha256": "694a762be131306fa79dbe9bbb4010cbf60a74b4a4654df133a9010ce7f1e4c4",
+  "limitation": "Structural acceptance is not semantic correctness. Model-only naming failed relevance and opaque-name abstention. No model proposals published; no live process access or writes.",
+  "sources": {
+    "crates/reversebolt-core/src/runtime_inventory.rs": "694a762be131306fa79dbe9bbb4010cbf60a74b4a4654df133a9010ce7f1e4c4",
+    "crates/reversebolt-core/src/runtime.rs": "f19fed0ca45922380873a9b938955746a4cc516dd17a6d674bd98bbd3c883df5",
+    "crates/reversebolt-runtime/src/bin/reversebolt-runtime-inventory.rs": "bcd300430d72a588bbd5542b414b69b0f7425c80fe4dbadcf90c0a579a0c78f2",
+    "crates/reversebolt-core/tests/runtime_paths.rs": "439cd7ec8b8f72bdda803bcee39715cc72823212ad524c36d4d1ff4bafd723c6",
+    "Cargo.lock": "278fddd75d744a6f03d8a5a736d7e2ff22f3712ab2f3125533b4e059caac7a03",
+    "research/runtime-naming/experiment.py": "b2de548f766bf69b2ddab803e18664988a6201312c5da2542f2495b1e23739ef",
+    "research/runtime-naming/experiment_v2.py": "88a3269919ad140e3fb7bf701a336df1227f5bfb664fa1df5aed1cfd731780fd",
+    "research/runtime-naming/experiment_v3.py": "718fe7cae5bab5484251d70996b7285ae1c9b32ede1b5d55708609ebe4940f18",
+    "research/runtime-naming/audit.py": "2b0934690a17f8f106e2e2775b289c85713dab94f14ab4e96cfde2120253a5ad"
+  },
+  "validation": {
+    "tests": {
+      "sha256": "0abc1c457dd524d09db15e4aadd5f70bf239036593159dc6bb4ed22643eb80f9",
+      "passed": 241
+    },
+    "final-paths": {
+      "sha256": "0a9f110452b50fdc0b31fa58ab4c2295611adab89316da1aba46c4bd47d9cf0a",
+      "passed": 16
+    },
+    "final-clippy": {
+      "sha256": "d3442f3d6298de9d5d0e283f3e4ad6bfe2aebef50b6640c1931476c87860fe97",
+      "passed": "exit 0, warnings denied"
+    }
+  },
+  "decision": "Do not publish these model labels. Keep exact field alternatives and object-local clues; require evidence beyond metadata-only model interpretation before identifying gameplay meaning."
+}

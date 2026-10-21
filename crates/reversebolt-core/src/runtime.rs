@@ -550,6 +550,18 @@ pub fn search(report: &Value, query: &str, offset: usize) -> Result<SearchPage> 
 }
 
 fn select(report: &Value, query: &str, offset: usize, limit: usize) -> Result<SearchPage> {
+    visit_candidates(report, query, offset, limit, &mut |_| Ok(()))
+}
+
+/// Internal streaming view of every reachable scalar, before the display limit.
+/// The visitor must not publish partial results if later report validation fails.
+pub(crate) fn visit_candidates(
+    report: &Value,
+    query: &str,
+    offset: usize,
+    limit: usize,
+    visitor: &mut dyn FnMut(&Candidate) -> Result<()>,
+) -> Result<SearchPage> {
     if limit == 0 || limit > 4096 {
         return Err("Candidate limit must be between 1 and 4096.".into());
     }
@@ -794,20 +806,22 @@ fn select(report: &Value, query: &str, offset: usize, limit: usize) -> Result<Se
                         .or_default()
                         .entry(image.clone())
                         .or_default();
+                    let candidate = Candidate {
+                        id: key,
+                        name,
+                        description: "Runtime value; gameplay effect unverified.".into(),
+                        locator,
+                        value: decoded,
+                        bytes: read.bytes.clone(),
+                        type_code: read.type_code,
+                        snapshot_id: shot.snapshot_id,
+                        node_id: id,
+                        edit_authority: false,
+                        context: context.clone(),
+                    };
+                    visitor(&candidate)?;
                     if bucket.len() < limit + offset {
-                        bucket.push_back(Candidate {
-                            id: key,
-                            name,
-                            description: "Runtime value; gameplay effect unverified.".into(),
-                            locator,
-                            value: decoded,
-                            bytes: read.bytes.clone(),
-                            type_code: read.type_code,
-                            snapshot_id: shot.snapshot_id,
-                            node_id: id,
-                            edit_authority: false,
-                            context: context.clone(),
-                        });
+                        bucket.push_back(candidate);
                     }
                 }
             }
