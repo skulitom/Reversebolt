@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Competing real-game hypotheses (2026-10-21): **33%**. A retained model proposal
+was automatically rebound to fresh runtime metadata in a new Manifold Garden
+process. Identical bounded input sequences separated two equal-valued movement
+fields: one intervention was overwritten and did not suppress the measured
+response; the other persisted, suppressed it to stationary variation, and
+recovered after restoration. This adds one validation point for distinguishing
+alternatives with actual consequences, not another point for repeating the
+earlier single-field result. The input/metric and inspected proposal remain
+exploratory; no held-out generalization or automatic in-app naming credit is added.
+
+The result also led to a shared Undo fix: exact original bytes already present
+at the original guarded path are recognized without another write. Native
+numeric/boolean, changed-value/reference, replay and restart checks passed, as
+did 244 workspace tests and the 45-tool smoke. Preview `0.1.0-20261021-200143`
+preserves all 44 history entries and settings. Credits: foundation 4/10, native
+6/10, observation 5/15, discovery 8/20, validation **4/15**, intent 1/10, agent
+5/10, generalization 0/10: **33/100**. Automatic investigation, supported semantic
+promotion and broader revalidation remain unfinished; the full goal stays active.
+[Protocol, results, limitations and recovery fix](../research/runtime-alternatives/README.md).
+
 Automatic naming investigation (2026-10-21): **32% unchanged**. Six local text-only
 runs on retained scans found useful candidates but also incorrect references,
 omitted alternatives, menu/internal clutter, unfinished descriptions and invented

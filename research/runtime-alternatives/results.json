@@ -1,0 +1,264 @@
+{
+  "game": {
+    "product_revision": "d4e2b0d0a628a1e3a6186ea32b6c269590bcd889",
+    "source_notes": [
+      "Both original and corrected prelaunch client hashes verified; duplicate path separators retained in frozen manifest."
+    ],
+    "outcomes": [
+      {
+        "candidate": 0,
+        "field_name": "moveSpeed",
+        "trial_id": "76842532-093d-4b3e-a2ef-6a2ac33f8eb7",
+        "effect_criteria_passed": false,
+        "replacement_observed_after_input": false,
+        "original_observed_after_input": true,
+        "recovery": {
+          "phase": "written",
+          "outcome": "refused",
+          "already_returned": true,
+          "limitation": "Original bytes at the guarded path only; not full gameplay rollback."
+        },
+        "medians": {
+          "baseline": 6.308893352812272,
+          "changed": 6.30695021457268,
+          "restored": 6.72614305606282
+        },
+        "stationary": {
+          "baseline": 0.25642006026296565,
+          "changed": 0.25519311541271,
+          "restored": 0.2557980277574872
+        },
+        "measurement_sha256": "168b26a3252b08dcea0a8767f98beeefc1a9ae51a8d4e9f8fd03e7384db2fa9a"
+      },
+      {
+        "candidate": 1,
+        "field_name": "walkSpeed",
+        "trial_id": "9823f5f9-7379-48d3-8b85-924159a8f514",
+        "effect_criteria_passed": true,
+        "replacement_observed_after_input": true,
+        "original_observed_after_input": false,
+        "recovery": {
+          "phase": "restored",
+          "outcome": "written",
+          "already_returned": false,
+          "limitation": "Original bytes at the guarded path only; not full gameplay rollback."
+        },
+        "medians": {
+          "baseline": 6.724194211102995,
+          "changed": 0.2585401068298028,
+          "restored": 6.497528990138788
+        },
+        "stationary": {
+          "baseline": 0.25639152666179693,
+          "changed": 0.2568823046018992,
+          "restored": 0.25861144083272464
+        },
+        "measurement_sha256": "a150a7dd490ddde9581b5d1d1829266ffe7c9149dd2b908507bbc24a4acebfa7"
+      }
+    ],
+    "measurement_frames": 36,
+    "movement_pulses": 24,
+    "requested_input_ms": 4800,
+    "setup_screenshots_reviewed": 7,
+    "helper_operations": 13,
+    "pauses": 123,
+    "maximum_stop_to_resume_us": 5185,
+    "helper_heap_operations_while_paused": 0,
+    "confirmed_writes": 3,
+    "refusals": 1,
+    "storage_changes": {
+      "Player-prev.log": "added",
+      "Player.log": "changed",
+      "Saves\\SaveSlot3.data": "changed",
+      "Saves\\Screenshot3.jpg": "changed"
+    },
+    "existing_saves_1_2_unchanged": true,
+    "evidence": [
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\0c74c200-9e9d-40a0-9e9a-6f2caac85163\\stdout.jsonl",
+        "sha256": "a4e9493988939ea5846a520443c4fd725965dd4cde2715ffa6c23e4b351cbdfa",
+        "report_sha256": "bb38f6ad691408136faeb8ac0e27878dcb97e96d71a04d0af85d754455f47b7b"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\117a6ec5-94fd-4dfb-92c0-33a5b9a4c03f\\stdout.jsonl",
+        "sha256": "986813d184589423a4862761f7841a224cf4c8ffd7567d3fe80de97dcb34b6a8",
+        "report_sha256": "f1647e5139b0ac9c3f4a3917788bcb43056c4c923a302cb0cdbc0e71f6604260"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\1ec25dbb-1e8d-4b43-b10f-54ca32b13bda\\stdout.jsonl",
+        "sha256": "ac7846db073a80fa27b4323a7f8a221d53b434d0b692e5cd82300a330df49461",
+        "report_sha256": "7970997f42d384547732b80032f7511c47c1933d878112c3c48e43b33a6a9f62"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\290e6cf7-919d-4bef-aa00-489f66ddcb70\\stdout.jsonl",
+        "sha256": "cf5a02b4c5a4d26683bc2330d412ad81fdf592899544b0081a7b79fe50076a6f",
+        "report_sha256": "3bea7f6a64c09bb8a490c1f511c06ce8eac25fc4ebaf8b982a12b34f0f0f90c0"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\3965fa88-d6cd-4a4f-a249-b3e0c070e86e\\stdout.jsonl",
+        "sha256": "13e3494d14eb396ebc8421fb61687bff3b203b10fdc43e1e3be91d63bbfbf2d4",
+        "report_sha256": "394c54d3748d91bc808a2060ed43a06154a10e983b627b782686813ae1214fef"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\6027788d-5f6a-4820-910a-ac5687ac7006\\stdout.jsonl",
+        "sha256": "a4e0b814f858f148aef70c0d6f961f88674f6839d7808badaee8e1b3cbac58fa",
+        "report_sha256": "6b6085cf66a48f92628986e679a5b6323479ae053e05465cbf372fcdd7de9c23"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\7de54c26-3dd9-48ca-bfcb-4ba2689b8c4f\\stdout.jsonl",
+        "sha256": "338ef8acd72de5367c1dd076379458c787a91f631ac9084ca48d1a8b0a0ba20c",
+        "report_sha256": "7ce3f63f039e47a932917b845fa415d7e8b9a390adfec02ed93ab6edc9c09372"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\80e51dc8-c55e-47d1-9b7b-71f9bcdba72d\\stdout.jsonl",
+        "sha256": "c159f302d07defeb1992e3541be37af8254e208e7ca87fcb2cc8f41683483000",
+        "report_sha256": "b84f94089d138435a76b77c999239136a9c1f090c75f6766f5362ece24b13f98"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\d5662215-0510-4a13-a2cd-eba5fa0d31e5\\stdout.jsonl",
+        "sha256": "97cf7c668c9e721aa609086ba82cc0e9b1a56f0a7add30d79e3d215344c77fa3",
+        "report_sha256": "497744eee384be3b47eca7aebc5642bbfd806c8f92e380366ee26977353a24df"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\d8f38a4a-6211-4494-82db-fe927770af1d\\stdout.jsonl",
+        "sha256": "4999f0e0aa29319c12af29f1745e97947668a8e98a5a514852639207c69c3fb4",
+        "report_sha256": "dc224e3b6b19a05ca1c73327c310f42429d0a9cde8af24d6342e645055ed04bf"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\f022d8ef-2936-4caf-be57-2ee240b00f53\\stdout.jsonl",
+        "sha256": "5371f474829b3b54c382cb8e45526884aff586fbe43d6d0b66cdc1b0d9b3f94e",
+        "report_sha256": "8d751f98ae2adedda509d9da91002269dcfb364a4ff871edc7e86a00c269f047"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\f2ba9593-4bab-48c3-b861-680ad6c18b96\\stdout.jsonl",
+        "sha256": "0b76a54eae4fcbd06adcdd031addbb64fee1c36de223c2b18ac17281e87abab1",
+        "report_sha256": "804cb4660cc6dd8b1ae012d29d72f52e0e2004f709e294011da9aefc7b5511e7"
+      },
+      {
+        "receipt": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-v1\\data\\runtime\\31868-01dd618c7ccd06f1\\f584c2df-f7e9-4ebb-8eeb-58d0d057b806\\stdout.jsonl",
+        "sha256": "870c37375730c6f14e691b51e8c0a8d4e7ddc5da6e69ffe3bb2b9454c3987e0d",
+        "report_sha256": "f2016c00db086b6e484f16c49b27794adb6560e5e286f700ef1a5240ba20d869"
+      }
+    ],
+    "limitation": "Exploratory same-game, same-scene comparison using a previously interpreted input and adapted model proposal. Rebinding does not prove persistent actor identity. Image differences measure rendered response, not velocity. Failure to persist does not prove display-only state. No held-out generalization claim.",
+    "cleanup": {
+      "game_31868_exited": true,
+      "headless_job": "j_e9f965c22c854d2295d17f0943554d59",
+      "headless_job_finished": true,
+      "anode_lease_released": true
+    }
+  },
+  "recovery": {
+    "product_revision": "21fb8ca77d2ad88fd99d26f61ec20d33ba86b653",
+    "tests_passed": 244,
+    "native_summary": {
+      "passed": true,
+      "tools": 45,
+      "trials": 4,
+      "operations": 13,
+      "pauses": 28,
+      "maximum_stop_to_resume_us": 64,
+      "evidence": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\1059f910-c632-4ff2-ad75-8df942b46db2\\stdout.jsonl",
+          "sha256": "b2e987c73d5dec12afdab86222cdedb8cb883e5917741d751f4af290091468ac",
+          "report_sha256": "c9dc2d13f959dfeca7bb6da8adc82298e412cd4868c3a2f92b6cf516affeba48"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\14f31c98-a8ec-4bf8-a624-f81cad212003\\stdout.jsonl",
+          "sha256": "02efa0ec69d3c8122399b8f9b68636f2d6cf559c55e2c9ca9fa559cf20b641f8",
+          "report_sha256": "988dd4760ec4fd1003ebe7009458be64f183f20e2e5ef272a1fad0f3c1ab3526"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\27190506-1a42-4462-af16-c9e95b31ca17\\stdout.jsonl",
+          "sha256": "7f2a6a4b32392cafcc06b0a8dc7ca764e7520a1a8831a65d78e08b5958c53eae",
+          "report_sha256": "95a384ed7fe6437afdcd0c9078c505c6be452e8510a4391915041aa014392efe"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\34646c16-5232-463e-9d3f-012836cef87e\\stdout.jsonl",
+          "sha256": "abc4913326f07b87752a0518aacab6357c189f71880d8af1607a8a49f27e7edb",
+          "report_sha256": "764349fe2c2e5b1f2acc847c3fbe151cd6cfa1c71b92061a34b3675c29ca2a44"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\4988b222-958a-49dc-a6f4-72a6d6d7a840\\stdout.jsonl",
+          "sha256": "1f721a7475c2094884b9060a44606ec6c795a86cc15f28434ed8ecbeabf97d99",
+          "report_sha256": "2c75f9e3732d0b1e173e64eba7e4bb3f10e380b76e84dd3b087baddd7a272cc6"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\4a29e5b2-9a71-4063-99a1-d5a3e5083be1\\stdout.jsonl",
+          "sha256": "e4cd7572778076414dbc6a8ab71834b7f0d23c52361cbd8904db33ae3128ea28",
+          "report_sha256": "cbf4856c7a329e0c79159cad828a6ba43fe1227d795d9d0c76669d4de6403913"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\6a498082-44a0-429e-bddc-e0f684dbfe18\\stdout.jsonl",
+          "sha256": "bc85e85ffe4285d34b2be06f9353491cdc1356473f452de27ae1ff90730e121f",
+          "report_sha256": "48a7ff5c231c8c3940e4d2cb3b0e5277da05fba91e8acf69be351efdc548ae06"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\8252a014-76d0-4ee6-a4bd-acc8bd0c8463\\stdout.jsonl",
+          "sha256": "ee11de3318b070b53b20bd6eedbffb93aa01f65f1ba490688f98823c0bc299dc",
+          "report_sha256": "edd4b51bede488ffdfcdd7e9fa6ad7059c62824c361562ce6832101b2cf5c573"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\84be9431-bb94-4ffa-9573-bc6f1d50f16f\\stdout.jsonl",
+          "sha256": "34734aabb96aeaa62dbc43de1c4c8e7d2ffcdd02d3453501f45aea177efacf18",
+          "report_sha256": "75a0770f498fab2919c6e3e5c9e0d703cba5909b962091193208c085d2f4fdf3"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\a458386d-2a1c-47bd-bef5-3d5d1952b3a0\\stdout.jsonl",
+          "sha256": "07a6a4e0279648520096100a36c94ecd8ec05914bda9ecfaf5c7a9d573bef722",
+          "report_sha256": "80b95868c6a8be2ceec4793ca7c2b3c17216ee5b01c427f222dd8a33c249c91d"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\b7d20e07-39c8-4401-9928-4423895339ae\\stdout.jsonl",
+          "sha256": "4dedc66211c532f9725093586771b6ae0cb92dbd27c91e7c607ffd0968c8bf82",
+          "report_sha256": "6561ff355c81dd0465394e7915155f04f18ab5533d66ce26cd8b4a77a37869a0"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\bdab1a47-6e6b-4c47-beb9-56c78bd6d429\\stdout.jsonl",
+          "sha256": "65ecf450b30fbae4c320699b2ea57f1ca411f33db54e26cd35a0179da509d181",
+          "report_sha256": "e50ee6f0b0dac330dac5906928f8d1c69e371ed726341ac87490a1c38b48f694"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-alternatives-recovery-v1\\native\\data\\runtime\\44564-01dd618e6f900228\\ed15c106-f9aa-467b-b6fd-b04e28ee075f\\stdout.jsonl",
+          "sha256": "17ff2c70107cb001139808d777ceefa1e9511bb2efbc2ba3ca5fcd96f79fb2f0",
+          "report_sha256": "d20bcd1c5b109ed5d23b58b65912de124acd583531f96e97479a9597b7612095"
+        }
+      ]
+    },
+    "native_children": [
+      {
+        "pid": 44564,
+        "exit": 0
+      },
+      {
+        "pid": 89928,
+        "exit": 1
+      },
+      {
+        "pid": 33080,
+        "exit": 1
+      },
+      {
+        "pid": 71528,
+        "exit": 1
+      }
+    ],
+    "binary_and_source_hashes_match": true,
+    "smoke_report": "test-results/smoke-2f57b1c1/report.json",
+    "desktop": {
+      "pid": 90568,
+      "preview": "dist\\0.1.0-20261021-200143",
+      "history": 44,
+      "model": "qwen3.8:latest",
+      "history_model_trials_changes_freezes_preserved": true,
+      "published_hashes_match_frozen": true
+    }
+  },
+  "native_job": {
+    "id": "j_38261c212e6b4d3a8fbddee948a7eeaf",
+    "finished": true,
+    "exit_code": 0
+  },
+  "progress_percent": 33
+}
