@@ -64,6 +64,7 @@ pub fn draw(
     kind: i32,
     value: &Value,
     enabled: bool,
+    bounds: Option<std::ops::RangeInclusive<f64>>,
 ) -> Option<String> {
     if kind == 2 {
         let mut checked = value["boolean"].as_bool().unwrap_or(false);
@@ -134,16 +135,42 @@ pub fn draw(
         editor.error = None;
     }
     let size = if editor.text.len() > 14 { 25. } else { 38. };
-    let response = ui.add_enabled(
-        enabled,
-        egui::TextEdit::singleline(&mut editor.text)
-            .id(value_id)
-            .font(egui::FontId::proportional(size))
-            .text_color(ACCENT)
-            .desired_width(ui.available_width())
-            .char_limit(64)
-            .hint_text("Value"),
-    );
+    let mut step = 0.;
+    let response = ui
+        .horizontal(|ui| {
+            let decrease = ui.add_enabled(
+                enabled,
+                egui::Button::new(RichText::new("−").size(24.)).min_size(egui::vec2(36., 46.)),
+            );
+            decrease.widget_info(|| {
+                egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, "Decrease value")
+            });
+            if decrease.clicked() {
+                step = -1.;
+            }
+            let response = ui.add_enabled(
+                enabled,
+                egui::TextEdit::singleline(&mut editor.text)
+                    .id(value_id)
+                    .font(egui::FontId::proportional(size))
+                    .text_color(ACCENT)
+                    .desired_width((ui.available_width() - 44.).max(70.))
+                    .char_limit(64)
+                    .hint_text("Value"),
+            );
+            let increase = ui.add_enabled(
+                enabled,
+                egui::Button::new(RichText::new("+").size(24.)).min_size(egui::vec2(36., 46.)),
+            );
+            increase.widget_info(|| {
+                egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, "Increase value")
+            });
+            if increase.clicked() {
+                step = 1.;
+            }
+            response
+        })
+        .inner;
     response
         .widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, enabled, "Value"));
     ui.ctx().accesskit_node_builder(value_id, |node| {
@@ -168,48 +195,65 @@ pub fn draw(
         response.surrender_focus();
         editor.focused = false;
     }
-    let mut range = -20.0..=20.0;
-    if let Ok(base) = editor.anchor.parse::<i128>() {
-        let limits = match kind {
-            4 => Some((i8::MIN as i128, i8::MAX as i128)),
-            5 => Some((0, u8::MAX as i128)),
-            6 => Some((i16::MIN as i128, i16::MAX as i128)),
-            7 => Some((0, u16::MAX as i128)),
-            8 => Some((i32::MIN as i128, i32::MAX as i128)),
-            9 => Some((0, u32::MAX as i128)),
-            10 => Some((i64::MIN as i128, i64::MAX as i128)),
-            11 => Some((0, u64::MAX as i128)),
-            _ => None,
-        };
-        if let Some((min, max)) = limits {
-            range = (min - base).max(-20) as f64..=(max - base).min(20) as f64;
-        }
+    if step != 0.
+        && let Some(value) = shifted(kind, &current, step)
+    {
+        editor.text = value;
+        commit = true;
     }
-    ui.scope(|ui| {
-        ui.spacing_mut().slider_width = ui.available_width();
-        ui.spacing_mut().interact_size.y = 34.;
-        ui.spacing_mut().slider_rail_height = 6.;
-        ui.visuals_mut().widgets.inactive.bg_fill = egui::Color32::from_rgb(85,92,104);
-        ui.visuals_mut().widgets.inactive.fg_stroke = egui::Stroke::new(2.,ACCENT);
-        ui.visuals_mut().widgets.hovered.bg_fill = ACCENT;
-        ui.visuals_mut().widgets.active.bg_fill = ACCENT;
-        ui.visuals_mut().selection.bg_fill = ACCENT;
-        let mut slider = egui::Slider::new(&mut editor.offset, range).show_value(false).trailing_fill(true);
-        if (4..=11).contains(&kind) { slider=slider.step_by(1.); }
-        let slider = ui.add_enabled(enabled, slider).on_hover_text("Drag to change the value. Release to apply. Small adjustments are currently limited to 20.");
-        #[cfg(test)] { editor.slider_rect = Some(slider.rect); }
-        slider.widget_info(||egui::WidgetInfo::labeled(egui::WidgetType::Slider, enabled, "Adjust value"));
-        if slider.changed() {
-            editor.error=None;
-            if let Some(value) = shifted(kind, &editor.anchor, editor.offset) { editor.text=value; }
-            editor.drag_dirty=true;
+    // Only a known domain range can justify a slider. A small observed value
+    // or a write-limit is not evidence that the setting itself has that range.
+    if let Some(range) = bounds.filter(|r| {
+        r.start().is_finite()
+            && r.end().is_finite()
+            && r.start() < r.end()
+            && r.end() - r.start() <= 20.
+    }) {
+        editor.anchor = range.start().to_string();
+        if !editor.dragging {
+            editor.offset = offset(kind, &editor.anchor, &current).unwrap_or(0.);
         }
-        let pointer_down=ui.input(|i|i.pointer.any_down());
-        editor.dragging=slider.dragged() || slider.is_pointer_button_down_on();
-        if enabled && editor.drag_dirty && !pointer_down {
-            commit=true; editor.drag_dirty=false;
-        }
-    });
+        let range = 0.0..=(range.end() - range.start());
+        ui.scope(|ui| {
+            ui.spacing_mut().slider_width = ui.available_width();
+            ui.spacing_mut().interact_size.y = 34.;
+            ui.spacing_mut().slider_rail_height = 6.;
+            ui.visuals_mut().widgets.inactive.bg_fill = egui::Color32::from_rgb(85, 92, 104);
+            ui.visuals_mut().widgets.inactive.fg_stroke = egui::Stroke::new(2., ACCENT);
+            ui.visuals_mut().widgets.hovered.bg_fill = ACCENT;
+            ui.visuals_mut().widgets.active.bg_fill = ACCENT;
+            ui.visuals_mut().selection.bg_fill = ACCENT;
+            let mut slider = egui::Slider::new(&mut editor.offset, range)
+                .show_value(false)
+                .trailing_fill(true);
+            if (4..=11).contains(&kind) {
+                slider = slider.step_by(1.);
+            }
+            let slider = ui
+                .add_enabled(enabled, slider)
+                .on_hover_text("Drag to change the value. Release to apply.");
+            #[cfg(test)]
+            {
+                editor.slider_rect = Some(slider.rect);
+            }
+            slider.widget_info(|| {
+                egui::WidgetInfo::labeled(egui::WidgetType::Slider, enabled, "Adjust value")
+            });
+            if slider.changed() {
+                editor.error = None;
+                if let Some(value) = shifted(kind, &editor.anchor, editor.offset) {
+                    editor.text = value;
+                }
+                editor.drag_dirty = true;
+            }
+            let pointer_down = ui.input(|i| i.pointer.any_down());
+            editor.dragging = slider.dragged() || slider.is_pointer_button_down_on();
+            if enabled && editor.drag_dirty && !pointer_down {
+                commit = true;
+                editor.drag_dirty = false;
+            }
+        });
+    }
     if commit {
         editor.dirty = false;
         match encode(kind, &editor.text) {
@@ -252,6 +296,7 @@ pub fn ocr(
         13,
         &value.map(|v| json!(v.to_string())).unwrap_or(json!("—")),
         enabled && eligible && value.is_some(),
+        None,
     );
     let trial = state.changes.iter().rev().find(|c| {
         c.scope.investigation == live.investigation_id
@@ -260,6 +305,7 @@ pub fn ocr(
     });
     let mut undo = None;
     ui.horizontal(|ui| {
+        ui.add_enabled(false, egui::Checkbox::new(&mut false,"Freeze")).on_hover_text("Freeze needs a supported internal value. This reading is still being connected to its control.");
         let label = trial.map_or("Learning", |t| match t.phase {
             Phase::Written => "Changed",
             Phase::Restored => "Restored",
@@ -325,7 +371,7 @@ mod tests {
                     ..Default::default()
                 },
                 |ui| {
-                    result = draw(ui, &mut editor, 8, &json!("50"), true);
+                    result = draw(ui, &mut editor, 8, &json!("3"), true, Some(1.0..=5.0));
                 },
             );
             output.textures_delta.clear();
@@ -352,7 +398,7 @@ mod tests {
             .unwrap()
             .parse::<i32>()
             .unwrap();
-        assert!((51..=70).contains(&value));
+        assert!((4..=5).contains(&value));
         assert!(frame(vec![]).0.is_none());
         assert!(frame(vec![]).0.is_none());
     }
@@ -369,7 +415,14 @@ mod tests {
                     ..Default::default()
                 },
                 |ui| {
-                    result = draw(ui, &mut editor, 11, &json!("18446744073709551614"), enabled);
+                    result = draw(
+                        ui,
+                        &mut editor,
+                        11,
+                        &json!("18446744073709551614"),
+                        enabled,
+                        None,
+                    );
                 },
             );
             output.textures_delta.clear();

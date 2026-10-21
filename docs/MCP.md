@@ -25,7 +25,7 @@ never creates a private simulator or duplicate session.
 
 ## Direct edits
 
-The server exposes 44 tools. `reversebolt_set_runtime_value` combines a fresh
+The server exposes 45 tools. `reversebolt_set_runtime_value` combines a fresh
 runtime reading, durable preparation and guarded application in one command.
 Supply a canonical lowercase UUID `change_id`, the current `investigation_id`,
 `catalog_id`, `after_revision`, `candidate_id`, and exact string `value` (number

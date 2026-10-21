@@ -64,6 +64,7 @@ fn action_evidence(
 }
 
 fn runtime_name(name: &str) -> String {
+    let name = name.strip_prefix("m_").unwrap_or(name);
     let mut result = String::new();
     let mut lower = false;
     for ch in name.trim_matches('_').chars().take(96) {
@@ -87,6 +88,17 @@ fn runtime_name(name: &str) -> String {
     } else {
         result
     }
+}
+fn identified_name(name: &str) -> bool {
+    let name = name.trim();
+    let lower = name.to_lowercase();
+    name.chars().filter(|c| c.is_alphabetic()).count() >= 3
+        && name.chars().count() <= 80
+        && !["unidentified", "unknown", "internal value", "value "]
+            .iter()
+            .any(|p| lower.starts_with(p))
+        && !name.contains(['<', '>', '$', '{', '}'])
+        && !name.chars().any(|c| c.is_control())
 }
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
@@ -416,6 +428,10 @@ impl LivePane {
         let mut cards: Vec<FindingCard> = vec![];
         for (index, card) in live.runtime.cards.iter().enumerate() {
             let candidate = &card.candidate;
+            let title = runtime_name(&candidate.name);
+            if !identified_name(&title) {
+                continue;
+            }
             let context = candidate
                 .locator
                 .steps
@@ -434,26 +450,26 @@ impl LivePane {
             cards.push((
                 CardSource::Runtime,
                 index,
-                runtime_name(&candidate.name),
+                title.clone(),
                 value,
-                brief_description(
-                    &candidate
-                        .context
-                        .first()
-                        .map(|h| format!("First seen with “{}”. Effect untested.", h.text))
-                        .unwrap_or_else(|| format!("Value in {context}. Effect untested.")),
-                ),
+                brief_description(&format!(
+                    "{title} setting for {}. Gameplay effect not yet checked.",
+                    runtime_name(context)
+                )),
                 card.status == "read",
                 Some(observation_age(card.observed_unix_ms, now)),
             ));
         }
         for track in live.tracks.iter().filter(|t| t.active) {
-            let title = track
+            let Some(title) = track
                 .label
                 .strip_prefix("Near “")
                 .and_then(|s| s.strip_suffix('”'))
+                .filter(|s| identified_name(s))
                 .map(str::to_owned)
-                .unwrap_or_else(|| format!("Unidentified value {}", track.id + 1));
+            else {
+                continue;
+            };
             let trial_observation = state
                 .changes
                 .iter()
@@ -483,9 +499,9 @@ impl LivePane {
             cards.push((
                 CardSource::Ocr,
                 track.id,
-                title,
+                title.clone(),
                 value.map_or_else(|| "—".into(), |v| v.to_string()),
-                "On-screen value; its effect is still unknown.".into(),
+                format!("The on-screen {title} reading."),
                 value.is_some(),
                 trial_observation
                     .map(|(o, _)| observation_age(o.time_ms, now))
@@ -497,6 +513,9 @@ impl LivePane {
             ));
         }
         for track in live.visual_tracks.iter().filter(|t| t.active) {
+            if !identified_name(&track.label) {
+                continue;
+            }
             let latest = track.observations.iter().rev().flatten().next();
             let readable = track.observations.last().is_some_and(Option::is_some)
                 && latest.is_some_and(|o| {
@@ -530,6 +549,9 @@ impl LivePane {
             ));
         }
         for track in live.temporal_tracks.iter().filter(|t| t.active) {
+            if !identified_name(&track.label) {
+                continue;
+            }
             let Some(latest) = track.observations.last() else {
                 continue;
             };
@@ -598,7 +620,7 @@ impl LivePane {
         let mut drop_targets = Vec::new();
         for row in cards.chunks(columns) {
             ui.columns(columns, |cols| {
-                for (column, (external, id, title, value, description, readable, _age)) in
+                for (column, (external, id, title, value, description, _readable, _age)) in
                     cols.iter_mut().zip(row)
                 {
                     column.push_id((external, id), |ui| {
@@ -653,7 +675,7 @@ impl LivePane {
                                     }
                                     _ => {
                                         ui.label(RichText::new(value).size(38.).color(ACCENT));
-                                        ui.label(RichText::new(if *readable { "Learning" } else { "Uncertain" }).small().color(MUTED));
+                                        ui.add_enabled(false, egui::Checkbox::new(&mut false,"Freeze")).on_hover_text("This observation needs a mapped internal control before it can be frozen.");
                                     }
                                 }
                             });

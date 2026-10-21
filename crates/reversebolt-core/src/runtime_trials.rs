@@ -444,7 +444,7 @@ impl Store {
     }
 }
 
-fn classify(patch: &Patch, report: &Value) -> &'static str {
+pub fn classify(patch: &Patch, report: &Value) -> &'static str {
     if patch.restoration(report, now_ms()).is_ok() {
         return "written";
     }

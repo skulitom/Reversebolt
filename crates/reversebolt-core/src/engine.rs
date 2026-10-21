@@ -101,6 +101,8 @@ pub struct View {
     pub changes: Vec<crate::changes::Change>,
     #[serde(default)]
     pub runtime_trials: Vec<crate::runtime_trials::Trial>,
+    #[serde(default)]
+    pub freezes: Vec<crate::freezes::Freeze>,
 }
 
 impl Default for View {
@@ -122,6 +124,7 @@ impl Default for View {
             analysis: None,
             changes: vec![],
             runtime_trials: vec![],
+            freezes: vec![],
         }
     }
 }
@@ -169,6 +172,9 @@ impl Engine {
                 .join("runtime-trials"),
         )?;
         view.runtime_trials = runtime_trials.records.clone();
+        for freeze in &mut view.freezes {
+            freeze.recover();
+        }
         Ok(Self {
             view,
             target: None,

@@ -1,7 +1,7 @@
 use super::{tests::*, *};
 use reversebolt_core::runtime::{self, Task};
 
-fn runtime_view() -> EngineView {
+pub(super) fn runtime_view() -> EngineView {
     let mut view = initial_view();
     let typ = runtime::TypeKey {
         image: "Fixture.dll".into(),

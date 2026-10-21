@@ -28,6 +28,14 @@ pub fn controls(
         return;
     };
     let latest = trials(state, card).next_back();
+    let freeze = state.freezes.iter().rev().find(|f| {
+        f.investigation == live.investigation_id
+            && f.catalog == live.runtime.catalog_id
+            && f.candidate == card.candidate.id
+    });
+    let frozen = freeze.is_some_and(|f| f.active());
+    let mut holding = frozen;
+    let mut freeze_changed = false;
     let requested = if card.status == "read" {
         crate::ui_value_control::draw(
             ui,
@@ -35,6 +43,7 @@ pub fn controls(
             card.candidate.type_code,
             &card.value,
             enabled && card.status == "read",
+            None,
         )
     } else {
         ui.label(RichText::new("—").size(38.).color(MUTED));
@@ -42,29 +51,13 @@ pub fn controls(
     };
     let mut undo = None;
     ui.horizontal(|ui| {
-        let label = latest.map_or(
-            if card.status == "read" {
-                "Learning"
-            } else {
-                "Unavailable"
-            },
-            |t| match t.phase {
-                Phase::Written => "Changed",
-                Phase::Restored => "Restored",
-                Phase::Uncertain => "Outcome unknown",
-                Phase::Writing | Phase::Restoring => "Applying…",
-                Phase::Refused | Phase::Unavailable | Phase::Expired => "Couldn’t apply",
-                _ => "Learning",
-            },
-        );
-        ui.label(RichText::new(label).small().color(
-            if latest.is_some_and(|t| t.phase.unresolved()) {
-                WARNING
-            } else {
-                MUTED
-            },
-        ))
-        .on_hover_text("Meaning and gameplay effects are still unverified.");
+        freeze_changed=ui.add_enabled(frozen || (enabled && card.status=="read"), egui::Checkbox::new(&mut holding,"Freeze"))
+            .on_hover_text("Keep this value at the chosen number or state. Uncheck to let it change again. Checks pause while discovery runs.").changed();
+        if let Some(f)=freeze.filter(|f|f.phase=="uncertain" || (f.phase=="stopped" && f.reason.contains("changed"))) {
+            ui.label(RichText::new("Stopped").small().color(WARNING)).on_hover_text(&f.reason);
+        } else if latest.is_some_and(|t|t.phase.unresolved()) {
+            ui.label(RichText::new("Check needed").small().color(WARNING));
+        }
         if let Some(t) = trials(state, card)
             .rev()
             .find(|t| t.phase == Phase::Written && t.restoration.is_none())
@@ -75,7 +68,18 @@ pub fn controls(
             undo = Some(t.id.clone());
         }
     });
-    if let Some(id) = undo {
+    if freeze_changed && !holding {
+        if let Some(f) = freeze {
+            handle.submit(
+                "set_runtime_freeze",
+                json!({"freeze_id":f.id,"enabled":false}),
+            );
+        }
+    } else if (freeze_changed && holding) || (frozen && requested.is_some()) {
+        let value = requested.unwrap_or_else(|| crate::ui_value_control::text(&card.value));
+        handle.submit("set_runtime_freeze",json!({"freeze_id":uuid::Uuid::new_v4().to_string(),"enabled":true,"investigation_id":live.investigation_id,
+            "catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"candidate_id":card.candidate.id,"value":value}));
+    } else if let Some(id) = undo {
         handle.submit("restore_runtime_change", json!({"change_id":id}));
     } else if let Some(value) = requested {
         handle.submit("set_runtime_value",json!({"change_id":uuid::Uuid::new_v4().to_string(),"investigation_id":live.investigation_id,

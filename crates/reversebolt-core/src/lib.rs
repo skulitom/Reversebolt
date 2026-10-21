@@ -5,6 +5,7 @@ pub mod coverage;
 pub mod discovery;
 pub mod effects;
 pub mod engine;
+pub mod freezes;
 pub mod inputs;
 pub mod intervention;
 pub mod investigation;

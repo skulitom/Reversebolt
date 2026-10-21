@@ -2,6 +2,7 @@
 
 mod capture_sampling;
 mod fixture;
+mod freeze_bridge;
 mod graphics;
 mod input_monitor;
 mod jobs;

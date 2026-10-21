@@ -1,6 +1,8 @@
 //! Responsive job control around the sole engine-owning worker.
 mod change_watch;
 #[cfg(test)]
+mod freeze_tests;
+#[cfg(test)]
 mod runtime_watch_tests;
 #[cfg(test)]
 mod watch_tests;
@@ -177,6 +179,7 @@ impl Handle {
                 next_capture: None,
                 change_continuation: None,
                 change_child: None,
+                freeze_stops: VecDeque::new(),
             };
             loop {
                 let Some(inbox) = inbox.upgrade() else { break };
@@ -190,6 +193,7 @@ impl Handle {
                 drop(inbox);
                 controller.finish_manual();
                 controller.tick();
+                controller.tick_freezes();
                 controller.publish();
                 std::thread::sleep(Duration::from_millis(25));
             }
@@ -520,6 +524,7 @@ struct Controller {
     next_capture: Option<(u64, usize, Instant)>,
     change_continuation: Option<ChangeContinuation>,
     change_child: Option<(u64, u64)>,
+    freeze_stops: VecDeque<Request>,
 }
 
 impl Controller {
@@ -547,6 +552,12 @@ impl Controller {
         }
     }
     fn finish_manual(&mut self) {
+        if self.manual.is_none()
+            && self.executor.flight.is_none()
+            && let Some(request) = self.freeze_stops.pop_front()
+        {
+            self.command(request);
+        }
         let Some(manual) = self.manual.take() else {
             return;
         };
@@ -690,6 +701,15 @@ impl Controller {
         }
     }
     fn command(&mut self, (mut command, reply): Request) {
+        let stopping = command.action == "set_runtime_freeze" && command.args["enabled"] == false;
+        if stopping
+            && (self.manual.is_some() || self.executor.flight.is_some())
+            && self.freeze_stops.len() < 16
+        {
+            self.freeze_stops.push_back((command, reply));
+            return;
+        }
+
         // The selection worker is read-only and may already be settling after
         // its parent job completed. A human stop/pause takes control so that
         // its future capture job cannot start after the click is acknowledged.
@@ -721,6 +741,9 @@ impl Controller {
             command.args["job"] = json!(child);
         }
         let result: Result<Value> = (|| {
+            if command.action.starts_with('_') {
+                return Err("Internal worker action is not a public command.".into());
+            }
             if matches!(command.action.as_str(), "status" | "history") {
                 return Ok(Value::Null);
             }
@@ -753,6 +776,7 @@ impl Controller {
                 .values()
                 .any(|j| !j.phase.terminal() && j.phase != job::Phase::Paused);
             if active
+                && !stopping
                 && !read_only(&command.action)
                 && !matches!(
                     command.action.as_str(),
@@ -762,6 +786,7 @@ impl Controller {
                 return Err("An observation job owns the investigation. Pause or cancel it, or take control from the desktop.".into());
             }
             if self.engine.view.read().unwrap().analysis.is_some()
+                && !stopping
                 && !read_only(&command.action)
                 && !matches!(
                     command.action.as_str(),
@@ -840,6 +865,54 @@ impl Controller {
                 if let Some(reply) = reply {
                     let _ = reply.send(self.response(false, Some(error), Value::Null));
                 }
+            }
+        }
+    }
+    fn tick_freezes(&mut self) {
+        if self.manual.is_some()
+            || self.executor.flight.is_some()
+            || !self.freeze_stops.is_empty()
+            || self.draining
+            || self.jobs.view().fence.is_some()
+            || self
+                .jobs
+                .snapshot()
+                .jobs
+                .values()
+                .any(|j| !j.phase.terminal())
+        {
+            return;
+        }
+        let view = self.engine.view.read().unwrap();
+        if view.analysis.is_some() {
+            return;
+        }
+        let now = reversebolt_core::changes::now_ms();
+        let next = view
+            .freezes
+            .iter()
+            .filter(|f| {
+                f.phase == "active"
+                    && (f.actor == "desktop" || self.jobs.snapshot().human_hold.is_none())
+                    && now.saturating_sub(f.checked_ms) >= 1000
+            })
+            .min_by_key(|f| f.checked_ms)
+            .map(|f| (f.id.clone(), f.actor.clone()));
+        drop(view);
+        if let Some((id, source)) = next {
+            match self.engine.start_command(Command {
+                action: "_tick_runtime_freeze".into(),
+                source,
+                args: json!({"freeze_id":id}),
+            }) {
+                Ok(response) => {
+                    self.manual = Some(Manual {
+                        response,
+                        reply: None,
+                        automatic: None,
+                    })
+                }
+                Err(error) => self.error(error),
             }
         }
     }
@@ -1294,6 +1367,7 @@ mod tests {
             next_capture: None,
             change_continuation: None,
             change_child: None,
+            freeze_stops: VecDeque::new(),
         };
         c.refresh_binding();
         c

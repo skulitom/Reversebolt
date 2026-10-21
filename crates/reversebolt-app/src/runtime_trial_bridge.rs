@@ -14,7 +14,7 @@ use std::{
     sync::{Arc, RwLock, atomic::AtomicBool},
 };
 
-fn evidence(outcome: runtime_bridge::Outcome) -> Result<Evidence> {
+pub(crate) fn evidence(outcome: runtime_bridge::Outcome) -> Result<Evidence> {
     let path = outcome
         .evidence
         .join("report.json")

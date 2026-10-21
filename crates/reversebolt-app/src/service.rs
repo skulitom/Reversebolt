@@ -162,6 +162,8 @@ impl EngineHandle {
                         | "observe_change"
                         | "inspect_runtime"
                         | "set_runtime_value"
+                        | "set_runtime_freeze"
+                        | "_tick_runtime_freeze"
                         | "prepare_runtime_change"
                         | "apply_runtime_change"
                         | "restore_runtime_change"
@@ -202,6 +204,8 @@ impl EngineHandle {
                                 | "observe_change"
                                 | "inspect_runtime"
                                 | "set_runtime_value"
+                                | "set_runtime_freeze"
+                                | "_tick_runtime_freeze"
                                 | "prepare_runtime_change"
                                 | "apply_runtime_change"
                                 | "restore_runtime_change"
@@ -224,6 +228,13 @@ impl EngineHandle {
                     );
                 }
                 if !read_only && let Err(message) = engine.save() {
+                    if command.action == "set_runtime_freeze" {
+                        for f in &mut engine.view.freezes {
+                            if command.args["freeze_id"] == f.id {
+                                f.stop("Freeze could not be saved and was not started.");
+                            }
+                        }
+                    }
                     error = Some(format!("Session history could not be saved: {message}"));
                     engine.view.error.clone_from(&error);
                 }
@@ -277,7 +288,55 @@ fn native_command(
             return Err("The job's target or memory batch changed; no capture was started.".into());
         }
     }
+    if matches!(
+        command.action.as_str(),
+        "set_runtime_value"
+            | "prepare_runtime_change"
+            | "apply_runtime_change"
+            | "restore_runtime_change"
+            | "set_observed_value"
+            | "prepare_change"
+            | "prepare_probe"
+            | "apply_change"
+            | "restore_change"
+    ) {
+        if engine.live.as_ref().is_some_and(|s| {
+            let scope = crate::runtime_bridge::runtime_scope(
+                s.view.memory_process.as_ref().unwrap_or(&s.view.process),
+            );
+            engine.view.freezes.iter().any(|f| f.holds(&scope))
+        }) {
+            return Err("A freeze write has an unknown outcome. Further writes are held.".into());
+        }
+        let candidate = command.args["candidate_id"]
+            .as_str()
+            .map(str::to_owned)
+            .or_else(|| {
+                engine
+                    .runtime_trials
+                    .records
+                    .iter()
+                    .find(|t| command.args["change_id"] == t.id)
+                    .map(|t| t.candidate_id.clone())
+            });
+        for f in &mut engine.view.freezes {
+            if candidate.as_deref() == Some(&f.candidate) {
+                f.stop("Freeze switched off for a manual edit.");
+            }
+        }
+    }
     match command.action.as_str() {
+        "set_runtime_freeze" => return crate::freeze_bridge::command(engine, command),
+        "_tick_runtime_freeze" => {
+            return crate::freeze_bridge::tick(
+                engine,
+                command.args["freeze_id"]
+                    .as_str()
+                    .ok_or("Missing freeze identity.")?,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+                published,
+            );
+        }
         "set_runtime_value"
         | "prepare_runtime_change"
         | "apply_runtime_change"
