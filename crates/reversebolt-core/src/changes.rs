@@ -105,6 +105,8 @@ impl WriteReceipt {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Observation {
     #[serde(default)]
+    pub input_context: Option<crate::inputs::Window>,
+    #[serde(default)]
     pub sampling: Option<crate::visual::CaptureSampling>,
     pub time_ms: u128,
     pub image: String,
@@ -139,6 +141,16 @@ pub enum ObservationStage {
     BeforeEdit,
     AfterEdit,
     AfterRestoration,
+}
+
+/// Immutable cursor for a queued, read-only result observation. A restoration
+/// or an intervening manual observation must never silently rebase the plan.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ObservationCursor {
+    pub change_id: String,
+    pub phase: Phase,
+    pub after_observation: usize,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

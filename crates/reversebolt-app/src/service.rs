@@ -330,7 +330,26 @@ fn native_command(
                 .as_mut()
                 .ok_or("The original application must still be connected.")?;
             let change = if command.action == "observe_change" {
-                session.observe_change(id, &mut engine.changes)?
+                let input_warning =
+                    owner.and_then(|owner| session.start_inputs(owner.cancel.clone()).err());
+                let result = if let Some(cursor) = command.args.get("cursor") {
+                    let cursor: reversebolt_core::changes::ObservationCursor =
+                        serde_json::from_value(cursor.clone())
+                            .map_err(|_| "Invalid trial observation cursor.")?;
+                    if cursor.change_id != id {
+                        return Err("The watch cursor names a different trial.".into());
+                    }
+                    session.observe_change_at(&cursor, &mut engine.changes)?
+                } else {
+                    session.observe_change(id, &mut engine.changes)?
+                };
+                if let Some(warning) = input_warning {
+                    engine.event(
+                        &command.source,
+                        format!("Input context unavailable: {warning}"),
+                    );
+                }
+                result
             } else {
                 let restored = command.action == "restore_change";
                 let mut result = session.execute_change(id, restored, &mut engine.changes)?;

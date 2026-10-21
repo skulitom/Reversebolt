@@ -1,4 +1,7 @@
 //! Responsive job control around the sole engine-owning worker.
+mod change_watch;
+#[cfg(test)]
+mod watch_tests;
 use crate::service::{EngineHandle, OperationOwner};
 use reversebolt_core::{Command, Result, engine::View as EngineView};
 use reversebolt_session_jobs::{
@@ -45,7 +48,8 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
                 job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing current work, then stopping",_=>"Historical",
             };
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
-            let title = if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
+            let watching = plan.as_ref().is_some_and(|s| s.change.is_some());
+            let title = if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
             ui.horizontal_wrapped(|ui| {
                 if job.phase==job::Phase::Running { ui.spinner(); }
@@ -60,6 +64,7 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
                 if state.history.human_hold.is_none() && job.controller.role==job::Role::Agent
                     && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
             });
+            if watching { ui.label(RichText::new("Keep playing to check for a delayed response.").size(12.).color(MUTED)); }
         }
         if let Some(analysis)=&analysis {
             let now=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis();
@@ -256,6 +261,8 @@ struct CaptureStep {
     local_model: Option<String>,
     #[serde(default, skip_serializing_if = "is_false")]
     background_model: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    change: Option<change_watch::Cursor>,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -353,8 +360,22 @@ impl job::Executor for CaptureExecutor {
             );
         }
         let command = Command {
-            action: "capture".into(),
-            args: json!({"scope":step.scope,"compare":step.compare,"remaining":step.remaining,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model}),
+            action: if step.change.is_some() {
+                "observe_change"
+            } else {
+                "capture"
+            }
+            .into(),
+            args: if let Some(cursor) = &step.change {
+                let cursor = reversebolt_core::changes::ObservationCursor {
+                    change_id: cursor.change_id.clone(),
+                    phase: cursor.phase.clone(),
+                    after_observation: cursor.after_observation,
+                };
+                json!({"scope":step.scope,"change_id":cursor.change_id,"cursor":cursor})
+            } else {
+                json!({"scope":step.scope,"compare":step.compare,"remaining":step.remaining,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model})
+            },
             source: step.source,
         };
         if self
@@ -412,10 +433,16 @@ impl job::Executor for CaptureExecutor {
                         value["error"].as_str().unwrap_or(
                             "Observation finished; see the shared investigation for evidence.",
                         ),
-                        json!({"captured":if value["data"]["captured"]==false {Some(false)} else if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
+                        if value["data"]["observations"].is_array() {
+                            json!({"kind":"change_observation","change_id":value["data"]["id"],"phase":value["data"]["phase"],
+                                "observation":value["data"]["observations"].as_array().and_then(|o|o.len().checked_sub(1)),
+                                "image_sha256":value["data"]["observations"].as_array().and_then(|o|o.last()).map(|o|&o["image_sha256"])})
+                        } else {
+                            json!({"captured":if value["data"]["captured"]==false {Some(false)} else if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
                             "batch":live["coverage"]["batch"],"capture":live["sample_count"],
                             "frame":live["frames"].as_array().and_then(|f| f.last()).map(|f|&f["id"]),
-                            "local_observation":value["data"]["local_observation"]}),
+                            "local_observation":value["data"]["local_observation"]})
+                        },
                     )
                 } else {
                     self.flight = Some(Flight {
@@ -661,7 +688,7 @@ impl Controller {
             }
             if matches!(
                 command.action.as_str(),
-                "start_observation_job" | "job_control"
+                "start_observation_job" | "start_change_watch" | "job_control"
             ) {
                 return self.job_command(&command);
             }
@@ -728,7 +755,12 @@ impl Controller {
         // Manual engine commands respond when their actual operation settles.
         let is_job = matches!(
             command.action.as_str(),
-            "status" | "history" | "job_events" | "start_observation_job" | "job_control"
+            "status"
+                | "history"
+                | "job_events"
+                | "start_observation_job"
+                | "start_change_watch"
+                | "job_control"
         );
         match result {
             Ok(data) => {
@@ -839,7 +871,9 @@ impl Controller {
                 "Wait for the paused image review to finish before resuming capture.".into(),
             );
         }
-        let action = if command.action == "start_observation_job" {
+        let action = if command.action == "start_change_watch" {
+            self.plan_change_watch(command, &binding, request, &actor.client)?
+        } else if command.action == "start_observation_job" {
             let mode: reversebolt_core::live::CaptureMode = command
                 .args
                 .get("mode")
@@ -889,6 +923,18 @@ impl Controller {
                     .get(&actor.client)
                     .map_or(0, |c| c.high_water);
             if fresh && snapshot.current.as_ref() == Some(&binding) {
+                if snapshot.jobs.values().any(|j| {
+                    !j.phase.terminal()
+                        && j.steps.iter().any(|s| {
+                            serde_json::from_str::<CaptureStep>(&s.payload)
+                                .is_ok_and(|s| s.change.is_some())
+                        })
+                }) {
+                    return Err(
+                        "Finish or stop the trial watch before starting discovery observations."
+                            .into(),
+                    );
+                }
                 let state = self.engine.view.read().unwrap();
                 let live = state
                     .live
@@ -927,6 +973,7 @@ impl Controller {
                         remaining: if compare { count - index - 1 } else { 0 },
                         mode,
                         background_model: local_model.is_some() && index == 1 && index != count - 1,
+                        change: None,
                         local_model: if index == 1 || index == count - 1 {
                             local_model.clone()
                         } else {
@@ -1058,7 +1105,7 @@ impl Controller {
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn initial_view() -> EngineView {
+    pub(super) fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
                 change_searches: vec![],
@@ -1096,7 +1143,7 @@ mod tests {
             ..EngineView::default()
         }
     }
-    fn controller(engine: EngineHandle) -> Controller {
+    pub(super) fn controller(engine: EngineHandle) -> Controller {
         let directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
             .join("../../target/job-adapter-tests")
             .join(uuid::Uuid::new_v4().to_string());
@@ -1122,7 +1169,7 @@ mod tests {
         c.refresh_binding();
         c
     }
-    fn request(c: &Controller, action: &str, extra: Value) -> Command {
+    pub(super) fn request(c: &Controller, action: &str, extra: Value) -> Command {
         let history = c.jobs.snapshot();
         let mut args = json!({"request_id":history.clients.get("mcp-agent").map_or(1,|c|c.high_water+1),
             "boot":history.boot,"binding":history.current});
@@ -1189,7 +1236,7 @@ mod tests {
         }
         json!({"ok":true,"error":null,"state":view})
     }
-    fn drive_change(c: &mut Controller) {
+    pub(super) fn drive_change(c: &mut Controller) {
         c.finish_manual();
         if let Some((job, step, _)) = c.next_capture {
             c.next_capture = Some((job, step, Instant::now()));

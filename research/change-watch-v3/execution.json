@@ -1,0 +1,86 @@
+{
+  "protocol_sha256": "cd79b226963437c88c6ad74730eb823f40cd1fe6109e1d24c3ee4929512a8389",
+  "jobs": [
+    {
+      "slot": 0,
+      "job_id": "j_413cf27691cd4bc496104c87d9c09335",
+      "worker_pid": 19824,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 107161,
+      "cursor": "2876"
+    },
+    {
+      "slot": 1,
+      "job_id": "j_b00f15cc3e3948ba8e61379eb5e14aad",
+      "worker_pid": 79856,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 107691,
+      "cursor": "2876"
+    },
+    {
+      "slot": 2,
+      "job_id": "j_572d067b110641dab4d2418783fb1982",
+      "worker_pid": 10360,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 107077,
+      "cursor": "2876"
+    }
+  ],
+  "cleanup": [
+    {
+      "owned_pids": [
+        88004,
+        48880,
+        77396,
+        19824
+      ],
+      "remaining": []
+    },
+    {
+      "owned_pids": [
+        85896,
+        87864,
+        84640,
+        79856
+      ],
+      "remaining": []
+    },
+    {
+      "owned_pids": [
+        83356,
+        88152,
+        83456,
+        10360
+      ],
+      "remaining": []
+    }
+  ],
+  "desktop": {
+    "pid": 67560,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703\\Reversebolt.exe",
+    "sha256": "2BDD4F38631D445CB2B8C5C73E3B4B16BF00FFF5C24AB139ABD522B1219A50CF",
+    "history_count": 29,
+    "history_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "prior_state_backup": "C:\\DEV\\Reversebolt\\test-results\\desktop-before-change-watch.json"
+  },
+  "anode_lease_released": true,
+  "viewer_visible_before_and_left_unchanged": true,
+  "manual_screenshot_views": 0,
+  "validation": {
+    "workspace_tests": 189,
+    "strict_clippy": "passed",
+    "format": "passed",
+    "release_build": "passed",
+    "mcp_tools": 36,
+    "smoke": "test-results/smoke-ca4fd223/report.json"
+  },
+  "prior_revisions": [
+    "../change-watch/execution.json",
+    "../change-watch-v2/execution.json"
+  ]
+}

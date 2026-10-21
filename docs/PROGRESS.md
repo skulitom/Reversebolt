@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest paced trial observation (2026-10-21): **31% unchanged**. Trial cards and
+agents can now watch an effect/restoration across several moments while gameplay
+continues. Exact trial cursors, existing human controls and durable job receipts
+prevent silent rebasing or replay; watches never write or inject input. All 189
+workspace tests, strict Clippy and the 36-tool packaged smoke pass. Three fixed
+native cases preserve an immediate nonresponse, observe a delayed 50 → 60 result
+after a delivered key event, and observe 60 → 50 only after the restoration
+display refresh. All 87 matrix images are hash-verified. Earlier plan-size and
+missing-reading failures remain retained under their original methods.
+Preview `0.1.0-20261021-122703` is running with all 29 history entries and the
+selected model preserved. Weighted credits remain foundation 4/10, native 6/10,
+observation 5/15, discovery 8/20, validation 2/15, intent/editing 1/10, agent 5/10
+and generalization 0/10. This is native workflow evidence; independent gameplay
+authority, hidden semantics and the full objective remain unfinished.
+[Implementation, retained failures and evidence](../research/change-watch-v3/README.md).
+
 Latest independent-game Follow changes evaluation (2026-10-21): **31% unchanged**.
 Original 2048 and Javascript Tetris each completed 36 automatic discovery
 captures, fresh checking, one small trial edit and successful byte restoration.

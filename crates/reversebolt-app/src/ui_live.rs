@@ -6,6 +6,22 @@ use eframe::egui::{self, RichText};
 use reversebolt_core::{engine::View, live::ProcessInfo};
 use serde_json::json;
 
+fn watch_change_button(
+    ui: &mut egui::Ui,
+    handle: &Handle,
+    change: &reversebolt_core::changes::Change,
+    enabled: bool,
+) {
+    let written = change.phase == reversebolt_core::changes::Phase::Written;
+    let remaining = (if written { 6usize } else { 8 }).saturating_sub(change.observations.len());
+    if ui.add_enabled(enabled && remaining > 0, egui::Button::new(if written { "Watch effect" } else { "Watch restoration" }))
+        .on_hover_text("Watch several moments while you keep playing. Pause or stop from the activity bar; observation never restores or reapplies a trial.")
+        .clicked() {
+        handle.submit("start_change_watch", json!({"change_id":change.id,"phase":change.phase,
+            "after_observation":change.observations.len(),"count":remaining.min(4),"interval_ms":1000}));
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 enum CardSource {
     Ocr,
@@ -612,9 +628,13 @@ impl LivePane {
                                                 ui.horizontal(|ui| {
                                                     if ui.add_enabled(!busy && live.connected,egui::Button::new("Restore bytes")).on_hover_text("Checks the original value's bytes before restoring. Downstream gameplay effects may remain.").clicked() {handle.submit("restore_change",json!({"change_id":change.id}));}
                                                     if ui.add_enabled(!busy && live.connected && change.observations.len()<8,egui::Button::new("Check effect")).clicked() {handle.submit("observe_change",json!({"change_id":change.id}));}
+                                                    watch_change_button(ui, handle, change, !busy && live.connected);
                                                 });
                                             }
-                                            Phase::Restored => {ui.label(RichText::new("Original bytes restored").size(12.).color(MUTED));}
+                                            Phase::Restored => {
+                                                ui.label(RichText::new("Original bytes restored").size(12.).color(MUTED));
+                                                watch_change_button(ui, handle, change, !busy && live.connected);
+                                            }
                                             Phase::Unavailable => {ui.label(RichText::new("Still narrowing down this edit").size(12.).color(MUTED));}
                                             Phase::Uncertain|Phase::Writing|Phase::Restoring => {ui.colored_label(WARNING,"Write outcome uncertain · edits held");}
                                             Phase::Refused|Phase::Expired => {ui.label(RichText::new("Trial not applied · prepare again").size(12.).color(MUTED));}

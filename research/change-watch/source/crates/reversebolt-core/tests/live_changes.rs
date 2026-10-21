@@ -1,0 +1,897 @@
+//! Live-session API contract test. The renderer is a supplied fixture, not OCR
+//! accuracy or independent gameplay evidence. Native writes have a separate smoke.
+use reversebolt_core::{
+    Result,
+    changes::{BytePatch, Phase, Store, WriteReceipt},
+    live::*,
+    prediction::Source,
+};
+use std::{
+    cell::{Cell, RefCell},
+    path::Path,
+    rc::Rc,
+};
+
+struct State {
+    bytes: RefCell<Vec<u8>>,
+    calls: Cell<usize>,
+    resize: Cell<bool>,
+    dead: Cell<bool>,
+    mapping_changed: Cell<bool>,
+    secondary: Cell<Option<f64>>,
+    screen_bias: Cell<f32>,
+    mirror: Cell<bool>,
+    reset_during_screen: Cell<bool>,
+}
+impl State {
+    fn set(&self, value: f32) {
+        self.bytes.borrow_mut()[32..36].copy_from_slice(&value.to_le_bytes());
+        if self.mirror.get() {
+            self.bytes.borrow_mut()[64..68].copy_from_slice(&value.to_le_bytes());
+        }
+    }
+}
+struct Target {
+    state: Rc<State>,
+    info: ProcessInfo,
+    memory: Option<ProcessInfo>,
+}
+impl NativeTarget for Target {
+    fn memory_info(&self) -> &ProcessInfo {
+        self.memory.as_ref().unwrap_or(&self.info)
+    }
+    fn info(&self) -> &ProcessInfo {
+        &self.info
+    }
+    fn alive(&self) -> bool {
+        !self.state.dead.get()
+    }
+    fn regions(&self) -> Result<Vec<Region>> {
+        Ok(vec![Region {
+            base: 65536,
+            length: 128,
+            allocation_base: 65536,
+            protection: if self.state.mapping_changed.get() {
+                8
+            } else {
+                4
+            },
+            kind: 0x20000,
+            image: false,
+        }])
+    }
+    fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
+        let offset = (address - 65536) as usize;
+        Ok(self.state.bytes.borrow()[offset..offset + length].to_vec())
+    }
+    fn screen(&self, path: &Path) -> Result<Screen> {
+        std::fs::write(path, b"\x89PNG\r\n\x1a\ncontract fixture").map_err(|e| e.to_string())?;
+        let value = f32::from_le_bytes(self.state.bytes.borrow()[32..36].try_into().unwrap())
+            + self.state.screen_bias.get();
+        if self.state.reset_during_screen.replace(false) {
+            self.state.bytes.borrow_mut()[32..36].copy_from_slice(&50f32.to_le_bytes());
+            self.state.bytes.borrow_mut()[64..68].copy_from_slice(&50f32.to_le_bytes());
+        }
+        let mut words = vec![Word {
+            text: value.to_string(),
+            bounds: [10., 10., 40., 20.],
+            line: 0,
+            source: TextSource::WindowsOcr,
+        }];
+        if let Some(value) = self.state.secondary.get() {
+            words.push(Word {
+                text: value.to_string(),
+                bounds: [10., 55., 40., 20.],
+                line: 1,
+                source: TextSource::WindowsOcr,
+            });
+        }
+        Ok(Screen {
+            sampling: None,
+            path: path.to_string_lossy().into(),
+            width: 100,
+            height: if self.state.resize.get() { 110 } else { 100 },
+            text: String::new(),
+            words,
+            warning: None,
+            method: "contract fixture".into(),
+        })
+    }
+    fn guarded_write(&self, patch: &BytePatch, _: &Region) -> WriteReceipt {
+        let offset = (patch.address - 65536) as usize;
+        let mut bytes = self.state.bytes.borrow_mut();
+        if bytes[offset..offset + patch.before.len()] != patch.before {
+            return WriteReceipt::refused("conflict");
+        }
+        self.state.calls.set(self.state.calls.get() + 1);
+        bytes[offset..offset + patch.after.len()].copy_from_slice(&patch.after);
+        self.state.secondary.set(Some(11.));
+        WriteReceipt {
+            attempted: true,
+            transferred: patch.after.len(),
+            observed_after: Some(patch.after.clone()),
+            error: None,
+        }
+    }
+    fn recognize(&self, _: &mut Screen) -> Result<()> {
+        Err("Optional recognizer unavailable; fixture words retained.".into())
+    }
+}
+
+#[test]
+fn session_prepares_trials_checks_source_evidence_and_revokes_passive_predictions() {
+    session_contract(false);
+}
+
+#[test]
+fn child_address_space_keeps_screen_evidence_but_binds_edits_to_its_own_identity() {
+    session_contract(true);
+}
+
+#[test]
+fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
+    for selected_offset in [32, 64] {
+        let root = std::env::temp_dir().join(format!("reversebolt-probe-{}", uuid::Uuid::new_v4()));
+        let state = Rc::new(State {
+            bytes: RefCell::new(vec![0; 128]),
+            calls: Cell::new(0),
+            resize: Cell::new(false),
+            dead: Cell::new(false),
+            mapping_changed: Cell::new(false),
+            secondary: Cell::new(Some(25.)),
+            screen_bias: Cell::new(0.),
+            mirror: Cell::new(true),
+            reset_during_screen: Cell::new(false),
+        });
+        let mut session = LiveSession::attach(
+            Box::new(Target {
+                state: state.clone(),
+                memory: None,
+                info: ProcessInfo {
+                    pid: 91,
+                    created: "probe-fixture".into(),
+                    window: 100,
+                    ..Default::default()
+                },
+            }),
+            1,
+            root.join("captures"),
+        )
+        .unwrap();
+        let mut store = Store::open(root.join("changes")).unwrap();
+        for value in [40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        session.correlate().unwrap();
+        let track = session.view.tracks[0].id;
+        session
+            .start_prediction_check(
+                &session.view.investigation_id.clone(),
+                1,
+                12,
+                Source::Ocr,
+                track,
+            )
+            .unwrap();
+        for value in [52., 52., 50., 50.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        let check = session.view.prediction_checks.first().unwrap();
+        let id = check.id.clone();
+        let selected = check
+            .candidates
+            .iter()
+            .position(|c| c.address == format!("0x{:X}", 65536 + selected_offset))
+            .unwrap();
+        let choices = reversebolt_core::probes::choices(check).unwrap();
+        assert_eq!(choices.len(), 2);
+        assert!(choices.iter().all(|c| c.eligible && c.indices.len() >= 2));
+        let ordinary = session
+            .prepare_change(track, 53., "test", &mut store)
+            .unwrap();
+        assert_eq!(
+            ordinary.phase,
+            Phase::Unavailable,
+            "Different addresses cannot imply consensus"
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., ("stale", selected), "test", &mut store)
+                .is_err()
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., (&id, 200), "test", &mut store)
+                .is_err()
+        );
+        // An unresolved overlapping interpretation blocks the probe; a rival at
+        // another location stays in the evidence without voting on this patch.
+        let group = reversebolt_core::probes::select(
+            session.view.prediction_checks.first().unwrap(),
+            selected,
+        )
+        .unwrap();
+        let alias = *group.iter().find(|i| **i != selected).unwrap();
+        let samples = std::mem::take(
+            &mut session
+                .view
+                .prediction_checks
+                .first_mut()
+                .unwrap()
+                .candidates[alias]
+                .samples,
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., (&id, selected), "test", &mut store)
+                .is_err()
+        );
+        session
+            .view
+            .prediction_checks
+            .first_mut()
+            .unwrap()
+            .candidates[alias]
+            .samples = samples;
+        let rival = choices
+            .iter()
+            .find(|c| !c.indices.contains(&selected))
+            .unwrap()
+            .indices[0];
+        session
+            .view
+            .prediction_checks
+            .first_mut()
+            .unwrap()
+            .candidates[rival]
+            .samples
+            .clear();
+        let prepared = session
+            .prepare_probe(track, 53., (&id, selected), "test", &mut store)
+            .unwrap();
+        assert_eq!(prepared.phase, Phase::Prepared);
+        assert_eq!(state.calls.get(), 0, "Preparation is read-only");
+        let probe = prepared.probe.as_ref().unwrap();
+        assert_eq!(
+            probe.alternatives.len(),
+            session
+                .view
+                .prediction_checks
+                .first()
+                .unwrap()
+                .candidates
+                .len()
+        );
+        assert_eq!(
+            probe.alternatives[rival].assessment,
+            reversebolt_core::prediction::Assessment::NeedsContrastingEvidence
+        );
+        for a in &probe.alternatives {
+            assert!(
+                (a.predicted_if_written.unwrap() - if a.in_test_group { 53. } else { 50. }).abs()
+                    < 0.55
+            );
+        }
+        let other_plan = session
+            .prepare_probe(track, 56., (&id, selected), "test", &mut store)
+            .unwrap();
+        assert_eq!(other_plan.phase, Phase::Prepared);
+        let applied = session
+            .execute_change(&prepared.id, false, &mut store)
+            .unwrap();
+        assert_eq!(applied.phase, Phase::Written);
+        let expired = session
+            .execute_change(&other_plan.id, false, &mut store)
+            .unwrap();
+        assert_eq!(expired.phase, Phase::Expired);
+        assert!(expired.reason.contains("interrupted"));
+        assert_eq!(state.calls.get(), 1);
+        let observed = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(observed.observations[0].agrees, selected_offset == 32);
+        assert_eq!(
+            observed.observations[0].intervention_outcome,
+            Some(if selected_offset == 32 {
+                reversebolt_core::intervention::Outcome::Matched
+            } else {
+                reversebolt_core::intervention::Outcome::DidNotFollow
+            })
+        );
+        assert_eq!(
+            observed.observations[0].intervention_memory.len(),
+            prepared.models.len()
+        );
+        assert_eq!(
+            observed.observations[0].value,
+            Some(if selected_offset == 32 { 53. } else { 50. })
+        );
+        for result in &observed.observations[0].probe_comparisons {
+            let agrees = probe.alternatives[result.index].in_test_group == (selected_offset == 32);
+            assert_eq!(
+                result.fit,
+                if agrees {
+                    reversebolt_core::probes::Fit::Agreed
+                } else {
+                    reversebolt_core::probes::Fit::Differed
+                }
+            );
+        }
+        assert!(
+            session
+                .view
+                .prediction_checks
+                .first()
+                .unwrap()
+                .invalidated
+                .is_some()
+        );
+        assert!(
+            session
+                .prepare_probe(track, 56., (&id, selected), "test", &mut store)
+                .is_err()
+        );
+        session
+            .execute_change(&prepared.id, false, &mut store)
+            .unwrap();
+        assert_eq!(state.calls.get(), 1, "Completed probes are never replayed");
+        state.reset_during_screen.set(true);
+        let transient = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(
+            transient.observations.last().unwrap().intervention_outcome,
+            Some(reversebolt_core::intervention::Outcome::MemoryChanged)
+        );
+        assert!(
+            transient
+                .observations
+                .last()
+                .unwrap()
+                .probe_comparisons
+                .iter()
+                .all(|c| c.fit == reversebolt_core::probes::Fit::Unavailable)
+        );
+        assert_eq!(
+            state.calls.get(),
+            1,
+            "Reading evidence must never issue writes"
+        );
+        assert_eq!(
+            session
+                .execute_change(&prepared.id, true, &mut store)
+                .unwrap()
+                .phase,
+            Phase::Written
+        );
+        assert_eq!(
+            state.calls.get(),
+            1,
+            "A changed interpretation must refuse restoration"
+        );
+        // Test-only fixture reset makes the original reviewed restoration possible again.
+        state.bytes.borrow_mut()[selected_offset..selected_offset + 4]
+            .copy_from_slice(&53f32.to_le_bytes());
+        let restored = session
+            .execute_change(&prepared.id, true, &mut store)
+            .unwrap();
+        assert_eq!(restored.phase, Phase::Restored);
+        let restored = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(
+            restored.observations.last().unwrap().intervention_outcome,
+            Some(reversebolt_core::intervention::Outcome::Matched)
+        );
+        assert_eq!(
+            f32::from_le_bytes(
+                state.bytes.borrow()[selected_offset..selected_offset + 4]
+                    .try_into()
+                    .unwrap()
+            ),
+            50.
+        );
+        drop(store);
+        let reopened = Store::open(root.join("changes")).unwrap();
+        assert_eq!(
+            reopened.get(&prepared.id).unwrap().observations[0].intervention_outcome,
+            observed.observations[0].intervention_outcome
+        );
+        assert_eq!(
+            reopened
+                .get(&prepared.id)
+                .unwrap()
+                .probe
+                .unwrap()
+                .alternatives
+                .len(),
+            probe.alternatives.len()
+        );
+        assert_eq!(root.parent(), Some(std::env::temp_dir().as_path()));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
+
+fn recheck_fixture() -> (LiveSession, Store, Rc<State>, std::path::PathBuf) {
+    let root = std::env::temp_dir().join(format!("reversebolt-recheck-{}", uuid::Uuid::new_v4()));
+    let state = Rc::new(State {
+        bytes: RefCell::new(vec![0; 128]),
+        calls: Cell::new(0),
+        resize: Cell::new(false),
+        dead: Cell::new(false),
+        mapping_changed: Cell::new(false),
+        secondary: Cell::new(None),
+        screen_bias: Cell::new(0.),
+        mirror: Cell::new(true),
+        reset_during_screen: Cell::new(false),
+    });
+    let mut session = LiveSession::attach(
+        Box::new(Target {
+            state: state.clone(),
+            memory: None,
+            info: ProcessInfo {
+                pid: 91,
+                created: "recheck-fixture".into(),
+                window: 100,
+                ..Default::default()
+            },
+        }),
+        1,
+        root.join("captures"),
+    )
+    .unwrap();
+    let store = Store::open(root.join("changes")).unwrap();
+    for (i, value) in [
+        40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48., 52., 52., 50., 50.,
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        state.set(value);
+        session.capture_for_discovery(15 - i).unwrap();
+    }
+    (session, store, state, root)
+}
+
+#[test]
+fn restored_trials_can_recheck_all_rivals_and_prepare_another_edit() {
+    use reversebolt_core::prediction::Assessment;
+    let (mut session, mut store, state, root) = recheck_fixture();
+    let investigation = session.view.investigation_id.clone();
+    let old = session.view.prediction_checks[0].clone();
+    let selected = old
+        .candidates
+        .iter()
+        .position(|c| c.address == "0x10020")
+        .unwrap();
+    let trial = session
+        .prepare_probe(old.track, 53., (&old.id, selected), "test", &mut store)
+        .unwrap();
+    let pending = session
+        .prepare_probe(old.track, 54., (&old.id, selected), "test", &mut store)
+        .unwrap();
+    assert_eq!(trial.phase, Phase::Prepared);
+    session
+        .execute_change(&trial.id, false, &mut store)
+        .unwrap();
+    assert!(
+        session
+            .recheck_findings(&investigation, 1, &store)
+            .unwrap_err()
+            .contains("Restore")
+    );
+    assert_eq!(session.view.coverage.batch, 1);
+    session.execute_change(&trial.id, true, &mut store).unwrap();
+    let coverage = session.view.coverage.clone();
+    session.recheck_findings(&investigation, 1, &store).unwrap();
+    assert!(
+        session.recheck_findings(&investigation, 1, &store).is_err(),
+        "Stale retries cannot open another batch"
+    );
+    assert_eq!(session.view.sample_count, 0);
+    assert!(session.view.tracks.iter().all(|t| t.samples.is_empty()));
+    assert_eq!(
+        session.view.coverage.selected_unique_bytes,
+        coverage.selected_unique_bytes
+    );
+    assert_eq!(
+        session.view.coverage.attempted_bytes,
+        coverage.attempted_bytes
+    );
+    assert!(session.view.planned_bytes <= old.candidates.len() * 8);
+    let current = &session.view.prediction_checks[0];
+    assert_ne!(current.id, old.id);
+    assert_eq!(current.candidates.len(), old.candidates.len());
+    for (before, after) in old.candidates.iter().zip(&current.candidates) {
+        assert_eq!(before.address, after.address);
+        assert_eq!(
+            serde_json::to_value(&before.mapping).unwrap(),
+            serde_json::to_value(&after.mapping).unwrap()
+        );
+        assert_eq!(
+            after.assessment(current),
+            Assessment::NeedsContrastingEvidence
+        );
+        assert!(after.samples.is_empty());
+    }
+    let archive: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(&current.rechecked_from.as_ref().unwrap().archive).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(archive["state"]["prediction_checks"][0]["id"], old.id);
+    assert_eq!(
+        archive["state"]["prediction_checks"][0]["candidates"][0]["samples"]
+            .as_array()
+            .unwrap()
+            .len(),
+        4
+    );
+    assert!(
+        session
+            .prepare_change(old.track, 53., "test", &mut store)
+            .is_err()
+    );
+    let calls = state.calls.get();
+    assert!(
+        session
+            .execute_change(&pending.id, false, &mut store)
+            .is_err()
+    );
+    assert_eq!(state.calls.get(), calls);
+    // A held value alone cannot reuse the old change contrast.
+    for _ in 0..4 {
+        state.set(50.);
+        session.capture().unwrap();
+    }
+    assert!(
+        session.view.prediction_checks[0]
+            .candidates
+            .iter()
+            .all(|c| c.assessment(&session.view.prediction_checks[0])
+                == Assessment::NeedsContrastingEvidence)
+    );
+    for value in [55., 55.] {
+        state.set(value);
+        session.capture().unwrap();
+    }
+    let current = &session.view.prediction_checks[0];
+    let id = current.id.clone();
+    assert!(
+        current
+            .candidates
+            .iter()
+            .all(|c| c.assessment(current) == Assessment::ConsistentInObservedScope)
+    );
+    let next = session
+        .prepare_probe(old.track, 58., (&id, selected), "test", &mut store)
+        .unwrap();
+    assert_eq!(next.phase, Phase::Prepared);
+    assert_eq!(
+        session
+            .execute_change(&next.id, false, &mut store)
+            .unwrap()
+            .phase,
+        Phase::Written
+    );
+    assert_eq!(
+        session
+            .execute_change(&next.id, true, &mut store)
+            .unwrap()
+            .phase,
+        Phase::Restored
+    );
+    // A second recheck points to the immediately preceding archive without
+    // growing or silently refitting the hypothesis set.
+    session.recheck_findings(&investigation, 2, &store).unwrap();
+    assert_eq!(
+        session.view.prediction_checks[0]
+            .rechecked_from
+            .as_ref()
+            .unwrap()
+            .check,
+        id
+    );
+    assert_eq!(
+        session.view.prediction_checks[0].candidates.len(),
+        old.candidates.len()
+    );
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn rechecking_preserves_current_batch_on_mapping_storage_and_budget_failure() {
+    let (mut session, store, state, root) = recheck_fixture();
+    let id = session.view.investigation_id.clone();
+    let original = session.view.prediction_checks[0].id.clone();
+    state.mapping_changed.set(true);
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("known location")
+    );
+    state.mapping_changed.set(false);
+    let next_dir = root.join("captures/batch-002");
+    std::fs::write(&next_dir, b"block directory creation").unwrap();
+    assert!(session.recheck_findings(&id, 1, &store).is_err());
+    std::fs::remove_file(&next_dir).unwrap();
+    std::fs::create_dir_all(next_dir.join("prediction-checks.json")).unwrap();
+    assert!(session.recheck_findings(&id, 1, &store).is_err());
+    session.view.coverage.attempted_bytes = reversebolt_core::coverage::MAX_READ_BYTES;
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("read budget")
+    );
+    session.view.coverage.attempted_bytes = 0;
+    session.view.coverage.archive_bytes = reversebolt_core::coverage::MAX_ARCHIVE_BYTES;
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("archive budget")
+    );
+    assert_eq!(session.view.prediction_checks[0].id, original);
+    assert_eq!(session.view.coverage.batch, 1);
+    assert_eq!(session.view.sample_count, 16);
+    assert_eq!(state.calls.get(), 0);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn recheck_does_not_accept_old_geometry_or_hide_fresh_contradictions() {
+    use reversebolt_core::prediction::Assessment;
+    for resize in [false, true] {
+        let (mut session, store, state, root) = recheck_fixture();
+        let id = session.view.investigation_id.clone();
+        session.recheck_findings(&id, 1, &store).unwrap();
+        state.resize.set(resize);
+        state.screen_bias.set(10.);
+        for value in [54., 54., 50., 50.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        let check = &session.view.prediction_checks[0];
+        assert!(check.candidates.iter().all(|c| c.assessment(check)
+            == if resize {
+                Assessment::Invalidated
+            } else {
+                Assessment::Contradicted
+            }));
+        if resize {
+            assert!(session.recheck_findings(&id, 2, &store).is_err());
+        }
+        assert_eq!(state.calls.get(), 0);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
+
+fn session_contract(separate: bool) {
+    let root =
+        std::env::temp_dir().join(format!("reversebolt-live-change-{}", uuid::Uuid::new_v4()));
+    let state = Rc::new(State {
+        bytes: RefCell::new(vec![0; 128]),
+        calls: Cell::new(0),
+        resize: Cell::new(false),
+        dead: Cell::new(false),
+        mapping_changed: Cell::new(false),
+        secondary: Cell::new(Some(25.)),
+        screen_bias: Cell::new(0.),
+        mirror: Cell::new(false),
+        reset_during_screen: Cell::new(false),
+    });
+    let mut session = LiveSession::attach(
+        Box::new(Target {
+            memory: separate.then(|| ProcessInfo {
+                pid: 92,
+                created: "child-a".into(),
+                ..Default::default()
+            }),
+            state: state.clone(),
+            info: ProcessInfo {
+                pid: 91,
+                created: "created-a".into(),
+                window: 100,
+                ..Default::default()
+            },
+        }),
+        1,
+        root.join("captures"),
+    )
+    .unwrap();
+    let mut store = Store::open(root.join("changes")).unwrap();
+    assert_eq!(session.view.process.pid, 91);
+    assert_eq!(
+        session.view.memory_process.as_ref().unwrap().pid,
+        if separate { 92 } else { 91 }
+    );
+    for value in [40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48.] {
+        state.set(value);
+        session.capture().unwrap();
+    }
+    session.correlate().unwrap();
+    let id = session.view.tracks[0].id;
+    assert!(!session.view.tracks[0].matches.is_empty());
+    session
+        .start_prediction_check(
+            &session.view.investigation_id.clone(),
+            1,
+            12,
+            Source::Ocr,
+            id,
+        )
+        .unwrap();
+    assert!(
+        session
+            .prepare_change(id, 51., "agent", &mut store)
+            .is_err()
+    );
+    for value in [52., 52., 50., 50.] {
+        state.set(value);
+        session.capture().unwrap();
+    }
+    state.screen_bias.set(2.);
+    let stale_screen = session
+        .prepare_change(id, 53., "agent", &mut store)
+        .unwrap();
+    assert_eq!(stale_screen.phase, Phase::Unavailable);
+    assert!(!stale_screen.baseline.as_ref().unwrap().agrees);
+    assert!(
+        session
+            .execute_change(&stale_screen.id, false, &mut store)
+            .is_err()
+    );
+    assert_eq!(state.calls.get(), 0);
+    state.screen_bias.set(0.);
+    let change = session
+        .prepare_change(id, 53., "agent", &mut store)
+        .unwrap();
+    assert_eq!(change.phase, Phase::Prepared);
+    assert_eq!(change.scope.process.pid, if separate { 92 } else { 91 });
+    if separate {
+        let mut wrong = Target {
+            state: state.clone(),
+            info: session.view.process.clone(),
+            memory: Some(ProcessInfo {
+                pid: 92,
+                created: "child-restarted".into(),
+                ..Default::default()
+            }),
+        };
+        let scope = session.change_scope(id).unwrap();
+        assert!(change.check_target(&wrong, &scope).is_err());
+        wrong.memory.as_mut().unwrap().created = "child-a".into();
+        wrong.memory.as_mut().unwrap().pid = 93;
+        assert!(change.check_target(&wrong, &scope).is_err());
+        assert_eq!(state.calls.get(), 0);
+        let evidence: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(root.join("captures/evidence.json")).unwrap())
+                .unwrap();
+        assert_eq!(evidence["process"]["pid"], 91);
+        assert_eq!(evidence["memory_process"]["pid"], 92);
+    }
+    assert_eq!(state.calls.get(), 0);
+    assert!(change.models.len() >= 2);
+    assert_eq!(change.watches.len(), 2);
+    assert_eq!(
+        change.baseline.as_ref().unwrap().readings[1].value,
+        Some(25.)
+    );
+    let result = session
+        .execute_change(&change.id, false, &mut store)
+        .unwrap();
+    assert_eq!(result.phase, Phase::Written);
+    assert!(
+        session
+            .view
+            .prediction_checks
+            .first()
+            .unwrap()
+            .invalidated
+            .is_some()
+    );
+    let cursor = reversebolt_core::changes::ObservationCursor {
+        change_id: change.id.clone(),
+        phase: Phase::Written,
+        after_observation: 0,
+    };
+    let checked = session.observe_change_at(&cursor, &mut store).unwrap();
+    assert!(session.observe_change_at(&cursor, &mut store).is_err());
+    assert_eq!(store.get(&change.id).unwrap().observations.len(), 1);
+    assert_eq!(state.calls.get(), 1);
+    assert!(checked.observations[0].agrees);
+    assert_eq!(checked.observations[0].value, Some(53.));
+    assert_eq!(checked.observations[0].image_sha256.len(), 64);
+    assert!(checked.observations[0].warning.is_some());
+    assert_eq!(
+        checked.observations[0]
+            .comparison
+            .as_ref()
+            .unwrap()
+            .other_values[0]
+            .status,
+        reversebolt_core::effects::Status::Changed
+    );
+    assert!(
+        change
+            .baseline
+            .as_ref()
+            .unwrap()
+            .capture_interval
+            .as_ref()
+            .unwrap()
+            .end_us
+            <= checked.observations[0]
+                .capture_interval
+                .as_ref()
+                .unwrap()
+                .begin_us
+    );
+    assert!(
+        session
+            .prepare_change(id, 56., "agent", &mut store)
+            .is_err()
+    );
+    session
+        .execute_change(&change.id, false, &mut store)
+        .unwrap();
+    assert_eq!(state.calls.get(), 1);
+    state.secondary.set(None);
+    let missing = session.observe_change(&change.id, &mut store).unwrap();
+    assert_eq!(
+        missing.observations[1]
+            .comparison
+            .as_ref()
+            .unwrap()
+            .other_values[0]
+            .status,
+        reversebolt_core::effects::Status::Unreadable
+    );
+    state.resize.set(true);
+    let resized = session.observe_change(&change.id, &mut store).unwrap();
+    assert!(!resized.observations[2].agrees);
+    assert!(resized.observations[2].error.is_some());
+    state.resize.set(false);
+    let restored = session
+        .execute_change(&change.id, true, &mut store)
+        .unwrap();
+    assert_eq!(restored.phase, Phase::Restored);
+    assert_eq!(state.calls.get(), 2);
+    let outdated_phase = reversebolt_core::changes::ObservationCursor {
+        change_id: change.id.clone(),
+        phase: Phase::Written,
+        after_observation: 3,
+    };
+    assert!(
+        session
+            .observe_change_at(&outdated_phase, &mut store)
+            .is_err()
+    );
+    assert_eq!(store.get(&change.id).unwrap().observations.len(), 3);
+    assert!(
+        session
+            .observe_change(&change.id, &mut store)
+            .unwrap()
+            .observations
+            .last()
+            .unwrap()
+            .agrees
+    );
+    state.dead.set(true);
+    assert!(session.observe_change(&change.id, &mut store).is_err());
+    // Evidence remains inspectable after target loss and engine restart. It
+    // cannot silently load replaced files or escape the operation directory.
+    drop(store);
+    let mut reopened = Store::open(root.join("changes")).unwrap();
+    let (baseline, after, images) = reopened.read_images(&change.id, 0).unwrap();
+    assert_eq!(images.len(), 2);
+    assert!(after.comparison.unwrap().other_values[0].before == Some(25.));
+    std::fs::write(&baseline.image, b"\x89PNG\r\n\x1a\nchanged").unwrap();
+    assert!(reopened.read_images(&change.id, 0).is_err());
+    let mut substituted = reopened.get(&change.id).unwrap();
+    let outside = root.join("outside.png");
+    std::fs::write(&outside, &images[0]).unwrap();
+    substituted.baseline.as_mut().unwrap().image = outside.to_string_lossy().into();
+    reopened.record(substituted).unwrap();
+    assert!(reopened.read_images(&change.id, 0).is_err());
+    assert!(reopened.read_images(&change.id, 99).is_err());
+    assert_eq!(root.parent(), Some(std::env::temp_dir().as_path()));
+    std::fs::remove_dir_all(root).unwrap();
+}

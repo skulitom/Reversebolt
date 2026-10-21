@@ -1,0 +1,67 @@
+{
+  "frozen_utc": "2026-10-21T11:20:53.631446+00:00",
+  "base_commit": "73dcde832b3e10299c50e39ed38809d1de528a3d",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122021",
+  "binaries": {
+    "Reversebolt.exe": "f0d1be97ca62be5f40a5fc8ae52198ea08bee7254c45dc9b3c4296bc02a54804",
+    "reversebolt-mcp.exe": "ac40a39d4797cbb7bf476c07b73280771f543d888d4b793820cd3bac42463aea"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "7d0033348b824bf5ed0605f11052b0475c6bc81c7f4e24bf91ae4cd5a4513578",
+    "run.py": "ca1f1c6208a0c12ee0acd857826b7c9d92f1cd1a7e1987872fbb9306e9079c4f",
+    "fixture.ps1": "49286e364d8ca6d7535c2d7ba936d851ecc5dd93688b9da12a83013e5d31d494",
+    "product.patch": "0eefdcebe492f8d80881e1d079d75a41b0161a3a8ec54ffc025a39bc62b9f023"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/jobs.rs": "9c6aa696309fc04fc6001370941906a841047f1c9a4b59acf72e2efdffdeb653",
+    "crates/reversebolt-app/src/jobs/change_watch.rs": "8bde5716ec9722338a3e365fa7fa828b1e10c70de025d1729eadcdfcdb5e6e4d",
+    "crates/reversebolt-app/src/jobs/watch_tests.rs": "0a4aec63eba1d66c5b5e850c3f6fbf4e621c4fb70bd859b4c1b2f201df790605",
+    "crates/reversebolt-app/src/service.rs": "dd3e6ddad33ec6a1d9851df10af785862d9cdc538fea4e6bd6fe6dc7534ba911",
+    "crates/reversebolt-app/src/ui_live.rs": "f6f08793aeb3f500635c9ea8b84ada0248af9e40add161c5cd22abfe63d7c558",
+    "crates/reversebolt-core/src/changes.rs": "0d893f3ef5fb96bf0372c5504810b8e8296e650cc60e04427bbf225e5a830871",
+    "crates/reversebolt-core/src/live.rs": "ff28cb3511082d0f67fa4290d899c03904a8c376be33a3885199fced81b791e6",
+    "crates/reversebolt-core/tests/live_changes.rs": "9695ae79c6815c959816bfc17fbc11528d2890c1815abb2fdd24a02dfa8d8f01",
+    "crates/reversebolt-mcp/src/main.rs": "23a2d6ca39e0f5aad840b399557c9eb17ceeb6a950e8bba91e28406e5fa66b7f",
+    "scripts/smoke.py": "b7b03fb4eda46d2354d025ee0862fdc6c2c67e700c7e17c99e4bfcff29626294"
+  },
+  "selection_values": {
+    "0": [
+      20,
+      80,
+      30,
+      70
+    ]
+  },
+  "fresh_values": [
+    70,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "order": [
+    0
+  ],
+  "trial": {
+    "delta": 10,
+    "watch_counts": [
+      3,
+      2
+    ],
+    "interval_ms": 2000,
+    "key_vk": 32,
+    "hold_ms": 120,
+    "pulse_after_watch_observation": 1
+  }
+}

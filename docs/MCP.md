@@ -182,6 +182,7 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_apply_change` | Explicitly attempt the prepared native write and record a screen-number check |
 | `reversebolt_restore_change` | Restore original bytes only while the original scope and complete interpretations still match |
 | `reversebolt_observe_change` | Add a source-hashed post-trial reading without writing process memory |
+| `reversebolt_start_change_watch` | Watch a settled trial across several paced observations while gameplay continues |
 | `reversebolt_read_change_evidence` | Read the before-image and one recorded post-edit/restoration image, with hashes and comparisons |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_recheck_findings` | Revisit frozen hypotheses at known addresses with fresh evidence and four automatic captures |
@@ -274,6 +275,33 @@ launch the engine in Anode with an isolated `--data-dir`. A main-desktop engine
 lists main-desktop applications.
 
 ## Explicit experimental changes
+
+`start_change_watch` backs **Watch effect** and **Watch restoration** on a card.
+Pass `change_id`, its exact `phase` (`written` or `restored`),
+`after_observation: change.observations.length`, `count` (1–8), and `interval_ms`
+(250–60000), plus the same `request_id`, `boot`, and `binding` envelope used by
+`start_observation_job`. The desktop defaults to at most four moments one second
+apart. Finish or stop an existing job first. Discovery cannot be queued alongside
+a watch. The eight-observation total still applies; a written trial reserves two
+slots for restoration checks.
+
+The receipt is an accepted plan, not completed effect verification. Each step
+pins the original phase and observation count as well as the investigation
+scope. A separate observation, restoration or scope change makes the old plan
+stale instead of rebasing it. Exact request replay returns the existing job;
+restart never resumes it. Existing Pause, Stop and Take control actions apply.
+Stopping a watch does not restore the trial. It never writes memory, sends game
+inputs, refits mappings or switches candidates. A human or separately controlled
+agent can continue gameplay while it watches.
+
+Job results identify the change, observation index and image hash. The full
+source-hashed observations remain in `state.changes`, with existing byte-persistence
+outcomes and `read_change_evidence`. Optional `input_context` records bounded
+foreground key-state samples between result images. Gaps, omitted polls and
+monitor generations remain explicit; the first watch may lack input context
+before its monitor starts. These samples are not delivered-input receipts or
+proof that a game updated. A delayed matching number remains observed influence,
+not gameplay authority, hidden-effect scope or complete rollback.
 
 `prepare_change` takes `investigation_id`, `batch`, an OCR `track` ID and a
 requested numeric `value`. It requires current frozen predictions with a fresh

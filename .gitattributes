@@ -27,3 +27,9 @@
 /research/change-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/change-search/product.patch -whitespace
 /research/game-change-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/change-watch/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/change-watch/product.patch -whitespace
+/research/change-watch-v2/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/change-watch-v2/product.patch -whitespace
+/research/change-watch-v3/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/change-watch-v3/product.patch -whitespace

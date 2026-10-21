@@ -582,6 +582,18 @@ impl LiveSession {
         Ok(result)
     }
 
+    pub fn observe_change_at(
+        &mut self,
+        cursor: &crate::changes::ObservationCursor,
+        store: &mut crate::changes::Store,
+    ) -> Result<crate::changes::Change> {
+        let change = store.get(&cursor.change_id)?;
+        if change.phase != cursor.phase || change.observations.len() != cursor.after_observation {
+            return Err("The trial changed since this watch was planned. Start a new watch from its current state.".into());
+        }
+        self.observe_change(&cursor.change_id, store)
+    }
+
     pub fn observe_change(
         &mut self,
         id: &str,
@@ -644,6 +656,7 @@ impl LiveSession {
         change.check_target(&*self.target, &self.change_scope(change.scope.track)?)?;
         let (path, reservation) = store.reserve_image(&change.id)?;
         let mut observation = Observation {
+            input_context: None,
             sampling: None,
             time_ms: now_ms(),
             image: path.to_string_lossy().into_owned(),
@@ -679,6 +692,17 @@ impl LiveSession {
                 begin_us,
                 end_us: self.capture_clock.elapsed().as_micros() as u64,
             });
+            let previous = change
+                .observations
+                .last()
+                .or(change.baseline.as_ref())
+                .and_then(|o| o.capture_interval.as_ref())
+                .filter(|t| t.clock_id == self.view.investigation_id)
+                .map_or(begin_us, |t| t.end_us);
+            observation.input_context = self.target.input_window(
+                previous,
+                observation.capture_interval.as_ref().unwrap().end_us,
+            );
             crate::intervention::finish(
                 &*self.target,
                 change,

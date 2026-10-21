@@ -1,5 +1,33 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Paced trial observations — 2026-10-21
+
+All 189 workspace tests, strict Clippy, formatting, release build and the
+36-tool packaged smoke pass. Watch plans retain trial phase/count and application
+scope; tests cover realistic identifiers within the unchanged journal bound,
+replay, stale cursors, resource reservation, discovery overlap, pause/restoration
+invalidation and cancellation while an observation is active.
+
+Three fixed native cases pass delayed-effect and delayed-restoration observation
+through the shared MCP commands. Each keeps the immediate nonresponse, records
+a 50 → 60 display update after a real key event, restores one byte, then records
+60 → 50 only after another event. Complete interpretation bytes bracket the
+captures; all 87 matrix PNG hashes and six delivered events are verified.
+
+Two earlier failures remain separately recorded: a 261-byte step exceeded the
+256-byte journal limit before its encoding repair, and an unreadable discovery
+value stopped the stricter second harness before a trial. The third method
+allows missing readings as nulls without altering product qualification; none
+were missing in its three cases. These are distinct cohorts, not replaced runs
+or independent-game acceptance. All 20 owned test processes exited and Anode
+was released. No screenshot was manually inspected; card buttons were not
+separately clicked in a native UI test.
+
+Smoke evidence: `test-results/smoke-ca4fd223/report.json`. Desktop preview
+`0.1.0-20261021-122703` is running with 29 history entries and the model setting
+preserved. Progress remains 31%.
+[Implementation, methods and limitations](../research/change-watch-v3/README.md).
+
 ## Independent-game Follow changes evaluation — 2026-10-21
 
 The unchanged `0.1.0-20261021-114033` build completed initial → four-moment broad

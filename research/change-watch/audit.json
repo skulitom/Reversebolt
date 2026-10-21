@@ -1,0 +1,106 @@
+{
+  "kind": "post-run integrity audit of retained failed first revision",
+  "protocol_sha256": "4156ee835a279717fa4e2c7b48754e3f84efae9f7918db09d8eab920b892aac0",
+  "errors": [
+    "AssertionError('invalid plan size')"
+  ],
+  "watch_failure": "Serialized step exceeded the existing 256-byte journal payload limit with real UUID/process identifiers. No watch was queued.",
+  "discovery_captures": 21,
+  "image_hashes_verified": 24,
+  "change_phase": "restored",
+  "write": {
+    "attempted": true,
+    "error": null,
+    "observed_after": [
+      240
+    ],
+    "transferred": 1
+  },
+  "restoration": {
+    "attempted": true,
+    "error": null,
+    "observed_after": [
+      200
+    ],
+    "transferred": 1
+  },
+  "observations": [
+    {
+      "value": 50.0,
+      "expected": 60.0,
+      "outcome": "did_not_follow"
+    },
+    {
+      "value": 50.0,
+      "expected": 50.0,
+      "outcome": "matched"
+    }
+  ],
+  "commands": [
+    {
+      "name": "list_processes",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "set_observer_model",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "attach_process",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "start_observation_job",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "start_change_search",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "prepare_probe",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "apply_change",
+      "ok": true,
+      "error": null
+    },
+    {
+      "name": "start_change_watch",
+      "ok": false,
+      "error": "invalid plan size"
+    },
+    {
+      "name": "restore_change",
+      "ok": true,
+      "error": null
+    }
+  ],
+  "source_snapshot": "source/ preserves the pre-fix files matching the frozen hashes; copied after execution and before the fix",
+  "runner_note": "report.outcome and report.final_oracle were last assigned during discovery, before the failed watch. errors and final-status retain the failed trial outcome.",
+  "raw_sha256": {
+    "applied.json": "c29c68f0d5ffb01c8883e174767412b349c16411f5872cf98dfbd601580de57c",
+    "attached.json": "dd1ecf2044297be697800f7187d0cde207345952da1e3905602209e4afb02595",
+    "cleanup-restore.json": "38bec42f8396bd57ad108d1d6fcd98832efbf09780942f01ebbe209211bafe00",
+    "commands.json": "62962ac684574bb1dca4d78d72f2739909048987e6b717f6cf954c55dcb9e935",
+    "final-status.json": "cc3953512477cf0fb06704501204662442bc2051313c9c6c8edbc219d98da94a",
+    "focused-completed-state.json": "22c2b9423dd5f8c20f5bbeb9bf5e18778f7364a4ec019b16c566ef0b7ceca293",
+    "focused-states.json": "315c0f4289018197e91c4d7cce96f64951c240960273ffdd6380430c448e719f",
+    "initial-completed-state.json": "484a1f29ecd0b53d1a2c64f01b92fe5b3c45bebd28f26ad15153b48653192eba",
+    "initial-states.json": "6b821abb581138da41ada11acd1d0a93ced2f86c7bc6f8705803ea1c5e0004c8",
+    "oracle.json": "e5944cb138da2b5308414fc987f893c7ff0d263cefe0ae35cf75f4b7768a7c1d",
+    "prepared.json": "c77651c58ba4e2399f42b1fd6dce78eda847f5a9a4143014ed59df27ec89c443",
+    "report.json": "e740514438e813faf76e528b0a1256855a0d6e54459cca57c1fb7f923f31a133",
+    "selection-completed-state.json": "bf6de9c5525c9d84e2ce986ebb5b86551c9105e479f6c67cecb562fe7dbf6374",
+    "selection-states.json": "513bca0166715aa3f19f3073e89d5d7c76b17d7f0a40989b402df6c1e49939d6",
+    "selection.json": "f8a88b4d04181dc32a8a51ec90272ba688b380175ea8b047fbc94aeb9507eead",
+    "started.json": "8477f68db7491d8f6a5f853e810a03226d81cfb5dc4ab31b78749f1101edc0dc"
+  }
+}

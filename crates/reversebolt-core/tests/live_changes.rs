@@ -787,7 +787,15 @@ fn session_contract(separate: bool) {
             .invalidated
             .is_some()
     );
-    let checked = session.observe_change(&change.id, &mut store).unwrap();
+    let cursor = reversebolt_core::changes::ObservationCursor {
+        change_id: change.id.clone(),
+        phase: Phase::Written,
+        after_observation: 0,
+    };
+    let checked = session.observe_change_at(&cursor, &mut store).unwrap();
+    assert!(session.observe_change_at(&cursor, &mut store).is_err());
+    assert_eq!(store.get(&change.id).unwrap().observations.len(), 1);
+    assert_eq!(state.calls.get(), 1);
     assert!(checked.observations[0].agrees);
     assert_eq!(checked.observations[0].value, Some(53.));
     assert_eq!(checked.observations[0].image_sha256.len(), 64);
@@ -846,6 +854,17 @@ fn session_contract(separate: bool) {
         .unwrap();
     assert_eq!(restored.phase, Phase::Restored);
     assert_eq!(state.calls.get(), 2);
+    let outdated_phase = reversebolt_core::changes::ObservationCursor {
+        change_id: change.id.clone(),
+        phase: Phase::Written,
+        after_observation: 3,
+    };
+    assert!(
+        session
+            .observe_change_at(&outdated_phase, &mut store)
+            .is_err()
+    );
+    assert_eq!(store.get(&change.id).unwrap().observations.len(), 3);
     assert!(
         session
             .observe_change(&change.id, &mut store)

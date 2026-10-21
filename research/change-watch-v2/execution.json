@@ -1,0 +1,23 @@
+{
+  "protocol_sha256": "21e95cc7242a0760a7fdaf3a1021c1dd8da0b17f6c918e43f7577858739242ea",
+  "job": {
+    "job_id": "j_7fbaf58e13b74139a89bbbfb6720404b",
+    "worker_pid": 86196,
+    "state": "completed",
+    "exit_code": 1,
+    "elapsed_ms": 75821,
+    "cursor": "2013"
+  },
+  "cleanup": {
+    "owned_pids": [
+      52724,
+      77764,
+      85784,
+      86196
+    ],
+    "remaining": []
+  },
+  "anode_lease_released": true,
+  "manual_screenshot_views": 0,
+  "retained_failure": true
+}

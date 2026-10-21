@@ -1,0 +1,767 @@
+{
+  "kind": "fixed three-case native watch matrix; earlier failures retained separately; no independent-game acceptance",
+  "cases": [
+    {
+      "slot": 0,
+      "outcome": "delayed effect and delayed restoration observed after two native input events; no automatic writes",
+      "png_hashes_verified": 29,
+      "discovery_readings": {
+        "initial": {
+          "expected": [
+            50
+          ],
+          "observed": [
+            50.0
+          ],
+          "missing": []
+        },
+        "selection": {
+          "expected": [
+            20,
+            80,
+            30,
+            70
+          ],
+          "observed": [
+            20.0,
+            80.0,
+            30.0,
+            70.0
+          ],
+          "missing": []
+        },
+        "focused": {
+          "expected": [
+            70,
+            56,
+            31,
+            85,
+            64,
+            27,
+            75,
+            92,
+            44,
+            67,
+            38,
+            50,
+            54,
+            54,
+            50,
+            50
+          ],
+          "observed": [
+            70.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            50.0,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ],
+          "missing": []
+        }
+      },
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          221.0,
+          70.0,
+          72.0,
+          61.0
+        ],
+        "complete_bytes": 108105728,
+        "elapsed_ms": 734,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\change-watch-v3\\case-0\\engine\\captures\\5b651cf3-c466-4dfc-9810-5e38b9fad1fa\\change-search-01.json",
+        "label": "Number at 221, 70",
+        "matched_windows": 6,
+        "observations": [
+          20.0,
+          80.0,
+          30.0,
+          70.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 108249088,
+        "reason": null,
+        "retained_windows": 6,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 0,
+        "status": "selected"
+      },
+      "selected_candidate": {
+        "track": 0,
+        "candidate": 0,
+        "address": "0x1E4F62FFFB0",
+        "requested": 60.0
+      },
+      "patch": {
+        "address": 2082894512050,
+        "after": [
+          240
+        ],
+        "before": [
+          200
+        ]
+      },
+      "write": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          240
+        ],
+        "transferred": 1
+      },
+      "restoration": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          200
+        ],
+        "transferred": 1
+      },
+      "observations": [
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 0,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 18,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 8,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 133,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 18,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 50.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 7,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        }
+      ],
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 1
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4
+        },
+        "3": {
+          "phase": "Completed",
+          "steps": 16
+        },
+        "4": {
+          "phase": "Completed",
+          "steps": 3
+        },
+        "5": {
+          "phase": "Completed",
+          "steps": 2
+        }
+      },
+      "input": [
+        {
+          "pressed_ms": 1792582378990,
+          "released_ms": 1792582379110,
+          "window": 16647304,
+          "pid": 88004,
+          "oracle": {
+            "field": 2082894512048,
+            "arena": 2082877014016,
+            "variant": 2,
+            "value": 60,
+            "display": "60",
+            "delivered": 1
+          }
+        },
+        {
+          "pressed_ms": 1792582395380,
+          "released_ms": 1792582395501,
+          "window": 16647304,
+          "pid": 88004,
+          "oracle": {
+            "field": 2082894512048,
+            "arena": 2082877014016,
+            "variant": 2,
+            "value": 50,
+            "display": "50",
+            "delivered": 2
+          }
+        }
+      ],
+      "final_oracle": {
+        "field": 2082894512048,
+        "arena": 2082877014016,
+        "variant": 2,
+        "value": 50,
+        "display": "50",
+        "delivered": 2
+      }
+    },
+    {
+      "slot": 1,
+      "outcome": "delayed effect and delayed restoration observed after two native input events; no automatic writes",
+      "png_hashes_verified": 29,
+      "discovery_readings": {
+        "initial": {
+          "expected": [
+            50
+          ],
+          "observed": [
+            50.0
+          ],
+          "missing": []
+        },
+        "selection": {
+          "expected": [
+            20,
+            80,
+            30,
+            70
+          ],
+          "observed": [
+            20.0,
+            80.0,
+            30.0,
+            70.0
+          ],
+          "missing": []
+        },
+        "focused": {
+          "expected": [
+            70,
+            56,
+            31,
+            85,
+            64,
+            27,
+            75,
+            92,
+            44,
+            67,
+            38,
+            50,
+            54,
+            54,
+            50,
+            50
+          ],
+          "observed": [
+            70.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            50.0,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ],
+          "missing": []
+        }
+      },
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          221.0,
+          70.0,
+          72.0,
+          61.0
+        ],
+        "complete_bytes": 107847680,
+        "elapsed_ms": 827,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\change-watch-v3\\case-1\\engine\\captures\\c97ec52f-7923-4482-8a13-e293584d50fb\\change-search-01.json",
+        "label": "Number at 221, 70",
+        "matched_windows": 6,
+        "observations": [
+          20.0,
+          80.0,
+          30.0,
+          70.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 107991040,
+        "reason": null,
+        "retained_windows": 6,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 0,
+        "status": "selected"
+      },
+      "selected_candidate": {
+        "track": 0,
+        "candidate": 0,
+        "address": "0x1F7FCCCB288",
+        "requested": 60.0
+      },
+      "patch": {
+        "address": 2164609823370,
+        "after": [
+          240
+        ],
+        "before": [
+          200
+        ]
+      },
+      "write": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          240
+        ],
+        "transferred": 1
+      },
+      "restoration": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          200
+        ],
+        "transferred": 1
+      },
+      "observations": [
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 0,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 18,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 7,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 131,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 18,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 50.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 8,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        }
+      ],
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 1
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4
+        },
+        "3": {
+          "phase": "Completed",
+          "steps": 16
+        },
+        "4": {
+          "phase": "Completed",
+          "steps": 3
+        },
+        "5": {
+          "phase": "Completed",
+          "steps": 2
+        }
+      },
+      "input": [
+        {
+          "pressed_ms": 1792582512565,
+          "released_ms": 1792582512712,
+          "window": 11404192,
+          "pid": 85896,
+          "oracle": {
+            "field": 2164609823368,
+            "arena": 2164583694336,
+            "variant": 2,
+            "value": 60,
+            "display": "60",
+            "delivered": 1
+          }
+        },
+        {
+          "pressed_ms": 1792582528731,
+          "released_ms": 1792582528853,
+          "window": 11404192,
+          "pid": 85896,
+          "oracle": {
+            "field": 2164609823368,
+            "arena": 2164583694336,
+            "variant": 2,
+            "value": 50,
+            "display": "50",
+            "delivered": 2
+          }
+        }
+      ],
+      "final_oracle": {
+        "field": 2164609823368,
+        "arena": 2164583694336,
+        "variant": 2,
+        "value": 50,
+        "display": "50",
+        "delivered": 2
+      }
+    },
+    {
+      "slot": 2,
+      "outcome": "delayed effect and delayed restoration observed after two native input events; no automatic writes",
+      "png_hashes_verified": 29,
+      "discovery_readings": {
+        "initial": {
+          "expected": [
+            50
+          ],
+          "observed": [
+            50.0
+          ],
+          "missing": []
+        },
+        "selection": {
+          "expected": [
+            20,
+            80,
+            30,
+            70
+          ],
+          "observed": [
+            20.0,
+            80.0,
+            30.0,
+            70.0
+          ],
+          "missing": []
+        },
+        "focused": {
+          "expected": [
+            70,
+            56,
+            31,
+            85,
+            64,
+            27,
+            75,
+            92,
+            44,
+            67,
+            38,
+            50,
+            54,
+            54,
+            50,
+            50
+          ],
+          "observed": [
+            70.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            50.0,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ],
+          "missing": []
+        }
+      },
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          221.0,
+          70.0,
+          72.0,
+          61.0
+        ],
+        "complete_bytes": 108134400,
+        "elapsed_ms": 736,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\change-watch-v3\\case-2\\engine\\captures\\c0b68d9d-c51a-4121-b267-ee8f3c04c63d\\change-search-01.json",
+        "label": "Number at 221, 70",
+        "matched_windows": 6,
+        "observations": [
+          20.0,
+          80.0,
+          30.0,
+          70.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 108277760,
+        "reason": null,
+        "retained_windows": 6,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 0,
+        "status": "selected"
+      },
+      "selected_candidate": {
+        "track": 0,
+        "candidate": 0,
+        "address": "0x19744AB7FC8",
+        "requested": 60.0
+      },
+      "patch": {
+        "address": 1749203779530,
+        "after": [
+          240
+        ],
+        "before": [
+          200
+        ]
+      },
+      "write": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          240
+        ],
+        "transferred": 1
+      },
+      "restoration": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          200
+        ],
+        "transferred": 1
+      },
+      "observations": [
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 0,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 50.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "did_not_follow",
+          "input_polls": 18,
+          "space_polls": 0,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 7,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 60.0,
+          "stage": "after_edit",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 128,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 60.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "did_not_follow",
+          "input_polls": 19,
+          "space_polls": 0,
+          "image_sha256": "1b5eb6c4c921d619485861af4caf3d6fa6b94f4867ee88c7fb6d3d10b97f790e"
+        },
+        {
+          "value": 50.0,
+          "expected": 50.0,
+          "stage": "after_restoration",
+          "outcome": "matched",
+          "input_polls": 256,
+          "space_polls": 7,
+          "image_sha256": "fb0f52a14b9bd015619735a9775e2224e54f85e7ec7388c62709f3c2451b337e"
+        }
+      ],
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 1
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4
+        },
+        "3": {
+          "phase": "Completed",
+          "steps": 16
+        },
+        "4": {
+          "phase": "Completed",
+          "steps": 3
+        },
+        "5": {
+          "phase": "Completed",
+          "steps": 2
+        }
+      },
+      "input": [
+        {
+          "pressed_ms": 1792582647212,
+          "released_ms": 1792582647332,
+          "window": 15139876,
+          "pid": 83356,
+          "oracle": {
+            "field": 1749203779528,
+            "arena": 1749174910976,
+            "variant": 2,
+            "value": 60,
+            "display": "60",
+            "delivered": 1
+          }
+        },
+        {
+          "pressed_ms": 1792582663503,
+          "released_ms": 1792582663624,
+          "window": 15139876,
+          "pid": 83356,
+          "oracle": {
+            "field": 1749203779528,
+            "arena": 1749174910976,
+            "variant": 2,
+            "value": 50,
+            "display": "50",
+            "delivered": 2
+          }
+        }
+      ],
+      "final_oracle": {
+        "field": 1749203779528,
+        "arena": 1749174910976,
+        "variant": 2,
+        "value": 50,
+        "display": "50",
+        "delivered": 2
+      }
+    }
+  ]
+}

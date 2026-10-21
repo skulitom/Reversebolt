@@ -1,0 +1,67 @@
+{
+  "kind": "post-run integrity audit of retained failed second revision",
+  "protocol_sha256": "21e95cc7242a0760a7fdaf3a1021c1dd8da0b17f6c918e43f7577858739242ea",
+  "errors": [
+    "AssertionError('Strict fixture OCR sequence differed')"
+  ],
+  "reason": "Fresh observation 8 had no readable text. The strict harness stopped before any trial despite four fresh candidate agreements.",
+  "focused_readings": [
+    70.0,
+    56.0,
+    31.0,
+    85.0,
+    64.0,
+    27.0,
+    75.0,
+    null,
+    44.0,
+    67.0,
+    38.0,
+    50.0,
+    54.0,
+    54.0,
+    50.0,
+    50.0
+  ],
+  "missing_frames": [
+    8
+  ],
+  "discovery_png_hashes_verified": 21,
+  "trial_writes": 0,
+  "checks": [
+    {
+      "track": 0,
+      "candidates": [
+        {
+          "address": "0x28743D7FB78",
+          "kind": "F32",
+          "outcomes": [
+            "agrees",
+            "agrees",
+            "agrees",
+            "agrees"
+          ]
+        }
+      ]
+    }
+  ],
+  "jobs": {
+    "1": "Completed",
+    "2": "Completed",
+    "3": "Completed"
+  },
+  "raw_json_sha256": {
+    "attached.json": "79cd07ebe2b6709bcdeeb7250f8160fc6be972278b3324fd3b0319ace0ca9208",
+    "commands.json": "635c7da7aab0d109490ba0e997d95fc867b20164ac5c34fe14414a5304124d93",
+    "final-status.json": "94e56017b1677b5449865ecf2ec6dfb4f571d384be981db072fea047305ef63a",
+    "focused-states.json": "92f57c6b39fdcb619f456c100434ef702adc6ea8a586fb96f91e4c07ccfcc076",
+    "initial-completed-state.json": "511b7893ef77217cb410292f3517944f84a126b8c1651af25b2c52514c8f8f4d",
+    "initial-states.json": "0345ac5173c6d843a86c3c32417a5407d86375de6ec0e7ae120fe62a0b441df9",
+    "oracle.json": "32c857b056a406c333fabd1f490f97310b43aa949983fcbb83ca23d6b2182667",
+    "report.json": "1168693aa5f7c9bca87193a2df706dd0a48a7f99c4212370a959d6645b4b0baa",
+    "selection-completed-state.json": "b974aa22709ad3888fe84c16c977852fc3bf7a37f121233cfb2bf3d38cdbf43a",
+    "selection-states.json": "085b0be903d7e0b8f8dd63b6ba7c100232e444da06227f3f4b9681f5abc48c3f",
+    "selection.json": "897c23c04c9afcf85d0e2c4299abd62be86e468f4ca625fd4922cd8b5d7d2e5c",
+    "started.json": "86d537428f9324f04dacca42a364f33ce6cbbad2bc2bf20afa54e789a2e4063d"
+  }
+}
