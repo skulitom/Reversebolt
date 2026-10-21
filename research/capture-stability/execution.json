@@ -1,0 +1,60 @@
+{
+  "jobs": [
+    {
+      "slot": 0,
+      "id": "j_313b8e1831ba4e34bb18f4c46a525701",
+      "exit_code": 0,
+      "elapsed_ms": 83950,
+      "final_cursor": "2046"
+    },
+    {
+      "slot": 1,
+      "id": "j_3fa5f5e124464189b3c849cc82a26e14",
+      "exit_code": 0,
+      "elapsed_ms": 75241,
+      "final_cursor": "1985"
+    },
+    {
+      "slot": 2,
+      "id": "j_9e122e63e3054aa395b2e96dc3d02933",
+      "exit_code": 0,
+      "elapsed_ms": 10062,
+      "final_cursor": "2688"
+    }
+  ],
+  "anode_session": 2,
+  "owned_processes_verified_exited": [
+    80880,
+    51188,
+    23896,
+    75912,
+    22924,
+    68456,
+    79432,
+    73864,
+    71076
+  ],
+  "lease_released": true,
+  "workspace_tests": 170,
+  "clippy": "passed with warnings denied",
+  "release_build": "passed",
+  "packaged_smoke": "test-results/smoke-a80ebc5a/report.json",
+  "log_sha256": {
+    "tests": "2963c2bbc5c47d8817cb5a53a589eea54870fea42002513701da3260db49976f",
+    "clippy": "9cf192fbbf26041073edadc913e37187c23c64db4027cd8c2f201b8d4861329c",
+    "build": "a0a1be8c1acb2fd9f7b52b0cebab2b131dcbc37ad06c7f4bc390edb8a0facb91",
+    "smoke": "1029d1f8bbc4174e91c50c7e8c29ca1a13053c436b730d420bedac18b4cbf8ae",
+    "audit": "9addf3adeae128c423e1223317adb9a19c84934f6c06651e64ef59b5f17ddbe1"
+  },
+  "desktop": {
+    "pid": 80068,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-102913\\Reversebolt.exe",
+    "sha256": "E62B891C2091E088917745498B90557CC9074C56A567ABC9DD4A955A33132369",
+    "history_count": 8,
+    "history_preserved": true,
+    "observer_model": "qwen3.8:latest"
+  },
+  "weighted_progress_percent": 29,
+  "goal_status": "active"
+}

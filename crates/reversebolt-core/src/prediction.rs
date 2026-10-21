@@ -393,6 +393,7 @@ mod tests {
                         reference_after: None,
                         frame: 13 + i,
                         image: Some(FrameRef {
+                            sampling: None,
                             input_context: None,
                             id: format!("frame-{i}"),
                             number: 13 + i,

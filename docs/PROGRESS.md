@@ -4,6 +4,19 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest capture sampling (2026-10-21): **29% unchanged**. Native window capture
+now keeps the last completed frame in a fixed 80 ms/eight-frame window, with
+content-independent selection and diagnostic receipts. Three fixed native
+cases passed: learned relocation followed by edit/observation/restoration;
+another move refusing the outdated edit; and four genuine blank captures with
+no invented numbers. All 49 saved captures match their selected-frame hashes.
+One burst recorded a nearly blank first frame followed by a detailed selected
+frame. This is bounded reliability and workflow evidence, not statistical
+validation or real-game generalization. All 170 workspace tests, strict Clippy
+and packaged checks pass. Desktop preview `0.1.0-20261021-102913` is running with
+history/settings preserved. All weighted credits remain unchanged; the full
+goal stays active. [Evidence and limits](../research/capture-stability/README.md).
+
 Latest learned references (2026-10-21): **29%**. Frozen numeric findings now learn
 bounded one-hop references from captured bytes. Recheck can propose a moved
 location while preserving old rivals, then require fresh value and pointer

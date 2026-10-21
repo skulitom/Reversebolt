@@ -104,6 +104,8 @@ impl WriteReceipt {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Observation {
+    #[serde(default)]
+    pub sampling: Option<crate::visual::CaptureSampling>,
     pub time_ms: u128,
     pub image: String,
     pub image_sha256: String,

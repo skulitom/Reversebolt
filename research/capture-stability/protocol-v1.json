@@ -1,0 +1,56 @@
+{
+  "frozen_utc": "2026-10-21T09:29:35.367910+00:00",
+  "base_commit": "52d7efae2235d84ce5bebe2331cb36d15c5ddf53",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-102913",
+  "binaries": {
+    "Reversebolt.exe": "e62b891c2091e088917745498b90557cc9074c56a567abc9dd4a955a33132369",
+    "reversebolt-mcp.exe": "86a1d59e533bef471a9d320301d0cfafd8a13b4fa441dedff747964724815ef2"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "f66e3f06e9ec72990b77c2c6da44b324c9804a240a06f7b7d75dda76ec8ec7ae",
+    "fixture.ps1": "53f34f0b01086db65eaeeaa5d186369181013599a08641feee3ef99f674106c2",
+    "run.py": "28f989c9c3dc3bc10a1ef31f605ca566d68fada33ab1091db2778e11fcbe5003",
+    "blank-fixture.ps1": "3d1de961d020468b76db972dd68acd482d1bbdd56397a66267842b5dc4aa83c9",
+    "blank.py": "0bd8a5bd326167395bb9ebdf73d8093ee2119c8f6ce985cebfcdd10961621637"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/ui_live.rs": "842c8803e16b94ecdec5246c9f9f67ee818775e1396a066b0fc1a35021985bc9",
+    "crates/reversebolt-core/src/changes.rs": "d0a0bf118ae925da287d9e1e7415f7e0dc34a6fbe0e945cd459f01011128b653",
+    "crates/reversebolt-core/src/lib.rs": "c98afd0d013f0c1abce62069c9babe8f08dbada2bdefc123d726d462514ca609",
+    "crates/reversebolt-core/src/live.rs": "62adeacdc7e6e8f2a8ab2443ec9985509f6bb127f37d9d3010d2952e296f4e40",
+    "crates/reversebolt-core/src/prediction.rs": "7bcc187f34b6a630b2ba702fb4323bafd7d9c9b5b253def640c39f1d9c7020c2",
+    "crates/reversebolt-core/src/probes.rs": "11ccebe12e348fd1356a7b2797510e666b82e4d18df44ccddb84b5e2993f6d73",
+    "crates/reversebolt-core/src/references.rs": "87f38cf90e4bd381ab0c6ba729a51577382263e0a4b9ff2e81d7146e3a570fc7",
+    "crates/reversebolt-core/tests/changes.rs": "881e1bf8478527914b3fb2b736aee6264d7f6f9f1c062568d40a5784b6e371d7",
+    "crates/reversebolt-core/tests/references.rs": "16a9ca38c596927854144efc8ee18d1e7623d5122a0e27b14df929bc64673c38",
+    "crates/reversebolt-mcp/src/main.rs": "c1ecf98f0c44aa516def8f53c5553def4780334be2c0c3703838d8b8fd341737",
+    "crates/reversebolt-app/src/capture_sampling.rs": "20c16fab94943e279bb1203a2f0ec6e56af45ee4b91ec18e84738f3f5c59bab0",
+    "crates/reversebolt-app/src/graphics.rs": "42308f2447bf1686c7f027b6ed0ea0d3947ab8d3646fe9df6ddb370dcedfa1d6",
+    "crates/reversebolt-app/src/native.rs": "bb9d839daba57f84a1992ed6aa415d9684ac4a593c8d5b05a96330d255095f7f",
+    "crates/reversebolt-core/src/visual.rs": "16ae3a29784ee4623976345ffaef8b360d3e79dc68ba3b73ab4ec9b53ed16721"
+  },
+  "values": [
+    40,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "fresh_values": [
+    54,
+    54,
+    50,
+    50
+  ]
+}

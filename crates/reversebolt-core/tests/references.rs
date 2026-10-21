@@ -86,6 +86,7 @@ impl NativeTarget for Target {
             self.0.relocate(THIRD);
         }
         Ok(Screen {
+            sampling: None,
             path: path.to_string_lossy().into(),
             width: 300,
             height: 100,

@@ -374,6 +374,7 @@ mod tests {
                 .save(path)
                 .map_err(|e| e.to_string())?;
             Ok(Screen {
+                sampling: None,
                 path: path.to_string_lossy().into(),
                 width,
                 height,
@@ -506,6 +507,7 @@ mod tests {
 
     fn proposed() -> (Pass, visual::FrameRef) {
         let frame = visual::FrameRef {
+            sampling: None,
             input_context: None,
             id: "frame-2".into(),
             number: 2,

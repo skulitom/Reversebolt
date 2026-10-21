@@ -85,6 +85,8 @@ pub struct NumberReading {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Screen {
+    #[serde(default)]
+    pub sampling: Option<visual::CaptureSampling>,
     pub path: String,
     pub width: u32,
     pub height: u32,
@@ -636,6 +638,7 @@ impl LiveSession {
         change.check_target(&*self.target, &self.change_scope(change.scope.track)?)?;
         let (path, reservation) = store.reserve_image(&change.id)?;
         let mut observation = Observation {
+            sampling: None,
             time_ms: now_ms(),
             image: path.to_string_lossy().into_owned(),
             image_sha256: String::new(),
@@ -678,6 +681,7 @@ impl LiveSession {
                 &self.view.investigation_id,
             );
             let mut screen = screen?;
+            observation.sampling = screen.sampling.clone();
             if std::fs::metadata(&path).map_err(|e| e.to_string())?.len()
                 > visual::MAX_IMAGE_BYTES as u64
             {
@@ -1146,6 +1150,7 @@ impl LiveSession {
         if let Ok(frame) = &mut screen {
             match visual::image_bytes(&screen_path) {
                 Ok(bytes) => self.view.frames.push(FrameRef {
+                    sampling: frame.sampling.clone(),
                     input_context: self.target.input_window(
                         self.view
                             .frames
@@ -2533,6 +2538,7 @@ mod tests {
         fn screen(&self, path: &Path) -> Result<Screen> {
             self.frame.set(self.frame.get() + 1);
             Ok(Screen {
+                sampling: None,
                 path: path.to_string_lossy().into_owned(),
                 width: 100,
                 height: if self.frame.get() <= 12 { 100 } else { 110 },

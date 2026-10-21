@@ -62,6 +62,7 @@ impl NativeTarget for Fixture {
         bytes.extend(self.frame.get().to_le_bytes());
         std::fs::write(path, bytes).unwrap();
         Ok(Screen {
+            sampling: None,
             path: path.to_string_lossy().into_owned(),
             width: 100,
             height: 100,

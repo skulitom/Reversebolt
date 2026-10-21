@@ -192,6 +192,17 @@ The mode is part of the immutable job plan, so a retry cannot switch modes.
 Old plans without a mode retain full recognition and their original retry identity.
 Capture metadata records the chosen mode explicitly.
 
+Native WGC captures expose optional `sampling` receipts in `latest.screen`,
+`live.frames` and intervention observations. They record the fixed 80 ms/eight
+frame policy, selected index, completion times relative to the capture request,
+raw compositor timestamps, dimensions, cropped RGBA hashes and diagnostic detail
+fractions. Selection always keeps the last frame completed within the window;
+content, OCR and expected values do not choose or replace an image. Static
+windows may produce one frame. A nearly uniform scene gets a warning and stays
+in the evidence, including missing readings. PNG checksums remain separate from
+RGBA hashes. Compatibility/older captures have no sampling receipt. These times
+do not establish atomic memory/image alignment or game-state freshness.
+
 The `live` state is separate from the practice state; practice
 write tools never edit the connected external application. A process restart
 requires a new selection; PID alone is not accepted as an identity.

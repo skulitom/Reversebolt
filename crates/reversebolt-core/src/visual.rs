@@ -8,6 +8,29 @@ use std::{io::Read, path::Path};
 pub const MAX_IMAGE_BYTES: usize = 10 * 1024 * 1024;
 pub const MAX_TRACKS: usize = 32;
 
+/// Audit of the bounded, content-neutral graphics-frame selection policy.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CaptureSampling {
+    pub policy: String,
+    pub settle_ms: u64,
+    pub max_frames: usize,
+    pub selected: usize,
+    pub frames: Vec<SampledFrame>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SampledFrame {
+    /// Completion time relative to the native capture request, not game time.
+    pub completed_us: u64,
+    /// Raw Windows SystemRelativeTime: compositor QPC time in 100 ns units.
+    pub compositor_100ns: Option<i64>,
+    pub width: u32,
+    pub height: u32,
+    /// Hash of cropped RGBA pixels, distinct from the saved PNG file hash.
+    pub rgba_sha256: String,
+    pub detail_fraction: f64,
+}
+
 /// Bounds of the capture operation in an investigation-local monotonic clock.
 /// These are not game presentation timestamps or an atomic memory snapshot.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -19,6 +42,8 @@ pub struct CaptureInterval {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrameRef {
+    #[serde(default)]
+    pub sampling: Option<CaptureSampling>,
     #[serde(default)]
     pub input_context: Option<crate::inputs::Window>,
     pub id: String,
@@ -279,6 +304,7 @@ mod tests {
     use super::*;
     fn frame() -> FrameRef {
         FrameRef {
+            sampling: None,
             input_context: None,
             id: "frame".into(),
             number: 1,

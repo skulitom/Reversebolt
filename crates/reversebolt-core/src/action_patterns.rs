@@ -487,6 +487,7 @@ pub(crate) mod tests {
                     .unwrap();
             }
             frames.push(FrameRef {
+                sampling: None,
                 id: format!("f{i}"),
                 number: i + 1,
                 sha256: format!("hash{i}"),

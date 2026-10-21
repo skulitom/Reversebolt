@@ -1,0 +1,1957 @@
+{
+  "protocol_sha256": "cc1651893eda5d0488282e8351e1d4ebebda63ec6c256a4568cb6d4497311943",
+  "audit": "Post-run integrity, sampling and outcome audit; original runner failures remain failures.",
+  "cases": [
+    {
+      "report": {
+        "slot": 0,
+        "errors": [],
+        "protocol_sha256": "cc1651893eda5d0488282e8351e1d4ebebda63ec6c256a4568cb6d4497311943",
+        "fixture_pid": 80880,
+        "initial_oracle": {
+          "field": 2274919910288,
+          "root": 2274907129720,
+          "offset": 2960,
+          "generation": 0,
+          "value": 40
+        },
+        "engine_pid": 51188,
+        "mcp_pid": 23896,
+        "before_move_oracle": {
+          "field": 2274919910288,
+          "root": 2274907129720,
+          "offset": 2960,
+          "generation": 0,
+          "value": 50
+        },
+        "moved_oracle": {
+          "field": 2274501266320,
+          "root": 2274907129720,
+          "offset": 2960,
+          "generation": 1,
+          "value": 50
+        },
+        "chosen_candidate": {
+          "index": 1,
+          "address": "0x21192D70B90",
+          "via": {
+            "learned_captures": 12,
+            "learned_pointer": 2274919907328,
+            "offset": 2960,
+            "root": {
+              "address": 2274907129720,
+              "length": 8,
+              "region": {
+                "allocation_base": 2274907127808,
+                "base": 2274907127808,
+                "image": false,
+                "kind": 131072,
+                "length": 4096,
+                "protection": 4
+              }
+            }
+          },
+          "mapping": {
+            "exact": true,
+            "intercept": 0.0,
+            "kind": "F32",
+            "offset": 2960,
+            "slope": 1.0,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          }
+        },
+        "applied_oracle": {
+          "field": 2274501266320,
+          "root": 2274907129720,
+          "offset": 2960,
+          "generation": 1,
+          "value": 53
+        },
+        "final_oracle": {
+          "field": 2274501266320,
+          "root": 2274907129720,
+          "offset": 2960,
+          "generation": 1,
+          "value": 50
+        },
+        "outcome": "moved value found, edited, observed and restored"
+      },
+      "runner_passed": true,
+      "sampling_issues": [],
+      "captures": 24,
+      "first_low_detail": 1,
+      "selected_low_detail": 0,
+      "frame_counts": [
+        2,
+        2,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1,
+        2,
+        2,
+        1,
+        2,
+        2,
+        2
+      ],
+      "maximum_completion_span_us": 59485,
+      "images": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\changes\\284f46ae-b5fd-4ba7-9f27-10eba9010213-b0d8789e-d249-44cd-9f7c-2586b6ae321f.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 175579,
+                "compositor_100ns": 1416662878787,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 234329,
+                "compositor_100ns": 1416663484848,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 58750,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\changes\\284f46ae-b5fd-4ba7-9f27-10eba9010213-513aee23-0d84-4c4f-99b9-b2f3132db9d1.png",
+          "sha256": "5188512554162ff37b31c6ee892926bb5d0c5ae8a8346e2912ba2566ad109b25",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 163108,
+                "compositor_100ns": 1416688484848,
+                "detail_fraction": 0.023174242424242424,
+                "height": 220,
+                "rgba_sha256": "20e69e18364cbe11ca8d2dd5bab2289b06435fa705c47550f01ae725e448f5d9",
+                "width": 600
+              },
+              {
+                "completed_us": 222129,
+                "compositor_100ns": 1416689090908,
+                "detail_fraction": 0.023174242424242424,
+                "height": 220,
+                "rgba_sha256": "20e69e18364cbe11ca8d2dd5bab2289b06435fa705c47550f01ae725e448f5d9",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59021,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-016.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 189507,
+                "compositor_100ns": 1416480606060,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-001.png",
+          "sha256": "e091c9b76931172cd2253659f78009f35748764ca76d094295248a514663341a",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 230508,
+                "compositor_100ns": 1415948484848,
+                "detail_fraction": 0.024136363636363636,
+                "height": 220,
+                "rgba_sha256": "c269daf3c5ab06ceb490bc6dde350f1beca9531be2b268781e1af00911e0afaf",
+                "width": 600
+              },
+              {
+                "completed_us": 257522,
+                "compositor_100ns": 1415948787878,
+                "detail_fraction": 0.024136363636363636,
+                "height": 220,
+                "rgba_sha256": "c269daf3c5ab06ceb490bc6dde350f1beca9531be2b268781e1af00911e0afaf",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 27014,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-002.png",
+          "sha256": "9c09ff4eda5f93e40c097fbf714615042ced20aa9d5ab0e3e2cca3ec1ecac662",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 195148,
+                "compositor_100ns": 1415983181818,
+                "detail_fraction": 0.02368939393939394,
+                "height": 220,
+                "rgba_sha256": "abd1b983e81340004bfa8f0522c9bbd8c92938dfc6aa67b8446a990ea00a744d",
+                "width": 600
+              },
+              {
+                "completed_us": 253662,
+                "compositor_100ns": 1415983787878,
+                "detail_fraction": 0.02368939393939394,
+                "height": 220,
+                "rgba_sha256": "abd1b983e81340004bfa8f0522c9bbd8c92938dfc6aa67b8446a990ea00a744d",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 58514,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-003.png",
+          "sha256": "a39ae71e3643a99d3e762f16a21fbf1bee995a260d0e58da880cea03eadc9e23",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 199660,
+                "compositor_100ns": 1416018636363,
+                "detail_fraction": 0.02253030303030303,
+                "height": 220,
+                "rgba_sha256": "dc7655293b54265779745a1b361e8aae9efbc9fd52868bbf3085d581274f5fea",
+                "width": 600
+              },
+              {
+                "completed_us": 228099,
+                "compositor_100ns": 1416018939393,
+                "detail_fraction": 0.02253030303030303,
+                "height": 220,
+                "rgba_sha256": "dc7655293b54265779745a1b361e8aae9efbc9fd52868bbf3085d581274f5fea",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28439,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-004.png",
+          "sha256": "8616e7960037fdbe9331fe1dbb1baf86383582c02d8f707439b1031c288591e4",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 188670,
+                "compositor_100ns": 1416053484848,
+                "detail_fraction": 0.024022727272727272,
+                "height": 220,
+                "rgba_sha256": "4593854aba33883f184bd3b8f2d5381ad460bb1a7098a598c320b4225ccc2ddb",
+                "width": 600
+              },
+              {
+                "completed_us": 248138,
+                "compositor_100ns": 1416054090908,
+                "detail_fraction": 0.024022727272727272,
+                "height": 220,
+                "rgba_sha256": "4593854aba33883f184bd3b8f2d5381ad460bb1a7098a598c320b4225ccc2ddb",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59468,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-005.png",
+          "sha256": "f9722adda48ecf3930db0ffe514aedd5b2834b424a9d67d05986fede07a291d8",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 185971,
+                "compositor_100ns": 1416088484848,
+                "detail_fraction": 0.024083333333333335,
+                "height": 220,
+                "rgba_sha256": "68cda4127fa9684dc6c24b7164ab69259c6f4072476e8fbf478f7b45a9d54acc",
+                "width": 600
+              },
+              {
+                "completed_us": 245456,
+                "compositor_100ns": 1416089090908,
+                "detail_fraction": 0.024083333333333335,
+                "height": 220,
+                "rgba_sha256": "68cda4127fa9684dc6c24b7164ab69259c6f4072476e8fbf478f7b45a9d54acc",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59485,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-006.png",
+          "sha256": "53e2680e41f21af7e93a151c50cee1a93240153ac4d64b4b78693570006db7dc",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 194548,
+                "compositor_100ns": 1416123333333,
+                "detail_fraction": 0.022590909090909092,
+                "height": 220,
+                "rgba_sha256": "516bebb6390c9e03bbac789d209320a891af8a91ed6e2a1de58750632d67f2c1",
+                "width": 600
+              },
+              {
+                "completed_us": 223433,
+                "compositor_100ns": 1416123636363,
+                "detail_fraction": 0.022590909090909092,
+                "height": 220,
+                "rgba_sha256": "516bebb6390c9e03bbac789d209320a891af8a91ed6e2a1de58750632d67f2c1",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28885,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-007.png",
+          "sha256": "bac5f491839f4e85f9936335717c08d993650b7acc576396812660ada30956a9",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 204582,
+                "compositor_100ns": 1416158484848,
+                "detail_fraction": 0.02262121212121212,
+                "height": 220,
+                "rgba_sha256": "5600436cedd503ac7ffc532d637f183c6426cead43b6d96b346887bec934fb68",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-008.png",
+          "sha256": "7f4520e7a69826401a9808df6b4c3bb887fbda1c5022c7a4715528be9f7ff5d3",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 194409,
+                "compositor_100ns": 1416193939393,
+                "detail_fraction": 0.02360606060606061,
+                "height": 220,
+                "rgba_sha256": "2438d55b14052ec014c0fa5684a32a63b8f946a42586e47c0a4318d8cb7624ca",
+                "width": 600
+              },
+              {
+                "completed_us": 223433,
+                "compositor_100ns": 1416194242424,
+                "detail_fraction": 0.02360606060606061,
+                "height": 220,
+                "rgba_sha256": "2438d55b14052ec014c0fa5684a32a63b8f946a42586e47c0a4318d8cb7624ca",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29024,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-009.png",
+          "sha256": "743fd7e651707bd2b747b1bb6ee3a8ac60621444f0cc4c7fd05a88ad588e2426",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 197571,
+                "compositor_100ns": 1416229090908,
+                "detail_fraction": 0.023916666666666662,
+                "height": 220,
+                "rgba_sha256": "bff26af4485c019eca4eeaa9ab207c40b84b3ea2e861beceed5881ba8271a426",
+                "width": 600
+              },
+              {
+                "completed_us": 256650,
+                "compositor_100ns": 1416229696969,
+                "detail_fraction": 0.023916666666666662,
+                "height": 220,
+                "rgba_sha256": "bff26af4485c019eca4eeaa9ab207c40b84b3ea2e861beceed5881ba8271a426",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59079,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-010.png",
+          "sha256": "0e24b3dc9171ad6f722b349c1958570b7258517a6e34e50d974d76f12f2fdc36",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 196099,
+                "compositor_100ns": 1416264393939,
+                "detail_fraction": 0.023181818181818185,
+                "height": 220,
+                "rgba_sha256": "b0bd1c9f7435224d8bd22063c6975d5a4fd197e0e36d70c3f9408a394cdc201e",
+                "width": 600
+              },
+              {
+                "completed_us": 224425,
+                "compositor_100ns": 1416264696969,
+                "detail_fraction": 0.023181818181818185,
+                "height": 220,
+                "rgba_sha256": "b0bd1c9f7435224d8bd22063c6975d5a4fd197e0e36d70c3f9408a394cdc201e",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28326,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-011.png",
+          "sha256": "54980f7382b9c7e905e273d84b2926cfa97dffec1f9063fdbea748b94ea0cf1d",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 183617,
+                "compositor_100ns": 1416299393939,
+                "detail_fraction": 0.02406818181818182,
+                "height": 220,
+                "rgba_sha256": "1be3a6818094f16fd52a5670c9cebcef875dd2dea1cf3998aa60693cb243eb9e",
+                "width": 600
+              },
+              {
+                "completed_us": 212737,
+                "compositor_100ns": 1416299696969,
+                "detail_fraction": 0.02406818181818182,
+                "height": 220,
+                "rgba_sha256": "1be3a6818094f16fd52a5670c9cebcef875dd2dea1cf3998aa60693cb243eb9e",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29120,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-012.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 204507,
+                "compositor_100ns": 1416334242424,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 263218,
+                "compositor_100ns": 1416334848484,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 58711,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-013.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 205857,
+                "compositor_100ns": 1416374545454,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 234354,
+                "compositor_100ns": 1416374848484,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28497,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-014.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 193390,
+                "compositor_100ns": 1416409848484,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\frame-015.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 194229,
+                "compositor_100ns": 1416444999999,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\changes\\284f46ae-b5fd-4ba7-9f27-10eba9010213-ec3339a6-7ba3-4f26-bc65-eca9e2476932.png",
+          "sha256": "5188512554162ff37b31c6ee892926bb5d0c5ae8a8346e2912ba2566ad109b25",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 163586,
+                "compositor_100ns": 1416715757575,
+                "detail_fraction": 0.023174242424242424,
+                "height": 220,
+                "rgba_sha256": "20e69e18364cbe11ca8d2dd5bab2289b06435fa705c47550f01ae725e448f5d9",
+                "width": 600
+              },
+              {
+                "completed_us": 192078,
+                "compositor_100ns": 1416716060605,
+                "detail_fraction": 0.023174242424242424,
+                "height": 220,
+                "rgba_sha256": "20e69e18364cbe11ca8d2dd5bab2289b06435fa705c47550f01ae725e448f5d9",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28492,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\changes\\284f46ae-b5fd-4ba7-9f27-10eba9010213-f9bc4e7b-3df3-471a-b7b2-619a95535a4f.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 176941,
+                "compositor_100ns": 1416741363636,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 206265,
+                "compositor_100ns": 1416741666666,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29324,
+          "first_low_detail": true,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\batch-002\\frame-004.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 196166,
+                "compositor_100ns": 1416635757575,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\batch-002\\frame-001.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 197703,
+                "compositor_100ns": 1416529242424,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 226424,
+                "compositor_100ns": 1416529545454,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28721,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\batch-002\\frame-002.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 204642,
+                "compositor_100ns": 1416564090908,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 233164,
+                "compositor_100ns": 1416564393939,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28522,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-0\\engine\\captures\\eeabf02c-2fbc-48ab-bfe5-63f36188c7ce\\batch-002\\frame-003.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 210048,
+                "compositor_100ns": 1416600303030,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 237467,
+                "compositor_100ns": 1416600606060,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 27419,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        }
+      ],
+      "raw_sha256": {
+        "applied.json": "7508c32dd384bf00365739637c7db3807e5659ac3ca5b7ad5d6510b5676190c3",
+        "attached.json": "70c69c550e769b701125b3a16b1456d803c7c8d0152ae0a6e71c59bd8f845502",
+        "commands.json": "1e9f414dfac14cd044086ecfa3234c3cc6b5036739f64b09136f825501bd56e5",
+        "discovery-completed.json": "4a73db25563e4f39ffb8ebff32143d76248d4a60ddbac215622cca6f144ba62d",
+        "discovery-states.json": "3bf8b685a1047f569bd628a20e71b7941eece7f9bd6e7b897f0ba1c8074355b4",
+        "effect.json": "c29f8e7eb44c82196c4ff645573a23ea0a5caab32eeca3b11c987b2284ec305c",
+        "final-status.json": "41a869559c065a3c016f9755efe6fc93bb2f70264105da7e16807fcbf1548f43",
+        "oracle.json": "f3e4594bc9849e2a2579f1cac0dfb0a440d514f1cf91c8f1cbc03e1b1af9f6e1",
+        "prepared.json": "745bd9bc57d1a5ed422ec6f4bdeec81e90847ee27052d739e5bcfb158eddc65b",
+        "recheck-completed.json": "a26091f0d52519045208d0b088c964fa50118f161a20fa15daef54b6c55d7193",
+        "recheck-start.json": "8f592994856fa9fe96d98315cfe18e496703d5c5de57bba121fed4c912c5ca50",
+        "recheck-states.json": "3dfcbef134a0be053267a06c6aea5e523e46984cae72fb3dc17e8025e3888c27",
+        "report.json": "0b891d4342e1cd59013edefb4a70a05185ee1d2771fa4464fa6613d531d8f263",
+        "restored.json": "c04412e59b7638a41304414801e9c40628287e9a5d6b68ee7a78ae29f5666080"
+      }
+    },
+    {
+      "report": {
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "cc1651893eda5d0488282e8351e1d4ebebda63ec6c256a4568cb6d4497311943",
+        "fixture_pid": 75912,
+        "initial_oracle": {
+          "field": 3019165861904,
+          "root": 3019165795488,
+          "offset": 2064,
+          "generation": 0,
+          "value": 40
+        },
+        "engine_pid": 22924,
+        "mcp_pid": 68456,
+        "before_move_oracle": {
+          "field": 3019165861904,
+          "root": 3019165795488,
+          "offset": 2064,
+          "generation": 0,
+          "value": 50
+        },
+        "moved_oracle": {
+          "field": 3019132700688,
+          "root": 3019165795488,
+          "offset": 2064,
+          "generation": 1,
+          "value": 50
+        },
+        "chosen_candidate": {
+          "index": 1,
+          "address": "0x2BEF2550810",
+          "via": {
+            "learned_captures": 12,
+            "learned_pointer": 3019165859840,
+            "offset": 2064,
+            "root": {
+              "address": 3019165795488,
+              "length": 8,
+              "region": {
+                "allocation_base": 3019165794304,
+                "base": 3019165794304,
+                "image": false,
+                "kind": 131072,
+                "length": 4096,
+                "protection": 4
+              }
+            }
+          },
+          "mapping": {
+            "exact": true,
+            "intercept": 0.0,
+            "kind": "F32",
+            "offset": 2064,
+            "slope": 1.0,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          }
+        },
+        "final_oracle": {
+          "field": 3019165861904,
+          "root": 3019165795488,
+          "offset": 2064,
+          "generation": 2,
+          "value": 50
+        },
+        "retained_old_value": 50.0,
+        "outcome": "second move refused old prepared write; old and current values unchanged"
+      },
+      "runner_passed": true,
+      "sampling_issues": [],
+      "captures": 21,
+      "first_low_detail": 0,
+      "selected_low_detail": 0,
+      "frame_counts": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        2,
+        3,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "maximum_completion_span_us": 59728,
+      "images": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-016.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 191898,
+                "compositor_100ns": 1417509090908,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 251279,
+                "compositor_100ns": 1417509696969,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59381,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-001.png",
+          "sha256": "e091c9b76931172cd2253659f78009f35748764ca76d094295248a514663341a",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 215591,
+                "compositor_100ns": 1416980606060,
+                "detail_fraction": 0.024136363636363636,
+                "height": 220,
+                "rgba_sha256": "c269daf3c5ab06ceb490bc6dde350f1beca9531be2b268781e1af00911e0afaf",
+                "width": 600
+              },
+              {
+                "completed_us": 243202,
+                "compositor_100ns": 1416980909090,
+                "detail_fraction": 0.024136363636363636,
+                "height": 220,
+                "rgba_sha256": "c269daf3c5ab06ceb490bc6dde350f1beca9531be2b268781e1af00911e0afaf",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 27611,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-002.png",
+          "sha256": "9c09ff4eda5f93e40c097fbf714615042ced20aa9d5ab0e3e2cca3ec1ecac662",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 203145,
+                "compositor_100ns": 1417011969696,
+                "detail_fraction": 0.02368939393939394,
+                "height": 220,
+                "rgba_sha256": "abd1b983e81340004bfa8f0522c9bbd8c92938dfc6aa67b8446a990ea00a744d",
+                "width": 600
+              },
+              {
+                "completed_us": 231906,
+                "compositor_100ns": 1417012272727,
+                "detail_fraction": 0.02368939393939394,
+                "height": 220,
+                "rgba_sha256": "abd1b983e81340004bfa8f0522c9bbd8c92938dfc6aa67b8446a990ea00a744d",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28761,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-003.png",
+          "sha256": "a39ae71e3643a99d3e762f16a21fbf1bee995a260d0e58da880cea03eadc9e23",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 188013,
+                "compositor_100ns": 1417046969696,
+                "detail_fraction": 0.02253030303030303,
+                "height": 220,
+                "rgba_sha256": "dc7655293b54265779745a1b361e8aae9efbc9fd52868bbf3085d581274f5fea",
+                "width": 600
+              },
+              {
+                "completed_us": 217291,
+                "compositor_100ns": 1417047272727,
+                "detail_fraction": 0.02253030303030303,
+                "height": 220,
+                "rgba_sha256": "dc7655293b54265779745a1b361e8aae9efbc9fd52868bbf3085d581274f5fea",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29278,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-004.png",
+          "sha256": "8616e7960037fdbe9331fe1dbb1baf86383582c02d8f707439b1031c288591e4",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 185467,
+                "compositor_100ns": 1417082121211,
+                "detail_fraction": 0.024022727272727272,
+                "height": 220,
+                "rgba_sha256": "4593854aba33883f184bd3b8f2d5381ad460bb1a7098a598c320b4225ccc2ddb",
+                "width": 600
+              },
+              {
+                "completed_us": 245182,
+                "compositor_100ns": 1417082727272,
+                "detail_fraction": 0.024022727272727272,
+                "height": 220,
+                "rgba_sha256": "4593854aba33883f184bd3b8f2d5381ad460bb1a7098a598c320b4225ccc2ddb",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59715,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-005.png",
+          "sha256": "f9722adda48ecf3930db0ffe514aedd5b2834b424a9d67d05986fede07a291d8",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 193659,
+                "compositor_100ns": 1417116969696,
+                "detail_fraction": 0.024083333333333335,
+                "height": 220,
+                "rgba_sha256": "68cda4127fa9684dc6c24b7164ab69259c6f4072476e8fbf478f7b45a9d54acc",
+                "width": 600
+              },
+              {
+                "completed_us": 253263,
+                "compositor_100ns": 1417117575757,
+                "detail_fraction": 0.024083333333333335,
+                "height": 220,
+                "rgba_sha256": "68cda4127fa9684dc6c24b7164ab69259c6f4072476e8fbf478f7b45a9d54acc",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59604,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-006.png",
+          "sha256": "53e2680e41f21af7e93a151c50cee1a93240153ac4d64b4b78693570006db7dc",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 190172,
+                "compositor_100ns": 1417151666666,
+                "detail_fraction": 0.022590909090909092,
+                "height": 220,
+                "rgba_sha256": "516bebb6390c9e03bbac789d209320a891af8a91ed6e2a1de58750632d67f2c1",
+                "width": 600
+              },
+              {
+                "completed_us": 219525,
+                "compositor_100ns": 1417151969696,
+                "detail_fraction": 0.022590909090909092,
+                "height": 220,
+                "rgba_sha256": "516bebb6390c9e03bbac789d209320a891af8a91ed6e2a1de58750632d67f2c1",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29353,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-007.png",
+          "sha256": "bac5f491839f4e85f9936335717c08d993650b7acc576396812660ada30956a9",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 210763,
+                "compositor_100ns": 1417186666666,
+                "detail_fraction": 0.02262121212121212,
+                "height": 220,
+                "rgba_sha256": "5600436cedd503ac7ffc532d637f183c6426cead43b6d96b346887bec934fb68",
+                "width": 600
+              },
+              {
+                "completed_us": 239379,
+                "compositor_100ns": 1417186969696,
+                "detail_fraction": 0.02262121212121212,
+                "height": 220,
+                "rgba_sha256": "5600436cedd503ac7ffc532d637f183c6426cead43b6d96b346887bec934fb68",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28616,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-008.png",
+          "sha256": "7f4520e7a69826401a9808df6b4c3bb887fbda1c5022c7a4715528be9f7ff5d3",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 202213,
+                "compositor_100ns": 1417222424242,
+                "detail_fraction": 0.02360606060606061,
+                "height": 220,
+                "rgba_sha256": "2438d55b14052ec014c0fa5684a32a63b8f946a42586e47c0a4318d8cb7624ca",
+                "width": 600
+              },
+              {
+                "completed_us": 228505,
+                "compositor_100ns": 1417222727272,
+                "detail_fraction": 0.02360606060606061,
+                "height": 220,
+                "rgba_sha256": "2438d55b14052ec014c0fa5684a32a63b8f946a42586e47c0a4318d8cb7624ca",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 26292,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-009.png",
+          "sha256": "743fd7e651707bd2b747b1bb6ee3a8ac60621444f0cc4c7fd05a88ad588e2426",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 190465,
+                "compositor_100ns": 1417257727272,
+                "detail_fraction": 0.023916666666666662,
+                "height": 220,
+                "rgba_sha256": "bff26af4485c019eca4eeaa9ab207c40b84b3ea2e861beceed5881ba8271a426",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 0,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 1,
+          "span_us": 0,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-010.png",
+          "sha256": "0e24b3dc9171ad6f722b349c1958570b7258517a6e34e50d974d76f12f2fdc36",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 187443,
+                "compositor_100ns": 1417293030302,
+                "detail_fraction": 0.023181818181818185,
+                "height": 220,
+                "rgba_sha256": "b0bd1c9f7435224d8bd22063c6975d5a4fd197e0e36d70c3f9408a394cdc201e",
+                "width": 600
+              },
+              {
+                "completed_us": 246756,
+                "compositor_100ns": 1417293636363,
+                "detail_fraction": 0.023181818181818185,
+                "height": 220,
+                "rgba_sha256": "b0bd1c9f7435224d8bd22063c6975d5a4fd197e0e36d70c3f9408a394cdc201e",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59313,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-011.png",
+          "sha256": "54980f7382b9c7e905e273d84b2926cfa97dffec1f9063fdbea748b94ea0cf1d",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 197354,
+                "compositor_100ns": 1417328030302,
+                "detail_fraction": 0.02406818181818182,
+                "height": 220,
+                "rgba_sha256": "1be3a6818094f16fd52a5670c9cebcef875dd2dea1cf3998aa60693cb243eb9e",
+                "width": 600
+              },
+              {
+                "completed_us": 226264,
+                "compositor_100ns": 1417328333333,
+                "detail_fraction": 0.02406818181818182,
+                "height": 220,
+                "rgba_sha256": "1be3a6818094f16fd52a5670c9cebcef875dd2dea1cf3998aa60693cb243eb9e",
+                "width": 600
+              },
+              {
+                "completed_us": 256458,
+                "compositor_100ns": 1417328636363,
+                "detail_fraction": 0.02406818181818182,
+                "height": 220,
+                "rgba_sha256": "1be3a6818094f16fd52a5670c9cebcef875dd2dea1cf3998aa60693cb243eb9e",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 2,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 3,
+          "span_us": 59104,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-012.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 187826,
+                "compositor_100ns": 1417363333333,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 217289,
+                "compositor_100ns": 1417363636363,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29463,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-013.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 183158,
+                "compositor_100ns": 1417403181818,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 212497,
+                "compositor_100ns": 1417403484848,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29339,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-014.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 179474,
+                "compositor_100ns": 1417438030302,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 239202,
+                "compositor_100ns": 1417438636363,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59728,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\frame-015.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 187396,
+                "compositor_100ns": 1417473181818,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 216151,
+                "compositor_100ns": 1417473484848,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28755,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\changes\\5bdd7328-5e39-41aa-aef5-dde30b10d576-35f96782-9d14-4c5f-9ca0-1e85532a83f9.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 185427,
+                "compositor_100ns": 1417690606060,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 244165,
+                "compositor_100ns": 1417691212121,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 58738,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\batch-002\\frame-004.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 184927,
+                "compositor_100ns": 1417663333333,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 213617,
+                "compositor_100ns": 1417663636363,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28690,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\batch-002\\frame-001.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 197617,
+                "compositor_100ns": 1417557424242,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 225969,
+                "compositor_100ns": 1417557727272,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 28352,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\batch-002\\frame-002.png",
+          "sha256": "90688740351d2439681b8696a7935ed9ffd63d4c2309b2475757b0dc689eccf7",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 208379,
+                "compositor_100ns": 1417593181818,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              },
+              {
+                "completed_us": 237566,
+                "compositor_100ns": 1417593484848,
+                "detail_fraction": 0.02352272727272727,
+                "height": 220,
+                "rgba_sha256": "de033eb36c23ca0c09ee2a2de1d024f6030c6368c4048df0ed769cade1e6b000",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 29187,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-1\\engine\\captures\\e2d61f70-b002-46db-82cf-265bb8e0cce7\\batch-002\\frame-003.png",
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 193781,
+                "compositor_100ns": 1417627878787,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 252807,
+                "compositor_100ns": 1417628484848,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": null,
+          "sampled_frames": 2,
+          "span_us": 59026,
+          "first_low_detail": false,
+          "selected_low_detail": false
+        }
+      ],
+      "raw_sha256": {
+        "attached.json": "a30eefbadac8d82de9ebdf82966dfb6fb5130e85b82371748c8b50f95de0bb6e",
+        "commands.json": "0f45db52aee00fdb49559bbd5337c0914c5a025a2dec9709a950116e6838b183",
+        "discovery-completed.json": "abac7598a5b8ee04236c121f076b2358fb1e1ebfb951b2dd59102b1bd5c9fbf2",
+        "discovery-states.json": "66c788afc10e5f65589b459e5515b6c0ae8ad2c63ca5032265850449d9433da8",
+        "final-status.json": "eec4ebf6e410dfc30f6540292fa7dc8b048203dbb631a1674422ed53c2b9d2fb",
+        "oracle.json": "757d9d3822eea136ddd2e0aa9f4b8e236735227fcda60e1cd04ead62800ec3a8",
+        "prepared.json": "26307b57c34db4955383f9d56c0c850fb33521c8933ad506be70b3e7f24134d0",
+        "recheck-completed.json": "0f882bf3d9fb6ff1763c6c33dbc550751a1d84c54d35d28770b9f6f31f32af7b",
+        "recheck-start.json": "594cdbe89c31d9c153ef38e6bcfe477e264371eab96a33b63e3666ce8df056b2",
+        "recheck-states.json": "6dd8284bc4419490ec7e528959fea7dc03665c4d7eed8a06fbc2f99e354d0ad7",
+        "refused.json": "6f307f1cfcfa5a42c525962a02644d93ab3c5db9b51de67bc36cce278e54affe",
+        "report.json": "911cf2d3a41e6e0018028a36ab35a189b426e40c58a401e0cb398d7ec1135243"
+      }
+    },
+    {
+      "report": {
+        "slot": 2,
+        "errors": [],
+        "protocol_sha256": "cc1651893eda5d0488282e8351e1d4ebebda63ec6c256a4568cb6d4497311943",
+        "fixture_pid": 79432,
+        "engine_pid": 73864,
+        "mcp_pid": 71076,
+        "sampling": [
+          {
+            "frames": [
+              {
+                "completed_us": 202656,
+                "compositor_100ns": 1417799848484,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 230969,
+                "compositor_100ns": 1417800151515,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          {
+            "frames": [
+              {
+                "completed_us": 160723,
+                "compositor_100ns": 1417819696969,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 190067,
+                "compositor_100ns": 1417819999999,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          {
+            "frames": [
+              {
+                "completed_us": 165029,
+                "compositor_100ns": 1417841969696,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 224430,
+                "compositor_100ns": 1417842575757,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          {
+            "frames": [
+              {
+                "completed_us": 166640,
+                "compositor_100ns": 1417864999999,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 226143,
+                "compositor_100ns": 1417865606060,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          }
+        ],
+        "outcome": "four genuine blank captures retained with no invented values"
+      },
+      "runner_passed": true,
+      "sampling_issues": [],
+      "captures": 4,
+      "first_low_detail": 4,
+      "selected_low_detail": 4,
+      "frame_counts": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "maximum_completion_span_us": 59503,
+      "images": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-2\\engine\\captures\\86bf0922-4129-4764-8f6a-dca32a925716\\frame-001.png",
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 202656,
+                "compositor_100ns": 1417799848484,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 230969,
+                "compositor_100ns": 1417800151515,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": "The image is mostly one color; visible details may be unavailable.",
+          "sampled_frames": 2,
+          "span_us": 28313,
+          "first_low_detail": true,
+          "selected_low_detail": true
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-2\\engine\\captures\\86bf0922-4129-4764-8f6a-dca32a925716\\frame-002.png",
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 160723,
+                "compositor_100ns": 1417819696969,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 190067,
+                "compositor_100ns": 1417819999999,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": "The image is mostly one color; visible details may be unavailable.",
+          "sampled_frames": 2,
+          "span_us": 29344,
+          "first_low_detail": true,
+          "selected_low_detail": true
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-2\\engine\\captures\\86bf0922-4129-4764-8f6a-dca32a925716\\frame-003.png",
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 165029,
+                "compositor_100ns": 1417841969696,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 224430,
+                "compositor_100ns": 1417842575757,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": "The image is mostly one color; visible details may be unavailable.",
+          "sampled_frames": 2,
+          "span_us": 59401,
+          "first_low_detail": true,
+          "selected_low_detail": true
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\capture-stability-v1\\case-2\\engine\\captures\\86bf0922-4129-4764-8f6a-dca32a925716\\frame-004.png",
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 166640,
+                "compositor_100ns": 1417864999999,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              },
+              {
+                "completed_us": 226143,
+                "compositor_100ns": 1417865606060,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          },
+          "warning": "The image is mostly one color; visible details may be unavailable.",
+          "sampled_frames": 2,
+          "span_us": 59503,
+          "first_low_detail": true,
+          "selected_low_detail": true
+        }
+      ],
+      "raw_sha256": {
+        "capture-1.json": "79ce401b45a8880c47a85ed6b0d24bf8db5550fb8e793359e025f1cc6865079a",
+        "capture-2.json": "d2914518dfe83fce62c633ede95bc44cd1d13899cfc2700ba4c9fa4e089d7e76",
+        "capture-3.json": "fd6f580a0c7781c46e2bb802b4f57a2ea43b925c9228b8a001efefb593cca733",
+        "capture-4.json": "3d88297b4a39181bce4393a98c59efd642dccf97ee4fd402e8ee38fd158bfefc",
+        "commands.json": "a87ec8bef014640661ee1deeb493efae0d3b3b6a850720b37450294912d1e328",
+        "final-status.json": "3d88297b4a39181bce4393a98c59efd642dccf97ee4fd402e8ee38fd158bfefc",
+        "ready.json": "b342fc286d0216cc212e0d7ba234894e2e7283ddf14f959adf0fe7fd5924308a",
+        "report.json": "1019bf80b63080580fce2a70b5a170d8a4a07ef8a72f456595a378860d53d95f"
+      }
+    }
+  ]
+}

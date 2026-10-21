@@ -243,6 +243,7 @@ mod tests {
     fn frames() -> Vec<FrameRef> {
         (1..=4)
             .map(|i| FrameRef {
+                sampling: None,
                 input_context: None,
                 id: i.to_string(),
                 number: i,

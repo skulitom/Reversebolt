@@ -52,6 +52,7 @@ impl NativeTarget for Target {
         .concat();
         std::fs::write(path, bytes).map_err(|e| e.to_string())?;
         Ok(Screen {
+            sampling: None,
             path: path.to_string_lossy().into(),
             width: 100,
             height: if self.flags.resized.get() { 110 } else { 100 },

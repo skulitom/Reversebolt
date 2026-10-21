@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod capture_sampling;
 mod fixture;
 mod graphics;
 mod input_monitor;

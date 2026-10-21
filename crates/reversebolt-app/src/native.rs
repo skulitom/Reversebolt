@@ -625,7 +625,12 @@ fn capture_bounded(window: u64, path: PathBuf) -> Result<Screen> {
         }
         let _guard = Guard;
         let result = match crate::graphics::capture(window) {
-            Ok(image) => save_screen(image, &path, "windows_graphics_capture", None),
+            Ok(capture) => save_screen(capture.image, &path, "windows_graphics_capture", None).map(
+                |mut screen| {
+                    screen.sampling = Some(capture.sampling);
+                    screen
+                },
+            ),
             Err(error) => capture(window as HWND, &path).map(|mut screen| {
                 let note =
                     format!("Using compatibility capture. Graphics capture unavailable: {error}");
@@ -768,17 +773,12 @@ fn save_screen(
         )
         .map_err(|e| e.to_string())?;
     std::fs::write(path, &png.0).map_err(|e| e.to_string())?;
-    let range = rgba
-        .pixels()
-        .map(|p| u32::from(p[0]) + u32::from(p[1]) + u32::from(p[2]))
-        .fold((u32::MAX, 0u32), |(lo, hi), v| (lo.min(v), hi.max(v)));
-    let warning = (range.1 - range.0 < 12)
-        .then(|| {
-            "The image is nearly uniform; the renderer may not support this capture method."
-                .to_string()
-        })
+    let warning = (crate::capture_sampling::detail_fraction(&rgba)
+        < crate::capture_sampling::LOW_DETAIL)
+        .then(|| "The image is mostly one color; visible details may be unavailable.".to_string())
         .or(previous_warning);
     Ok(Screen {
+        sampling: None,
         path: path.to_string_lossy().into_owned(),
         width: rgba.width(),
         height: rgba.height(),

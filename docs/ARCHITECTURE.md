@@ -1,5 +1,16 @@
 # Shared engine, two interfaces
 
+Windows Graphics Capture samples a short fixed window after the first completed
+frame (80 ms, at most eight frames) and retains the last completed image. Pixel
+content never selects a winner or causes a retry. The native request keeps only
+the latest image plus small per-frame receipts: completion time, raw compositor
+timestamp, dimensions, RGBA hash and a diagnostic detail fraction. A genuinely
+blank scene remains blank. A dominant-color warning is informational and does
+not turn missing OCR into a remembered value. Compatibility capture has no WGC
+receipt. The existing one-worker and five-second caller bounds still apply;
+if OS shutdown hangs, that worker remains occupied. Sequential memory/image
+brackets remain non-atomic and do not rule out compositor lag or ABA changes.
+
 Known-location rechecks use the same batch archive transition as broad memory
 search. Before publishing the transition, the engine validates the original
 process, batch and window epoch; it rejects

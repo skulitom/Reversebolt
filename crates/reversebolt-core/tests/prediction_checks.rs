@@ -85,6 +85,7 @@ impl NativeTarget for Target {
             });
         }
         Ok(Screen {
+            sampling: None,
             path: path.to_string_lossy().into(),
             width: 100,
             height: if self.flags.resize.get() { 110 } else { 100 },

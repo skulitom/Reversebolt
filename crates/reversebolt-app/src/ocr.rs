@@ -392,6 +392,7 @@ pub fn evaluate_sequence(models: &Path, frames: &Path, output: &Path) -> Result<
     for path in paths {
         let (width, height) = image::image_dimensions(&path).map_err(|e| e.to_string())?;
         let mut screen = Screen {
+            sampling: None,
             path: path.to_string_lossy().into_owned(),
             width,
             height,

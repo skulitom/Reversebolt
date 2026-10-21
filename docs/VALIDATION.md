@@ -1,5 +1,21 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Fixed-window native capture sampling — 2026-10-21
+
+All 170 workspace tests, strict Clippy, formatting, release build and packaged
+checks pass. Three frozen native cases pass: edit/observe/restore after a
+learned reference relocates, refusal after another relocation, and persistent
+blank-window retention without invented OCR values. All 49 selected images
+match their sampling receipts. One first-frame low-detail condition was absent
+from the later selected frame; four genuine blanks remained blank. The earlier
+learned-reference experiment's failure remains recorded, and no statistical or
+independent-game reliability claim follows from these fixtures.
+
+The 32-tool smoke is `test-results/smoke-a80ebc5a/report.json`. Desktop preview
+`0.1.0-20261021-102913` is running with eight history entries and the observer
+setting preserved. Owned Anode processes exited and the lease was released.
+See [frozen method, outcomes and limitations](../research/capture-stability/README.md).
+
 ## Exact actions with unresolved representations — 2026-10-21
 
 A separate Rust experiment ran 1,080 searches and 2,160 requested edits over
