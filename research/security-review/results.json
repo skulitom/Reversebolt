@@ -1,0 +1,20 @@
+{
+  "sample_sha256": "a99d229af90a32e21425a43b8b5c353a90b914437c462b15f629bf6b2cd4060a",
+  "sample_bytes": 24252416,
+  "archive_relative_path": "test-results\\security-review-v1\\Reversebolt-security-review.zip",
+  "archive_sha256": "0ea70e3fd41ae74a09a251916b19ebcf77b7abdf51b5e928fe5332d819ad2a21",
+  "archive_bytes": 9894,
+  "members": {
+    "REVIEW.md": "b6107b26aadac54a145ecfe7af8fb1b6b39de6b8f9b709d7fd2e661bf2aaaba7",
+    "diagnostics.json": "4d049f1ba1aa457a9170c798dc74bfa0d07a9a52f2a481b6a3eb9b47ecdab514",
+    "provenance.json": "ac3cbec6214d926f40e24412a0055f38433f7bf33d57a281e1edb978bba5069d"
+  },
+  "exact_original_present": true,
+  "quarantined_copy_still_absent": true,
+  "scan_events_paired": true,
+  "no_new_detection_in_retained_scan_window": true,
+  "uploaded": false,
+  "protection_settings_changed": false,
+  "executable_launched": false,
+  "limitation": "Packaging and a completed on-demand scan do not clear the prior behavioral detection."
+}
