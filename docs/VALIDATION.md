@@ -1,5 +1,21 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Shared local visual observer — 2026-10-21
+
+All 85 workspace tests, strict Clippy and formatting pass. The native/MCP test
+automatically produced a named provisional card from an owned window displaying
+saved imagery. Cancellation acknowledged in 35.97 ms and published no new items;
+missing-model work stopped its job without later captures. Settings and history
+survived restart while live scope was revoked. The final UI passed accessible
+control checks for short card text, the full Inspect explanation and model
+selection. No screenshots were manually viewed and no games were controlled.
+
+Preview `0.1.0-20261021-011044` is running on the user desktop with local vision
+enabled and all seven previous history entries preserved. Its executable and
+OCR-model hashes were verified; the published 24-tool smoke passed at
+`test-results/smoke-8707ecf0/report.json`. See
+[detailed evidence and limitations](research/LOCAL_OBSERVER_INTEGRATION.md).
+
 ## Crop-focused proposal review — 2026-10-21
 
 All 81 workspace tests, strict workspace Clippy and formatting pass. A frozen

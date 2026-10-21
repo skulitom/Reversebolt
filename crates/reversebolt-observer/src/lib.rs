@@ -116,6 +116,14 @@ pub struct Frame {
 impl Frame {
     pub fn read(path: &Path, timestamp_ns: u64) -> Result<Self> {
         let bytes = visual::image_bytes(path)?;
+        Self::from_png(bytes, timestamp_ns)
+    }
+
+    /// Accept engine-owned image bytes without trusting caller-supplied geometry or hashes.
+    pub fn from_png(bytes: Vec<u8>, timestamp_ns: u64) -> Result<Self> {
+        if bytes.len() > visual::MAX_IMAGE_BYTES || !bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
+            return Err("Supply a PNG within the 10 MiB image budget.".into());
+        }
         let decoder =
             image::ImageReader::with_format(std::io::Cursor::new(&bytes), image::ImageFormat::Png);
         let (width, height) = decoder.into_dimensions().map_err(|e| e.to_string())?;

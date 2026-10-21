@@ -2821,6 +2821,7 @@ dependencies = [
  "image",
  "ocrs",
  "reversebolt-core",
+ "reversebolt-observer",
  "reversebolt-session-jobs",
  "reversebolt-vision",
  "rten",

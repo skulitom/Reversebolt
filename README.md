@@ -14,7 +14,9 @@ with the evidence; these interpretations do not establish editable controls.
 For shorter sequences, agents can use visual capture mode to skip text
 recognition while retaining images and memory. Actual cadence is measured;
 skipped screen numbers stay missing.
-Automatic game understanding and live-game edits are not implemented yet.
+An optional installed local vision model can now add provisional character and
+held-object cards automatically. General game understanding and live-game edits
+are not implemented yet.
 The disposable practice environment supports tested edits. The destination is
 documented in [the full vision](docs/VISION.md), with an explicit
 [progress rubric](docs/PROGRESS.md).
@@ -38,6 +40,17 @@ details. Results are unverified correlations. This preview
 samples up to 16 MiB per moment, not the whole process. Capture support varies
 by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
 application running. The connection invalidates when the original process exits.
+
+Open **Local vision**, enter the name of a vision model already installed in
+local Ollama, and choose **Use model**. Future connections and **Keep looking**
+review image pairs after moments 2 and 16. Each pass uses full images followed
+by crop checks; it can add latency and still misidentify things. Short named
+cards appear automatically. **Earlier** distinguishes an old image finding from
+a current reading; **Inspect** retains its full explanation. No models are
+downloaded and no images are uploaded. **Disable** turns this off for future
+jobs. Stop or pause waits for the active request and prevents subsequent model
+calls. A failed pass stops its job, retaining evidence. See
+[integration evidence and limits](docs/research/LOCAL_OBSERVER_INTEGRATION.md).
 
 For a series with matches, **Challenge these matches** freezes its predictions
 and checks them against fresh observations. Agreement is limited evidence;
@@ -109,11 +122,11 @@ overwritten. No global MCP client settings are changed.
   egui desktop and isolated practice fixture.
 - `reversebolt-mcp`: official MCP protocol adapter to the same engine.
 - `reversebolt-session-jobs`: durable observation jobs, receipts, interruption
-  and human takeover; production plans currently contain captures only.
+  and human takeover; captures can include bounded local visual interpretation.
 - `reversebolt-vision`: local PP-OCRv6 inference, word geometry and bounded
   temporal regions through the Rust RTen runtime.
 - `reversebolt-observer`: experimental image-only local model adapter and
-  offline replay runner; not enabled in the desktop or MCP. See its
+  crop reviewer, shared by automatic desktop/MCP jobs and offline replay. See its
   [measured results and limits](docs/research/LOCAL_OBSERVER.md).
 
 The current practice adapter is deliberately separate from the discovery

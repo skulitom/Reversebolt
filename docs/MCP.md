@@ -98,7 +98,7 @@ lists main-desktop applications.
 
 ## Image-grounded agent observations
 
-There are now 23 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 24 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -129,7 +129,8 @@ value is `null` with `quality: "uncertain"`; uncertainty may also retain a tenta
 value, which is excluded from matching. Optional bounds use source-image pixels
 `[x,y,width,height]`. One still frame does not establish speed, animation rate or
 a hidden causal rule. Observation labels are interpretations, not verified game
-semantics. No model is automatically invoked by Reversebolt in this preview.
+semantics. An explicitly configured local observer can supply additional
+provisional appearance observations during automatic jobs, as described below.
 
 Each declared observer/key/transport/geometry epoch gets its own series. Labels,
 units and types stay stable within a series. Exactly repeated submissions are
@@ -244,8 +245,36 @@ in full mode or 50–60,000 ms in visual mode. Automatic discovery passes and
 jobs with `compare:true` start the first capture immediately; other jobs retain
 the specified initial delay. Subsequent delays begin after completion. Connection
 requests 16 moments at one-second intervals. Remaining retention is checked including queued
-jobs. There is no gameplay input, semantic-model execution, automatic memory
+jobs. There is no gameplay input, automatic memory
 batch advancement or live-game write in these plans.
+
+`reversebolt_set_observer_model` accepts `model: "installed-tag"` or `null` to
+disable local inference. It checks the installed local Ollama vision model and
+persists the choice for future automatic connections and batch advances. It
+never downloads weights, changes an existing job, or starts inference itself.
+The desktop **Local vision** setting uses the same command.
+
+Explicit `start_observation_job` requests can include `local_model`; omission
+keeps capture-only behavior. A model requires at least two captures. Its name is
+pinned in the durable step payload after capture 2 and the final capture; actual
+digests, prompt/schema/options, image hashes and crop transforms are retained in
+each pass receipt. Automatic 16-moment jobs use the configured choice at moments
+2 and 16. No target identity, memory or annotations enter the model prompt.
+
+Model work runs within the owned engine operation, while status/control replies
+remain responsive. Pause, cancel and desktop takeover signal the active pass;
+the current HTTP request may finish, but later calls and publication are skipped
+when the flag is observed. Already completed publication is not undone. A pass
+checks a 90-second budget between requests (an active request can add up to
+90 seconds plus bounded metadata checks). Failed passes stop the job, with no
+automatic retry. HTTP timeout means the client stopped waiting, not proof of
+server quiescence. Raw receipts are saved under `captures/model-observations/`.
+
+Accepted items are image-bound `provisional` text observations from engine source
+`local-model`, with generic names and original proposal coordinates. They receive
+new keys per pass, making no persistent identity claim. They do not generate
+numeric memory matches or enable writes. See
+[native integration evidence](research/LOCAL_OBSERVER_INTEGRATION.md).
 
 The job ledger retains at most 24 jobs, 8 queued jobs, 8 receipts per client and
 128 events. `job_events` returns up to 64 events after its `cursor`; use `next`

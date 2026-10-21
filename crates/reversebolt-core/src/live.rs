@@ -749,24 +749,48 @@ impl LiveSession {
     }
 
     pub fn submit_observation(&mut self, input: ObservationInput, source: &str) -> Result<bool> {
+        self.submit_observations(vec![input], source)
+            .map(|count| count != 0)
+    }
+
+    /// Validate and save the entire group before publishing any of its observations.
+    pub fn submit_observations(
+        &mut self,
+        inputs: Vec<ObservationInput>,
+        source: &str,
+    ) -> Result<usize> {
+        if inputs.len() > visual::MAX_TRACKS {
+            return Err("Too many observations in one group.".into());
+        }
         if self.refresh_connection() || !self.view.connected {
             return Err(
                 "Reconnect before submitting observations to a closed investigation.".into(),
             );
         }
-        let (frame, _) = self.read_frame(&input.investigation_id, &input.frame_id)?;
-        if input.image_sha256 != frame.sha256 {
-            return Err("The observation does not identify the captured image's checksum.".into());
-        }
-        if frame.epoch != self.image_epoch {
-            return Err(
-                "The window size changed. Submit observations for the current image geometry."
-                    .into(),
-            );
-        }
         let mut tracks = self.view.visual_tracks.clone();
-        let changed = visual::record(&mut tracks, input, &frame, source, self.view.sample_count)?;
-        if changed {
+        let mut changed = 0;
+        for input in inputs {
+            let (frame, _) = self.read_frame(&input.investigation_id, &input.frame_id)?;
+            if input.image_sha256 != frame.sha256 {
+                return Err(
+                    "The observation does not identify the captured image's checksum.".into(),
+                );
+            }
+            if frame.epoch != self.image_epoch {
+                return Err(
+                    "The window size changed. Submit observations for the current image geometry."
+                        .into(),
+                );
+            }
+            changed += usize::from(visual::record(
+                &mut tracks,
+                input,
+                &frame,
+                source,
+                self.view.sample_count,
+            )?);
+        }
+        if changed != 0 {
             self.save_visual_evidence(&tracks)?;
             self.view.visual_tracks = tracks;
             self.update_prediction_check(false);
@@ -1536,12 +1560,23 @@ mod tests {
         wrong.image_sha256 = "incorrect".into();
         assert!(session.submit_observation(wrong, "agent").is_err());
         assert!(session.view.visual_tracks.is_empty());
+        let mut bad_group = inputs[1].clone();
+        bad_group.image_sha256 = "wrong".into();
+        assert!(
+            session
+                .submit_observations(vec![inputs[0].clone(), bad_group], "local-model")
+                .is_err()
+        );
+        assert!(
+            session.view.visual_tracks.is_empty(),
+            "A later invalid item published the earlier item"
+        );
         let archive = directory.join("evidence.json");
         std::fs::remove_file(&archive).unwrap();
         std::fs::create_dir(&archive).unwrap();
         assert!(
             session
-                .submit_observation(inputs[0].clone(), "agent")
+                .submit_observations(inputs[..2].to_vec(), "agent")
                 .is_err()
         );
         assert!(

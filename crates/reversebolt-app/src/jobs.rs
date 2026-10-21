@@ -10,7 +10,11 @@ use serde_json::{Value, json};
 use std::{
     collections::VecDeque,
     path::PathBuf,
-    sync::{Arc, Mutex, RwLock, atomic::AtomicBool, mpsc},
+    sync::{
+        Arc, Mutex, RwLock,
+        atomic::{AtomicBool, Ordering},
+        mpsc,
+    },
     time::{Duration, Instant},
 };
 
@@ -44,19 +48,21 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
     egui::Frame::new().fill(SURFACE).inner_margin(12).corner_radius(8).show(ui,|ui| {
         for job in state.history.jobs.values().filter(|j|!j.phase.terminal()) {
             let phase=match job.phase {
-                job::Phase::Queued=>"Queued",job::Phase::Running=>"Observing",job::Phase::Pausing=>"Finishing this capture, then pausing",
-                job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing this capture, then stopping",_=>"Historical",
+                job::Phase::Queued=>"Queued",job::Phase::Running=>"Observing",job::Phase::Pausing=>"Finishing current work, then pausing",
+                job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing current work, then stopping",_=>"Historical",
             };
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
             let title = if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Capturing motion" } else if plan.is_some_and(|s| s.compare) { "Finding controls" } else { "Observation" };
+            let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
             ui.horizontal_wrapped(|ui| {
                 ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",title,job.next_step,job.steps.len())).color(ACCENT));
+                if model_step { ui.label("Reading images locally…"); }
                 if job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
-                }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish the current capture, then pause.").clicked() {
+                }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish any active capture or model request, then pause.").clicked() {
                     handle.submit("job_control",json!({"operation":"pause","job":job.id}));
                 }
-                if ui.button("Stop").on_hover_text("Finish any capture already in progress; prevent later captures.").clicked() {handle.submit("job_control",json!({"operation":"cancel","job":job.id}));}
+                if ui.button("Stop").on_hover_text("Finish any active request; prevent later captures and model calls.").clicked() {handle.submit("job_control",json!({"operation":"cancel","job":job.id}));}
                 if state.history.human_hold.is_none() && job.controller.role==job::Role::Agent
                     && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
             });
@@ -236,6 +242,8 @@ struct CaptureStep {
         skip_serializing_if = "reversebolt_core::live::CaptureMode::is_full"
     )]
     mode: reversebolt_core::live::CaptureMode,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_model: Option<String>,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -245,6 +253,8 @@ fn is_false(value: &bool) -> bool {
 struct Flight {
     id: u64,
     response: mpsc::Receiver<Value>,
+    cancel: Arc<AtomicBool>,
+    poll_interval: Duration,
 }
 struct CaptureExecutor {
     engine: EngineHandle,
@@ -270,9 +280,14 @@ impl CaptureExecutor {
         })
     }
     /// Look for actual completion without counting busy polling as a job poll.
-    fn can_poll(&mut self) -> bool {
+    fn can_poll(&mut self, cancel_requested: bool) -> bool {
         match &self.flight {
-            Some(Flight { response, .. }) => {
+            Some(Flight {
+                response, cancel, ..
+            }) => {
+                if cancel_requested {
+                    cancel.store(true, Ordering::SeqCst);
+                }
                 if self.ready.is_none() {
                     match response.try_recv() {
                         Ok(value) => self.ready = Some(value),
@@ -321,23 +336,35 @@ impl job::Executor for CaptureExecutor {
         }
         let command = Command {
             action: "capture".into(),
-            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode}),
+            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode,"local_model":step.local_model}),
             source: step.source,
         };
-        match self.engine.start_command(command) {
+        let cancel = Arc::new(AtomicBool::new(false));
+        let poll_interval = Duration::from_secs(if step.local_model.is_some() { 15 } else { 1 });
+        match self
+            .engine
+            .start_owned_command(command, Some(cancel.clone()))
+        {
             Ok(response) => {
                 self.flight = Some(Flight {
                     id: operation.id,
                     response,
+                    cancel,
+                    poll_interval,
                 });
-                self.next_poll = Instant::now() + Duration::from_secs(1);
+                self.next_poll = Instant::now() + poll_interval;
                 job::Poll::Pending
             }
             Err(error) => Self::outcome(false, &error, Value::Null),
         }
     }
-    fn poll(&mut self, id: u64, _cancel: bool) -> job::Poll {
-        self.next_poll = Instant::now() + Duration::from_secs(1);
+    fn poll(&mut self, id: u64, cancel_requested: bool) -> job::Poll {
+        if let Some(flight) = &self.flight {
+            if cancel_requested {
+                flight.cancel.store(true, Ordering::SeqCst);
+            }
+            self.next_poll = Instant::now() + flight.poll_interval;
+        }
         // A timed-out window worker still owns its output path. Do not declare
         // quiescence or start the next operation until that worker has settled.
         if crate::native::renderer_busy() {
@@ -347,6 +374,8 @@ impl job::Executor for CaptureExecutor {
             Some(Flight {
                 id: owned,
                 response,
+                cancel,
+                poll_interval,
             }) if id == owned => {
                 let value = self.ready.take().or_else(|| response.try_recv().ok());
                 if let Some(value) = value {
@@ -354,14 +383,20 @@ impl job::Executor for CaptureExecutor {
                     Self::outcome(
                         value["ok"] == true,
                         value["error"].as_str().unwrap_or(
-                            "Capture finished; see the shared investigation for evidence.",
+                            "Observation finished; see the shared investigation for evidence.",
                         ),
-                        json!({"captured":value["ok"]==true,"investigation_id":live["investigation_id"],
+                        json!({"captured":if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
                             "batch":live["coverage"]["batch"],"capture":live["sample_count"],
-                            "frame":live["frames"].as_array().and_then(|f| f.last()).map(|f|&f["id"])}),
+                            "frame":live["frames"].as_array().and_then(|f| f.last()).map(|f|&f["id"]),
+                            "local_observation":value["data"]["local_observation"]}),
                     )
                 } else {
-                    self.flight = Some(Flight { id, response });
+                    self.flight = Some(Flight {
+                        id,
+                        response,
+                        cancel,
+                        poll_interval,
+                    });
                     job::Poll::Pending
                 }
             }
@@ -463,6 +498,7 @@ impl Controller {
             action: "start_observation_job".into(),
             source,
             args: json!({"count":16,"interval_ms":1000,"compare":true,
+                "local_model":self.engine.view.read().unwrap().observer_model,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
         };
@@ -612,6 +648,25 @@ impl Controller {
                 .map_err(|_| "Choose capture mode full or visual.")?
                 .unwrap_or_default();
             let count = command.args["count"].as_u64().unwrap_or(12) as usize;
+            let local_model = command
+                .args
+                .get("local_model")
+                .filter(|v| !v.is_null())
+                .map(|v| {
+                    v.as_str()
+                        .filter(|s| {
+                            !s.is_empty()
+                                && s.len() <= 128
+                                && s.chars()
+                                    .all(|c| c.is_ascii_alphanumeric() || "-_.:/".contains(c))
+                        })
+                        .map(str::to_owned)
+                        .ok_or("Supply an installed local model name or null.")
+                })
+                .transpose()?;
+            if local_model.is_some() && count < 2 {
+                return Err("Local visual observation needs at least two captures.".into());
+            }
             let interval = command.args["interval_ms"].as_u64().unwrap_or(1000);
             let minimum = if mode.is_full() { 250 } else { 50 };
             if !(1..=16).contains(&count) || !(minimum..=60000).contains(&interval) {
@@ -670,6 +725,11 @@ impl Controller {
                         source: command.source.clone(),
                         compare,
                         mode,
+                        local_model: if index == 1 || index == count - 1 {
+                            local_model.clone()
+                        } else {
+                            None
+                        },
                     })
                     .map_err(|e| e.to_string())?,
                 });
@@ -714,7 +774,16 @@ impl Controller {
         if view.in_flight.is_none() && crate::native::renderer_busy() {
             return;
         }
-        if view.in_flight.is_some() && !self.executor.can_poll() {
+        let cancelled = self.draining
+            || view.fence.is_some()
+            || view
+                .in_flight
+                .as_ref()
+                .and_then(|f| view.history.jobs.get(&f.operation.job))
+                .is_some_and(|j| {
+                    j.invalidated || matches!(j.phase, job::Phase::Pausing | job::Phase::Cancelling)
+                });
+        if view.in_flight.is_some() && !self.executor.can_poll(cancelled) {
             return;
         }
         if view.in_flight.is_none()
@@ -1118,6 +1187,144 @@ mod tests {
         assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
         assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 1);
         assert!(started_rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn local_model_plans_are_pinned_and_stop_keeps_the_current_request_owned() {
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            let model = command.args["local_model"].is_string();
+            started_tx.send(command).unwrap();
+            if model {
+                release_rx.recv().unwrap();
+            }
+            view.live.as_mut().unwrap().sample_count += 1;
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":3,"interval_ms":50,"mode":"visual","local_model":"fixture:model"}),
+        );
+        let reply = c.job_command(&command).unwrap();
+        let id = reply["ack"]["job"].as_u64().unwrap();
+        let steps = &c.jobs.snapshot().jobs[&id].steps;
+        let models: Vec<_> = steps
+            .iter()
+            .map(|s| {
+                serde_json::from_str::<CaptureStep>(&s.payload)
+                    .unwrap()
+                    .local_model
+            })
+            .collect();
+        assert_eq!(
+            models,
+            vec![
+                None,
+                Some("fixture:model".into()),
+                Some("fixture:model".into())
+            ]
+        );
+        c.engine.view.write().unwrap().observer_model = Some("changed:model".into());
+        assert_eq!(c.job_command(&command).unwrap()["duplicate"], true);
+        let mut conflict = command.clone();
+        conflict.args["local_model"] = json!("changed:model");
+        assert!(c.job_command(&conflict).is_err());
+        for _ in 0..150 {
+            c.tick();
+            if started_rx
+                .try_iter()
+                .any(|v| v.args["local_model"] == "fixture:model")
+            {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 1);
+        assert_eq!(
+            c.executor.flight.as_ref().unwrap().poll_interval,
+            Duration::from_secs(15)
+        );
+        let queued = request(
+            &c,
+            "start_observation_job",
+            json!({"count":1,"interval_ms":50,"mode":"visual"}),
+        );
+        let queued_id = c.job_command(&queued).unwrap()["ack"]["job"]
+            .as_u64()
+            .unwrap();
+        let cancel_queued = request(
+            &c,
+            "job_control",
+            json!({"job":queued_id,"operation":"cancel"}),
+        );
+        c.job_command(&cancel_queued).unwrap();
+        c.tick();
+        assert!(
+            !c.executor
+                .flight
+                .as_ref()
+                .unwrap()
+                .cancel
+                .load(Ordering::SeqCst),
+            "Cancelling another queued job must not stop this model request"
+        );
+        let cancel = request(&c, "job_control", json!({"job":id,"operation":"cancel"}));
+        c.job_command(&cancel).unwrap();
+        c.tick();
+        assert!(
+            c.executor
+                .flight
+                .as_ref()
+                .unwrap()
+                .cancel
+                .load(Ordering::SeqCst)
+        );
+        assert!(c.jobs.view().in_flight.is_some());
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelling);
+        release_tx.send(()).unwrap();
+        for _ in 0..150 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].phase == job::Phase::Cancelled {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
+        assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 2);
+        assert!(started_rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn automatic_jobs_select_the_configured_model_and_legacy_plans_do_not() {
+        let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No work started"));
+        let mut c = controller(engine);
+        c.engine.view.write().unwrap().observer_model = Some("chosen:local".into());
+        let receipt = c.start_automatic_observation("desktop".into()).unwrap();
+        let id = receipt["ack"]["job"].as_u64().unwrap();
+        let models: Vec<_> = c.jobs.snapshot().jobs[&id]
+            .steps
+            .iter()
+            .enumerate()
+            .filter_map(|(i, s)| {
+                let step: CaptureStep = serde_json::from_str(&s.payload).unwrap();
+                step.local_model.map(|m| (i, m))
+            })
+            .collect();
+        assert_eq!(
+            models,
+            vec![(1, "chosen:local".into()), (15, "chosen:local".into())]
+        );
+        for args in [
+            json!({"count":1,"local_model":"x"}),
+            json!({"local_model":true}),
+            json!({"local_model":"bad model"}),
+        ] {
+            let command = request(&c, "start_observation_job", args);
+            assert!(c.job_command(&command).is_err());
+        }
     }
 
     #[test]

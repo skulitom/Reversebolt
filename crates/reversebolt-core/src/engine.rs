@@ -78,6 +78,9 @@ pub struct View {
     pub processes: Vec<crate::live::ProcessInfo>,
     #[serde(default)]
     pub live: Option<crate::live::LiveView>,
+    /// Explicitly selected, already-installed local model for future automatic jobs.
+    #[serde(default)]
+    pub observer_model: Option<String>,
 }
 
 impl Default for View {
@@ -95,6 +98,7 @@ impl Default for View {
             error: None,
             processes: vec![],
             live: None,
+            observer_model: None,
         }
     }
 }

@@ -20,7 +20,11 @@ use std::{
     },
 };
 
-type Job = (Command, Option<mpsc::Sender<Value>>);
+type Job = (
+    Command,
+    Option<mpsc::Sender<Value>>,
+    Option<Arc<AtomicBool>>,
+);
 pub use crate::jobs::Handle;
 
 #[derive(Clone)]
@@ -42,7 +46,7 @@ impl EngineHandle {
         let worker_view = published.clone();
         let worker_busy = busy.clone();
         std::thread::spawn(move || {
-            while let Ok((command, reply)) = receiver.recv() {
+            while let Ok((command, reply, _cancel)) = receiver.recv() {
                 worker_busy.store(true, Ordering::SeqCst);
                 let mut view = worker_view.read().unwrap().clone();
                 let result = execute(command, &mut view);
@@ -88,7 +92,7 @@ impl EngineHandle {
                     engine.view.live = Some(session.view.clone());
                     *published.write().unwrap() = engine.view.clone();
                 }
-                let (command, reply) = match job {
+                let (command, reply, cancel) = match job {
                     Ok(job) => job,
                     Err(mpsc::RecvTimeoutError::Timeout) => continue,
                     Err(mpsc::RecvTimeoutError::Disconnected) => break,
@@ -110,6 +114,7 @@ impl EngineHandle {
                 } else if matches!(
                     command.action.as_str(),
                     "list_processes"
+                        | "set_observer_model"
                         | "attach_process"
                         | "capture"
                         | "correlate"
@@ -122,7 +127,7 @@ impl EngineHandle {
                         | "submit_temporal_observation"
                 ) {
                     engine.view.error = None;
-                    native_command(&mut engine, &command, &live_directory)
+                    native_command(&mut engine, &command, &live_directory, cancel.as_deref())
                 } else {
                     engine.execute(&command)
                 };
@@ -132,6 +137,7 @@ impl EngineHandle {
                         if matches!(
                             command.action.as_str(),
                             "read_capture"
+                                | "capture"
                                 | "submit_observation"
                                 | "read_sequence"
                                 | "submit_temporal_observation"
@@ -169,9 +175,16 @@ impl EngineHandle {
     }
 
     pub fn start_command(&self, command: Command) -> Result<mpsc::Receiver<Value>> {
+        self.start_owned_command(command, None)
+    }
+    pub fn start_owned_command(
+        &self,
+        command: Command,
+        cancel: Option<Arc<AtomicBool>>,
+    ) -> Result<mpsc::Receiver<Value>> {
         let (tx, rx) = mpsc::channel();
         self.sender
-            .try_send((command, Some(tx)))
+            .try_send((command, Some(tx), cancel))
             .map_err(|_| "The engine is busy; retry after the current action.".to_string())?;
         Ok(rx)
     }
@@ -181,6 +194,7 @@ fn native_command(
     engine: &mut Engine,
     command: &Command,
     directory: &std::path::Path,
+    cancel: Option<&AtomicBool>,
 ) -> Result<Value> {
     if let Some(scope) = command.args.get("scope") {
         let live = engine
@@ -196,6 +210,24 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "set_observer_model" => {
+            let value = command
+                .args
+                .get("model")
+                .ok_or("Supply a local model name, or null to disable it.")?;
+            let model = if value.is_null() {
+                None
+            } else {
+                let model = value.as_str().ok_or("Supply a local model name or null.")?;
+                crate::local_observer::check_model(model)?;
+                Some(model.to_owned())
+            };
+            engine.view.observer_model = model;
+            engine.event(
+                &command.source,
+                "Updated the local visual observer for future automatic jobs.",
+            );
+        }
         "read_sequence" => {
             let session = engine
                 .live
@@ -300,6 +332,18 @@ fn native_command(
             engine.live = Some(session);
         }
         "capture" => {
+            let model = command
+                .args
+                .get("local_model")
+                .filter(|v| !v.is_null())
+                .map(|v| {
+                    v.as_str()
+                        .ok_or("local_model must name an installed local vision model.")
+                })
+                .transpose()?;
+            if model.is_some() && cancel.is_none() {
+                return Err("Local inference must belong to an observation job.".into());
+            }
             let mode: reversebolt_core::live::CaptureMode = command
                 .args
                 .get("mode")
@@ -323,6 +367,22 @@ fn native_command(
             }
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
+            if let Some(model) = model {
+                let result = crate::local_observer::run(
+                    engine.live.as_mut().unwrap(),
+                    model,
+                    cancel.unwrap(),
+                    directory,
+                )?;
+                engine.event(
+                    "local-model",
+                    format!(
+                        "Local visual review recorded {} provisional items. Evidence: {}.",
+                        result["recorded"], result["evidence_id"]
+                    ),
+                );
+                return Ok(json!({"local_observation":result}));
+            }
         }
         "correlate" => {
             let session = engine

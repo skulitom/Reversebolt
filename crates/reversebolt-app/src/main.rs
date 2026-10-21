@@ -3,6 +3,7 @@
 mod fixture;
 mod graphics;
 mod jobs;
+mod local_observer;
 mod native;
 mod ocr;
 mod service;

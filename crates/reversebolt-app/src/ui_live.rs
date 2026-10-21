@@ -13,6 +13,20 @@ enum CardSource {
     Temporal,
 }
 
+fn brief_description(text: &str) -> String {
+    let sentence = text.split(". ").next().unwrap_or(text);
+    let words = sentence
+        .split_whitespace()
+        .take(20)
+        .collect::<Vec<_>>()
+        .join(" ");
+    let mut brief = words.chars().take(150).collect::<String>();
+    if brief.len() < sentence.len() {
+        brief.push('…');
+    }
+    brief
+}
+
 #[derive(Default)]
 pub struct LivePane {
     picker: bool,
@@ -270,7 +284,18 @@ impl LivePane {
                 track.id,
                 track.label.clone(),
                 value,
-                "Interpreted from the app. Its effect is not verified yet.".into(),
+                if track.submitted_by == "local-model" {
+                    track
+                        .observations
+                        .iter()
+                        .rev()
+                        .flatten()
+                        .next()
+                        .map(|o| brief_description(&o.input.explanation))
+                        .unwrap_or_else(|| "A provisional visual finding.".into())
+                } else {
+                    "Interpreted from the app. Its effect is not verified yet.".into()
+                },
                 readable,
             ));
         }
@@ -342,11 +367,28 @@ impl LivePane {
                                 ui.horizontal(|ui| {
                                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                                     ui.label(
-                                        RichText::new(if *readable {
-                                            "Learning"
-                                        } else {
-                                            "Uncertain"
-                                        })
+                                        RichText::new(
+                                            if *external == CardSource::Image
+                                                && live
+                                                    .visual_tracks
+                                                    .iter()
+                                                    .find(|t| t.id == *id)
+                                                    .is_some_and(|t| {
+                                                        t.observations
+                                                            .last()
+                                                            .is_some_and(Option::is_none)
+                                                            && t.observations
+                                                                .iter()
+                                                                .any(Option::is_some)
+                                                    })
+                                            {
+                                                "Earlier"
+                                            } else if *readable {
+                                                "Learning"
+                                            } else {
+                                                "Uncertain"
+                                            },
+                                        )
                                         .size(12.0)
                                         .color(MUTED),
                                     );
@@ -401,6 +443,12 @@ impl LivePane {
                             ui.label("Changes between these images may be missing. This does not verify continuous movement or a gameplay effect.");
                         }
                     } else {
+                        if external == CardSource::Image
+                            && let Some(track) = live.visual_tracks.iter().find(|t|t.id==id)
+                            && let Some((index,observation)) = track.observations.iter().enumerate().rev().find_map(|(i,o)|o.as_ref().map(|o|(i,o))) {
+                            ui.label(&observation.input.explanation);
+                            ui.label(format!("Observed in moment {} · {}",index+1,track.observer));
+                        }
                         let matches = if external == CardSource::Image { live.visual_tracks.iter().find(|t| t.id == id).map(|t| &t.matches) }
                             else { live.tracks.iter().find(|t| t.id == id).map(|t| &t.matches) };
                         ui.add_space(12.0);

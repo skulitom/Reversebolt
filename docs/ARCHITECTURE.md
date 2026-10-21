@@ -16,6 +16,8 @@ flowchart LR
     Engine --> Live[Selected application session]
     Live --> Native[Read-only Windows process handle]
     Live --> Window[Bounded window capture and OCR]
+    Engine --> Observer[Optional installed local vision model]
+    Observer --> Evidence
     Target --> Memory[Windows process memory]
     Target --> Observations[Numeric observation adapter]
 ```
@@ -167,33 +169,35 @@ changes and archived with their memory batch. They are excluded from scalar
 correlation; no continuous identity, physical motion or authority is established.
 See [temporal evidence](research/TEMPORAL_EVIDENCE.md).
 
-Temporal semantic inference, an automatic model executor and calibrated
-uncertainty remain required work. Memory coverage and capture-only jobs use
+Temporal semantic inference and calibrated uncertainty remain required work.
+Memory coverage and the original capture-only jobs use
 reviewed integrations of their isolated prototypes; neither implies semantic
 understanding or general causal experiments.
 
-The experimental `reversebolt-observer` crate tests a bounded local Ollama
-adapter independently of the live engine. It accepts only ordered images,
+The experimental `reversebolt-observer` crate provides a bounded local Ollama
+adapter. It accepts only ordered images,
 uses an installed vision model, retains provenance and validates structured
 proposals. It has no target handle, tools or write authority. Replay shows useful
 actor/component proposals alongside frequent false categories and poor small
-object localization. It is not yet wired into automatic observation or MCP;
-that requires proposal verification and durable model-job ownership. See
+object localization. Optional automatic jobs now invoke it after selected
+captures, with same-model crop filtering and durable operation ownership. See
 [local-model evaluation](research/LOCAL_OBSERVER.md).
 
 Its crop-review module takes source-bound proposal geometry without the proposed
 name/category, presents source context and an enlarged crop, and retains exact
 transforms and raw model output. Replay separates category filtering from box
 refinement: filtering reduces unmatched proposals while refinement loses a
-correct match. Same-model agreement is correlated evidence. It remains an
-experimental CLI, with no engine mutation or editing authority. See
+correct match. Same-model agreement is correlated evidence. An application
+adapter publishes provisional text observations using the original coordinates;
+it has no editing authority. See
 [crop-review results](research/CROP_REVIEW.md).
 
 ## Observation job controller
 
 The `reversebolt-session-jobs` crate supplies bounded durable state transitions,
 request receipts, event cursors, pause/cancel and human takeover. Its application
-executor accepts only typed capture steps. Every step pins the investigation,
+executor accepts typed capture steps with optional local-model interpretation.
+Every step pins the investigation,
 batch, process creation identity and HWND, checked again by the engine before
 capture. Delay is outside the durable operation intent so pausing between
 captures does not manufacture a completed step.
@@ -212,6 +216,16 @@ original receipt; they do not replay captures. A durable intent without an
 outcome is unknown even for read-only captures. Journal checkpoints and evidence
 files are separate writes, not an atomic cross-file transaction. The library's
 generic effect/consent tests do not expose production write operations.
+
+Local-model steps keep the same worker and ownership through inference and
+evidence publication. They check a shared cancellation flag between model calls,
+save full source-bound receipts before publication, and validate/save an entire
+observation group before exposing any item. Status and job controls stay on the
+controller thread. Model work has separate poll cadence so normal inference
+latency does not exhaust the native-capture poll budget. A server timeout stops
+the job without retries; it does not prove an independently running Ollama
+server has stopped computation. Restart never resumes inference. See
+[model integration](research/LOCAL_OBSERVER_INTEGRATION.md).
 
 See [MCP contract](MCP.md#durable-observation-jobs) and
 [integration evidence](research/OBSERVATION_JOBS.md) for limits and failure cases.

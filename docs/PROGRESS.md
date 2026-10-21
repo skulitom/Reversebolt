@@ -381,3 +381,32 @@ All category credits and the denominator stay unchanged at **20 / 100**; the ful
 goal remains active. Next: independent grounding and bounded shared-session
 model execution, preserving provisional observations until effects are verified.
 See [crop review evidence](research/CROP_REVIEW.md).
+
+## 2026-10-21 — automatic local appearance findings: 21%
+
+Multimodal observation increases from **3 / 15 to 4 / 15** for an implemented
+image-derived source in the shared desktop/MCP workflow. Other credits stay
+foundation 4, native access 4, discovery 2, validation 2, intent 0, agent
+collaboration 5 and generalization 0. Total: **21 / 100**. The denominator and
+full goal remain unchanged and active.
+
+With a local vision model selected, connection automatically reviews captured
+image pairs after moments 2 and 16. Source-bound proposals and crop reviews can
+produce provisional named appearance cards. Descriptions are short; Inspect
+retains the explanation. Models have no process handles or write authority.
+The same durable job owns capture, inference and publication; cancellation,
+failure and restart behavior are explicit.
+
+An automated native replay produced a character card without manual capture or
+model commands. A second pass acknowledged cancellation in 35.97 ms and
+published nothing; failed model work also stopped subsequent capture steps.
+Restart preserved settings/history and resumed no jobs. All 85 tests, strict
+Clippy, native UI Automation and the published 24-tool smoke pass. This is
+integration evidence using already seen imagery, not a new accuracy result or
+independent-game acceptance gate. No gameplay input or writes were used.
+
+Desktop preview `0.1.0-20261021-011044` is running with the tested local model
+enabled and prior history preserved. Next: persistent, uncertainty-aware visual
+measurements that can be compared with internal trajectories, followed by
+independent validation of meaning and effects. See
+[integration evidence and remaining limits](research/LOCAL_OBSERVER_INTEGRATION.md).

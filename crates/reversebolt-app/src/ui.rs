@@ -12,18 +12,29 @@ pub struct Workbench {
     endpoint: String,
     show_connection: bool,
     show_live: bool,
+    show_observer: bool,
+    observer_model: String,
     live: crate::ui_live::LivePane,
 }
 
 impl Workbench {
     pub fn new(cc: &eframe::CreationContext<'_>, handle: Handle, endpoint: String) -> Self {
         theme::apply(&cc.egui_ctx);
+        let observer_model = handle
+            .view
+            .read()
+            .unwrap()
+            .observer_model
+            .clone()
+            .unwrap_or_default();
         Self {
             handle,
             edits: ["100".into(), "30".into()],
             endpoint,
             show_connection: false,
             show_live: true,
+            show_observer: false,
+            observer_model,
             live: crate::ui_live::LivePane::default(),
         }
     }
@@ -107,6 +118,9 @@ impl eframe::App for Workbench {
                     ui.label(RichText::new(&self.endpoint).size(12.0));
                     ui.label("Run reversebolt-mcp.exe as an MCP stdio server. See docs/MCP.md.");
                 }
+                if ui.button("Local vision").clicked() {
+                    self.show_observer = true;
+                }
                 ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                     ui.label(
                         RichText::new("v0.1.0  /  Rust + MIT")
@@ -115,6 +129,34 @@ impl eframe::App for Workbench {
                     );
                 });
             });
+        if self.show_observer {
+            egui::Window::new("Local vision").open(&mut self.show_observer).resizable(false).show(ui.ctx(), |ui| {
+                ui.set_width(380.0);
+                ui.label("Use an installed local vision model to find characters and held objects automatically.");
+                ui.label("Its findings are provisional. Images stay on this computer.");
+                ui.label(format!("Selected: {}", state.observer_model.as_deref().unwrap_or("None")));
+                let label = ui.label("Installed model name");
+                let id = ui.make_persistent_id("local_model_name");
+                ui.input_mut(|input| input.consume_accesskit_action_requests(id, |request| {
+                    if request.action == egui::accesskit::Action::SetValue
+                        && let Some(egui::accesskit::ActionData::Value(value)) = &request.data {
+                        self.observer_model = value.chars().take(128).collect(); return true;
+                    }
+                    false
+                }));
+                ui.add(egui::TextEdit::singleline(&mut self.observer_model).id(id).char_limit(128)).labelled_by(label.id);
+                ui.horizontal(|ui| {
+                    if ui.add_enabled(!busy && !self.observer_model.is_empty(), egui::Button::new("Use model")).clicked() {
+                        self.handle.submit("set_observer_model", json!({"model":self.observer_model}));
+                    }
+                    if ui.add_enabled(!busy && state.observer_model.is_some(), egui::Button::new("Disable")).clicked() {
+                        self.handle.submit("set_observer_model", json!({"model":null}));
+                    }
+                });
+                ui.label("Applies when you connect or choose Keep looking. No models are downloaded.");
+                if let Some(error) = &state.error { ui.colored_label(ERROR,error); }
+            });
+        }
         egui::CentralPanel::default().frame(egui::Frame::new().fill(BACKGROUND).inner_margin(22))
             .show(ui, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {

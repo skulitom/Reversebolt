@@ -1,0 +1,255 @@
+{
+  "date": "2026-10-21",
+  "scope": "Owned native window displaying previously seen image. Actual capture, model, MCP and desktop integration; no new gameplay or generalization evaluation.",
+  "automatic_and_cancellation": {
+    "scope": "Owned native window displaying previously seen saved imagery; integration evidence, not a new gameplay/generalization evaluation.",
+    "cards": 1,
+    "names": [
+      "Pink-haired pixel character"
+    ],
+    "model": "qwen3.8:latest",
+    "automatic_plan_models": [
+      2,
+      16
+    ],
+    "cancellation_ack_ms": 35.97369999624789,
+    "maximum_status_ms": 113.14820000552572,
+    "cancelled_pass_reviews": 0,
+    "no_publication_after_cancel": true,
+    "provisional_text_only": true,
+    "no_memory_matches_or_writes": true,
+    "model_setting_persisted": true,
+    "invalid_model_preserved_setting": true,
+    "receipts": {
+      "64701bef-58bf-4056-9ebd-6efaa5003821.json": "910f9874b3f9edb077fc670ac99705acdd247b38a328abccbbbcf2e73f6f0e8c",
+      "ebda6552-acfc-4d7d-b562-96d13ac074a6.json": "43bdb8407efc5d2e1ffb3583167797e2ba1e329f732c76842c31f27e707c4cb6"
+    }
+  },
+  "published_ui": {
+    "build": "0.1.0-20261021-011044",
+    "window": {
+      "pid": 80188,
+      "process": "Reversebolt",
+      "title": "Reversebolt",
+      "className": "Window Class",
+      "bounds": {
+        "x": 45,
+        "y": 25,
+        "width": 1136,
+        "height": 659
+      },
+      "foreground": true,
+      "enabled": true,
+      "minimized": false,
+      "maximized": false
+    },
+    "card_name": "Pink-headed pixel character",
+    "description": "The focused crop shows a small pixel figure with a pink head, pale face, dark eyes, and green collar standing\u2026",
+    "description_characters": 110,
+    "current_value": "Character",
+    "state": "Learning",
+    "inspect_keeps_full_explanation": true,
+    "inspect_keeps_source": true,
+    "no_edit_controls": true,
+    "screenshots_viewed": 0
+  },
+  "restart": {
+    "model_persisted": true,
+    "history_preserved": true,
+    "live_scope_revoked": true,
+    "no_auto_resume": true,
+    "new_boot": 2
+  },
+  "model_failure": {
+    "failed_job": 4,
+    "settled_steps": 2,
+    "attempted_captures": 2,
+    "unstarted_later_captures": 1,
+    "observations_unchanged": true,
+    "receipt_id": "9d4e5806-1a74-44b9-814f-2532627075ae",
+    "error": "The requested model is not installed locally.",
+    "patches": 0,
+    "checker_correction": "Failed steps advance the settled-step cursor. Corrected that assertion by inspecting the same terminal job; no work was replayed."
+  },
+  "desktop_delivery": {
+    "version": "0.1.0-20261021-011044",
+    "pid": 84724,
+    "prior_history_preserved": 7,
+    "observer_model": "qwen3.8:latest",
+    "new_history_count": 8,
+    "executables": [
+      {
+        "name": "reversebolt-mcp.exe",
+        "sha256": "2123368BF07F10B1495F9C6A394DE68A5EB1DDF9E927A2E448C6E3EC8BFACB5C"
+      },
+      {
+        "name": "Reversebolt.exe",
+        "sha256": "589E50D2D9B1E0B3F9611834274677A0C8140F992AD52FA7FD36463CDC1B24B9"
+      }
+    ],
+    "models_verified": true,
+    "live_connection": false
+  },
+  "tests": {
+    "workspace": 85,
+    "queued_job_cancellation_regression": "passed after full suite",
+    "published_smoke": {
+      "practice": [
+        {
+          "seed": 8675309,
+          "matches": [
+            4,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 1001,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 20261020,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        }
+      ],
+      "mcp_tools": 24,
+      "shared_session": "passed",
+      "auth_and_origin": "passed",
+      "stale_restore": "rejected",
+      "restart": "history retained; controls invalidated"
+    }
+  },
+  "raw_sha256": {
+    "test-results/local-observer-integration-v1/uia-initial.json": "ec70326c0128d03bf4ec97c90fecaaaff7b6bdc5bda33a0c397f975b4313b697",
+    "test-results/local-observer-integration-v1/uia-final.json": "d967d87c78121fd26f9d7949c7d6469eb74961bb6231f00427d1cf228b3657e0",
+    "test-results/local-observer-integration-v1/session/integration-result.json": "750bc9a0c12bc2164f136d1b2323d779338dd112b73de7f55cd971262d1dd587",
+    "test-results/local-observer-integration-v1/session/restart-proof.json": "604d38e0d483ccdcb855af4d18e65c769f2e698bcc16c0ad5c7a4be983bb43fa",
+    "test-results/local-observer-integration-v1/session/failure-proof.json": "27fd21e7cd908fc9e9ff95a69213dd123f2978173dc5ddf04ab907c28c95ac45",
+    "test-results/local-observer-integration-v1/desktop-delivery.json": "1d206e898b92d7faacb4361652342978ff00c15db50d3e0bb04d5b86abc2a345",
+    "test-results/local-observer-integration-tests-final.txt": "cbdd36828c5a3fcde09d8a07e253a11736d2c95b5511c1bb99ccc58f0da988c1",
+    "test-results/local-observer-integration-clippy-final.txt": "b1fbd7833b23771c9f3190ff2ab6bc07327560c5896fd67dcd0a69b2acc19f2f",
+    "test-results/local-observer-integration-cancel-regression.txt": "f5a06c92c47710c898767fe0d1e240237754def5d621d5d35474022dcfdb817d",
+    "test-results/smoke-8707ecf0/report.json": "a8da5677b28a20dc99a3fe984db51d55afe7c98f73ba7c6f1abd31c44504b277",
+    "test-results/local-observer-integration-clippy-checkpoint.txt": "2292cdf59bc2ada83cc0736636881633ccbc31219cc898697d87120501b9e1a8"
+  },
+  "model_receipts": [
+    {
+      "id": "64701bef-58bf-4056-9ebd-6efaa5003821",
+      "sha256": "910f9874b3f9edb077fc670ac99705acdd247b38a328abccbbbcf2e73f6f0e8c",
+      "cancelled": true,
+      "error": null,
+      "proposed_observations": 0,
+      "frames": [
+        {
+          "id": "5a54fa8b-c967-4890-b972-db23979250c2",
+          "sha256": "0fdd5528307143ce63a420bb92f923f1bd58968d789952afa054aa0979accf65"
+        },
+        {
+          "id": "ba710f9a-4243-40cb-accd-4f8a6cd66f52",
+          "sha256": "0fdd5528307143ce63a420bb92f923f1bd58968d789952afa054aa0979accf65"
+        }
+      ],
+      "model": "qwen3.8:latest",
+      "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+      "proposal_ms": 4071,
+      "review_ms": []
+    },
+    {
+      "id": "9d4e5806-1a74-44b9-814f-2532627075ae",
+      "sha256": "51647311ef1e2986bf15fd5660fb2b1159b3e6f900b0adfa1ee19b591f9fe88b",
+      "cancelled": false,
+      "error": "The requested model is not installed locally.",
+      "proposed_observations": 0,
+      "frames": [
+        {
+          "id": "fdbc4fcf-ee45-4676-8ebb-38cf8d5cd6df",
+          "sha256": "48cd60454959faae2969c56b4953c27018a627d14fb8f95841a823a8f66579dc"
+        },
+        {
+          "id": "23c3a57c-660e-46bd-acc4-90d7aa842d74",
+          "sha256": "48cd60454959faae2969c56b4953c27018a627d14fb8f95841a823a8f66579dc"
+        }
+      ],
+      "model": null,
+      "model_digest": null,
+      "proposal_ms": null,
+      "review_ms": []
+    },
+    {
+      "id": "e6d2cedb-baea-41d2-bda9-8dd7ab3d2db0",
+      "sha256": "fa362b10a058fe8834eabd0f9de6e14191504cf0ad84975377b6a6120e7f4fd9",
+      "cancelled": false,
+      "error": null,
+      "proposed_observations": 1,
+      "frames": [
+        {
+          "id": "7913729c-c2b9-4dce-9dd5-d8ac7078c812",
+          "sha256": "48cd60454959faae2969c56b4953c27018a627d14fb8f95841a823a8f66579dc"
+        },
+        {
+          "id": "551385ae-04c4-4979-8b3c-d95681318a8f",
+          "sha256": "48cd60454959faae2969c56b4953c27018a627d14fb8f95841a823a8f66579dc"
+        }
+      ],
+      "model": "qwen3.8:latest",
+      "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+      "proposal_ms": 10198,
+      "review_ms": [
+        3374
+      ]
+    },
+    {
+      "id": "ebda6552-acfc-4d7d-b562-96d13ac074a6",
+      "sha256": "43bdb8407efc5d2e1ffb3583167797e2ba1e329f732c76842c31f27e707c4cb6",
+      "cancelled": false,
+      "error": null,
+      "proposed_observations": 1,
+      "frames": [
+        {
+          "id": "609a68e8-646e-4226-91eb-b7af793066ff",
+          "sha256": "0fdd5528307143ce63a420bb92f923f1bd58968d789952afa054aa0979accf65"
+        },
+        {
+          "id": "e4d4cde4-b43d-4608-a20a-f77b64cfede4",
+          "sha256": "0fdd5528307143ce63a420bb92f923f1bd58968d789952afa054aa0979accf65"
+        }
+      ],
+      "model": "qwen3.8:latest",
+      "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+      "proposal_ms": 10847,
+      "review_ms": [
+        3575
+      ]
+    }
+  ],
+  "source_sha256": {
+    "crates/reversebolt-app/src/local_observer.rs": "993f6b445cca801dd931e8bb6dbfb8c20e201551d925959021045848a1e6cf97",
+    "crates/reversebolt-app/src/jobs.rs": "14c042ae3aaa6b1d3b675403abfe63eb877211f0a046948ac9d7abfc23f8a6da",
+    "crates/reversebolt-app/src/service.rs": "a67a1eb356ede381b903eaa0d1e3b8cac4ce63fe724cbf766b942e10cfcce8eb",
+    "crates/reversebolt-app/src/ui_live.rs": "9f97afb27ac7537a68913dcc96da48c0d3fe7b99c9d211e929074a2f0cb1624a",
+    "crates/reversebolt-app/src/ui.rs": "1560cd00cf49e06adc997bc122754fa4e5f9aca3fe2f5e3dba071d5bfc86183c",
+    "crates/reversebolt-core/src/live.rs": "e02d6c0460ff005678d72bdc30e6e69661f8e2cb2c62f38dc4e63559c7213a93",
+    "crates/reversebolt-observer/src/lib.rs": "9d2a30d2437032c69460c059d09d28234a7b09e13e40e3e5e3292f6acacaa408"
+  },
+  "source_note": "A subsequent test-only queued-job cancellation assertion was added after publishing. Production code is unchanged from the published build.",
+  "limitations": [
+    "Correlated same-model image judgments, not independently verified controls.",
+    "No persistent object identity, motion quantities, memory correspondence or game writes.",
+    "Performance is one native replay run; model loading and inference add seconds.",
+    "A failed pass stops its job; HTTP timeout does not prove server computation stopped.",
+    "Raw pass and engine evidence are separate writes; proposed observations are not a publication receipt.",
+    "Local model upstream identity/license has not been independently established; no weights or commercial footage redistributed."
+  ],
+  "desktop_launcher_verified": true
+}
