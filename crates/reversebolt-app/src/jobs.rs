@@ -49,7 +49,7 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             };
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
             let watching = plan.as_ref().is_some_and(|s| s.change.is_some());
-            let title = if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
+            let title = if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
             ui.horizontal_wrapped(|ui| {
                 if job.phase==job::Phase::Running { ui.spinner(); }
@@ -245,6 +245,8 @@ impl Scope {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct CaptureStep {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    runtime: Option<reversebolt_core::runtime::Task>,
     scope: Scope,
     delay_ms: u64,
     source: String,
@@ -360,13 +362,17 @@ impl job::Executor for CaptureExecutor {
             );
         }
         let command = Command {
-            action: if step.change.is_some() {
+            action: if step.runtime.is_some() {
+                "inspect_runtime"
+            } else if step.change.is_some() {
                 "observe_change"
             } else {
                 "capture"
             }
             .into(),
-            args: if let Some(cursor) = &step.change {
+            args: if let Some(task) = &step.runtime {
+                json!({"scope":step.scope,"task":task})
+            } else if let Some(cursor) = &step.change {
                 let cursor = reversebolt_core::changes::ObservationCursor {
                     change_id: cursor.change_id.clone(),
                     phase: cursor.phase.clone(),
@@ -391,7 +397,13 @@ impl job::Executor for CaptureExecutor {
         let owner = self.owner.as_ref().unwrap().clone();
         let cancel = owner.cancel.clone();
         // The final step can drain the first review and then run its own review.
-        let poll_interval = Duration::from_secs(if step.local_model.is_some() { 30 } else { 1 });
+        let poll_interval = Duration::from_secs(if step.local_model.is_some() {
+            30
+        } else if step.runtime.is_some() {
+            5
+        } else {
+            1
+        });
         match self.engine.start_owned_command(command, Some(owner)) {
             Ok(response) => {
                 self.flight = Some(Flight {
@@ -433,7 +445,9 @@ impl job::Executor for CaptureExecutor {
                         value["error"].as_str().unwrap_or(
                             "Observation finished; see the shared investigation for evidence.",
                         ),
-                        if value["data"]["observations"].is_array() {
+                        if value["data"]["runtime"].is_object() {
+                            value["data"].clone()
+                        } else if value["data"]["observations"].is_array() {
                             json!({"kind":"change_observation","change_id":value["data"]["id"],"phase":value["data"]["phase"],
                                 "observation":value["data"]["observations"].as_array().and_then(|o|o.len().checked_sub(1)),
                                 "image_sha256":value["data"]["observations"].as_array().and_then(|o|o.last()).map(|o|&o["image_sha256"])})
@@ -560,6 +574,10 @@ impl Controller {
     fn start_automatic_observation(&mut self, source: String) -> Result<Value> {
         let snapshot = self.jobs.snapshot();
         let state = self.engine.view.read().unwrap();
+        let runtime = state
+            .live
+            .as_ref()
+            .is_some_and(|l| l.runtime.available && l.runtime.phase == "available");
         let changing = state.live.as_ref().is_some_and(|live| {
             live.change_searches.last().is_some_and(|s| {
                 s.status == "collecting" && s.selection_batch == live.coverage.batch
@@ -585,10 +603,15 @@ impl Controller {
             "mcp-agent"
         };
         let command = Command {
-            action: "start_observation_job".into(),
+            action: if runtime {
+                "start_runtime_job"
+            } else {
+                "start_observation_job"
+            }
+            .into(),
             source: source.clone(),
             args: json!({"count":if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
-                "local_model":model,
+                "local_model":model,"task":{"operation":"discover"},
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
         };
@@ -688,7 +711,10 @@ impl Controller {
             }
             if matches!(
                 command.action.as_str(),
-                "start_observation_job" | "start_change_watch" | "job_control"
+                "start_observation_job"
+                    | "start_change_watch"
+                    | "start_runtime_job"
+                    | "job_control"
             ) {
                 return self.job_command(&command);
             }
@@ -759,6 +785,7 @@ impl Controller {
                 | "history"
                 | "job_events"
                 | "start_observation_job"
+                | "start_runtime_job"
                 | "start_change_watch"
                 | "job_control"
         );
@@ -873,6 +900,58 @@ impl Controller {
         }
         let action = if command.action == "start_change_watch" {
             self.plan_change_watch(command, &binding, request, &actor.client)?
+        } else if command.action == "start_runtime_job" {
+            let task: reversebolt_core::runtime::Task =
+                serde_json::from_value(command.args["task"].clone())
+                    .map_err(|_| "Supply a runtime discovery or refresh task.")?;
+            task.validate()?;
+            let parts: Vec<_> = binding.target.split('/').collect();
+            if parts.len() != 4 {
+                return Err("Invalid runtime job binding.".into());
+            }
+            let scope = Scope {
+                investigation_id: parts[0].into(),
+                batch: parts[1].parse().map_err(|_| "Invalid batch binding.")?,
+                created: parts[2].into(),
+                window: parts[3].parse().map_err(|_| "Invalid window binding.")?,
+            };
+            let fresh = request
+                > snapshot
+                    .clients
+                    .get(&actor.client)
+                    .map_or(0, |c| c.high_water);
+            if fresh && snapshot.current.as_ref() == Some(&binding) {
+                if snapshot.jobs.values().any(|j| !j.phase.terminal()) {
+                    return Err(
+                        "Finish or stop the current job before inspecting internal values.".into(),
+                    );
+                }
+                let state = self.engine.view.read().unwrap();
+                let live = state.live.as_ref().ok_or("Connect an application first.")?;
+                if !live.runtime.available {
+                    return Err("No supported runtime is available.".into());
+                }
+                live.runtime.paths(&task)?;
+            }
+            job::Action::Submit {
+                steps: vec![job::Step {
+                    kind: job::Kind::Observe,
+                    payload: serde_json::to_string(&CaptureStep {
+                        runtime: Some(task),
+                        scope,
+                        delay_ms: 0,
+                        source: command.source.clone(),
+                        compare: false,
+                        remaining: 0,
+                        mode: reversebolt_core::live::CaptureMode::Full,
+                        local_model: None,
+                        background_model: false,
+                        change: None,
+                    })
+                    .map_err(|e| e.to_string())?,
+                }],
+                consent: false,
+            }
         } else if command.action == "start_observation_job" {
             let mode: reversebolt_core::live::CaptureMode = command
                 .args
@@ -962,6 +1041,7 @@ impl Controller {
                 steps.push(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
+                        runtime: None,
                         scope: scope.clone(),
                         delay_ms: if (compare || !mode.is_full()) && index == 0 {
                             0
@@ -1108,6 +1188,7 @@ mod tests {
     pub(super) fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                runtime: Default::default(),
                 change_searches: vec![],
                 value_searches: vec![],
                 memory_process: None,
@@ -1650,6 +1731,69 @@ mod tests {
             false
         );
         assert!(c.jobs.snapshot().jobs.is_empty());
+    }
+
+    #[test]
+    fn supported_runtime_automatic_discovery_uses_one_managed_step() {
+        let mut view = initial_view();
+        view.live.as_mut().unwrap().runtime.available = true;
+        view.live.as_mut().unwrap().runtime.phase = "available".into();
+        let engine = EngineHandle::test_worker(view, |_, _| {
+            panic!("No operation dispatched in this plan check")
+        });
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("agent".into()).unwrap();
+        let id = receipt["ack"]["job"].as_u64().unwrap();
+        let snapshot = c.jobs.snapshot();
+        let plan = &snapshot.jobs[&id];
+        assert_eq!(plan.steps.len(), 1);
+        let step: CaptureStep = serde_json::from_str(&plan.steps[0].payload).unwrap();
+        assert!(matches!(
+            step.runtime,
+            Some(reversebolt_core::runtime::Task::Discover)
+        ));
+        assert!(step.local_model.is_none());
+        assert_eq!(step.delay_ms, 0);
+    }
+
+    #[test]
+    fn runtime_job_replay_and_cancel_wait_for_the_owned_operation() {
+        let mut view = initial_view();
+        view.live.as_mut().unwrap().runtime.available = true;
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let engine = EngineHandle::test_worker(view, move |command, view| {
+            started_tx.send(command).unwrap();
+            release_rx.recv().unwrap();
+            json!({"ok":true,"state":view,"data":{"runtime":{"cards":4}}})
+        });
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_runtime_job",
+            json!({"task":{"operation":"discover"}}),
+        );
+        let reply = c.job_command(&command).unwrap();
+        let id = reply["ack"]["job"].as_u64().unwrap();
+        assert_eq!(c.job_command(&command).unwrap()["duplicate"], true);
+        for _ in 0..3 {
+            c.tick();
+        }
+        let dispatched = started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        assert_eq!(dispatched.action, "inspect_runtime");
+        let cancel = request(&c, "job_control", json!({"job":id,"operation":"cancel"}));
+        c.job_command(&cancel).unwrap();
+        assert!(c.jobs.view().in_flight.is_some());
+        release_tx.send(()).unwrap();
+        for _ in 0..100 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].phase == job::Phase::Cancelled {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
+        assert!(started_rx.try_recv().is_err());
     }
 
     #[test]

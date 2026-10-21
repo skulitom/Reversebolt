@@ -11,7 +11,7 @@ if (-not $SkipBuild) {
 $version = '0.1.0-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
 $destination = Join-Path $repository "dist\$version"
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
-foreach ($name in @('Reversebolt.exe','reversebolt-mcp.exe')) {
+foreach ($name in @('Reversebolt.exe','reversebolt-mcp.exe','reversebolt-runtime-loader.exe','reversebolt_runtime.dll')) {
     Copy-Item -LiteralPath (Join-Path $repository "target\release\$name") -Destination (Join-Path $destination $name)
 }
 Copy-Item -LiteralPath (Join-Path $repository 'LICENSE') -Destination $destination
@@ -41,7 +41,7 @@ if ($modelsAvailable) {
 } else {
     Write-Warning 'Publishing without optional neural models; only Windows OCR will be available.'
 }
-$manifest = Get-ChildItem -LiteralPath $destination -Filter '*.exe' | ForEach-Object {
+$manifest = Get-ChildItem -LiteralPath $destination -File | Where-Object { $_.Extension -in @('.exe','.dll') } | ForEach-Object {
     [pscustomobject]@{ name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
 }
 $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $destination 'manifest.json') -Encoding utf8

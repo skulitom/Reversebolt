@@ -545,6 +545,7 @@ mod tests {
             }
         }
         let view = LiveView {
+            runtime: Default::default(),
             change_searches: vec![],
             value_searches: vec![],
             memory_process: None,

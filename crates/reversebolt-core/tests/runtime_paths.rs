@@ -77,3 +77,59 @@ fn unknown_runtime_types_and_unread_edges_abstain() {
     value["snapshots"][0]["roots"][0]["read_ok"] = json!(false);
     assert!(runtime::candidates(&value, 8).unwrap().is_empty());
 }
+
+#[test]
+fn late_non_core_values_displace_early_framework_values_at_the_limit() {
+    let mut value = report(0, "0x100", 50);
+    value["core_image"] = json!("Example.dll");
+    let mut extra = report(10, "0x200", 70);
+    for c in extra["classes"].as_array_mut().unwrap() {
+        c["key"]["image"] = json!("FreshApplication.dll");
+    }
+    value["classes"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["classes"].as_array().unwrap().clone());
+    value["snapshots"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["snapshots"].as_array().unwrap().clone());
+    let chosen = runtime::candidates(&value, 1).unwrap();
+    assert_eq!(chosen.len(), 1);
+    assert_eq!(chosen[0].value, 70);
+    assert_eq!(
+        chosen[0].locator.steps.last().unwrap().owner.image,
+        "FreshApplication.dll"
+    );
+}
+
+#[test]
+fn refresh_rejects_stale_revisions_and_invalidates_unavailable_current_values() {
+    let candidate = runtime::candidates(&report(0, "0x100", 50), 1)
+        .unwrap()
+        .remove(0);
+    let mut view = runtime::View {
+        available: true,
+        catalog_id: "catalog".into(),
+        cards: vec![runtime::Card {
+            value: candidate.value.clone(),
+            status: "read".into(),
+            observed_unix_ms: 1,
+            candidate: candidate.clone(),
+        }],
+        ..Default::default()
+    };
+    let task = runtime::Task::Refresh {
+        catalog_id: "catalog".into(),
+        after_revision: 0,
+        ids: vec![candidate.id.clone()],
+    };
+    let failure = json!({"scope":candidate.locator.scope,"edit_authority":false,"checks":[{"path_id":candidate.id,"status":"null_reference"}]});
+    view.apply_refresh(&task, &failure, 200).unwrap();
+    assert_eq!(view.cards[0].value, Value::Null);
+    assert_eq!(view.cards[0].candidate.value, 50);
+    assert_eq!(view.cards[0].status, "null_reference");
+    assert_eq!(view.revision, 1);
+    assert!(view.apply_refresh(&task, &failure, 300).is_err());
+    assert_eq!(view.cards[0].observed_unix_ms, 200);
+}

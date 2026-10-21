@@ -226,6 +226,8 @@ pub struct LocalObservationWarning {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
     #[serde(default)]
+    pub runtime: crate::runtime::View,
+    #[serde(default)]
     pub change_searches: Vec<crate::change_search::Summary>,
     /// Historical address-selection receipts, never current numeric evidence.
     #[serde(default)]
@@ -843,6 +845,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            runtime: crate::runtime::View::default(),
             change_searches: vec![],
             value_searches: vec![],
             memory_process: Some(target.memory_info().clone()),

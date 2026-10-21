@@ -112,6 +112,48 @@ fn call(process: HANDLE, address: usize, argument: usize, label: &str) -> Result
 }
 fn run() -> Result<()> {
     let a: Vec<String> = std::env::args().collect();
+    if a.len() == 5 && a[1] == "--detect" {
+        let pid: u32 = a[2].parse().map_err(|_| "invalid PID")?;
+        let expected_session: u32 = a[4].parse().map_err(|_| "invalid session")?;
+        unsafe {
+            let process = OpenProcess(
+                PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | PROCESS_SYNCHRONIZE,
+                0,
+                pid,
+            );
+            if process.is_null() {
+                return Err(error("open detection target"));
+            }
+            let process = Handle(process);
+            if creation(process.0)? != a[3]
+                || session(pid)? != expected_session
+                || session(GetCurrentProcessId())? != expected_session
+            {
+                return Err("detection process identity mismatch".into());
+            }
+            let mut providers = 0;
+            for module in modules(pid)? {
+                let local = LoadLibraryExW(
+                    wide(&module.path).as_ptr(),
+                    null_mut(),
+                    DONT_RESOLVE_DLL_REFERENCES,
+                );
+                if !local.is_null() {
+                    providers +=
+                        usize::from(reversebolt_runtime::has_runtime_exports(local as usize));
+                    FreeLibrary(local);
+                }
+            }
+            if creation(process.0)? != a[3] || WaitForSingleObject(process.0, 0) != WAIT_TIMEOUT {
+                return Err("target exited during detection".into());
+            }
+            println!(
+                "{}",
+                json!({"pid":pid,"created":a[3],"session":expected_session,"supported":providers==1,"providers":providers})
+            );
+        }
+        return Ok(());
+    }
     if a.len() != 7 && a.len() != 9 {
         return Err("usage: reversebolt-runtime-loader PID CREATION_HEX SESSION HELPER_ABSOLUTE_PATH SHA256 OUTPUT_ABSOLUTE_PATH [ROOT_START EXPECTED_ROOT_CATALOG_SHA256 | --paths-file LOCATORS_JSON]".into());
     }

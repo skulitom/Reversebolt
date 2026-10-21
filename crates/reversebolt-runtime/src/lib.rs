@@ -97,6 +97,12 @@ api! {
     il2cpp_stop_gc_world: unsafe extern "C" fn(),
     il2cpp_start_gc_world: unsafe extern "C" fn(),
 }
+/// Check exports only; never execute a function in this module.
+/// # Safety
+/// `module` must be a valid locally mapped Windows module handle.
+pub unsafe fn has_runtime_exports(module: usize) -> bool {
+    unsafe { Api::load(module).is_ok() }
+}
 struct Attached<'a>(&'a Api, Ptr);
 impl Drop for Attached<'_> {
     fn drop(&mut self) {
@@ -809,6 +815,20 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
         return Err("attach failed".into());
     }
     let _attached = Attached(&api, thread);
+    let core_image = unsafe {
+        GetProcAddress(module.base as _, c"il2cpp_get_corlib".as_ptr().cast()).and_then(|f| {
+            let get = std::mem::transmute::<
+                unsafe extern "system" fn() -> isize,
+                unsafe extern "C" fn() -> Ptr,
+            >(f);
+            let image = get();
+            if image.is_null() {
+                None
+            } else {
+                text((api.il2cpp_image_get_name)(image)).ok()
+            }
+        })
+    };
     let start = Instant::now();
     let mut c = catalog(&api, start)?;
     let catalog_ms = start.elapsed().as_millis() as u64;
@@ -923,7 +943,7 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
     }
     let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"key":k.key,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"shape":shape,"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"width":f.width,"reference":f.reference,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
     Ok(
-        json!({"schema":4,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
+        json!({"schema":4,"core_image":core_image,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
     )
 }
 /// # Safety

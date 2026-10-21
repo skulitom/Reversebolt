@@ -24,6 +24,7 @@ fn watch_change_button(
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 enum CardSource {
+    Runtime,
     Ocr,
     Image,
     Temporal,
@@ -56,12 +57,37 @@ fn action_evidence(
         match source {
             CardSource::Ocr => Source::Ocr,
             CardSource::Image => Source::External,
-            CardSource::Temporal => return None,
+            CardSource::Temporal | CardSource::Runtime => return None,
         },
         id,
     )
 }
 
+fn runtime_name(name: &str) -> String {
+    let mut result = String::new();
+    let mut lower = false;
+    for ch in name.trim_matches('_').chars().take(96) {
+        if ch == '_' {
+            result.push(' ');
+            lower = false;
+            continue;
+        }
+        if ch.is_uppercase() && lower {
+            result.push(' ');
+        }
+        if result.is_empty() {
+            result.extend(ch.to_uppercase());
+        } else {
+            result.push(ch);
+        }
+        lower = ch.is_lowercase();
+    }
+    if result.is_empty() {
+        "Internal value".into()
+    } else {
+        result
+    }
+}
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
     let words = sentence
@@ -94,6 +120,7 @@ pub(crate) fn observation_age(observed: u128, now: u128) -> String {
 
 #[derive(Default)]
 pub struct LivePane {
+    runtime_catalog: String,
     picker: bool,
     query: String,
     selected: Option<ProcessInfo>,
@@ -325,6 +352,29 @@ impl LivePane {
             }
         });
         ui.label(RichText::new("Your controls, as they are discovered.").color(MUTED));
+        if self.runtime_catalog != live.runtime.catalog_id {
+            self.runtime_catalog = live.runtime.catalog_id.clone();
+            self.detail = None;
+            self.card_order
+                .retain(|(source, _)| *source != CardSource::Runtime);
+        }
+        if live.runtime.available {
+            if ui
+                .add_enabled(
+                    !busy && live.connected,
+                    egui::Button::new("Find internal values"),
+                )
+                .clicked()
+            {
+                handle.submit(
+                    "start_runtime_job",
+                    json!({"task":{"operation":"discover"}}),
+                );
+            }
+            if let Some(notice) = &live.runtime.notice {
+                ui.label(RichText::new(notice).size(12.).color(MUTED));
+            }
+        }
         if !live.connected {
             ui.colored_label(
                 WARNING,
@@ -340,6 +390,33 @@ impl LivePane {
             .unwrap_or_default()
             .as_millis();
         let mut cards: Vec<FindingCard> = vec![];
+        for (index, card) in live.runtime.cards.iter().enumerate() {
+            let candidate = &card.candidate;
+            let context = candidate
+                .locator
+                .steps
+                .last()
+                .map(|s| s.owner.type_name.split(',').next().unwrap_or("Object"))
+                .unwrap_or("Object");
+            let value = if card.status != "read" {
+                "—".into()
+            } else if let Some(s) = card.value.as_str() {
+                s.to_owned()
+            } else if let Some(b) = card.value["boolean"].as_bool() {
+                b.to_string()
+            } else {
+                card.value.to_string()
+            };
+            cards.push((
+                CardSource::Runtime,
+                index,
+                runtime_name(&candidate.name),
+                value,
+                brief_description(&format!("Value in {context}. Effect untested.")),
+                card.status == "read",
+                Some(observation_age(card.observed_unix_ms, now)),
+            ));
+        }
         for track in live.tracks.iter().filter(|t| t.active) {
             let title = track
                 .label
@@ -576,6 +653,10 @@ impl LivePane {
                                         *id,
                                     ));
                                 }
+                                if *external==CardSource::Runtime && let Some(card)=live.runtime.cards.get(*id)
+                                    && ui.add_enabled(!busy && live.connected,egui::Button::new("Refresh value")).clicked() {
+                                        handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]}}));
+                                }
                                 if *external==CardSource::Ocr {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
                                     let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
@@ -804,6 +885,7 @@ impl LivePane {
                         });
                     }
                     let input_frame=match external {
+                        CardSource::Runtime=>None,
                         CardSource::Ocr=>live.frames.last(),
                         CardSource::Image=>live.visual_tracks.iter().find(|t|t.id==id).and_then(|t|t.observations.iter().rev().flatten().next()).and_then(|o|live.frames.iter().find(|f|f.id==o.input.frame_id)),
                         CardSource::Temporal=>live.temporal_tracks.iter().find(|t|t.id==id).and_then(|t|t.observations.last()).and_then(|o|o.evidence.frames.last()),
@@ -846,7 +928,13 @@ impl LivePane {
                             if let Some(error)=&observation.error {ui.colored_label(WARNING,error);}
                         }
                     }
-                    if external == CardSource::Temporal {
+                    if external == CardSource::Runtime {
+                        if let Some(card)=live.runtime.cards.get(id) {
+                            ui.label("Found directly in the application's internal state. A name alone does not establish what it controls.");
+                            ui.label(format!("Latest check: {}",card.status.replace('_'," ")));
+                            ui.label("Refresh follows the current object at this path. Collections can change occupants.");
+                        }
+                    } else if external == CardSource::Temporal {
                         if let Some(track) = live.temporal_tracks.iter().find(|t| t.id == id)
                             && let Some(observation) = track.observations.last() {
                             ui.label(&observation.input.explanation);

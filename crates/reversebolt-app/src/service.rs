@@ -159,6 +159,7 @@ impl EngineHandle {
                         | "apply_change"
                         | "restore_change"
                         | "observe_change"
+                        | "inspect_runtime"
                 ) {
                     engine.view.error = None;
                     native_command(
@@ -190,6 +191,7 @@ impl EngineHandle {
                                 | "apply_change"
                                 | "restore_change"
                                 | "observe_change"
+                                | "inspect_runtime"
                         ) {
                             data
                         } else {
@@ -261,6 +263,15 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "inspect_runtime" => {
+            return crate::runtime_bridge::command(
+                engine,
+                command,
+                owner,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+                published,
+            );
+        }
         "read_change_evidence" => {
             let id = command.args["change_id"]
                 .as_str()
@@ -322,6 +333,17 @@ fn native_command(
             return Ok(json!(change));
         }
         "apply_change" | "restore_change" | "observe_change" => {
+            if command.action != "observe_change"
+                && engine
+                    .live
+                    .as_ref()
+                    .is_some_and(|s| s.view.runtime.phase == "uncertain")
+            {
+                return Err(
+                    "An internal inspection has an unresolved outcome. Trial writes are held."
+                        .into(),
+                );
+            }
             let id = command.args["change_id"]
                 .as_str()
                 .ok_or("Supply the prepared change identity.")?;
@@ -508,11 +530,33 @@ fn native_command(
                 models,
                 memory,
             )?;
-            let session = reversebolt_core::live::LiveSession::attach(
+            let mut session = reversebolt_core::live::LiveSession::attach(
                 Box::new(target),
                 budget,
                 directory.join(uuid::Uuid::new_v4().to_string()),
             )?;
+            match crate::runtime_bridge::detect(
+                session
+                    .view
+                    .memory_process
+                    .as_ref()
+                    .unwrap_or(&session.view.process),
+                &directory.parent().unwrap_or(directory).join("runtime"),
+            ) {
+                Ok(available) => {
+                    session.view.runtime.available = available;
+                    session.view.runtime.phase = if available {
+                        "available"
+                    } else {
+                        "unsupported"
+                    }
+                    .into();
+                }
+                Err(error) => {
+                    session.view.runtime.phase = "unsupported".into();
+                    session.view.runtime.notice = Some(error);
+                }
+            }
             engine.event(
                 &command.source,
                 format!(

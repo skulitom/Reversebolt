@@ -9,6 +9,7 @@ mod local_observer;
 mod native;
 mod observation_pipeline;
 mod ocr;
+mod runtime_bridge;
 mod service;
 mod target;
 mod theme;

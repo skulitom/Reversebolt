@@ -106,6 +106,7 @@ impl Controller {
                 Ok(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
+                        runtime: None,
                         scope: scope.clone(),
                         delay_ms: interval,
                         source: command.source.clone(),
