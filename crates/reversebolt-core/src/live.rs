@@ -193,6 +193,10 @@ pub struct MemoryRead {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
     #[serde(default)]
+    pub rule_checks: Vec<crate::rule_checks::Check>,
+    #[serde(default)]
+    pub rule_error: Option<String>,
+    #[serde(default)]
     pub action_patterns: Vec<crate::action_patterns::Evidence>,
     #[serde(default)]
     pub prediction_check: Option<PredictionCheck>,
@@ -558,6 +562,7 @@ impl LiveSession {
                 check.invalidated = Some("The original process exited.".into());
             }
             let _ = self.save_prediction_check();
+            self.update_rule_checks();
             self.view.phase =
                 "The application closed. Connect again to start a new investigation.".into();
             for track in &mut self.view.tracks {
@@ -592,6 +597,8 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            rule_checks: vec![],
+            rule_error: None,
             action_patterns: vec![],
             prediction_check: None,
             coverage: Coverage {
@@ -853,6 +860,7 @@ impl LiveSession {
             &self.view.tracks,
             &self.view.visual_tracks,
         );
+        self.update_rule_checks();
         if !self.view.frames.is_empty()
             && let Err(error) = self.save_visual_evidence(&self.view.visual_tracks)
             && let Some(screen) = self.view.latest.as_mut().and_then(|c| c.screen.as_mut())
@@ -1060,6 +1068,8 @@ impl LiveSession {
         self.view.latest = None;
         self.view.frames.clear();
         self.view.action_patterns.clear();
+        self.view.rule_checks.clear();
+        self.view.rule_error = None;
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
         self.view.temporal_tracks.clear();
@@ -1148,6 +1158,7 @@ impl LiveSession {
                 &self.view.tracks,
                 &self.view.visual_tracks,
             );
+            self.update_rule_checks();
             self.update_prediction_check(false);
         }
         Ok(changed)
@@ -1224,6 +1235,42 @@ impl LiveSession {
         }))
         .map_err(|e| e.to_string())?;
         write_evidence(&self.directory.join("evidence.json"), &bytes)
+    }
+
+    fn update_rule_checks(&mut self) {
+        if self.view.rule_error.is_some() {
+            return;
+        }
+        let mut checks =
+            crate::rule_checks::update(&self.view, self.capture_clock.elapsed().as_micros() as u64);
+        // Stamp new forecasts after computation. A start-of-computation timestamp
+        // could incorrectly precede a press that happened while fitting ran.
+        let prepared_us = self.capture_clock.elapsed().as_micros() as u64;
+        crate::rule_checks::stamp_prepared(&mut checks, &self.view.rule_checks, prepared_us);
+        if checks.is_empty() {
+            return;
+        }
+        let persist = || -> Result<()> {
+            let bytes=serde_json::to_vec_pretty(&serde_json::json!({
+                "schema_version":1,"investigation_id":self.view.investigation_id,"batch":self.view.coverage.batch,
+                "process":self.view.process,"checks":checks,"frames":self.view.frames,
+                "number_tracks":self.view.tracks,"visual_tracks":self.view.visual_tracks,
+                "action_patterns":self.view.action_patterns,"scope":crate::rule_checks::LIMITATION,
+            })).map_err(|e|e.to_string())?;
+            write_evidence(&self.directory.join("rule-evidence.json"), &bytes)
+        };
+        match persist() {
+            Ok(()) => self.view.rule_checks = checks,
+            Err(error) => {
+                let reason = format!(
+                    "Pattern predictions stopped because their evidence could not be saved: {error}"
+                );
+                for check in &mut self.view.rule_checks {
+                    check.invalidated = Some(reason.clone());
+                }
+                self.view.rule_error = Some(reason);
+            }
+        }
     }
 
     /// Freeze one series' existing candidates before any prospective samples.

@@ -460,7 +460,11 @@ impl LivePane {
                                 ui.set_width(ui.available_width());
                                 ui.set_min_height(148.0);
                                 ui.label(RichText::new(title).size(19.0).strong());
-                                let pattern = action_evidence(live,*external,*id).and_then(|e|e.patterns.iter().find_map(|p|p.brief()));
+                                let pattern = action_evidence(live,*external,*id).and_then(|e| {
+                                    if live.rule_checks.iter().any(|c|c.source==e.source && c.track==e.track && c.invalidated.is_none()) {
+                                        Some("Checking why the outcome varies.".into())
+                                    } else {e.patterns.iter().find_map(|p|p.brief())}
+                                });
                                 ui.label(RichText::new(pattern.as_deref().unwrap_or(description)).size(13.0).color(MUTED));
                                 if let Some(age) = age {
                                     ui.label(RichText::new(age).size(12.).color(MUTED));
@@ -578,6 +582,24 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if let Some(error)=&live.rule_error {ui.colored_label(WARNING,error);}
+                    if let Some(e)=action_evidence(live,external,id) {
+                        for check in live.rule_checks.iter().filter(|c|c.source==e.source && c.track==e.track) {
+                            egui::CollapsingHeader::new("Predictions made before the action").id_salt(&check.id).show(ui,|ui| {
+                                egui::ScrollArea::vertical().id_salt((&check.id,"rules")).max_height(210.).show(ui,|ui| {
+                                    ui.label(check.summary());
+                                    if let Some(reason)=&check.invalidated {ui.colored_label(WARNING,reason);}
+                                    for (i,candidate) in check.candidates.iter().enumerate() {
+                                        ui.label(format!("{}{}", if check.rejected(i) {"Ruled out: "} else {"Possible: "},candidate.description()));
+                                        let agrees=check.challenges.iter().filter(|c|c.comparisons[i].result==reversebolt_core::rule_checks::Result::Agreed).count();
+                                        let unknown=check.challenges.iter().filter(|c|c.comparisons[i].result==reversebolt_core::rule_checks::Result::Unknown).count();
+                                        ui.label(format!("{agrees} later agreements · {unknown} unknown"));
+                                    }
+                                    ui.label("Compare a different starting value or later action history, if reachable. Unknown boundaries still need evidence; surviving predictions do not prove a gameplay rule.");
+                                });
+                            });
+                        }
+                    }
                     if let Some(evidence)=action_evidence(live,external,id) && !evidence.patterns.is_empty() {
                         egui::CollapsingHeader::new("Observed control patterns").show(ui,|ui| {
                             egui::ScrollArea::vertical().id_salt("control_pattern_details").max_height(190.).show(ui,|ui| {

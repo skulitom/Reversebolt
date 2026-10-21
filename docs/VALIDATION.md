@@ -484,3 +484,25 @@ Preview `0.1.0-20261021-042809` is responding in the user's desktop session with
 eight history entries and the local model selection retained. The compact
 record is `research/action-patterns/evidence/native-v1.json`. Full paths, numeric
 outcomes, reproduction and limits are in [input/value contrasts](research/ACTION_PATTERNS.md).
+
+## Conditional prospective predictions — 2026-10-21
+
+All 128 workspace tests, strict Clippy, formatting and release build pass.
+New checks cover frozen alternatives under separating context, threshold-gap
+abstention, forecasts made too late, scope/discovery invalidation, constant
+response, computation-completion timestamps, late current-image declarations
+and capture space under the actual memory budget.
+
+The native state/history matrix passes for production OCR and explicitly
+declared boolean observations. Frozen models disagree after a visible refill;
+two fresh episodes reject the inappropriate alternative in each fixture.
+Forecasts precede the first sampled presses. Forced archive-save failures stop
+new predictions and do not resume after path repair; prior archives survive.
+The published history-mode run confirms persistence, restart invalidation and
+an accessibility-only Inspect check. No screenshots or games were controlled.
+
+The compact record is `research/conditional-predictions/evidence/native-v1.json`;
+raw evidence is under `test-results/rule-checks-v1/`. The 29-tool smoke is
+`test-results/smoke-22ab43ef/report.json`. Preview `0.1.0-20261021-045650` is
+responding on the desktop with eight history entries and the local model choice
+preserved. See [the complete method, failures and limits](research/CONDITIONAL_PREDICTIONS.md).

@@ -597,3 +597,34 @@ game acceptance credit is added. Preview `0.1.0-20261021-042809` is running with
 prior history and model selection preserved. See [the evidence and limits](research/ACTION_PATTERNS.md).
 Next: use candidate patterns to select state-conditioned, prospective contrasts,
 including delayed or hidden effects, and connect them to nonnumeric behavior.
+
+## 2026-10-21 — conditional predictions before sampled actions: 25%
+
+General discovery increases from **3 / 20 to 4 / 20** for automatic conditional
+state/history hypotheses with frozen parameters, retained boundary ambiguity,
+and forecasts prepared before fresh sampled actions. Other credits remain
+foundation 4, native access 5, multimodal observation 5, validation 2, intent 0,
+agent collaboration 5 and generalization 0. Total: **25 / 100**. The fixed
+denominator and full goal remain unchanged and active.
+
+Two owned native fixtures look identical during discovery but use different
+conditions for a change. Restoring the visible number separates their frozen
+predictions: later outcomes reject the history explanation in one and the
+starting-value explanation in the other. Threshold gaps and late/missing
+forecasts stay unknown. New forecasts are saved before publication; save failures
+stop updates without automatic resumption. Human cards and MCP share these checks.
+
+The research rule library's stronger input/measurement assumptions are not
+asserted for passive samples, and its verification gate was not imported. This
+is original, limited conditional prediction over observed episodes. It does not
+recover hidden state, prove a unique rule, establish causal edit authority or
+pass independent-game acceptance. No validation/generalization credit is added.
+
+All 128 workspace tests, strict Clippy, formatting, native state/history checks,
+forced persistence-failure checks, a published UI/MCP run and restart checks
+pass. Earlier failures and the late-declaration regression are preserved.
+Preview `0.1.0-20261021-045650` is running with history and model settings retained.
+See [conditional prediction evidence](research/CONDITIONAL_PREDICTIONS.md).
+Next: evaluate these predictions against less controlled behavior and genuinely
+independent software, retain failures, and improve motion/appearance observations
+and active selection of reachable distinguishing contexts.

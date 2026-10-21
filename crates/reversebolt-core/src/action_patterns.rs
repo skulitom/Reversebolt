@@ -452,13 +452,16 @@ pub fn find(view: &LiveView, source: Source, track: usize) -> Option<&Evidence> 
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::{
         inputs::{Buffer, Poll},
         visual::CaptureInterval,
     };
-    fn fixture(keys: &[u8], changes: &[f64]) -> (Vec<FrameRef>, Vec<Option<VisualValue>>) {
+    pub(crate) fn fixture(
+        keys: &[u8],
+        changes: &[f64],
+    ) -> (Vec<FrameRef>, Vec<Option<VisualValue>>) {
         assert_eq!(keys.len(), changes.len());
         let mut frames = vec![];
         let mut values = vec![Some(VisualValue::Number(100.))];

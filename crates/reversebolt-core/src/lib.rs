@@ -7,6 +7,7 @@ pub mod engine;
 pub mod inputs;
 pub mod live;
 pub mod prediction;
+pub mod rule_checks;
 pub mod temporal;
 pub mod visual;
 

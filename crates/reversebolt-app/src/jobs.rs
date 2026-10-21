@@ -922,6 +922,8 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                rule_checks: vec![],
+                rule_error: None,
                 action_patterns: vec![],
                 temporal_tracks: vec![],
                 prediction_check: None,

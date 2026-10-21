@@ -438,6 +438,22 @@ timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Frozen prediction checks
 
+`live.rule_checks` separately exposes automatic conditional outcome checks.
+Each has a discovery scope/boundary, immutable candidate feature/threshold ranges,
+training episodes/values and per-image `forecasts`. A forecast identifies its
+baseline image, prior bounded-episode count and one prediction slot per candidate.
+`issued_us` is computation completion in the investigation's monotonic clock.
+Current-image declarations may create a new forecast for an updated episode
+count; old forecasts remain unchanged. Unknown contexts are not backdated.
+
+`challenges` retain the observed episode, `first_pressed_us`, and candidate
+comparisons (`agreed`, `contradicted`, `unknown`). An agreement requires a known
+prediction prepared strictly before the first sampled press. Candidates inside
+an unresolved threshold gap abstain. A survivor is not a verified mechanism.
+Use a reachable context that separates alternatives; the engine never injects
+input or authorizes writes on this basis. `live.rule_error` stops this batch's
+updates on evidence-save failure. See [the contract](research/CONDITIONAL_PREDICTIONS.md).
+
 `live.action_patterns` separately contains automatic descriptive input/value
 contrasts for active `ocr` and `external` series. Intervals reference exact frame
 IDs and retain endpoint values, elapsed-time ranges and exclusion reasons.

@@ -54,6 +54,11 @@ and changes without detected keys. Agents receive the same evidence and suggeste
 follow-up through MCP. These are associations, not verified button meanings;
 see [the method and limits](docs/research/ACTION_PATTERNS.md).
 
+When outcomes differ, Reversebolt can also freeze competing starting-state and
+action-history explanations, predict before a later sampled press, and rule out
+contradicted predictions. **Inspect** keeps those details; surviving explanations
+remain provisional. See [conditional predictions](docs/research/CONDITIONAL_PREDICTIONS.md).
+
 Open **Local vision**, enter the name of a vision model already installed in
 local Ollama, and choose **Use model**. Future connections and **Keep looking**
 review image pairs after moments 2 and 16. The first review runs while capture

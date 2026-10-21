@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "scope": "Frozen conditional predictions over sampled input episodes in owned fixtures. Boolean outcomes are declared annotations. Not causal authority, hidden-state identification or game acceptance.",
+  "source_sha256": {
+    "crates/reversebolt-core/src/rule_checks.rs": "3a08e6217435c0d830173119d01df5f8a7124c4dd8f0b907e0e9766bd1ed2e45",
+    "crates/reversebolt-core/src/action_patterns.rs": "24005b5ce94393242b400ce654c479a195a5c55de48393625090a1cdc5cc4ff9",
+    "crates/reversebolt-core/src/live.rs": "7d8282cf4815d4d357be08cfe22f88d5cbeba9b85dd95ee0017f23b76b3f23d5",
+    "crates/reversebolt-app/src/ui_live.rs": "6a9f45ebd6153fb618d0158c1afd77bb13c9198b4033083231bbe6f011f3f8c7",
+    "crates/reversebolt-app/src/jobs.rs": "24b3ea94a0322e68986c31f6310c5dfb695597a5c85e20fc581ce2134baa77ac",
+    "crates/reversebolt-mcp/src/main.rs": "70e9b41d09b3a480d99a0f0d6b500c66fc097be0c7096a80d2f098babde7c49d",
+    "scripts/rule-check-smoke.py": "1ebad3ead689ddae0938bf4d4d968012a68ae7a14f3a735ce60445ddac3a35a6",
+    "scripts/rule-check-fixture.ps1": "ea4ae874fb5f9ffbfb68aca18415462a2ef6c2f3a814356f28165271b9e7fe56"
+  },
+  "workspace_tests": 128,
+  "log_sha256": {
+    "workspace-tests.log": "0930b4c463a6f8bc4ca8ddfea235283ebae03dc84bf90e9abfba3be4c6285e9f",
+    "clippy.log": "7ca73663fe34a0effac0131ebf4e231fa444ad563cecee620cf3132d0995936c",
+    "release-build.log": "1ce7ba12d2e3225704851dbb8e531eb876c4fb661bb0d479017ac9b45deac664"
+  },
+  "runs": [
+    {
+      "path": "test-results\\rule-checks-v1\\native-03\\state\\report.json",
+      "sha256": "8e7307e3865460e9574318e4ebba28efa505f177ba08c4914f3e92f9a152dc36",
+      "mode": "state",
+      "checks": [
+        {
+          "source": "ocr",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "contradicted",
+              "agreed"
+            ],
+            [
+              "contradicted",
+              "agreed"
+            ]
+          ],
+          "minimum_forecast_lead_us": 122731
+        },
+        {
+          "source": "external",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "contradicted",
+              "agreed"
+            ],
+            [
+              "contradicted",
+              "agreed"
+            ]
+          ],
+          "minimum_forecast_lead_us": 62225
+        }
+      ],
+      "archive_sha256": "2f0ed5e8f59e6c7550f80505d600e88956f6df6685aad08014f50f2b43a3cb36",
+      "binary_sha256": {
+        "Reversebolt.exe": "1451dbf9234fbd1fb1765929e887e5f4515b678dc702449018df2711ad542883",
+        "reversebolt-mcp.exe": "3db9969bd591008374e208f1ebb51cb22347da7015e28222e4c23311ce246cc3"
+      },
+      "restart_verified": true,
+      "persistence_failure": {
+        "predictions_stopped": true,
+        "no_retry_after_repair": true,
+        "original_archive_preserved": true,
+        "error": "Pattern predictions stopped because their evidence could not be saved: Evidence was not saved: Access is denied. (os error 5)"
+      }
+    },
+    {
+      "path": "test-results\\rule-checks-v1\\native-03\\history\\report.json",
+      "sha256": "a8d7785038748a05e17a27fbdc040cb8d4196976b7bd74c78ff52cb1e1eb022e",
+      "mode": "history",
+      "checks": [
+        {
+          "source": "ocr",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "agreed",
+              "contradicted"
+            ],
+            [
+              "agreed",
+              "contradicted"
+            ]
+          ],
+          "minimum_forecast_lead_us": 103730
+        },
+        {
+          "source": "external",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "agreed",
+              "contradicted"
+            ],
+            [
+              "agreed",
+              "contradicted"
+            ]
+          ],
+          "minimum_forecast_lead_us": 39204
+        }
+      ],
+      "archive_sha256": "04168675d53e8da5ba32324681907c74e57e4620ee8782228ee0d897542c4516",
+      "binary_sha256": {
+        "Reversebolt.exe": "1451dbf9234fbd1fb1765929e887e5f4515b678dc702449018df2711ad542883",
+        "reversebolt-mcp.exe": "3db9969bd591008374e208f1ebb51cb22347da7015e28222e4c23311ce246cc3"
+      },
+      "restart_verified": true,
+      "persistence_failure": {
+        "predictions_stopped": true,
+        "no_retry_after_repair": true,
+        "original_archive_preserved": true,
+        "error": "Pattern predictions stopped because their evidence could not be saved: Evidence was not saved: Access is denied. (os error 5)"
+      }
+    },
+    {
+      "path": "test-results\\rule-checks-v1\\published-01\\history\\report.json",
+      "sha256": "0f75bb26f07e1bb905eaefb9092687b134655b4097c75a148097e65007b4a5c7",
+      "mode": "history",
+      "checks": [
+        {
+          "source": "ocr",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "agreed",
+              "contradicted"
+            ],
+            [
+              "agreed",
+              "contradicted"
+            ]
+          ],
+          "minimum_forecast_lead_us": 108768
+        },
+        {
+          "source": "external",
+          "frozen_after_frame": 8,
+          "candidate_features": [
+            {
+              "kind": "prior_episodes"
+            },
+            {
+              "kind": "ocr",
+              "track": 0
+            }
+          ],
+          "bounds": [
+            [
+              1.0,
+              2.0
+            ],
+            [
+              498.0,
+              499.0
+            ]
+          ],
+          "fresh_episodes": 2,
+          "comparisons": [
+            [
+              "agreed",
+              "contradicted"
+            ],
+            [
+              "agreed",
+              "contradicted"
+            ]
+          ],
+          "minimum_forecast_lead_us": 56339
+        }
+      ],
+      "archive_sha256": "430e761e97d3c668e4486376d8c5d014e0c031c2e8e7d3b130484e5e2ec23e72",
+      "binary_sha256": {
+        "Reversebolt.exe": "1451dbf9234fbd1fb1765929e887e5f4515b678dc702449018df2711ad542883",
+        "reversebolt-mcp.exe": "3db9969bd591008374e208f1ebb51cb22347da7015e28222e4c23311ce246cc3"
+      },
+      "restart_verified": true,
+      "persistence_failure": null
+    }
+  ],
+  "development_failures": {
+    "path": "test-results\\rule-checks-v1\\development-failures.json",
+    "sha256": "c1176c740e2518985cca0e39990bcce92186fe8c3193455172e153b641b96d64",
+    "details": {
+      "failures": [
+        {
+          "run": "native-01",
+          "job": "j_f29cdaebf750448faf70a2a24bda8c7a",
+          "reason": "Requested 18 captures exceeds the existing job maximum 16; rejected before input or observation."
+        },
+        {
+          "run": "native-02",
+          "job": "j_4f0ccc64e473467a8565f22e0aa90ad8",
+          "reason": "A late current image declaration closed the prior episode, but the only forecast still carried the old episode count. Second future declared-boolean challenge was unknown."
+        }
+      ],
+      "binary_sha256": {
+        "Reversebolt.exe": "10649d6f6250124b4f045972436562c2e483c219711ae3b4dbee45d1739b3c08",
+        "reversebolt-mcp.exe": "27940a16b89578243294ec951fcb61056efe284af9152527d1549ee033f8c33c"
+      }
+    }
+  },
+  "ui": {
+    "path": "test-results\\rule-checks-v1\\published-01\\history\\ui-evidence.json",
+    "sha256": "ddb81826aec7e471d7062ec9a7cd7afd553da047687b78ebe25dd405d046a5bb",
+    "screenshots": 0
+  },
+  "desktop": {
+    "path": "test-results\\rule-checks-v1\\desktop\\desktop-delivery.json",
+    "sha256": "c9bbe94141be5f7d513ae19ec224487f47c6db7cdb17e861e4e4a49784a42c3b",
+    "pid": 85380,
+    "preview": "dist\\0.1.0-20261021-045650",
+    "history_entries": 8,
+    "history_preserved": true,
+    "observer_model_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "binary_sha256": {
+      "Reversebolt.exe": "1451dbf9234fbd1fb1765929e887e5f4515b678dc702449018df2711ad542883",
+      "reversebolt-mcp.exe": "3db9969bd591008374e208f1ebb51cb22347da7015e28222e4c23311ce246cc3"
+    }
+  },
+  "practice_smoke": {
+    "path": "test-results/smoke-22ab43ef/report.json",
+    "sha256": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+  },
+  "progress": {
+    "total": 25,
+    "changed": "general discovery 3/20 to 4/20",
+    "validation": 2,
+    "generalization": 0
+  },
+  "limits": [
+    "No independent-game evaluation",
+    "No delivered-input or randomized-independence attestation",
+    "No causal meaning or editing authority",
+    "No exact threshold selected inside an ambiguous gap",
+    "No recovery of hidden state",
+    "No automatic context-setting or game input executor"
+  ]
+}
