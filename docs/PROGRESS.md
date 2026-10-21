@@ -4,6 +4,18 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest capture timing (2026-10-21): **26% unchanged**. Fresh checks now bracket
+images with bounded candidate reads. Changed or unbracketed values count neither
+for nor against a match, and late observations cannot bypass that rule. Controlled
+tests cover asynchronous changes and later recovery; all 144 workspace tests
+pass. Fresh original-game runs retained no verified controls: 2048 had no matches,
+and Tetris's fresh score stayed constant before its mappings became unavailable.
+The native run verifies endpoint collection and accounting, not reduced timing
+errors. Desktop preview `0.1.0-20261021-073028` is running with history preserved.
+[Evidence and limits](../research/capture-alignment/README.md). All weighted
+credits remain foundation 4/10, native access 6/10, observation 5/15, discovery
+4/20, validation 2/15, intent 0/10, agent collaboration 5/10, generalization 0/10.
+
 Latest repeated-evidence check (2026-10-21): **26% unchanged**. Four automated
 original-game sessions exposed an isolated-reading false-match pattern. The
 generic matcher now requires repeated contrast in both halves and their inliers;

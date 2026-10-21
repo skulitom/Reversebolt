@@ -1,0 +1,83 @@
+{
+  "frozen_at_utc": "2026-10-21T06:30:49.755104+00:00",
+  "product_commit": "157277a plus capture-bracketing patch",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-073028",
+  "binaries": {
+    "Reversebolt.exe": "c29aeeade2b462c3cd35acc99d80bd951c077c7eae8bf766918e65f450155f46",
+    "reversebolt-mcp.exe": "0e217f76f8f7c148a6c95f506c951e37750cb3c593d632a832bb6aff22b5cb8d"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 300,
+  "order": [
+    [
+      "2048",
+      1
+    ],
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        37,
+        38,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        39,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "pre_capture_method_sha256": {
+    "PROTOCOL.md": "a7f01320bf320b47a605aa5e62ad326d011003baa09a8069ab79a34d812702cf",
+    "run.mjs": "5ab65c0aadb3658e7170e6523f0589ea77da3c56d817299d36503454ad693356",
+    "score.py": "c6e592dc637ac5a3e5dec9b30e4b9938022bb73bfa53c16bdbc18b381758c351",
+    "../independent-games/input.py": "917191154e5958d20c9bfc13975251eeb9fdb8318f782d11119e10999e0df275"
+  },
+  "cpu_probe_ms": 3000,
+  "product_source_sha256": {
+    "crates/reversebolt-core/src/live.rs": "6535e51df7d38f3a0af371d3216c62877b71cb2079630d82c67757898e73d23b",
+    "crates/reversebolt-core/src/prediction.rs": "12c19e4f89e0c01453fced86df96ce5381a0fe3e712d09dd34e4a48558f364f9",
+    "crates/reversebolt-core/tests/prediction_checks.rs": "54b4c0e2e29a4b66bf58aaeb7c94a3778767a130ef46f44e3873e2c202227c72",
+    "crates/reversebolt-app/src/ui_live.rs": "d37960a36775dac58979e1a0865cbf3741ebcf55148166b0bc31ea8a4267f79d"
+  },
+  "fresh_captures": 8
+}

@@ -514,6 +514,24 @@ can fill missing readings, but cannot change the stored predictions or bytes.
 
 Inspect `live.prediction_check`: it contains the original mappings, image hashes,
 fresh byte witnesses, read receipts, predictions, observations and outcomes.
+Each fresh sample includes `before_image`, a small candidate-byte read and its
+receipt before requesting the image. The ordinary post-image memory scan is
+the other endpoint. Equal raw bytes, complete reads and correctly ordered bounds
+on the image's clock are required for an agreement or contradiction. Otherwise
+the outcome is `timing_uncertain` (or `missing` if the later memory value is
+unavailable). Late external observations cannot override that timing decision.
+Historic samples without a prefix witness do not count toward a new trial.
+
+`latest.prediction_reads` records these extra reads, charged against the same
+4 GiB investigation budget before capture starts. At most 200 unique candidates
+of up to eight bytes each are read per fresh image; repeated address/width pairs
+are deduplicated. `latest.screen_started_unix_ms` and the frame's wall-clock
+start identify the image request after those reads; `latest.started_unix_ms`
+still marks the overall capture. Read receipts share the monotonic image clock.
+Equal endpoints cannot exclude intervening changes, stale rendered frames or
+display copies. Continuously changing values can remain uncertain; these are
+not synchronized game-state snapshots.
+
 `live.phase` gives the aggregate result. A contradiction rules out the mapping
 against that observation. Four agreements including an adjacent hold and a
 distinct change permit only **consistent in observed scope**. This is a

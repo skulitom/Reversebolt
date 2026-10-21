@@ -17,6 +17,7 @@ use std::{
 
 const MAX_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
+type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -167,6 +168,10 @@ pub struct CaptureSummary {
     pub mode: CaptureMode,
     pub number: usize,
     pub started_unix_ms: u128,
+    /// Wall-clock start of the image request, after any candidate prefix reads.
+    /// Historical records used the overall capture start instead.
+    #[serde(default)]
+    pub screen_started_unix_ms: Option<u128>,
     pub elapsed_ms: u128,
     pub memory_read_ms: u128,
     #[serde(default)]
@@ -179,6 +184,9 @@ pub struct CaptureSummary {
     pub changed_mapping_bytes: usize,
     #[serde(default)]
     pub memory_reads: Vec<MemoryRead>,
+    /// Small candidate reads before the image, charged to the same read budget.
+    #[serde(default)]
+    pub prediction_reads: Vec<MemoryRead>,
     pub screen: Option<Screen>,
     pub screen_error: Option<String>,
 }
@@ -688,6 +696,96 @@ impl LiveSession {
         self.capture_mode(CaptureMode::Full)
     }
 
+    fn prediction_read_plan(&self) -> Vec<(u64, Chunk)> {
+        let Some(check) = &self.view.prediction_check else {
+            return vec![];
+        };
+        let number = self.view.sample_count + 1;
+        if check.invalidated.is_some() || number <= check.after_frame || number > check.last_frame {
+            return vec![];
+        }
+        let mut reads = BTreeMap::new();
+        for candidate in check.candidates.iter().filter(|c| c.invalidated.is_none()) {
+            if let Some(chunk) = self
+                .plan
+                .iter()
+                .find(|c| c.address == candidate.chunk_address)
+            {
+                let address = chunk.address + candidate.offset_in_chunk as u64;
+                let length = candidate.mapping.kind.width();
+                reads.insert(
+                    (address, length),
+                    (
+                        chunk.address,
+                        Chunk {
+                            address,
+                            length,
+                            region: chunk.region.clone(),
+                        },
+                    ),
+                );
+            }
+        }
+        reads.into_values().collect()
+    }
+
+    fn read_before_image(&mut self, plan: &[(u64, Chunk)], start: Instant) -> PredictionReads {
+        let mut witnesses = BTreeMap::new();
+        for (original_chunk, chunk) in plan {
+            let begin_us = self.capture_clock.elapsed().as_micros() as u64;
+            let begin_ms = start.elapsed().as_millis();
+            let compatible = || {
+                self.target
+                    .query(chunk.address)
+                    .ok()
+                    .flatten()
+                    .is_some_and(|r| chunk.covered_by(&r))
+            };
+            let mut bytes = None;
+            let mut disposition = "unavailable";
+            if self.invalid_chunks.contains(original_chunk) || !compatible() {
+                self.invalid_chunks.insert(*original_chunk);
+                disposition = "mapping_changed_or_unavailable";
+            } else {
+                self.view.coverage.attempted_bytes += chunk.length as u64;
+                if let Ok(value) = self.target.read(chunk.address, chunk.length)
+                    && value.len() == chunk.length
+                {
+                    self.view.coverage.read_bytes += value.len() as u64;
+                    if compatible() {
+                        self.read_ranges.add(chunk.address, chunk.length);
+                        bytes = Some(value);
+                        disposition = "retained_generation_unverified";
+                    } else {
+                        self.invalid_chunks.insert(*original_chunk);
+                        disposition = "mapping_changed_during_read";
+                    }
+                }
+            }
+            if bytes.is_none() {
+                self.view.coverage.changed_or_unavailable_bytes += chunk.length as u64;
+            }
+            let read = MemoryRead {
+                address: format!("0x{:X}", chunk.address),
+                requested: chunk.length,
+                retained: bytes.as_ref().map_or(0, Vec::len),
+                begin_ms,
+                end_ms: start.elapsed().as_millis(),
+                capture_interval: Some(CaptureInterval {
+                    clock_id: self.view.investigation_id.clone(),
+                    begin_us,
+                    end_us: self.capture_clock.elapsed().as_micros() as u64,
+                }),
+                disposition: disposition.into(),
+            };
+            witnesses.insert(
+                (chunk.address, chunk.length),
+                prediction::Witness { bytes, read },
+            );
+        }
+        witnesses
+    }
+
     pub fn capture_mode(&mut self, mode: CaptureMode) -> Result<()> {
         if self.refresh_connection() || !self.view.connected {
             return Err(
@@ -700,7 +798,11 @@ impl LiveSession {
         {
             return Err("This memory batch reached its capture budget. Compare its observations, then search more memory.".into());
         }
-        if self.view.coverage.attempted_bytes + self.view.planned_bytes as u64
+        let prediction_plan = self.prediction_read_plan();
+        let prediction_bytes: usize = prediction_plan.iter().map(|(_, c)| c.length).sum();
+        if self.view.coverage.attempted_bytes
+            + self.view.planned_bytes as u64
+            + prediction_bytes as u64
             > coverage::MAX_READ_BYTES
         {
             return Err("This investigation reached its 4 GiB read budget. Start a new connection to continue.".into());
@@ -717,6 +819,13 @@ impl LiveSession {
         let start = Instant::now();
         let number = self.snapshots.len() + 1;
         let screen_path = self.directory.join(format!("frame-{number:03}.png"));
+        let before_image = self.read_before_image(&prediction_plan, start);
+        let prediction_read_ms = start.elapsed().as_millis();
+        let screen_start = Instant::now();
+        let screen_started_unix_ms = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis();
         let capture_begin_us = self.capture_clock.elapsed().as_micros() as u64;
         let mut screen = self.target.screen(&screen_path);
         let capture_end_us = self.capture_clock.elapsed().as_micros() as u64;
@@ -736,7 +845,7 @@ impl LiveSession {
         } else {
             image_length
         };
-        let screen_capture_ms = start.elapsed().as_millis();
+        let screen_capture_ms = screen_start.elapsed().as_millis();
         let memory_start = Instant::now();
         let mut snapshot = BTreeMap::new();
         let mut unreadable = 0;
@@ -793,7 +902,7 @@ impl LiveSession {
             });
         }
         let captured = snapshot.values().map(Vec::len).sum::<usize>();
-        let memory_read_ms = memory_start.elapsed().as_millis();
+        let memory_read_ms = prediction_read_ms + memory_start.elapsed().as_millis();
         self.view.coverage.read_unique_bytes = self.read_ranges.bytes();
         self.view.coverage.changed_or_unavailable_bytes += (changed + unreadable) as u64;
         self.view.coverage.analyzed_current_bytes = 0;
@@ -867,7 +976,7 @@ impl LiveSession {
                     width: frame.width,
                     height: frame.height,
                     epoch: self.image_epoch,
-                    started_unix_ms: now,
+                    started_unix_ms: screen_started_unix_ms,
                     capture_interval: Some(CaptureInterval {
                         clock_id: self.view.investigation_id.clone(),
                         begin_us: capture_begin_us,
@@ -889,6 +998,7 @@ impl LiveSession {
             mode,
             number,
             started_unix_ms: now,
+            screen_started_unix_ms: Some(screen_started_unix_ms),
             elapsed_ms: start.elapsed().as_millis(),
             memory_read_ms,
             screen_capture_ms,
@@ -897,6 +1007,7 @@ impl LiveSession {
             unreadable_bytes: unreadable,
             changed_mapping_bytes: changed,
             memory_reads: receipts,
+            prediction_reads: before_image.values().map(|w| w.read.clone()).collect(),
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
         });
@@ -937,7 +1048,7 @@ impl LiveSession {
                 self.view.tracks.len()
             )
         };
-        self.update_prediction_check(true);
+        self.update_prediction_check(true, Some(&before_image));
         Ok(())
     }
 
@@ -1205,7 +1316,7 @@ impl LiveSession {
                 &self.view.visual_tracks,
             );
             self.update_rule_checks();
-            self.update_prediction_check(false);
+            self.update_prediction_check(false, None);
         }
         Ok(changed)
     }
@@ -1427,7 +1538,7 @@ impl LiveSession {
         Ok(())
     }
 
-    fn update_prediction_check(&mut self, captured: bool) {
+    fn update_prediction_check(&mut self, captured: bool, before_image: Option<&PredictionReads>) {
         let Some(check) = &mut self.view.prediction_check else {
             return;
         };
@@ -1470,6 +1581,14 @@ impl LiveSession {
                     .cloned();
                 candidate.samples.push(prediction::Sample {
                     frame: number,
+                    before_image: before_image
+                        .and_then(|reads| {
+                            reads.get(&(
+                                candidate.chunk_address + candidate.offset_in_chunk as u64,
+                                candidate.mapping.kind.width(),
+                            ))
+                        })
+                        .cloned(),
                     image: self
                         .view
                         .frames

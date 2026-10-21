@@ -19,17 +19,76 @@ pub enum Outcome {
     Missing,
     Agrees,
     Contradicts,
+    TimingUncertain,
+}
+
+impl Outcome {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Pending => "Waiting for a reading",
+            Self::Missing => "Memory reading unavailable",
+            Self::Agrees => "Agrees",
+            Self::Contradicts => "Contradicts",
+            Self::TimingUncertain => "Capture timing uncertain",
+        }
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Witness {
+    pub bytes: Option<Vec<u8>>,
+    pub read: MemoryRead,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Sample {
     pub frame: usize,
     pub image: Option<FrameRef>,
+    /// A bounded read of this candidate before requesting the image. Historical
+    /// samples without this witness cannot establish a timed comparison.
+    #[serde(default)]
+    pub before_image: Option<Witness>,
     pub bytes: Option<Vec<u8>>,
     pub read: Option<MemoryRead>,
     pub predicted: Option<f64>,
     pub observed: Option<f64>,
     pub outcome: Outcome,
+}
+
+impl Sample {
+    /// Equal endpoints bracket the image request, not every intervening state.
+    /// They cannot exclude an ABA change or a delayed/compositor display copy.
+    pub fn supports_comparison(&self) -> bool {
+        let (Some(before), Some(after), Some(read), Some(image)) =
+            (&self.before_image, &self.bytes, &self.read, &self.image)
+        else {
+            return false;
+        };
+        let (Some(bytes), Some(first), Some(last), Some(capture)) = (
+            &before.bytes,
+            &before.read.capture_interval,
+            &read.capture_interval,
+            &image.capture_interval,
+        ) else {
+            return false;
+        };
+        image.number == self.frame
+            && !bytes.is_empty()
+            && bytes.len() <= 8
+            && bytes == after
+            && before.read.requested == bytes.len()
+            && before.read.retained == bytes.len()
+            && read.retained >= after.len()
+            && before.read.disposition == "retained_generation_unverified"
+            && read.disposition == "retained_generation_unverified"
+            && first.clock_id == capture.clock_id
+            && last.clock_id == capture.clock_id
+            && first.begin_us <= first.end_us
+            && first.end_us <= capture.begin_us
+            && capture.begin_us <= capture.end_us
+            && capture.end_us <= last.begin_us
+            && last.begin_us <= last.end_us
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -89,19 +148,21 @@ impl FrozenCandidate {
         if self
             .samples
             .iter()
-            .any(|s| s.outcome == Outcome::Contradicts)
+            .any(|s| s.supports_comparison() && s.outcome == Outcome::Contradicts)
         {
             return Assessment::Contradicted;
         }
         let usable = self
             .samples
             .iter()
-            .filter(|s| s.outcome == Outcome::Agrees)
+            .filter(|s| s.supports_comparison() && s.outcome == Outcome::Agrees)
             .count();
         let mut hold = false;
         let mut change = false;
         for pair in self.samples.windows(2) {
-            if pair.iter().all(|s| s.outcome == Outcome::Agrees)
+            if pair
+                .iter()
+                .all(|s| s.supports_comparison() && s.outcome == Outcome::Agrees)
                 && pair[1].frame == pair[0].frame + 1
                 && let (Some(a), Some(b)) = (pair[0].observed, pair[1].observed)
             {
@@ -131,6 +192,8 @@ impl PredictionCheck {
                         .filter(|v| v.is_finite())
                 });
                 sample.outcome = match (sample.predicted, sample.observed) {
+                    (None, _) => Outcome::Missing,
+                    _ if !sample.supports_comparison() => Outcome::TimingUncertain,
                     (Some(predicted), Some(observed)) => {
                         if (predicted - observed).abs() <= self.tolerance {
                             Outcome::Agrees
@@ -138,7 +201,6 @@ impl PredictionCheck {
                             Outcome::Contradicts
                         }
                     }
-                    (None, _) => Outcome::Missing,
                     (_, None) => Outcome::Pending,
                 };
             }
@@ -166,6 +228,23 @@ impl PredictionCheck {
 mod tests {
     use super::*;
     use crate::discovery::Kind;
+    use crate::visual::CaptureInterval;
+
+    fn read_at(begin_us: u64, end_us: u64) -> MemoryRead {
+        MemoryRead {
+            address: "0x10".into(),
+            requested: 4,
+            retained: 4,
+            begin_ms: 0,
+            end_ms: 0,
+            disposition: "retained_generation_unverified".into(),
+            capture_interval: Some(CaptureInterval {
+                clock_id: "session".into(),
+                begin_us,
+                end_us,
+            }),
+        }
+    }
 
     fn check(predictions: &[f64]) -> PredictionCheck {
         PredictionCheck {
@@ -209,10 +288,18 @@ mod tests {
                             height: 10,
                             epoch: 0,
                             started_unix_ms: i as u128,
-                            capture_interval: None,
+                            capture_interval: Some(CaptureInterval {
+                                clock_id: "session".into(),
+                                begin_us: 3,
+                                end_us: 6,
+                            }),
                         }),
-                        bytes: None,
-                        read: None,
+                        before_image: Some(Witness {
+                            bytes: Some((*p as i32).to_le_bytes().to_vec()),
+                            read: read_at(1, 2),
+                        }),
+                        bytes: Some((*p as i32).to_le_bytes().to_vec()),
+                        read: Some(read_at(7, 8)),
                         predicted: Some(*p),
                         observed: None,
                         outcome: Outcome::Pending,
@@ -265,5 +352,89 @@ mod tests {
         );
         c.invalidated = Some("target exited".into());
         assert_eq!(c.candidates[0].assessment(&c), Assessment::Invalidated);
+    }
+
+    #[test]
+    fn changing_bytes_or_unbracketed_images_never_confirm_or_refute_a_mapping() {
+        for fault in [
+            "changed",
+            "missing",
+            "before_overlap",
+            "after_overlap",
+            "clock",
+            "image",
+            "short_read",
+        ] {
+            let mut c = check(&[1., 1., 3., 3.]);
+            let sample = &mut c.candidates[0].samples[1];
+            match fault {
+                "changed" => {
+                    sample.before_image.as_mut().unwrap().bytes = Some(9_i32.to_le_bytes().to_vec())
+                }
+                "missing" => sample.before_image = None,
+                "before_overlap" => {
+                    sample
+                        .before_image
+                        .as_mut()
+                        .unwrap()
+                        .read
+                        .capture_interval
+                        .as_mut()
+                        .unwrap()
+                        .end_us = 4
+                }
+                "after_overlap" => {
+                    sample
+                        .read
+                        .as_mut()
+                        .unwrap()
+                        .capture_interval
+                        .as_mut()
+                        .unwrap()
+                        .begin_us = 5
+                }
+                "clock" => {
+                    sample
+                        .read
+                        .as_mut()
+                        .unwrap()
+                        .capture_interval
+                        .as_mut()
+                        .unwrap()
+                        .clock_id = "other".into()
+                }
+                "image" => sample.image.as_mut().unwrap().capture_interval = None,
+                "short_read" => sample.before_image.as_mut().unwrap().read.retained = 2,
+                _ => unreachable!(),
+            }
+            for observed in [1., 99.] {
+                c.observe(&observations(&[
+                    Some(1.),
+                    Some(observed),
+                    Some(3.),
+                    Some(3.),
+                ]));
+                assert_eq!(c.candidates[0].samples[1].outcome, Outcome::TimingUncertain);
+                assert_eq!(
+                    c.candidates[0].assessment(&c),
+                    Assessment::NeedsContrastingEvidence
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn legacy_agreements_without_timing_witnesses_do_not_authorize_a_trial() {
+        let mut c = check(&[1., 1., 3., 3.]);
+        c.observe(&observations(&[Some(1.), Some(1.), Some(3.), Some(3.)]));
+        let mut json = serde_json::to_value(&c).unwrap();
+        for s in json["candidates"][0]["samples"].as_array_mut().unwrap() {
+            s.as_object_mut().unwrap().remove("before_image");
+        }
+        let historical: PredictionCheck = serde_json::from_value(json).unwrap();
+        assert_eq!(
+            historical.candidates[0].assessment(&historical),
+            Assessment::NeedsContrastingEvidence
+        );
     }
 }

@@ -994,8 +994,8 @@ impl LivePane {
                             if let Some(reason) = &candidate.invalidated { ui.colored_label(WARNING, reason); }
                             for sample in &candidate.samples {
                                 let value = |v:Option<f64>| v.map_or_else(|| "missing".into(), |n| format!("{n:.2}"));
-                                ui.label(format!("Capture {}: predicted {} · observed {} · {:?}",
-                                    sample.frame, value(sample.predicted), value(sample.observed), sample.outcome));
+                                ui.label(format!("Capture {}: predicted {} · observed {} · {}",
+                                    sample.frame, value(sample.predicted), value(sample.observed), sample.outcome.label()));
                             }
                         });
                 }

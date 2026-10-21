@@ -18,6 +18,9 @@ struct Flags {
     resize: Cell<bool>,
     remap: Cell<bool>,
     missing: Cell<bool>,
+    change_during_image: Cell<bool>,
+    read_bias: Cell<i32>,
+    missing_prefix: Cell<bool>,
 }
 struct Target {
     info: ProcessInfo,
@@ -50,8 +53,11 @@ impl NativeTarget for Target {
         }])
     }
     fn screen(&self, path: &Path) -> Result<Screen> {
-        let frame = self.flags.frame.get() + 1;
-        self.flags.frame.set(frame);
+        let frame = self.flags.frame.get();
+        let observed = value(frame) + self.flags.read_bias.get();
+        if self.flags.change_during_image.get() {
+            self.flags.read_bias.set(self.flags.read_bias.get() + 10);
+        }
         let mut bytes = b"\x89PNG\r\n\x1a\ncontract fixture".to_vec();
         bytes.extend(frame.to_le_bytes());
         std::fs::write(path, bytes).map_err(|e| e.to_string())?;
@@ -63,29 +69,37 @@ impl NativeTarget for Target {
             warning: None,
             method: "contract fixture".into(),
             words: vec![Word {
-                text: value(frame).to_string(),
+                text: observed.to_string(),
                 bounds: [10., 10., 40., 20.],
                 line: 0,
                 source: TextSource::WindowsOcr,
             }],
         })
     }
-    fn read(&self, _: u64, length: usize) -> Result<Vec<u8>> {
-        if self.flags.missing.get() {
+    fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
+        if self.flags.missing.get() || (self.flags.missing_prefix.get() && length <= 8) {
             return Err("injected incomplete read".into());
         }
         let frame = self.flags.frame.get();
-        let mut bytes = vec![0; length];
+        let mut bytes = [0; 128];
         // Two observationally indistinguishable copies, plus a time confound.
         for offset in [32, 48] {
-            bytes[offset..offset + 4].copy_from_slice(&value(frame).to_le_bytes());
+            bytes[offset..offset + 4]
+                .copy_from_slice(&(value(frame) + self.flags.read_bias.get()).to_le_bytes());
         }
         bytes[64..68].copy_from_slice(&(13 + frame as i32 * 7).to_le_bytes());
-        Ok(bytes)
+        let offset = (address - 0x10000) as usize;
+        Ok(bytes[offset..offset + length].to_vec())
     }
 }
 fn setup() -> (LiveSession, Rc<Flags>, PathBuf) {
     setup_mode(CaptureMode::Full)
+}
+
+fn capture(session: &mut LiveSession, flags: &Flags, mode: CaptureMode) {
+    // Fixture state advances between captures, independently of screen/read calls.
+    flags.frame.set(flags.frame.get() + 1);
+    session.capture_mode(mode).unwrap();
 }
 
 fn setup_mode(mode: CaptureMode) -> (LiveSession, Rc<Flags>, PathBuf) {
@@ -98,7 +112,7 @@ fn setup_mode(mode: CaptureMode) -> (LiveSession, Rc<Flags>, PathBuf) {
     };
     let mut session = LiveSession::attach(Box::new(target), 1, root.clone()).unwrap();
     for _ in 0..12 {
-        session.capture_mode(mode).unwrap();
+        capture(&mut session, &flags, mode);
     }
     (session, flags, root)
 }
@@ -130,7 +144,7 @@ fn start(session: &mut LiveSession, source: Source) -> Result<()> {
 
 #[test]
 fn visual_samples_keep_image_bound_external_matching_and_fresh_checks() {
-    let (mut session, _, root) = setup_mode(CaptureMode::Visual);
+    let (mut session, flags, root) = setup_mode(CaptureMode::Visual);
     assert!(session.view.tracks.is_empty());
     assert_eq!(session.view.frames.len(), 12);
     for n in 1..=12 {
@@ -140,7 +154,7 @@ fn visual_samples_keep_image_bound_external_matching_and_fresh_checks() {
     assert!(!session.view.visual_tracks[0].matches.is_empty());
     start(&mut session, Source::External).unwrap();
     for n in 13..=16 {
-        session.capture_mode(CaptureMode::Visual).unwrap();
+        capture(&mut session, &flags, CaptureMode::Visual);
         submit(&mut session, n);
     }
     let check = session.view.prediction_check.as_ref().unwrap();
@@ -163,7 +177,8 @@ fn visual_samples_keep_image_bound_external_matching_and_fresh_checks() {
 
 #[test]
 fn automatic_report_compares_and_keeps_frozen_predictions_unchanged() {
-    let (mut session, _, _) = setup();
+    let (mut session, flags, _) = setup();
+    flags.frame.set(flags.frame.get() + 1);
     session.capture_for_report().unwrap();
     assert!(session.view.tracks.iter().any(|t| !t.matches.is_empty()));
     session
@@ -179,6 +194,7 @@ fn automatic_report_compares_and_keeps_frozen_predictions_unchanged() {
         &session.view.prediction_check.as_ref().unwrap().candidates[0].mapping,
     )
     .unwrap();
+    flags.frame.set(flags.frame.get() + 1);
     session.capture_for_report().unwrap();
     let check = session.view.prediction_check.as_ref().unwrap();
     assert_eq!(check.candidates[0].samples.len(), 1);
@@ -191,7 +207,7 @@ fn automatic_report_compares_and_keeps_frozen_predictions_unchanged() {
 #[test]
 fn prospective_checks_keep_predictions_and_do_not_distinguish_identical_copies() {
     for source in [Source::Ocr, Source::External] {
-        let (mut session, _, root) = setup();
+        let (mut session, flags, root) = setup();
         if source == Source::External {
             for n in 1..=12 {
                 submit(&mut session, n);
@@ -216,7 +232,7 @@ fn prospective_checks_keep_predictions_and_do_not_distinguish_identical_copies()
             frozen.id
         );
         for _ in 0..4 {
-            session.capture().unwrap();
+            capture(&mut session, &flags, CaptureMode::Full);
         }
         if source == Source::External {
             let check = session.view.prediction_check.as_ref().unwrap();
@@ -296,7 +312,7 @@ fn missing_memory_geometry_mapping_exit_and_storage_failures_never_promote_check
             assert!(session.capture().is_err());
         } else {
             for _ in 0..4 {
-                session.capture().unwrap();
+                capture(&mut session, &flags, CaptureMode::Full);
             }
         }
         let check = session.view.prediction_check.as_ref().unwrap();
@@ -311,4 +327,74 @@ fn missing_memory_geometry_mapping_exit_and_storage_failures_never_promote_check
             );
         }
     }
+}
+
+#[test]
+fn changing_or_missing_brackets_abstain_then_recover_on_later_stable_captures() {
+    use reversebolt_core::prediction::Outcome;
+    for missing in [false, true] {
+        let (mut session, flags, root) = setup();
+        assert!(
+            session
+                .view
+                .latest
+                .as_ref()
+                .unwrap()
+                .prediction_reads
+                .is_empty()
+        );
+        session.correlate().unwrap();
+        start(&mut session, Source::Ocr).unwrap();
+        let before = session.view.coverage.attempted_bytes;
+        flags.change_during_image.set(!missing);
+        flags.missing_prefix.set(missing);
+        let mut prefix_bytes = 0;
+        for _ in 0..4 {
+            capture(&mut session, &flags, CaptureMode::Full);
+            let reads = &session.view.latest.as_ref().unwrap().prediction_reads;
+            assert!(!reads.is_empty());
+            assert!(reads.iter().all(|r| r.requested <= 8));
+            prefix_bytes += reads.iter().map(|r| r.requested as u64).sum::<u64>();
+        }
+        assert_eq!(
+            session.view.coverage.attempted_bytes - before,
+            4 * session.view.planned_bytes as u64 + prefix_bytes
+        );
+        let check = session.view.prediction_check.as_ref().unwrap();
+        for c in check.candidates.iter().filter(|c| c.address != "0x10040") {
+            assert!(
+                c.samples
+                    .iter()
+                    .all(|s| s.outcome == Outcome::TimingUncertain)
+            );
+            assert_eq!(c.assessment(check), Assessment::NeedsContrastingEvidence);
+        }
+        flags.change_during_image.set(false);
+        flags.missing_prefix.set(false);
+        for _ in 0..4 {
+            capture(&mut session, &flags, CaptureMode::Full);
+        }
+        let check = session.view.prediction_check.as_ref().unwrap();
+        for c in check.candidates.iter().filter(|c| c.address != "0x10040") {
+            assert_eq!(c.assessment(check), Assessment::ConsistentInObservedScope);
+            assert!(c.samples[4..].iter().all(|s| s.supports_comparison()));
+        }
+        assert!(root.starts_with(std::env::temp_dir()));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
+
+#[test]
+fn bracket_reads_are_reserved_before_any_capture_side_effect() {
+    let (mut session, _, root) = setup();
+    session.correlate().unwrap();
+    start(&mut session, Source::Ocr).unwrap();
+    session.view.coverage.attempted_bytes =
+        reversebolt_core::coverage::MAX_READ_BYTES - session.view.planned_bytes as u64;
+    let before = session.view.coverage.attempted_bytes;
+    assert!(session.capture().unwrap_err().contains("read budget"));
+    assert_eq!(session.view.sample_count, 12);
+    assert_eq!(session.view.coverage.attempted_bytes, before);
+    assert!(!root.join("frame-013.png").exists());
+    std::fs::remove_dir_all(root).unwrap();
 }

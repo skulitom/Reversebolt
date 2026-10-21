@@ -13,3 +13,4 @@
 /research/visual-objects/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/memory-sources/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/process-scope-study/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/capture-alignment/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

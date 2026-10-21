@@ -90,6 +90,10 @@ or scope failures still stop the job. See
 For a series with matches, **Challenge these matches** freezes its predictions
 and checks them against fresh observations. Agreement is limited evidence;
 contradictions rule out that mapping. Neither outcome verifies a gameplay control.
+Small reads bracket each fresh image. If the candidate bytes change across the
+capture, that comparison stays uncertain; it counts neither for nor against the
+match. Later stable captures can supply the missing evidence. Equal endpoints
+still cannot rule out changes between reads or a delayed display copy.
 Initial matching requires repeated value differences in both halves of the
 observations, including the readings each mapping explains. A single unusual
 reading cannot certify a match; rare changes may need more observation. See
