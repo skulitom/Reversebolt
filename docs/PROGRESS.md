@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest refreshable runtime paths (2026-10-21): **31% unchanged**. The shared core
+can derive scalar paths without addresses, and the reader resolves them afresh
+with exact process, type, layout, field and array checks. The repaired native
+fixture passed 13 cases and 31 balanced pauses, including address reuse,
+collection reordering and explicit refusals after structural changes. Its first
+response-envelope failure is retained. All 194 workspace tests passed, followed
+by targeted checks of the repair. Four generically selected Blue Prince paths
+refreshed in 1.819 s, with 516 microseconds total across three managed pauses.
+All four were unchanged framework fields, not verified gameplay controls.
+Candidate selection, useful effects, persistent identity and desktop/MCP dispatch
+remain unfinished. Frozen sources and all ten versioned binary copies pass the
+artifact audit. The desktop preview and all weighted credits remain unchanged;
+the full goal remains active. [Evidence and limits](../research/runtime-paths/README.md).
+
 Latest deeper runtime traversal (2026-10-21): **31% unchanged**. The reusable
 Rust reader completed 4,267 supported Blue Prince root slots in 67 final batches,
 with 93 preparatory snapshots. It reached 7,747 non-root node occurrences,

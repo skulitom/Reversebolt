@@ -74,9 +74,17 @@ These occurrences can repeat between batches; they are not distinct controls.
 Coverage remains bounded and partial, and the component is not yet connected to
 the app/MCP dispatchers. See [traversal results and limits](../research/runtime-traversal/README.md).
 
-Next expose typed candidates through the shared investigation API, establish
-refreshable reference paths and validate useful effects. Neither snapshot
-addresses nor field names establish persistent identity or edit authority.
+The shared core now derives typed scalar paths, and the runtime reader can
+resolve them afresh with type/layout and process checks. Owned tests cover
+replacement, reordering and structural refusals. Four paths refreshed in Blue
+Prince, but the fixed selection picked unchanged framework fields. This exposes
+candidate usefulness as the next bottleneck; those paths establish no gameplay
+authority. See [path evidence](../research/runtime-paths/README.md).
+
+Next prioritize useful application-state candidates, expose discovery/refresh
+through the shared investigation dispatcher and simple cards, and validate useful
+effects. Neither snapshot addresses, stable path IDs nor field names establish
+persistent identity or edit authority.
 Static values may be defaults from uninitialized classes. Keep automatic reads
 separate from mechanisms that execute code in the target, and expose unsupported
 paths. Runtime structure should get priority when available; memory-change

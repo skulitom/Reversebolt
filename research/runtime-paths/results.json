@@ -1,0 +1,830 @@
+{
+  "audit_passed": true,
+  "versions": [
+    {
+      "version": 1,
+      "execution_context": {
+        "source_revision": "b4936dbff070d67dadcc1af7a3a68c373c46e05f",
+        "frozen_manifest_sha256": "3ed9de957f608fc52bd2bfe3b4f7dd57cab34366447ea1a975395182558b7ebb",
+        "recorded_utc": "2026-10-21T14:17:11.0884266Z"
+      },
+      "frozen_source_files_verified": 19,
+      "frozen_binary_files_verified": 5,
+      "git_line_ending_reconstruction": []
+    },
+    {
+      "version": 2,
+      "execution_context": {
+        "source_revision": "a8618c466391dd57c8bd296891b6088ca77662de",
+        "frozen_manifest_sha256": "e7faea56ed8d47809ba8022ad443990cfff35662e0a7100292ccf23dedbd5a49",
+        "recorded_utc": "2026-10-21T14:18:35.8710037Z"
+      },
+      "frozen_source_files_verified": 20,
+      "frozen_binary_files_verified": 5,
+      "git_line_ending_reconstruction": []
+    }
+  ],
+  "retained_v1_failure": "Refresh response lacked the top-level identity envelope; loader rejected after successful unload. Host exit 0 and balanced 8/8 pauses.",
+  "mock_cases": [
+    {
+      "label": "discovery",
+      "statuses": [],
+      "pauses": 5,
+      "max_stop_to_resume_us": 58,
+      "loader_elapsed_ms": 120
+    },
+    {
+      "label": "refresh-0",
+      "statuses": [
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 20,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "refresh-1",
+      "statuses": [
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 24,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "refresh-2",
+      "statuses": [
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 16,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "reordered",
+      "statuses": [
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 17,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "null-root",
+      "statuses": [
+        "null_reference",
+        "null_reference",
+        "null_reference",
+        "null_reference"
+      ],
+      "pauses": 1,
+      "max_stop_to_resume_us": 3,
+      "loader_elapsed_ms": 6
+    },
+    {
+      "label": "generic-type-changed",
+      "statuses": [
+        "type_changed",
+        "type_changed",
+        "type_changed",
+        "type_changed"
+      ],
+      "pauses": 2,
+      "max_stop_to_resume_us": 10,
+      "loader_elapsed_ms": 17
+    },
+    {
+      "label": "array-shortened",
+      "statuses": [
+        "array_bounds",
+        "array_bounds",
+        "array_bounds",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 16,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "layout-changed",
+      "statuses": [
+        "type_changed",
+        "type_changed",
+        "type_changed",
+        "type_changed"
+      ],
+      "pauses": 1,
+      "max_stop_to_resume_us": 6,
+      "loader_elapsed_ms": 6
+    },
+    {
+      "label": "restored-structure",
+      "statuses": [
+        "read",
+        "read",
+        "read",
+        "read"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 14,
+      "loader_elapsed_ms": 27
+    },
+    {
+      "label": "wrong-root-layout",
+      "statuses": [
+        "root_unavailable"
+      ],
+      "pauses": 1,
+      "max_stop_to_resume_us": 0,
+      "loader_elapsed_ms": 28
+    },
+    {
+      "label": "missing-field",
+      "statuses": [
+        "field_unavailable"
+      ],
+      "pauses": 3,
+      "max_stop_to_resume_us": 7,
+      "loader_elapsed_ms": 25
+    }
+  ],
+  "mock_balanced_pauses": 31,
+  "observed_same_address_changed_identity_pairs": 3,
+  "game": {
+    "passed": true,
+    "pid": 87716,
+    "created": "01dd6167203add85",
+    "helper_sha256": "23a3769cdb60b7152b0a7918129033760193a4a5823eeb29ac61c073c4b6511b",
+    "discovery_root_scan_complete": true,
+    "discovery_next_root": 4267,
+    "discovery_catalog_roots": 4267,
+    "candidate_count": 4096,
+    "selected_path_steps": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "refresh_statuses": [
+      "read",
+      "read",
+      "read",
+      "read"
+    ],
+    "refresh_pauses": [
+      {
+        "attempt": 0,
+        "helper_allocations_while_paused": 0,
+        "helper_deallocations_while_paused": 0,
+        "pause_held_us": 23,
+        "stop_to_resume_us": 162
+      },
+      {
+        "attempt": 1,
+        "helper_allocations_while_paused": 0,
+        "helper_deallocations_while_paused": 0,
+        "pause_held_us": 20,
+        "stop_to_resume_us": 208
+      },
+      {
+        "attempt": 2,
+        "helper_allocations_while_paused": 0,
+        "helper_deallocations_while_paused": 0,
+        "pause_held_us": 17,
+        "stop_to_resume_us": 146
+      }
+    ],
+    "refresh_classes_added": 3,
+    "discovery_loader": {
+      "elapsed_ms": 18679,
+      "helper_absent": true,
+      "inspection_exit": 0,
+      "stage": "complete",
+      "unload_exit": 1
+    },
+    "refresh_loader": {
+      "elapsed_ms": 1819,
+      "helper_absent": true,
+      "inspection_exit": 0,
+      "stage": "complete",
+      "unload_exit": 1
+    },
+    "edit_authority": false
+  },
+  "selected_game_case_fields": [
+    {
+      "name": "Element 0",
+      "declaring_image": "mscorlib.dll",
+      "steps": 2,
+      "value_changed": false
+    },
+    {
+      "name": "Element 1",
+      "declaring_image": "mscorlib.dll",
+      "steps": 2,
+      "value_changed": false
+    },
+    {
+      "name": "Element 2",
+      "declaring_image": "mscorlib.dll",
+      "steps": 2,
+      "value_changed": false
+    },
+    {
+      "name": "_size",
+      "declaring_image": "mscorlib.dll",
+      "steps": 2,
+      "value_changed": false
+    }
+  ],
+  "game_discovery": {
+    "catalog_ms": 1966,
+    "elapsed_before_json_write_ms": 5474,
+    "snapshots": 67,
+    "warmups": 93,
+    "max_stop_to_resume_us": 5297,
+    "root_scan_complete": true,
+    "graph_complete": false
+  },
+  "refresh_catalog_ms": 1764,
+  "workspace_tests_passed": 194,
+  "game_after": {
+    "pid": 87716,
+    "created": "01dd6167203add85",
+    "session": 2,
+    "responding": true,
+    "window": 3867242,
+    "helper_present": false
+  },
+  "cleanup": {
+    "remaining_owned_processes": [],
+    "lease_released": true,
+    "steam_sessions": [
+      1
+    ]
+  },
+  "desktop": {
+    "pid": 67560,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703\\Reversebolt.exe",
+    "session": 1,
+    "ok": true,
+    "history_count": 29,
+    "observer_model": "qwen3.8:latest",
+    "sha256": "2bdd4f38631d445cb2b8c5c73e3b4b16bf00fff5c24ab139abd522b1219a50cf",
+    "changed_this_turn": false
+  },
+  "screenshots": 0,
+  "gameplay_inputs": 0,
+  "game_field_write_calls": 0,
+  "edit_authority": false,
+  "progress_percent": 31,
+  "raw_artifacts": [
+    {
+      "path": "test-results/runtime-paths-workspace-tests.log",
+      "sha256": "e2481041a1297a69bc423322c2a94ce4a35ece44b938addf4b1d1008118e56df",
+      "bytes": 23416
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/object-host.exe",
+      "sha256": "bdc3490aebcddf96bdd4f98dd21edd169a126e129aedf22a8e9ac3705293cfb3",
+      "bytes": 351232
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt-runtime-candidates.exe",
+      "sha256": "60635eb4374f78ac2b1c7ea90834bc7c9d747ff076ea974e600e89fb429dcf06",
+      "bytes": 550912
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt-runtime-loader.exe",
+      "sha256": "5cfa4d79819f7a74b2f9404474b88dd9c7efae86810189c6827fcb76af66613d",
+      "bytes": 515584
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt_path_fixture.dll",
+      "sha256": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+      "bytes": 204288
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt_runtime.dll",
+      "sha256": "aa83aa2fc2a824b03a9c925f67eabd34b11a5c1c596c638313686c0c963b3569",
+      "bytes": 661504
+    },
+    {
+      "path": "test-results/runtime-paths-v1/execution-context.json",
+      "sha256": "26446a73a5049aeddf473896d1c2b491effc6029b26dfbe67ddfa2ce59bc132e",
+      "bytes": 219
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/candidates.json",
+      "sha256": "64fec30c050e5ae2add10073c7a88530a22f9be4b55569ed06cf5f5026050a31",
+      "bytes": 75841
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/candidates.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/candidates.stdout.jsonl",
+      "sha256": "c5882e4a8cdf90c279dcec2c8a38560065ed78d936414c77f457bcc032239bac",
+      "bytes": 42
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/discovery.json",
+      "sha256": "b93811ea69aef7398c8a52a64380192810444fe3b75622b029ee988988bc106d",
+      "bytes": 74141
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/discovery.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/discovery.stdout.jsonl",
+      "sha256": "04df45f8a2e342e29e527ead003ff7e1c1abbbb537f624b50bffc6786e451f54",
+      "bytes": 780
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/execution.json",
+      "sha256": "9a667f158eade1c97db837ad7cd64991babcb2516d7677cceb0a97b4bcde955a",
+      "bytes": 209
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/host.jsonl",
+      "sha256": "6f0d9a59aacb73526bed3325d56dfaadf79274817c602a9df5d7196a7c9d3b81",
+      "bytes": 23
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/identity.json",
+      "sha256": "a506f1ee62aab5d2b296cd7ce421a0b05ee5a10d19524e6e118cc50a2f5c1362",
+      "bytes": 74
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/mode.ack",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "bytes": 1
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/mode.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "bytes": 1
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/refresh-0.json",
+      "sha256": "2beebf3e7863008a26c97d48d72aad15bc0ad994626fa4f9314cd67122e935ec",
+      "bytes": 1880
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/refresh-0.paths.json",
+      "sha256": "4bdd1bff94739fe40e559ee89cae214f5d731b0325d86cdc73ecbce3129798fa",
+      "bytes": 6702
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/refresh-0.stderr.jsonl",
+      "sha256": "2b35621924b9721fa01d984ce22811acf91d7c122031c8b33c70e94a803f1463",
+      "bytes": 38
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/refresh-0.stdout.jsonl",
+      "sha256": "3d12f725a715850525bab8c74b354ddcfc1809d99d23e497e0a9e923fb996a3e",
+      "bytes": 779
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/selected.json",
+      "sha256": "ea3ce8b0b266277fe5e11bd01f0bee7c463a6248a376e3231c337ee1827884e7",
+      "bytes": 12029
+    },
+    {
+      "path": "test-results/runtime-paths-v1/mock/stop",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/bin/object-host.exe",
+      "sha256": "bdc3490aebcddf96bdd4f98dd21edd169a126e129aedf22a8e9ac3705293cfb3",
+      "bytes": 351232
+    },
+    {
+      "path": "test-results/runtime-paths-v2/bin/reversebolt-runtime-candidates.exe",
+      "sha256": "44d38c28451b92828515a9788bf27f6de1d5f90b4eaa74afb3eb2ea37d2c69e2",
+      "bytes": 550912
+    },
+    {
+      "path": "test-results/runtime-paths-v2/bin/reversebolt-runtime-loader.exe",
+      "sha256": "18bb0609885cf06ee91e6aa36a9d667f33943b5ebeb29c401269124410125814",
+      "bytes": 515584
+    },
+    {
+      "path": "test-results/runtime-paths-v2/bin/reversebolt_path_fixture.dll",
+      "sha256": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+      "bytes": 204288
+    },
+    {
+      "path": "test-results/runtime-paths-v2/bin/reversebolt_runtime.dll",
+      "sha256": "23a3769cdb60b7152b0a7918129033760193a4a5823eeb29ac61c073c4b6511b",
+      "bytes": 664064
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/candidates.json",
+      "sha256": "2e3db67eeeadcefaa6fff43ff7fc601e3fbf19fbdb646d00a5f573ef9e33309c",
+      "bytes": 9228031
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/candidates.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/candidates.stdout.jsonl",
+      "sha256": "efa44e662109a1154e232a709d3112071892a3e819366d898bb6fc9c5e28476a",
+      "bytes": 44
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/discovery.json",
+      "sha256": "a665475a8e669f4c9bf100e718368f6a2d57b8c1d309b0c1f0015dbd225d8d58",
+      "bytes": 14540835
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/discovery.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/discovery.stdout.jsonl",
+      "sha256": "d55c3ce0798cb5748527139e6938fcb87c17d994190e6e9a65a58265becb2613",
+      "bytes": 790
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/paths.json",
+      "sha256": "204e94955e02eb3ae4238afc632714ac658285e534ab3409f4e714c89ac2d029",
+      "bytes": 7109
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/refresh.json",
+      "sha256": "5fd7db63f4d7e4aeede64416cbd94c7400a8262b905acf7db0ee25989861abbe",
+      "bytes": 1778
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/refresh.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/refresh.stdout.jsonl",
+      "sha256": "e045debc22459672037b9c8514566baba2a76768b3f9a47fdea39a548ecf874b",
+      "bytes": 787
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/selected.json",
+      "sha256": "2a2c8e62e42f3bd5eb8d8d0f02ef1893eebeeb77d8833f9fa432a87fecb9f1b1",
+      "bytes": 10794
+    },
+    {
+      "path": "test-results/runtime-paths-v2/blue-prince/summary.json",
+      "sha256": "8f2fbfcaccd1c3557abfa0d81af1db9a2b56646dc8b2c60f60b48c2e42a0906d",
+      "bytes": 1413
+    },
+    {
+      "path": "test-results/runtime-paths-v2/cleanup.json",
+      "sha256": "c8bdc44c404ae834b24c838a2d67e4cf4ccf1d49f15c0b90faec2093e74f2ee2",
+      "bytes": 104
+    },
+    {
+      "path": "test-results/runtime-paths-v2/desktop.json",
+      "sha256": "d6ed9018e31db4fdd4d7a3591bf060436ea0d3547cd7dcb4991d08d544200597",
+      "bytes": 310
+    },
+    {
+      "path": "test-results/runtime-paths-v2/execution-context.json",
+      "sha256": "3c50ae5b105c58aeb71320213c1b176c9406ed42e36d456af49642bca4948247",
+      "bytes": 219
+    },
+    {
+      "path": "test-results/runtime-paths-v2/game-after.json",
+      "sha256": "07060c18b67640f105f00c163ac94ed7e297401a9e4ca42643be91f2b3401cd3",
+      "bytes": 330
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/array-shortened.json",
+      "sha256": "3b50ccdff121d9cf4ce45ea4e7fcc21f0627eed8a4fcc66fc2a8a808b6f8e241",
+      "bytes": 1833
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/array-shortened.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/array-shortened.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/array-shortened.stdout.jsonl",
+      "sha256": "e716297ab774ed7973eacada7fb56280ee9cd5e46ca1bde804be37b7e2281e1b",
+      "bytes": 784
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/candidates.json",
+      "sha256": "e2a06cc202c5599bab0bc2a7902591504ffc4411e02b3b166dd260d31af34f1b",
+      "bytes": 75889
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/candidates.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/candidates.stdout.jsonl",
+      "sha256": "c5882e4a8cdf90c279dcec2c8a38560065ed78d936414c77f457bcc032239bac",
+      "bytes": 42
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/discovery.json",
+      "sha256": "c516d6591b36107ab43d05703ba956330491e73e52ca95ac9c010c43b8638711",
+      "bytes": 73716
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/discovery.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/discovery.stdout.jsonl",
+      "sha256": "961e4431c42473733ff3065a8a74234b92b5cde101851afd7f24defdbc3350bc",
+      "bytes": 781
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/execution.json",
+      "sha256": "ed17f93a1cbc05595d832b98f4d501ee8e03e74ae89ceea1ef500ab2e27ada86",
+      "bytes": 929
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/generic-type-changed.json",
+      "sha256": "4a10dfa1813857500644f5ed493b4af65f869c7a6ac1bb0fa299e6df9aa4d089",
+      "bytes": 1617
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/generic-type-changed.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/generic-type-changed.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/generic-type-changed.stdout.jsonl",
+      "sha256": "f3eb7fc3cd9d5f1b2a7ad3294a5526ccb562a61f77042f3d0e5bc37b12f9fb79",
+      "bytes": 791
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/host.jsonl",
+      "sha256": "09d94263a212b286ce13b03cc6f89f5581e5c1d793fccfe28fc2994378a4ab2a",
+      "bytes": 25
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/identity.json",
+      "sha256": "943439faad4bf59566cc963915cdeb037b7e886a27c733a5780c8bacfe91eb4d",
+      "bytes": 75
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/layout-changed.json",
+      "sha256": "59771ab935a4059a9eb127430fdffa16e65c10c7af375c8ce8a2857d26319187",
+      "bytes": 1419
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/layout-changed.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/layout-changed.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/layout-changed.stdout.jsonl",
+      "sha256": "fdbd3c1b73c0282c277288cc6b380e27ffc73edaef43e95f3d3b07f610876a4b",
+      "bytes": 784
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/missing-field.json",
+      "sha256": "b8dae8e809a2e919a6f95c3bb8b89361058ffadfb9dc4ad78dadfbd81d1a85ab",
+      "bytes": 1078
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/missing-field.paths.json",
+      "sha256": "18f27ab975932b3192e32ed966bc6e73e521c51fd892e0aee1fdff07d2243b3f",
+      "bytes": 1780
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/missing-field.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/missing-field.stdout.jsonl",
+      "sha256": "d42db4df6a3df62f96b366b0c1fe0a71506298accf89a680cc04c6d2fe34b827",
+      "bytes": 784
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/mode.ack",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "bytes": 1
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/mode.txt",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "bytes": 1
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/null-root.json",
+      "sha256": "956ccf82d16eac1d76b173283cce6098da08c2ea87ec9ee183a091b43118f774",
+      "bytes": 1363
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/null-root.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/null-root.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/null-root.stdout.jsonl",
+      "sha256": "450045426f56c8857a8e99918cb03cafca914f4d50ba110efeb6549c5c05f9fa",
+      "bytes": 779
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-0.json",
+      "sha256": "a680d9fb3bf9d7ff07762bf71b5ecb2d748884aa7e636452be88ca1e197317bf",
+      "bytes": 1933
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-0.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-0.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-0.stdout.jsonl",
+      "sha256": "9760b9cf29b40b8855952838cf77d3b6a6276cc370032a9e356f821778b10294",
+      "bytes": 780
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-1.json",
+      "sha256": "d10e1cd30404b796a1274d5a351048ce74e5e9bd53e33e1d6e9da86ee0376414",
+      "bytes": 1934
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-1.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-1.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-1.stdout.jsonl",
+      "sha256": "02db90bd23169aecb343ec9f928af9cf98242b3eaff252457bcde77b68bad04b",
+      "bytes": 780
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-2.json",
+      "sha256": "771321731bb6f329f4da9f3e6cc65593a426d06ea64dfdbe8a293ec00d7048c4",
+      "bytes": 1935
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-2.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-2.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/refresh-2.stdout.jsonl",
+      "sha256": "d16c235ce5f3d012e74afebb3f07ac7a99297e7ad3769869a6deedaad210e3a0",
+      "bytes": 780
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/reordered.json",
+      "sha256": "1b7f4393857e23f4b40f05efb7e9ad1981e088f05c9f07ed97e8d3ebb1e5e25b",
+      "bytes": 1935
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/reordered.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/reordered.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/reordered.stdout.jsonl",
+      "sha256": "ca9da1bd7e2a67ed82cf79d813f19407cec545a474362644d5fee2a779760018",
+      "bytes": 780
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/restored-structure.json",
+      "sha256": "991a6958f196c4a470575f21e1247c916d412c30c2133310af95197c2be10884",
+      "bytes": 1933
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/restored-structure.paths.json",
+      "sha256": "eb086f464e3c18a973ff58880aa62816f2419b73b57d2bad204587b55b1d8a67",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/restored-structure.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/restored-structure.stdout.jsonl",
+      "sha256": "4c0c1b2999e8bf7f14ee49623bd6f8a41e1281a0134ea5c58f03f7712d5e18ae",
+      "bytes": 789
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/selected.json",
+      "sha256": "bb67407a5ae66612a7cba864e4d6b241c9cc796bb70d0d258922ebb164d001e7",
+      "bytes": 12033
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/stop",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/summary.json",
+      "sha256": "8185e11bfabe0efd4a0c6aba364aea8da346f14b0acb15df7e5efb3043c2f301",
+      "bytes": 1311
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-process.paths.json",
+      "sha256": "1e8e9e31d1be74071789ca63f79b5d3dc961df08b5502e7ce4be62f5ebf49efb",
+      "bytes": 6706
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-process.stderr.jsonl",
+      "sha256": "16b70eb2c100f0f6402043ab1ac4f2a1ab9f5f941b9b3562a696d0ad3a266d23",
+      "bytes": 67
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-process.stdout.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-root-layout.json",
+      "sha256": "03572d91f8dd3cb6730f62667d4b1d3d00cf2227d6b2963c11a7bad8b878d14c",
+      "bytes": 753
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-root-layout.paths.json",
+      "sha256": "8ba1dddb18355652db7b2725072bee7e4b6e72b1bd1a41aada1f96522f1f4bc3",
+      "bytes": 1776
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-root-layout.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-paths-v2/mock/wrong-root-layout.stdout.jsonl",
+      "sha256": "6af65c354713ad4dd51b00feac5d2009c63c3f98849ed203faebd72fcf647ee0",
+      "bytes": 788
+    },
+    {
+      "path": "test-results/runtime-paths-v2/target.json",
+      "sha256": "24b55aa00a14fe5db434747fb6948279d1b06bd2b32044134d6476dc6925b6ec",
+      "bytes": 236
+    }
+  ]
+}
