@@ -41,6 +41,30 @@ fn read_archive(path: &Path) -> Result<Value> {
     serde_json::from_slice(&bytes).map_err(|e| e.to_string())
 }
 
+fn inventory_index(
+    inventory: &reversebolt_core::runtime_inventory::Inventory,
+) -> (Vec<Value>, Value) {
+    // Agents need object-local clues before choosing a type, just like the local
+    // observer. Preserve the existing complete field descriptors for API clients.
+    let context = reversebolt_core::runtime_type_index::build(inventory, 110_000);
+    let types = inventory.types.iter().map(|t| {
+        let samples = context.as_ref().ok().and_then(|index| index.types.iter().find(|i| i.id == t.id));
+        let mut entry = json!({"id":t.id,"name":t.key.type_name,
+            "fields":t.fields.iter().map(|f|json!({"id":f.field_id,"name":f.name,"type_code":f.type_code,"paths":f.path_count})).collect::<Vec<_>>()});
+        if let Some(samples) = samples.filter(|s| !s.object_samples.is_empty()) {
+            entry["object_samples"] = json!(samples.object_samples);
+        }
+        entry
+    }).collect();
+    let coverage = match context {
+        Ok(index) => {
+            json!({"available":index.available_object_samples,"omitted":index.omitted_object_samples,"error":null})
+        }
+        Err(error) => json!({"available":null,"omitted":null,"error":error}),
+    };
+    (types, coverage)
+}
+
 /// Agent-supplied proposals use the same inventory and validation as local inference.
 pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) -> Result<Value> {
     if c.action == "plan_runtime_comparisons" {
@@ -100,11 +124,15 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             .transpose()?
             .map(|ids| h::select(&inventory, &ids))
             .transpose()?;
-        let index:Vec<_> = inventory.types.iter().map(|t|json!({"id":t.id,"name":t.key.type_name,
-            "fields":t.fields.iter().map(|f|json!({"id":f.field_id,"name":f.name,"type_code":f.type_code,"paths":f.path_count})).collect::<Vec<_>>()})).collect();
+        let (index, context_coverage) = if selection.is_none() {
+            let (types, coverage) = inventory_index(&inventory);
+            (json!(types), coverage)
+        } else {
+            (Value::Null, Value::Null)
+        };
         return Ok(
             json!({"catalog_id":view.catalog_id,"revision":view.revision,"report_sha256":inventory.report_sha256,
-            "types":if selection.is_none(){json!(index)}else{Value::Null},"selection":selection,"limitation":h::LIMITATION}),
+            "types":index,"context_coverage":context_coverage,"selection":selection,"limitation":h::LIMITATION}),
         );
     };
     if p.catalog_id != view.catalog_id
@@ -427,6 +455,110 @@ fn prepare_activity(
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn inventory() -> reversebolt_core::runtime_inventory::Inventory {
+        use reversebolt_core::{
+            runtime::{FieldRef, TextHint, TypeKey},
+            runtime_inventory::*,
+        };
+        Inventory {
+            schema: 1,
+            report_sha256: "a".repeat(64),
+            scope: runtime::Scope {
+                pid: 1,
+                created: "0000000000000001".into(),
+                session: 1,
+            },
+            types: [9, 11]
+                .into_iter()
+                .map(|id| {
+                    let key = TypeKey {
+                        image: "Observed".into(),
+                        type_name: format!("Container{id}"),
+                        layout_sha256: "b".repeat(64),
+                    };
+                    ObservedType {
+                        id,
+                        key: key.clone(),
+                        fields: [13, 27]
+                            .into_iter()
+                            .map(|field_id| ObservedField {
+                                field_id,
+                                name: format!("Coefficient{field_id}"),
+                                type_code: 12,
+                                values: vec![json!("3.5")],
+                                path_count: 3,
+                                samples: (0..3)
+                                    .map(|sample| PathSample {
+                                        path_id: format!("{id:02x}{field_id:02x}{sample:060x}"),
+                                        value: json!("3.5"),
+                                        context: vec![TextHint {
+                                            field: FieldRef {
+                                                declaring: key.clone(),
+                                                field_id: 50,
+                                            },
+                                            text: if id == 9 { "Speed" } else { "Energy" }.into(),
+                                            truncated: false,
+                                        }],
+                                    })
+                                    .collect(),
+                            })
+                            .collect(),
+                    }
+                })
+                .collect(),
+            reachable_paths: 12,
+            omitted_core_paths: 0,
+            omitted_array_elements: 0,
+            omitted_non_numeric_paths: 0,
+            limitation: "fixture".into(),
+        }
+    }
+    #[test]
+    fn agent_index_exposes_object_clues_without_losing_field_descriptors() {
+        let inventory = inventory();
+        let (types, coverage) = inventory_index(&inventory);
+        assert_eq!(coverage, json!({"available":12,"omitted":4,"error":null}));
+        for (observed, t) in inventory.types.iter().zip(types) {
+            assert_eq!(t["id"], observed.id);
+            assert_eq!(t["name"], observed.key.type_name);
+            assert_eq!(t["fields"].as_array().unwrap().len(), 2);
+            assert_eq!(
+                t["fields"][1],
+                json!({"id":27,"name":"Coefficient27","type_code":12,"paths":3})
+            );
+            for sample in t["object_samples"].as_array().unwrap() {
+                let source = observed
+                    .fields
+                    .iter()
+                    .flat_map(|f| f.samples.iter())
+                    .find(|s| sample["path_id"] == s.path_id)
+                    .unwrap();
+                assert_eq!(sample["object_text"], json!([source.context[0].text]));
+            }
+        }
+    }
+    #[test]
+    fn an_oversized_context_index_does_not_erase_agent_field_metadata() {
+        let mut inventory = inventory();
+        let template = inventory.types[0].fields[0].clone();
+        inventory.types[0].fields = (0..1000)
+            .map(|id| {
+                let mut f = template.clone();
+                f.field_id = id;
+                f.name = format!("field_{id}_{}", "x".repeat(128));
+                f
+            })
+            .collect();
+        let (types, coverage) = inventory_index(&inventory);
+        assert_eq!(types[0]["fields"].as_array().unwrap().len(), 1000);
+        assert_eq!(
+            types[0]["fields"][999]["name"],
+            inventory.types[0].fields[999].name
+        );
+        assert!(coverage["error"].as_str().is_some());
+        assert!(coverage["available"].is_null() && coverage["omitted"].is_null());
+        assert!(types[0].get("object_samples").is_none());
+    }
     fn view() -> runtime::View {
         runtime::View {
             catalog_id: "current".into(),

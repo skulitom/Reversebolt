@@ -818,6 +818,15 @@ Agents can contribute runtime hypotheses independently of the local model.
 `reversebolt_read_runtime_inventory` takes the current `catalog_id`; omit
 `selected_types` for a type/field index or pass up to eight type IDs for an exact
 256-row selection. It returns the canonical report hash and report-local row IDs.
+The index also includes bounded `object_samples` on each type, with complete text
+attached to its exact `path_id` and field name. These clues are visible before
+choosing a type; they must not be transferred to another object. The shared
+selection policy includes at most four samples per type and 16 KiB of added
+context; `object_samples` is omitted when a type has no included samples.
+`context_coverage` reports available/omitted samples, or an explicit
+error with unknown counts if the bounded context index cannot be built. Complete
+field descriptors remain available in that case. A selected-row response has
+`context_coverage: null` and retains its existing per-row object text.
 Use `reversebolt_submit_runtime_hypotheses` with a new `review_id`, `catalog_id`,
 `after_revision`, `after_review` (current naming evidence ID or null),
 `report_sha256`, `selected_types` and up to twelve `hypotheses`. Each proposal has

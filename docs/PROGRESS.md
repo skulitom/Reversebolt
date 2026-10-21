@@ -4,6 +4,31 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Shared discovery evidence and selection experiment (2026-10-22): **35% unchanged**.
+The agent inventory API now exposes bounded object-local text before an agent
+chooses a type, using the same selection policy as the local observer. Complete
+field descriptors remain compatible, each clue retains its exact path, and
+omitted/unavailable context is explicit. Two new regression tests cover object
+binding, preserved descriptors and an oversized context index. The 68 app tests,
+53-tool stdio catalogue check, strict app/MCP Clippy and formatting pass. The
+catalogue check used no engine or target access. This source update has not
+yet been published to the desktop.
+
+A frozen five-case experiment replaced per-type question quotas with one shared
+budget. Calls fell from 30 to 9; both gameplay reports produced twelve accepted
+questions and the menu produced none. However, the latest gameplay report lost
+movement coverage, and the labelled fixture still abstained. The predeclared
+promotion criteria failed. Production policy was restored; the prototype,
+receipts and failures remain available. All type selections were unchanged and
+the artifact audit passed. No game, input, write or image review was required.
+[Protocol and results](../research/shared-question-budget/README.md).
+
+The exact-build Windows review packet is complete and locally audited. External
+submission approval is pending; nothing has been uploaded. The existing preview
+remains in place and protection settings are unchanged. There is no new causal
+or generalization evidence, so all weighted credits stay unchanged and the full
+goal remains active. [Prepared review](../research/security-review/REVIEW.md).
+
 Control presentation follow-up (2026-10-22): **35% unchanged**. Generic numbered
 labels are now hidden from both cards and the add-controls picker; short names
 such as HP remain eligible. Visual and temporal cards use their retained

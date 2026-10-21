@@ -68,3 +68,22 @@ Desktop preview `0.1.0-20261021-225832` remains unchanged while its Windows
 security detection is unresolved. Next: improve useful field-question selection
 and connect ambiguous candidates to observable test conditions, retaining the
 current abstentions and unwanted device-setting suggestions as regression cases.
+
+## Agent API alignment (2026-10-22)
+
+The shared `read_runtime_inventory` command now exposes the same kind of bounded
+object-local clues before an MCP agent selects a type. Existing full type names
+and field descriptors are preserved. Optional `object_samples` retain their exact
+field name/path/text binding; `context_coverage` records available and omitted
+samples. If the bounded context index is too large, full field descriptors still
+return with an explicit context error and unknown counts. This prevents a context
+budget failure from erasing the agent's metadata inventory.
+
+Two added regression checks cover path binding and descriptor preservation, plus
+the oversized-index fallback. All 68 app tests and strict app/MCP Clippy pass.
+`scripts/mcp-catalog-smoke.py` verifies the actual stdio handshake and 53-tool
+catalogue, including the inventory tool's description and read-only annotation,
+without connecting an engine or target. Its process exits successfully. Evidence:
+`test-results/agent-context-tests.log`, `agent-context-clippy.log` and
+`agent-context-mcp-v1/result.json`. This is source/API validation; the current
+desktop engine has not been replaced while Windows detection review is pending.
