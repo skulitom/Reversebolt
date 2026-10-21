@@ -256,7 +256,7 @@ pub(super) fn refresh(
             "snapshot_object_addresses":result.visited[..result.visited_count].iter().map(|a|format!("0x{a:x}")).collect::<Vec<_>>()})
     }).collect();
     Ok(
-        json!({"schema":1,"operation":"refresh_runtime_paths","scope":scope,"checks":checks,"pauses":pauses,
+        json!({"schema":1,"operation":"refresh_runtime_paths","scope":scope,"pid":scope.pid,"created":scope.created,"session":scope.session,"checks":checks,"pauses":pauses,
         "catalog_ms":catalog_ms,"classes_added":added_classes,"metadata_error":metadata_error,
         "elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,
         "identity_contract":"values belong to current path occupants in the final paused snapshot; no persistent object identity or edit authority"}),
