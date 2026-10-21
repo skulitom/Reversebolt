@@ -46,7 +46,7 @@ fn activity(
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 3 {
-        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--activity MANIFEST]".into());
+        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--activity MANIFEST] [--replay RECEIPT]".into());
     }
     let bytes = std::fs::read(&args[0])?;
     if bytes.len() > 64 * 1024 * 1024 {
@@ -56,6 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut inventory = reversebolt_core::runtime_inventory::build(&report)?;
     let mut opaque = false;
     let mut activity_path = None;
+    let mut replay_path = None;
     let mut options = args[3..].iter();
     while let Some(option) = options.next() {
         match option.as_str() {
@@ -63,8 +64,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "--activity" if activity_path.is_none() => {
                 activity_path = Some(options.next().ok_or("Missing activity manifest")?)
             }
+            "--replay" if replay_path.is_none() => {
+                replay_path = Some(options.next().ok_or("Missing replay receipt")?)
+            }
             _ => return Err("Unknown or repeated mode".into()),
         }
+    }
+    if replay_path.is_some() && activity_path.is_some() {
+        return Err("Metadata replay cannot add new activity inference".into());
     }
     let activity = activity_path.map(|p| activity(p)).transpose()?;
     if opaque {
@@ -80,20 +87,43 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     let output = PathBuf::from(&args[1]);
+    let replay = if let Some(path) = replay_path {
+        let mut bytes = vec![];
+        std::fs::File::open(path)?
+            .take(12 * 1024 * 1024 + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() > 12 * 1024 * 1024 {
+            return Err("Replay receipt exceeds its budget".into());
+        }
+        let mut receipt: reversebolt_observer::runtime_naming::Receipt =
+            serde_json::from_slice(&bytes)?;
+        if receipt.model != args[2] || receipt.activity.is_some() {
+            return Err(
+                "Replay requires the same model identity and metadata-only evidence".into(),
+            );
+        }
+        receipt.add_object_text_questions(&inventory)?;
+        Some(receipt)
+    } else {
+        None
+    };
     std::fs::create_dir(&output)?;
-    let runtime = tokio::runtime::Runtime::new()?;
-    let receipt = runtime.block_on(async {
-        let observer = reversebolt_observer::Observer::connect(&args[2]).await?;
-        Ok::<_, String>(
-            observer
-                .runtime_hypotheses_with_activity(
-                    &inventory,
-                    activity.as_ref(),
-                    &AtomicBool::new(false),
-                )
-                .await,
-        )
-    })?;
+    let receipt = if let Some(receipt) = replay {
+        receipt
+    } else {
+        tokio::runtime::Runtime::new()?.block_on(async {
+            let observer = reversebolt_observer::Observer::connect(&args[2]).await?;
+            Ok::<_, String>(
+                observer
+                    .runtime_hypotheses_with_activity(
+                        &inventory,
+                        activity.as_ref(),
+                        &AtomicBool::new(false),
+                    )
+                    .await,
+            )
+        })?
+    };
     std::fs::write(
         output.join("receipt.json"),
         serde_json::to_vec_pretty(&receipt)?,
@@ -101,12 +131,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::write(
         output.join("input.json"),
         serde_json::to_vec_pretty(
-            &serde_json::json!({"opaque_research_only":opaque,"source":args[0],"inventory":inventory,"activity_manifest":activity_path}),
+            &serde_json::json!({"opaque_research_only":opaque,"source":args[0],"inventory":inventory,"activity_manifest":activity_path,"replay_receipt":replay_path}),
         )?,
     )?;
     println!(
         "{}",
         serde_json::json!({"output":output,"error":receipt.error,"cancelled":receipt.cancelled,
+        "elapsed_ms_is_retained":replay_path.is_some(),
+        "question_source":receipt.question_source(),"question_policy":receipt.question_policy(),"metadata_model_calls":if replay_path.is_some(){0}else{receipt.stages.len()},
         "accepted":receipt.batch.as_ref().map(|b|b.accepted.len()),"rejected":receipt.batch.as_ref().map(|b|b.rejected.len()),
         "elapsed_ms":receipt.stages.iter().map(|s|s.elapsed_ms).sum::<u128>()})
     );

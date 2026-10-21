@@ -26,6 +26,8 @@ pub struct Stage {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub object_text_fallback: Option<ObjectTextFallback>,
     #[serde(default)]
     pub activity: Option<crate::runtime_activity::Receipt>,
     pub schema: u32,
@@ -39,6 +41,70 @@ pub struct Receipt {
     pub error: Option<String>,
     pub cancelled: bool,
     pub limitation: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ObjectTextFallback {
+    pub original_batch: h::Batch,
+    pub coverage: reversebolt_core::runtime_object_questions::Coverage,
+}
+
+impl Receipt {
+    pub fn question_policy(&self) -> Option<&str> {
+        (self.question_source() == h::QuestionSource::ObjectText).then(|| {
+            self.object_text_fallback
+                .as_ref()
+                .unwrap()
+                .coverage
+                .policy
+                .as_str()
+        })
+    }
+    pub fn question_source(&self) -> h::QuestionSource {
+        if self
+            .object_text_fallback
+            .as_ref()
+            .is_some_and(|f| !f.coverage.accepted_paths.is_empty())
+        {
+            h::QuestionSource::ObjectText
+        } else {
+            h::QuestionSource::Declared
+        }
+    }
+
+    /// Pure replayable step: no inference, target access, card publication or write.
+    pub fn add_object_text_questions(&mut self, inventory: &Inventory) -> Result<()> {
+        if self.object_text_fallback.is_some() {
+            return Err("Object-text fallback has already been applied.".into());
+        }
+        if self.error.is_some() || self.cancelled {
+            return Ok(());
+        }
+        if self.report_sha256 != inventory.report_sha256 {
+            return Err("Fallback report evidence changed.".into());
+        }
+        let (Some(selection), Some(batch)) = (&self.selection, &self.batch) else {
+            return Ok(());
+        };
+        if h::select(inventory, &selection.selected_types)? != *selection {
+            return Err("Fallback selection evidence changed.".into());
+        }
+        if !batch.accepted.is_empty() || !batch.rejected.is_empty() {
+            return Ok(());
+        }
+        if h::validate(selection, h::Proposals { hypotheses: vec![] })? != *batch {
+            return Err("Fallback abstention evidence changed.".into());
+        }
+        let plan = reversebolt_core::runtime_object_questions::plan(inventory, selection)?;
+        self.object_text_fallback = Some(ObjectTextFallback {
+            original_batch: batch.clone(),
+            coverage: plan.coverage,
+        });
+        if !plan.batch.accepted.is_empty() {
+            self.batch = Some(plan.batch);
+        }
+        Ok(())
+    }
 }
 
 impl Observer {
@@ -79,6 +145,7 @@ impl Observer {
         cancel: &AtomicBool,
     ) -> Receipt {
         let mut receipt = Receipt {
+            object_text_fallback: None,
             activity: None,
             schema: 1,
             report_sha256: inventory.report_sha256.clone(),
@@ -98,6 +165,12 @@ impl Observer {
         if let Err(error) = result {
             receipt.error = Some(error);
         } else if !cancel.load(Ordering::SeqCst)
+            && let Err(error) = receipt.add_object_text_questions(inventory)
+        {
+            receipt.error = Some(error);
+        }
+        if receipt.error.is_none()
+            && !cancel.load(Ordering::SeqCst)
             && let Some(activity) = activity
         {
             receipt.activity = Some(self.runtime_activity(activity).await);
@@ -229,6 +302,121 @@ fn naming_text(stage: &Stage) -> Result<&str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn abstention() -> (Inventory, Receipt) {
+        let key =
+            json!({"image":"observed","type_name":"Container","layout_sha256":"b".repeat(64)});
+        let inventory: Inventory=serde_json::from_value(json!({
+            "schema":1,"report_sha256":"a".repeat(64),"scope":{"pid":1,"created":"0000000000000001","session":1},
+            "types":[{"id":0,"key":key,"fields":[{"field_id":0,"name":"Coefficient","type_code":12,
+                "values":["3.5"],"path_count":2,"samples":[
+                    {"path_id":"c".repeat(64),"value":"3.5","context":[{"field":{"declaring":key,"field_id":1},"text":"Speed","truncated":false}]},
+                    {"path_id":"d".repeat(64),"value":"3.5","context":[{"field":{"declaring":key,"field_id":1},"text":"Speed","truncated":false}]}
+                ]}]}],"reachable_paths":2,"omitted_core_paths":0,"omitted_array_elements":0,"omitted_non_numeric_paths":0,"limitation":"fixture"
+        })).unwrap();
+        let selection = h::select(&inventory, &[0]).unwrap();
+        let batch = h::validate(&selection, h::Proposals { hypotheses: vec![] }).unwrap();
+        let receipt = Receipt {
+            object_text_fallback: None,
+            activity: None,
+            schema: 1,
+            report_sha256: inventory.report_sha256.clone(),
+            model: "retained".into(),
+            model_digest: "e".repeat(64),
+            server_version: "fixture".into(),
+            stages: vec![],
+            selection: Some(selection),
+            batch: Some(batch),
+            error: None,
+            cancelled: false,
+            limitation: h::LIMITATION.into(),
+        };
+        (inventory, receipt)
+    }
+
+    #[test]
+    fn fallback_retains_abstention_and_distinguishes_its_source_without_inference() {
+        let (inventory, mut receipt) = abstention();
+        let original = receipt.batch.clone().unwrap();
+        receipt.add_object_text_questions(&inventory).unwrap();
+        assert_eq!(
+            receipt
+                .object_text_fallback
+                .as_ref()
+                .unwrap()
+                .original_batch,
+            original
+        );
+        assert_eq!(receipt.batch.as_ref().unwrap().accepted.len(), 1);
+        assert_eq!(receipt.question_source(), h::QuestionSource::ObjectText);
+        assert!(receipt.stages.is_empty());
+        assert_eq!(receipt.model, "retained");
+        assert!(receipt.add_object_text_questions(&inventory).is_err());
+    }
+
+    #[test]
+    fn cancelled_failed_rejected_or_nonempty_reviews_are_never_overridden() {
+        for case in ["cancelled", "failed", "rejected", "nonempty"] {
+            let (inventory, mut receipt) = abstention();
+            match case {
+                "cancelled" => receipt.cancelled = true,
+                "failed" => receipt.error = Some("retained failure".into()),
+                "rejected" => {
+                    let mut plan = reversebolt_core::runtime_object_questions::plan(
+                        &inventory,
+                        receipt.selection.as_ref().unwrap(),
+                    )
+                    .unwrap();
+                    let mut p = plan.batch.accepted.pop().unwrap().proposal;
+                    p.name = "Invented".into();
+                    receipt.batch = Some(
+                        h::validate(
+                            receipt.selection.as_ref().unwrap(),
+                            h::Proposals {
+                                hypotheses: vec![p],
+                            },
+                        )
+                        .unwrap(),
+                    );
+                    assert_eq!(receipt.batch.as_ref().unwrap().rejected.len(), 1);
+                }
+                _ => {
+                    receipt.batch = Some(
+                        reversebolt_core::runtime_object_questions::plan(
+                            &inventory,
+                            receipt.selection.as_ref().unwrap(),
+                        )
+                        .unwrap()
+                        .batch,
+                    )
+                }
+            }
+            let before = serde_json::to_value(&receipt).unwrap();
+            receipt.add_object_text_questions(&inventory).unwrap();
+            assert_eq!(serde_json::to_value(&receipt).unwrap(), before, "{case}");
+            assert_eq!(receipt.question_source(), h::QuestionSource::Declared);
+        }
+    }
+
+    #[test]
+    fn changed_report_selection_or_abstention_cannot_seed_questions() {
+        for case in ["report", "selection", "batch"] {
+            let (inventory, mut receipt) = abstention();
+            match case {
+                "report" => receipt.report_sha256 = "f".repeat(64),
+                "selection" => {
+                    receipt.selection.as_mut().unwrap().rows[0].object_text = vec!["Energy".into()]
+                }
+                _ => receipt.batch.as_mut().unwrap().considered_samples += 1,
+            }
+            assert!(
+                receipt.add_object_text_questions(&inventory).is_err(),
+                "{case}"
+            );
+            assert!(receipt.object_text_fallback.is_none());
+            assert!(receipt.batch.as_ref().unwrap().accepted.is_empty());
+        }
+    }
+
     #[test]
     fn missing_or_near_limit_input_accounting_never_becomes_a_review() {
         let mut stage = Stage {

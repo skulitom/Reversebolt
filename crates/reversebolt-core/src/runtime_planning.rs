@@ -356,6 +356,8 @@ mod tests {
             })
             .collect();
         let review = Review {
+            question_source: Default::default(),
+            question_policy: None,
             play_context: None,
             evidence_id: uuid::Uuid::new_v4().to_string(),
             report_sha256: report,

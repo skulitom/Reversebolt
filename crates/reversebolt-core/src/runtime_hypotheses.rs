@@ -5,8 +5,25 @@ use std::collections::BTreeSet;
 
 pub const LIMITATION: &str = "Unverified hypotheses from internal labels and same-object text. Citations bind the guess to observations; they do not prove its meaning, controlling state, scope, numeric bounds or edit authority.";
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum QuestionSource {
+    #[default]
+    Declared,
+    ObjectText,
+}
+impl QuestionSource {
+    fn is_declared(&self) -> bool {
+        *self == Self::Declared
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Review {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub question_policy: Option<String>,
+    #[serde(default, skip_serializing_if = "QuestionSource::is_declared")]
+    pub question_source: QuestionSource,
     #[serde(default)]
     pub play_context: Option<crate::play_context::Context>,
     pub evidence_id: String,
@@ -29,7 +46,7 @@ pub struct Row {
     pub object_text: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Selection {
     pub report_sha256: String,
     pub rows: Vec<Row>,
@@ -127,13 +144,13 @@ pub struct Hypothesis {
     pub alternatives: Vec<Row>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Rejected {
     pub proposal: Proposal,
     pub reason: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Batch {
     pub report_sha256: String,
     pub selected_types: Vec<usize>,
@@ -156,6 +173,10 @@ pub struct Reference {
 /// Immutable provenance retained with a comparison, including competing paths.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TestOrigin {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub question_policy: Option<String>,
+    #[serde(default, skip_serializing_if = "QuestionSource::is_declared")]
+    pub question_source: QuestionSource,
     #[serde(default)]
     pub play_context: Option<crate::play_context::Context>,
     pub reference: Reference,
@@ -164,6 +185,14 @@ pub struct TestOrigin {
 }
 impl TestOrigin {
     pub fn selected(&self) -> Result<&Row> {
+        if self.question_source == QuestionSource::ObjectText {
+            if self.question_policy.as_deref() != Some(crate::runtime_object_questions::POLICY) {
+                return Err("The object-text question policy is unsupported.".into());
+            }
+            crate::runtime_object_questions::validate_origin(&self.hypothesis)?;
+        } else if self.question_policy.is_some() {
+            return Err("A declared question cannot claim a deterministic policy.".into());
+        }
         if let Some(context) = &self.play_context {
             context.validate()?;
         }
@@ -246,7 +275,17 @@ pub fn resolve(
     if &checked != hypothesis {
         return Err("The hypothesis no longer matches the exact discovery evidence.".into());
     }
+    if review.question_source == QuestionSource::ObjectText
+        && !crate::runtime_object_questions::plan(inventory, &selection)?
+            .batch
+            .accepted
+            .contains(&checked)
+    {
+        return Err("The question no longer follows the recorded object-label policy.".into());
+    }
     let origin = TestOrigin {
+        question_policy: review.question_policy.clone(),
+        question_source: review.question_source,
         play_context: review.play_context.clone(),
         reference: reference.clone(),
         report_sha256: inventory.report_sha256.clone(),

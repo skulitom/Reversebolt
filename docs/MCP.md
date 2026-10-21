@@ -41,6 +41,16 @@ yet use this evidence automatically.
 
 ## Direct edits
 
+Automatic metadata reviews may create literal internal questions after a valid
+empty model result, using a complete clue on the same object. Such reviews and
+their comparison origins carry `question_source: "object_text"` and
+`question_policy: "complete-object-clue-v2"`. The raw model response and original
+empty batch remain in the receipt; incomplete context and deferred groups are
+counted. Existing nonempty/rejected/failed/cancelled reviews are not overridden.
+These questions do not rename cards, establish bounds or authorize edits. Legacy
+declared questions omit the two optional provenance fields. See
+[the replay and limitations](../research/object-text-questions/README.md).
+
 `reversebolt_set_runtime_freeze` enables a periodically checked hold. Pass a fresh
 canonical `freeze_id`, `enabled:true`, exact investigation/catalogue/revision and
 candidate, and the desired string `value`. Stop with the same identity and

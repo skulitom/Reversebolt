@@ -1,0 +1,200 @@
+{
+  "versions": [
+    {
+      "version": "v1",
+      "artifact_audit_passed": true,
+      "protocol_expectations_passed": false,
+      "failure": "Expected positive fixture question was absent: incomplete surrounding text excluded all three paths.",
+      "frozen_manifest_sha256": "c52a3e6534b19b2fbbc87eb93f5b8f91429a046c20dbb54a537131b55ae7675f",
+      "desktop_sample_sha256_at_freeze": "a99d229af90a32e21425a43b8b5c353a90b914437c462b15f629bf6b2cd4060a",
+      "cases": [
+        {
+          "case": "latest",
+          "accepted": 7,
+          "rejected": 1,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "6bc38b2273ad9d4423e5fc20cb91731fc9c314de0442ff59cbe1b8a53cf5abe6",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.8429999999934807
+        },
+        {
+          "case": "manifold",
+          "accepted": 8,
+          "rejected": 0,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "6fbd1bc1a9c4d611a38c74b0c1845da5509f14b458ba389052964c61cd7d52ac",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.7809999999881256
+        },
+        {
+          "case": "menu",
+          "accepted": 2,
+          "rejected": 2,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "235c79c745b2a2ad16d6e986ab6780dc9edc623ef4ba6df105e1c6429a80a646",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.5780000000086147
+        },
+        {
+          "case": "fixture",
+          "accepted": 0,
+          "rejected": 0,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": {
+            "policy": "one-object-label-v1",
+            "report_sha256": "f0bace316bb4f04d8b5a4658f489b59d206bc9dddac21795626e90f878726c36",
+            "rows_without_labels": 0,
+            "ambiguous_rows": 0,
+            "incomplete_context_rows": 3,
+            "invalid_label_rows": 0,
+            "groups_available": 0,
+            "groups_deferred": 0,
+            "accepted_paths": [],
+            "limitation": "A literal text clue, not a model interpretation or verified gameplay property. Paths may alias or change occupants. No card meaning, range or write permission is established."
+          },
+          "receipt_sha256": "7f1df32ce71b2e7ce324d7c62440d8f509ead7c4e57ed9ea9350d4905b833417",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.01600000000325963
+        },
+        {
+          "case": "opaque",
+          "accepted": 0,
+          "rejected": 0,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": {
+            "policy": "one-object-label-v1",
+            "report_sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+            "rows_without_labels": 0,
+            "ambiguous_rows": 0,
+            "incomplete_context_rows": 0,
+            "invalid_label_rows": 0,
+            "groups_available": 0,
+            "groups_deferred": 0,
+            "accepted_paths": [],
+            "limitation": "A literal text clue, not a model interpretation or verified gameplay property. Paths may alias or change occupants. No card meaning, range or write permission is established."
+          },
+          "receipt_sha256": "a96b7f04f34c6c22175ebf5d0c71ce630eeb5d680458bbb551869e0db25985c5",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.7660000000032596
+        }
+      ]
+    },
+    {
+      "version": "v2",
+      "artifact_audit_passed": true,
+      "protocol_expectations_passed": true,
+      "failure": null,
+      "frozen_manifest_sha256": "ac614a98b1f7accb0e17de6a1b4b1b07573bb3d8f48999b96f4f6e057317482e",
+      "desktop_sample_sha256_at_freeze": "a99d229af90a32e21425a43b8b5c353a90b914437c462b15f629bf6b2cd4060a",
+      "cases": [
+        {
+          "case": "latest",
+          "accepted": 7,
+          "rejected": 1,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "6bc38b2273ad9d4423e5fc20cb91731fc9c314de0442ff59cbe1b8a53cf5abe6",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.8440000000118744
+        },
+        {
+          "case": "manifold",
+          "accepted": 8,
+          "rejected": 0,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "6fbd1bc1a9c4d611a38c74b0c1845da5509f14b458ba389052964c61cd7d52ac",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.7809999999881256
+        },
+        {
+          "case": "menu",
+          "accepted": 2,
+          "rejected": 2,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": null,
+          "receipt_sha256": "235c79c745b2a2ad16d6e986ab6780dc9edc623ef4ba6df105e1c6429a80a646",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.5780000000086147
+        },
+        {
+          "case": "fixture",
+          "accepted": 1,
+          "rejected": 0,
+          "question_source": "object_text",
+          "question_policy": "complete-object-clue-v2",
+          "fallback": {
+            "policy": "complete-object-clue-v2",
+            "report_sha256": "f0bace316bb4f04d8b5a4658f489b59d206bc9dddac21795626e90f878726c36",
+            "rows_without_labels": 0,
+            "ambiguous_rows": 0,
+            "incomplete_context_rows": 3,
+            "invalid_label_rows": 0,
+            "groups_available": 1,
+            "groups_deferred": 0,
+            "accepted_paths": [
+              "13f85d20fea5b38e110fa187826bd6809476cc6e6afa3619d9ced08f323bf171"
+            ],
+            "limitation": "A literal clue, not a model interpretation or verified gameplay property. Other text may be incomplete or omitted; this clue is not a unique property identity. Paths may alias or change occupants. No card meaning, range or write permission is established."
+          },
+          "receipt_sha256": "b184447a528ea515ba6a07394626cd3b7364029ec17396f0e9cf69c3e54047a5",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.030999999988125637
+        },
+        {
+          "case": "opaque",
+          "accepted": 0,
+          "rejected": 0,
+          "question_source": "declared",
+          "question_policy": null,
+          "fallback": {
+            "policy": "complete-object-clue-v2",
+            "report_sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+            "rows_without_labels": 0,
+            "ambiguous_rows": 0,
+            "incomplete_context_rows": 0,
+            "invalid_label_rows": 0,
+            "groups_available": 0,
+            "groups_deferred": 0,
+            "accepted_paths": [],
+            "limitation": "A literal clue, not a model interpretation or verified gameplay property. Other text may be incomplete or omitted; this clue is not a unique property identity. Paths may alias or change occupants. No card meaning, range or write permission is established."
+          },
+          "receipt_sha256": "a24fc5fa426e03232abdeb192a99dd471496c10f7d63e285ba79301fe7e13161",
+          "process_exit": 0,
+          "new_model_calls": 0,
+          "replay_seconds": 0.75
+        }
+      ]
+    }
+  ],
+  "workspace_tests_passed": 292,
+  "test_log_sha256": "40223d01169a06d512759d961cc566c19a7c838c63386f4b776f41c938c4bdab",
+  "clippy_log_sha256": "914a1ff98456aa62a0e93fb9a94c66c5093c0792ae088cd7a694940be2f6e17f",
+  "limitations": [
+    "Known development fixtures and saved game reports, not held-out evaluation.",
+    "No model, target access, gameplay edit, input or manual image review during replay.",
+    "One literal question does not prove meaning, gameplay relevance, domain bounds or authority to edit.",
+    "The existing unwanted menu proposals are unchanged.",
+    "No desktop deployment or live causal verification is established by this audit."
+  ]
+}

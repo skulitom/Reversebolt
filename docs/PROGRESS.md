@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Literal object-text questions (2026-10-22): **35% unchanged**. After a successful
+empty metadata review, complete same-object text can now seed an internal,
+explicitly untested question. All selected competing paths remain alternatives;
+the source and versioned policy follow it into comparison provenance. Errors,
+cancellation, rejected proposals and existing nonempty reviews are preserved.
+This does not name a visible card, infer numeric bounds or authorize an edit.
+
+Two frozen five-case replays used retained responses and zero new model calls.
+V1 failed the labelled fixture because unrelated truncated text excluded every
+path. V2 records that incomplete context and uses the complete clue: one question,
+two alternatives, three incomplete-context rows. Other reviews and the empty
+opaque case remain unchanged; unwanted menu proposals remain unresolved. All
+292 workspace tests and strict all-target Clippy pass. No game, target access,
+input, memory write or manual image review was needed. There is no new causal
+or generalization evidence, and the full goal remains active.
+[Protocol, retained failure and results](../research/object-text-questions/README.md).
+
 Shared discovery evidence and selection experiment (2026-10-22): **35% unchanged**.
 The agent inventory API now exposes bounded object-local text before an agent
 chooses a type, using the same selection policy as the local observer. Complete

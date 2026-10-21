@@ -153,6 +153,8 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
         },
     )?;
     let review = Review {
+        question_source: Default::default(),
+        question_policy: None,
         play_context: None,
         evidence_id: p.review_id.clone(),
         report_sha256: inventory.report_sha256.clone(),
@@ -309,6 +311,8 @@ fn review_inner(
         "source":source.path,"job":owner.job,"model":model,"scope":{"pid":report["pid"],"created":report["created"],"session":report["session"]},"status":"pending"}),
     )?;
     let mut state = Review {
+        question_source: Default::default(),
+        question_policy: None,
         play_context: None,
         evidence_id: id,
         report_sha256: source.document_sha256,
@@ -346,6 +350,8 @@ fn review_inner(
                 )
             })?;
         state.play_context = receipt.activity.as_ref().and_then(|a| a.context());
+        state.question_source = receipt.question_source();
+        state.question_policy = receipt.question_policy().map(str::to_owned);
         state.batch = receipt.batch.clone();
         state.error = receipt.error.clone();
         Ok(json!(receipt))
@@ -572,6 +578,8 @@ mod tests {
     }
     fn review() -> Review {
         Review {
+            question_source: Default::default(),
+            question_policy: None,
             play_context: None,
             evidence_id: "review".into(),
             report_sha256: "a".repeat(64),

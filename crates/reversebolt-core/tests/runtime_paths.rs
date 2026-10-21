@@ -223,6 +223,8 @@ fn naming_inventory_keeps_similar_fields_separate_and_reaches_past_cards() {
         question: "Does changing this field alter the observed response?".into(),
     };
     let mut review = h::Review {
+        question_source: Default::default(),
+        question_policy: None,
         play_context: None,
         evidence_id: uuid::Uuid::new_v4().to_string(),
         report_sha256: inventory.report_sha256.clone(),
