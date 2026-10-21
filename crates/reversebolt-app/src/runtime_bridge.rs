@@ -340,6 +340,10 @@ pub fn command(
         .unwrap_or_default()
         .as_millis();
     let outcome = run(&info, &paths, base, &owner.cancel);
+    let completed = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis();
     let session = engine.live.as_mut().unwrap();
     let view = &mut session.view.runtime;
     let outcome = match outcome {
@@ -384,6 +388,8 @@ pub fn command(
                     candidate,
                     status: "read".into(),
                     observed_unix_ms: observed,
+                    readings: Vec::new(),
+                    readings_dropped: 0,
                 })
                 .collect();
             view.catalog_id = uuid::Uuid::new_v4().to_string();
@@ -403,7 +409,12 @@ pub fn command(
                 observed_unix_ms: observed,
             });
         }),
-        Task::Refresh { .. } => view.apply_refresh(&task, &report, observed),
+        Task::Refresh { .. } => view.apply_refresh(
+            &task,
+            &report,
+            [observed, completed],
+            &outcome.evidence.join("report.json").to_string_lossy(),
+        ),
     };
     if let Err(error) = publication {
         view.phase = "failed".into();

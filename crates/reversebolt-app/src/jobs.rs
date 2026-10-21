@@ -1,6 +1,8 @@
 //! Responsive job control around the sole engine-owning worker.
 mod change_watch;
 #[cfg(test)]
+mod runtime_watch_tests;
+#[cfg(test)]
 mod watch_tests;
 use crate::service::{EngineHandle, OperationOwner};
 use reversebolt_core::{Command, Result, engine::View as EngineView};
@@ -617,7 +619,7 @@ impl Controller {
             }
             .into(),
             source: source.clone(),
-            args: json!({"count":if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
+            args: json!({"count":if runtime {1} else if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
                 "local_model":model,"task":{"operation":"discover"},
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
@@ -912,6 +914,17 @@ impl Controller {
                 serde_json::from_value(command.args["task"].clone())
                     .map_err(|_| "Supply a runtime discovery or refresh task.")?;
             task.validate()?;
+            let count = command.args.get("count").map_or(Ok(1), |v| {
+                v.as_u64()
+                    .filter(|n| (1..=16).contains(n))
+                    .ok_or("Use one to sixteen internal-value checks.")
+            })? as usize;
+            let tasks = task.sequence(count)?;
+            let interval = command.args.get("interval_ms").map_or(Ok(1000), |v| {
+                v.as_u64()
+                    .filter(|n| (250..=60000).contains(n))
+                    .ok_or("Use an interval from 250 to 60,000 ms.")
+            })?;
             let parts: Vec<_> = binding.target.split('/').collect();
             if parts.len() != 4 {
                 return Err("Invalid runtime job binding.".into());
@@ -941,25 +954,31 @@ impl Controller {
                 live.runtime.paths(&task)?;
             }
             job::Action::Submit {
-                steps: vec![job::Step {
-                    kind: job::Kind::Observe,
-                    payload: serde_json::to_string(&CaptureStep {
-                        runtime: Some(crate::runtime_bridge::store_task(
-                            &self.runtime_directory,
-                            &task,
-                        )?),
-                        scope,
-                        delay_ms: 0,
-                        source: command.source.clone(),
-                        compare: false,
-                        remaining: 0,
-                        mode: reversebolt_core::live::CaptureMode::Full,
-                        local_model: None,
-                        background_model: false,
-                        change: None,
+                steps: tasks
+                    .iter()
+                    .enumerate()
+                    .map(|(index, next_task)| {
+                        Ok(job::Step {
+                            kind: job::Kind::Observe,
+                            payload: serde_json::to_string(&CaptureStep {
+                                runtime: Some(crate::runtime_bridge::store_task(
+                                    &self.runtime_directory,
+                                    next_task,
+                                )?),
+                                scope: scope.clone(),
+                                delay_ms: if index == 0 { 0 } else { interval },
+                                source: command.source.clone(),
+                                compare: false,
+                                remaining: 0,
+                                mode: reversebolt_core::live::CaptureMode::Full,
+                                local_model: None,
+                                background_model: false,
+                                change: None,
+                            })
+                            .map_err(|e| e.to_string())?,
+                        })
                     })
-                    .map_err(|e| e.to_string())?,
-                }],
+                    .collect::<Result<Vec<_>>>()?,
                 consent: false,
             }
         } else if command.action == "start_observation_job" {

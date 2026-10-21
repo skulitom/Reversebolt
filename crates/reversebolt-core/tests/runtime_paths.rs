@@ -1,6 +1,112 @@
 use reversebolt_core::runtime::{self, Member};
 use serde_json::{Value, json};
 
+fn tracked_view() -> runtime::View {
+    let candidate = runtime::candidates(&report(0, "0x100", 50), 1)
+        .unwrap()
+        .remove(0);
+    runtime::View {
+        available: true,
+        catalog_id: "catalog".into(),
+        cards: vec![runtime::Card {
+            value: candidate.value.clone(),
+            candidate,
+            status: "read".into(),
+            observed_unix_ms: 1,
+            readings: Vec::new(),
+            readings_dropped: 0,
+        }],
+        ..Default::default()
+    }
+}
+
+fn refresh_reading(view: &runtime::View, value: Option<i32>) -> (runtime::Task, Value) {
+    let candidate = &view.cards[0].candidate;
+    let task = runtime::Task::Refresh {
+        catalog_id: view.catalog_id.clone(),
+        after_revision: view.revision,
+        ids: vec![candidate.id.clone()],
+    };
+    let result = json!({"scope":candidate.locator.scope,"edit_authority":false,"checks":[{
+        "path_id":candidate.id,"status":if value.is_some() {"read"} else {"null_reference"},
+        "type_code":8,"bytes":value.map(|v|v.to_le_bytes()),"value":value
+    }]});
+    (task, result)
+}
+
+#[test]
+fn runtime_traces_preserve_gaps_timing_provenance_and_bounded_history() {
+    let mut view = tracked_view();
+    for (index, value) in [Some(50), Some(52), None, Some(80)].into_iter().enumerate() {
+        let (task, result) = refresh_reading(&view, value);
+        let start = 100 + index as u128 * 10;
+        view.apply_refresh(&task, &result, [start, start + 3], "source/report.json")
+            .unwrap();
+    }
+    assert_eq!(view.cards[0].observed_differences(), 1);
+    let missing = &view.cards[0].readings[2];
+    assert!(missing.value.is_null() && missing.bytes.is_empty());
+    assert_eq!(
+        [missing.started_unix_ms, missing.completed_unix_ms],
+        [120, 123]
+    );
+    assert_eq!(missing.evidence_path, "source/report.json");
+    assert_eq!(missing.report_sha256.len(), 64);
+    for i in 0..16 {
+        let (task, result) = refresh_reading(&view, Some(i));
+        view.apply_refresh(
+            &task,
+            &result,
+            [200 + i as u128, 201 + i as u128],
+            "later.json",
+        )
+        .unwrap();
+    }
+    assert_eq!(view.cards[0].readings.len(), 16);
+    assert_eq!(view.cards[0].readings_dropped, 4);
+    assert_eq!(view.cards[0].readings[0].revision, 5);
+    assert_eq!(view.cards[0].readings[15].revision, 20);
+    assert_eq!(view.cards[0].candidate.value, 50);
+    assert_eq!(view.cards[0].value, 15);
+}
+
+#[test]
+fn malformed_refresh_or_clock_bounds_do_not_mutate_trace_or_cursor() {
+    let mut view = tracked_view();
+    let (task, mut result) = refresh_reading(&view, Some(50));
+    let before = serde_json::to_value(&view).unwrap();
+    result["checks"][0]["type_code"] = json!(9);
+    assert!(
+        view.apply_refresh(&task, &result, [1, 2], "bad.json")
+            .is_err()
+    );
+    assert_eq!(serde_json::to_value(&view).unwrap(), before);
+    result["checks"][0]["type_code"] = json!(8);
+    assert!(
+        view.apply_refresh(&task, &result, [2, 1], "bad.json")
+            .is_err()
+    );
+    assert_eq!(serde_json::to_value(&view).unwrap(), before);
+}
+
+#[test]
+fn runtime_sequence_pins_every_revision_and_rejects_overflow_or_repeated_discovery() {
+    let view = tracked_view();
+    let (task, _) = refresh_reading(&view, Some(50));
+    let sequence = task.sequence(16).unwrap();
+    for (index, step) in sequence.iter().enumerate() {
+        assert_eq!(serde_json::to_value(step).unwrap()["after_revision"], index);
+    }
+    assert!(task.sequence(0).is_err());
+    assert!(task.sequence(17).is_err());
+    assert!(runtime::Task::Discover.sequence(2).is_err());
+    let mut overflow = serde_json::to_value(task).unwrap();
+    overflow["after_revision"] = json!(u64::MAX - 1);
+    let overflow: runtime::Task = serde_json::from_value(overflow).unwrap();
+    assert!(overflow.sequence(2).is_err());
+    assert!(overflow.sequence(1).is_ok());
+}
+
 fn key(name: &str) -> Value {
     json!({"image":"Example.dll","type_name":name,"layout_sha256":"a".repeat(64)})
 }
@@ -218,6 +324,8 @@ fn refresh_rejects_stale_revisions_and_invalidates_unavailable_current_values() 
             value: candidate.value.clone(),
             status: "read".into(),
             observed_unix_ms: 1,
+            readings: Vec::new(),
+            readings_dropped: 0,
             candidate: candidate.clone(),
         }],
         ..Default::default()
@@ -228,11 +336,15 @@ fn refresh_rejects_stale_revisions_and_invalidates_unavailable_current_values() 
         ids: vec![candidate.id.clone()],
     };
     let failure = json!({"scope":candidate.locator.scope,"edit_authority":false,"checks":[{"path_id":candidate.id,"status":"null_reference"}]});
-    view.apply_refresh(&task, &failure, 200).unwrap();
+    view.apply_refresh(&task, &failure, [200, 210], "fixture-report")
+        .unwrap();
     assert_eq!(view.cards[0].value, Value::Null);
     assert_eq!(view.cards[0].candidate.value, 50);
     assert_eq!(view.cards[0].status, "null_reference");
     assert_eq!(view.revision, 1);
-    assert!(view.apply_refresh(&task, &failure, 300).is_err());
+    assert!(
+        view.apply_refresh(&task, &failure, [300, 310], "fixture-report")
+            .is_err()
+    );
     assert_eq!(view.cards[0].observed_unix_ms, 200);
 }

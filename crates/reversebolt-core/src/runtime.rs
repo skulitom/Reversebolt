@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 pub const MAX_PATH_STEPS: usize = 8;
 pub const MAX_REFRESH_PATHS: usize = 32;
+pub const MAX_RUNTIME_READINGS: usize = 16;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -179,6 +180,40 @@ pub struct Card {
     pub value: Value,
     pub status: String,
     pub observed_unix_ms: u128,
+    /// Fresh refreshes only; discovery snapshots are retained separately.
+    #[serde(default)]
+    pub readings: Vec<Reading>,
+    #[serde(default)]
+    pub readings_dropped: u64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Reading {
+    pub revision: u64,
+    /// Bounds of the complete inspection operation, not an exact sampling instant.
+    pub started_unix_ms: u128,
+    pub completed_unix_ms: u128,
+    pub status: String,
+    pub value: Value,
+    pub bytes: Vec<u8>,
+    pub evidence_path: String,
+    /// Canonical JSON digest of the refresh report.
+    pub report_sha256: String,
+}
+
+impl Card {
+    /// Differences between consecutive successful observations; never bridge a gap.
+    /// A path may change occupants, so this does not establish one object's motion.
+    pub fn observed_differences(&self) -> usize {
+        self.readings
+            .windows(2)
+            .filter(|pair| {
+                pair[0].status == "read"
+                    && pair[1].status == "read"
+                    && pair[0].bytes != pair[1].bytes
+            })
+            .count()
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -193,6 +228,34 @@ pub enum Task {
 }
 
 impl Task {
+    /// Pin every future refresh to its expected revision; never silently rebase.
+    pub fn sequence(&self, count: usize) -> Result<Vec<Self>> {
+        self.validate()?;
+        if !(1..=MAX_RUNTIME_READINGS).contains(&count) {
+            return Err("Use one to sixteen internal-value checks.".into());
+        }
+        match self {
+            Self::Discover if count == 1 => Ok(vec![self.clone()]),
+            Self::Discover => Err("Repeated checks require selected values, not discovery.".into()),
+            Self::Refresh {
+                catalog_id,
+                after_revision,
+                ids,
+            } => {
+                // Every step also needs room to publish its resulting revision.
+                after_revision
+                    .checked_add(count as u64)
+                    .ok_or("Runtime revision limit reached.")?;
+                Ok((0..count)
+                    .map(|index| Self::Refresh {
+                        catalog_id: catalog_id.clone(),
+                        after_revision: after_revision + index as u64,
+                        ids: ids.clone(),
+                    })
+                    .collect())
+            }
+        }
+    }
     pub fn validate(&self) -> Result<()> {
         if let Self::Refresh {
             catalog_id, ids, ..
@@ -257,6 +320,8 @@ impl View {
                         value: candidate.value.clone(),
                         status: "read".into(),
                         observed_unix_ms: observed,
+                        readings: Vec::new(),
+                        readings_dropped: 0,
                     }),
             );
         }
@@ -298,7 +363,16 @@ impl View {
             }
         }
     }
-    pub fn apply_refresh(&mut self, task: &Task, report: &Value, now: u128) -> Result<()> {
+    pub fn apply_refresh(
+        &mut self,
+        task: &Task,
+        report: &Value,
+        window: [u128; 2],
+        evidence: &str,
+    ) -> Result<()> {
+        if window[1] < window[0] {
+            return Err("Runtime inspection clock moved backwards; timing is unavailable.".into());
+        }
         let paths = self.paths(task)?;
         if !matches!(task, Task::Refresh { .. }) {
             return Err("Expected a refresh task.".into());
@@ -325,6 +399,7 @@ impl View {
                 return Err("Refresh result belongs to another path or process.".into());
             }
             let status = check["status"].as_str().ok_or("Missing refresh status.")?;
+            let mut recorded_bytes = Vec::new();
             let value = if status == "read" {
                 let bytes: Vec<u8> = serde_json::from_value(check["bytes"].clone())
                     .map_err(|_| "Invalid value bytes.")?;
@@ -332,25 +407,54 @@ impl View {
                     .as_i64()
                     .and_then(|k| i32::try_from(k).ok())
                     .ok_or("Missing scalar kind.")?;
+                let original = &self
+                    .cards
+                    .iter()
+                    .find(|c| c.candidate.id == id)
+                    .unwrap()
+                    .candidate;
+                if kind != original.type_code || bytes.len() != original.bytes.len() {
+                    return Err("Refresh scalar representation differs from discovery.".into());
+                }
                 let value = scalar_value(kind, &bytes)?;
                 if value != check["value"] {
                     return Err("Refresh value contradicts its bytes.".into());
                 }
+                recorded_bytes = bytes;
                 value
             } else {
                 Value::Null
             };
-            updates.push((id, status.to_owned(), value));
+            updates.push((id, status.to_owned(), value, recorded_bytes));
         }
-        for (id, status, value) in updates {
+        let report_sha256 = format!(
+            "{:x}",
+            Sha256::digest(serde_json::to_vec(report).expect("JSON report"))
+        );
+        for (id, status, value, bytes) in updates {
             let card = self
                 .cards
                 .iter_mut()
                 .find(|c| c.candidate.id == id)
                 .unwrap();
+            card.readings.push(Reading {
+                revision: next_revision,
+                started_unix_ms: window[0],
+                completed_unix_ms: window[1],
+                status: status.clone(),
+                value: value.clone(),
+                bytes,
+                evidence_path: evidence.into(),
+                report_sha256: report_sha256.clone(),
+            });
+            if card.readings.len() > MAX_RUNTIME_READINGS {
+                let dropped = card.readings.len() - MAX_RUNTIME_READINGS;
+                card.readings.drain(..dropped);
+                card.readings_dropped = card.readings_dropped.saturating_add(dropped as u64);
+            }
             card.value = value;
             card.status = status;
-            card.observed_unix_ms = now;
+            card.observed_unix_ms = window[0];
         }
         self.revision = next_revision;
         Ok(())

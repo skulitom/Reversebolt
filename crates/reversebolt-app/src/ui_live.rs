@@ -696,9 +696,17 @@ impl LivePane {
                                         *id,
                                     ));
                                 }
-                                if *external==CardSource::Runtime && let Some(card)=live.runtime.cards.get(*id)
-                                    && ui.add_enabled(!busy && live.connected,egui::Button::new("Refresh value")).clicked() {
+                                if *external==CardSource::Runtime && let Some(card)=live.runtime.cards.get(*id) {
+                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Refresh value")).clicked() {
                                         handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]}}));
+                                    }
+                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Watch changes")).on_hover_text("Check this internal value six times while you play. No screenshots or gameplay changes.").clicked() {
+                                        handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]},"count":6,"interval_ms":1000}));
+                                    }
+                                    if !card.readings.is_empty() {
+                                        let missing=card.readings.iter().filter(|r|r.status!="read").count();
+                                        ui.label(RichText::new(format!("{} checks · {} differences{}",card.readings.len(),card.observed_differences(),if missing>0 {format!(" · {missing} unavailable")} else {String::new()})).size(12.).color(MUTED));
+                                    }
                                 }
                                 if *external==CardSource::Ocr {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
@@ -976,6 +984,13 @@ impl LivePane {
                             ui.label("Found directly in the application's internal state. A name alone does not establish what it controls.");
                             ui.label(format!("Latest check: {}",card.status.replace('_'," ")));
                             ui.label("Refresh follows the current object at this path. Collections can change occupants.");
+                            if !card.readings.is_empty() {
+                                ui.label("Recent checks. Gaps and changed occupants prevent claims of continuous behaviour; these do not prove an edit's effect.");
+                                for reading in &card.readings {
+                                    ui.label(format!("{} · {} · {} ms inspection",reading.status.replace('_'," "),if reading.status=="read" {reading.value.to_string()} else {"unavailable".into()},reading.completed_unix_ms.saturating_sub(reading.started_unix_ms)));
+                                }
+                                if card.readings_dropped>0 { ui.label(format!("{} older checks omitted from this card. Original reports remain in the session evidence.",card.readings_dropped)); }
+                            }
                         }
                     } else if external == CardSource::Temporal {
                         if let Some(track) = live.temporal_tracks.iter().find(|t| t.id == id)
