@@ -36,3 +36,5 @@
 /research/game-change-watch/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/runtime-probe/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/runtime-objects/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/runtime-traversal/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/crates/reversebolt-runtime/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

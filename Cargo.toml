@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/reversebolt-core", "crates/reversebolt-app", "crates/reversebolt-mcp", "crates/reversebolt-jobs", "crates/reversebolt-vision", "crates/reversebolt-observer"]
+members = ["crates/reversebolt-core", "crates/reversebolt-app", "crates/reversebolt-mcp", "crates/reversebolt-jobs", "crates/reversebolt-vision", "crates/reversebolt-observer", "crates/reversebolt-runtime"]
 resolver = "3"
 
 [workspace.package]

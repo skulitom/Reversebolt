@@ -1,0 +1,95 @@
+{
+  "frozen_utc": "2026-10-21T13:52:51.800186+00:00",
+  "files": [
+    {
+      "path": "crates/reversebolt-runtime/Cargo.toml",
+      "sha256": "d6cd09c27337b508ef2b39f83226d2987c17e851543b687840b0a9eb8c619916",
+      "bytes": 534
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/bin/reversebolt-runtime-loader.rs",
+      "sha256": "7cc758d26a1adefe4cfb03bf083fc90ffb40e4c83c3b4f273dcd6d0c611b08c4",
+      "bytes": 10438
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/lib.rs",
+      "sha256": "42d55673ad833c0e1dba194085aa12765d6912c2b9de82de1dadd401d6ee7c46",
+      "bytes": 36045
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/win.rs",
+      "sha256": "42b79d1040df53725ff5cc76bd68f6d133171bbe862099f22574fcb24d398258",
+      "bytes": 3993
+    },
+    {
+      "path": "research/runtime-traversal/freeze.py",
+      "sha256": "498a4ece40496633b4e62a60201c045a2f73c5c0bde164883c3c7fb254701e4f",
+      "bytes": 960
+    },
+    {
+      "path": "research/runtime-traversal/game_case.py",
+      "sha256": "251b78d1f83237a425315793c904d8ee284f5f0abdeed4994c0074de413d7a1a",
+      "bytes": 3723
+    },
+    {
+      "path": "research/runtime-traversal/mock/Cargo.lock",
+      "sha256": "bcb65cfea624d9b4175dcf742108cd7764336d336281f4ce63ff076df4602cbf",
+      "bytes": 173
+    },
+    {
+      "path": "research/runtime-traversal/mock/Cargo.toml",
+      "sha256": "5f1368b3cd8aa563fd8df06cfefff043fc711cb855af24a761e8b4f288a67586",
+      "bytes": 142
+    },
+    {
+      "path": "research/runtime-traversal/mock/src/lib.rs",
+      "sha256": "b3edf3d69cc818f6e98c9969c7c37641a1f70362d5e682b4739238affe429f62",
+      "bytes": 11507
+    },
+    {
+      "path": "research/runtime-traversal/mock_case.py",
+      "sha256": "9835a5420f9fe7eb26f6d7eea5007f7880e8c6a18f2e3ff999d01b17397b36a7",
+      "bytes": 5277
+    },
+    {
+      "path": "research/runtime-traversal/PROTOCOL.md",
+      "sha256": "28e41c22245a5e3c55b5a8d143a2d2cd97324d310f66e41f18515af840673de8",
+      "bytes": 3629
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "b378526acc87fab2b4d5423a9428151c5a65487867f1b61ffdefd9fe8e8e1ea0",
+      "bytes": 528
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "d906cc0b9c95a4520c1c6d29372f5760450fe0cda03ea831ade4de8a6b4f1b13",
+      "bytes": 115733
+    },
+    {
+      "path": "research/runtime-objects/probe/src/bin/object-host.rs",
+      "sha256": "e5dd0a0ad33c46ccbed7ee618c5695e74767bcb7e47a482e293fc7c1fcffe43d",
+      "bytes": 1621
+    },
+    {
+      "path": "target/runtime-objects/debug/object-host.exe",
+      "sha256": "bdc3490aebcddf96bdd4f98dd21edd169a126e129aedf22a8e9ac3705293cfb3",
+      "bytes": 351232
+    },
+    {
+      "path": "target/debug/reversebolt_runtime.dll",
+      "sha256": "c4ab56693b0491255e23c1133ea386eaea28c9092b403b83f7efdf0e57adeaeb",
+      "bytes": 502272
+    },
+    {
+      "path": "target/debug/reversebolt-runtime-loader.exe",
+      "sha256": "0162650117cdff04cbae98e82c6f6d03fc0456d653d8c15f3d9a88a28ea6c8aa",
+      "bytes": 355328
+    },
+    {
+      "path": "target/runtime-traversal/debug/reversebolt_traversal_fixture.dll",
+      "sha256": "6923aa7ccd4554724d2443931f942e4fe2e14f163682d28f96c6b9a6389c1c10",
+      "bytes": 167424
+    }
+  ]
+}
