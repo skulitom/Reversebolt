@@ -444,3 +444,22 @@ pass/failure checks passed; test windows were closed afterward.
 See [concurrency evidence and limits](research/BACKGROUND_OBSERVER.md). Next:
 improve observation cadence and moving-object measurements before comparing
 them with internal state; retain explicit source freshness and uncertainty.
+
+## 2026-10-21 — exact-action validation research: remains 21%
+
+The new research planner preserves ambiguous types while comparing their exact
+requested byte actions. A frozen 1,080-search run found scoped tested actions
+in 323 searches, versus 41 canonical type identifications. Across 2,160 requests,
+620 passed the declared effect scope and longer audit; 120 remain unknown in
+effect scope, and 80 of those have hidden effects in the private audit. Prior
+failed recovery/disposal and 1,420 untested requests remain in the record.
+
+Eight new tests, strict Clippy and source-bound automated verification pass.
+This improves the research direction but has not been integrated with live
+targets or evaluated on new independent games. Category credits and the fixed
+denominator remain unchanged; the full goal stays active. The existing card-based
+desktop preview is still running. See [evidence and limits](research/ACTION_EQUIVALENCE.md).
+
+Next: operation-level evidence in the shared engine, with real target lifecycle,
+effect observation and recovery capabilities. Keep representation uncertainty
+explicit; a tested requested action does not establish a whole slider range.

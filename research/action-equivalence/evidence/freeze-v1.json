@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "frozen_utc": "2026-10-21T01:22:04.340289+00:00",
+  "seeds_per_case": 20,
+  "seed_start": 43000,
+  "expected_searches": 1080,
+  "expected_requests": 2160,
+  "sources": {
+    "research\\action-equivalence\\Cargo.lock": "6ab1a4d1091d6d3f6b51f7caf3db75cf559324fa04497882b6dfbdba9e53f57c",
+    "research\\action-equivalence\\Cargo.toml": "63a674a8ad1121ecd287ca38cff598112f7eed8e441a9024ea63c81ffb1c4ebb",
+    "research\\action-equivalence\\provenance.json": "4823a67ecc90e68c042b627a4cd8877064fea9b31a51fa926bdc2776c5ec0a58",
+    "research\\action-equivalence\\README.md": "fc8926bff0065e69b031f67243ddcea7eca04eba21863b68a051928b9e05dc34",
+    "research\\action-equivalence\\src\\action.rs": "673a5b2c387b9890721a7899da8b4b689288f12c4bf5d8f3ce88276692412ed6",
+    "research\\action-equivalence\\src\\evaluator.rs": "4c025c2f2eb2c98193dd5f061c6038e4ccda73f6460aaaa371607fa656af22f9",
+    "research\\action-equivalence\\src\\fixtures\\inherited.rs": "38b493711fc4c99c0d3a605dcd14cb082ecd956f37a04d06d7a52dde7b6dbc82",
+    "research\\action-equivalence\\src\\fixtures\\withheld.rs": "ed6695cf34e08596454c64886d7b5edbc7f9a94f98a46ca8eba5900ce5452ed2",
+    "research\\action-equivalence\\src\\lib.rs": "ca1f9b9ed215f9affa5f1b3ab2a4147b6b03bbaba7e5829f06f999cf8be13718",
+    "research\\action-equivalence\\src\\main.rs": "fecab8eeb38d99b94a4c12a60a7e34ecb85fc74d4c34237f65cae829ddbbbca1",
+    "research\\action-equivalence\\src\\planner.rs": "ff976e25592b43eb9f1982caa25a37911d0489b65df5f80ef68006c28b075ca8",
+    "research\\action-equivalence\\vendor\\causal-validation\\Cargo.toml": "5ea98f49a2d55143f5472d3aa5e5f70639a17525eec64b10d650b4758c7841a3",
+    "research\\action-equivalence\\vendor\\causal-validation\\src\\discovery.rs": "b54f785348f4ec2c9f6183c4bf7348d965ce732645badbc9fb1be3cd14bd2de5",
+    "research\\action-equivalence\\vendor\\causal-validation\\src\\lib.rs": "f97283de270c0b8fdbc387d2ea81b46f2639bb29c310d0b266ee22d95986ad79",
+    "research\\action-equivalence\\vendor\\causal-validation\\src\\validation.rs": "ad8359f11c0fc955982f89561d426696b8438c970853851c4c6eb46acdc0b7af"
+  },
+  "executable": "target\\action-equivalence\\release\\reversebolt-action-equivalence.exe",
+  "executable_sha256": "691006a6ad30e8e888a6d88b712ec27b3e3a422d4e7d44ff8690af629034ce32"
+}

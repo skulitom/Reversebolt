@@ -1,5 +1,19 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Exact actions with unresolved representations — 2026-10-21
+
+A separate Rust experiment ran 1,080 searches and 2,160 requested edits over
+all 42 existing synthetic mechanisms using fixed new seeds. It found 620 exact
+actions that passed declared-scope checks and the longer post-answer audit,
+including 538 actions after canonical type identification abstained. Another
+120 actions remain explicitly unknown in effect scope; 80 have hidden private
+effects in the longer audit. All prior recovery failures remain recorded.
+
+Eight new tests, strict Clippy, frozen source/executable checks and independent
+record accounting pass. See [method, counts and limitations](research/ACTION_EQUIVALENCE.md).
+No production code changed, so the running desktop preview remains
+`0.1.0-20261021-015824`; no new game or screenshot interaction was needed.
+
 ## Capture alongside local image review — 2026-10-21
 
 All 94 workspace tests, strict Clippy and formatting pass. The native/MCP fixture
