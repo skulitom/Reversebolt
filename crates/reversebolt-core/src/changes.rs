@@ -297,8 +297,10 @@ impl Change {
 
     pub fn check_target(&self, target: &dyn NativeTarget, scope: &Scope) -> Result<()> {
         if !target.alive()
-            || target.info().pid != self.scope.process.pid
-            || target.info().created != self.scope.process.created
+            || target.memory_info().pid != self.scope.process.pid
+            || target.memory_info().created != self.scope.process.created
+            || scope.process.pid != self.scope.process.pid
+            || scope.process.created != self.scope.process.created
             || scope.investigation != self.scope.investigation
             || scope.batch != self.scope.batch
             || scope.epoch != self.scope.epoch

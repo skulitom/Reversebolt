@@ -832,6 +832,30 @@ impl LivePane {
                     );
                 });
                 ui.label(&live.process.title);
+                egui::CollapsingHeader::new("Memory source").show(ui, |ui| {
+                    let current = live.memory_process.as_ref().unwrap_or(&live.process);
+                    ui.label(format!("Reading {} (PID {})", current.name, current.pid));
+                    ui.label("Some applications keep state in a child process. Choosing one starts a fresh investigation while watching the same window.");
+                    if ui.add_enabled(!busy && live.connected, egui::Button::new("Refresh memory sources")).clicked() {
+                        handle.submit("list_memory_processes", json!({}));
+                    }
+                    if let Some(error) = &live.memory_sources_error {
+                        ui.colored_label(WARNING, error);
+                    }
+                    egui::ScrollArea::vertical().max_height(160.).id_salt("memory_sources").show(ui, |ui| {
+                        for source in &live.memory_sources {
+                            let selected = source.pid == current.pid && source.created == current.created;
+                            if ui.add_enabled(!busy && live.connected && !selected,
+                                egui::Button::new(format!("Observe {} (PID {})", source.name, source.pid))).clicked() {
+                                handle.submit("attach_process", json!({"pid":live.process.pid,"created":live.process.created,
+                                    "window":live.process.window,"memory_pid":source.pid,"memory_created":source.created,
+                                    "budget_mib":16,"auto_observe":true}));
+                                self.image = None;
+                            }
+                        }
+                    });
+                    ui.label(RichText::new("Only accessible descendants with a live parent chain are listed. Their role in gameplay is unknown.").size(12.).color(MUTED));
+                });
                 ui.label(
                     RichText::new(format!(
                         "PID {}  ·  Memory batch {}  ·  {} moments captured",

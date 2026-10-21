@@ -4,6 +4,14 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest process-scope support (2026-10-21): **26%**. Window observation and
+memory-source identity are now separate, with shared desktop/MCP child selection,
+fresh investigations on switching, and guarded writes bound to the actual
+memory process. Native fixture capture, scope rejection, child-exit and UI
+automation checks pass; 136 workspace tests pass. Native access moves from 5/10
+to 6/10. Other credits remain unchanged, including zero withheld-generalization
+credit. [Evidence and limitations](../research/memory-sources/README.md).
+
 Latest visual-object coverage (2026-10-21): **25% unchanged**. Automatic
 observation can publish provisional named object cards alongside characters
 and held items. One fresh automated Tetris run produced seven object findings;
@@ -722,3 +730,18 @@ Preview `0.1.0-20261021-060956` is running with eight prior history entries and
 the selected local model preserved. The packaged 29-tool MCP/practice smoke and
 binary/model hash checks pass. No owned Anode fixture remains. Full results,
 reproduction and compact evidence are in the observation-resilience research.
+
+## 2026-10-21 — separate memory process: 26%
+
+The window owner can remain the image/input source while an accessible child
+supplies memory. Inventory, exact creation identities, writes and source changes
+are shared between the UI and MCP. Twelve native fixture captures produce six
+owned-arena hypotheses; source changes start fresh, stale/unrelated identities
+are rejected, and child exit invalidates capture. The UI source action completes
+its automatic 16-capture pass. Native write/restore guards also pass on the
+selected child. These checks establish access and isolation, not gameplay roles.
+
+Credits: foundation 4/10, native access **6/10**, observation 5/15, discovery
+4/20, validation 2/15, intent 0/10, agent collaboration 5/10, generalization 0/10.
+Total **26/100**. Automatic memory-source selection and verified real-game
+controlling state remain unfinished; the full goal remains active.

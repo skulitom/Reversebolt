@@ -120,6 +120,7 @@ impl EngineHandle {
                     "status"
                         | "history"
                         | "list_processes"
+                        | "list_memory_processes"
                         | "read_capture"
                         | "read_sequence"
                         | "read_change_evidence"
@@ -136,6 +137,7 @@ impl EngineHandle {
                 } else if matches!(
                     command.action.as_str(),
                     "list_processes"
+                        | "list_memory_processes"
                         | "set_observer_model"
                         | "attach_process"
                         | "capture"
@@ -172,6 +174,7 @@ impl EngineHandle {
                         if matches!(
                             command.action.as_str(),
                             "read_capture"
+                                | "list_memory_processes"
                                 | "capture"
                                 | "submit_observation"
                                 | "read_sequence"
@@ -411,7 +414,34 @@ fn native_command(
             return Ok(json!({"recorded":changed,"duplicate":!changed}));
         }
         "list_processes" => engine.view.processes = crate::native::processes()?,
+        "list_memory_processes" => {
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect an application first.")?;
+            session.refresh_memory_sources();
+            return Ok(json!({"processes":session.view.memory_sources,
+                "error":session.view.memory_sources_error,
+                "limitation":"Accessible descendants with a live, same-session parent chain at inventory time. Ancestry does not identify gameplay ownership; inaccessible or exited branches are omitted. Selection starts a new investigation."}));
+        }
         "attach_process" => {
+            let memory = match (
+                command.args.get("memory_pid"),
+                command.args.get("memory_created"),
+            ) {
+                (None, None) => None,
+                (Some(pid), Some(created)) => Some((
+                    pid.as_u64()
+                        .and_then(|p| u32::try_from(p).ok())
+                        .filter(|p| *p != 0)
+                        .ok_or("memory_pid must identify a listed process.")?,
+                    created
+                        .as_str()
+                        .filter(|s| !s.is_empty())
+                        .ok_or("memory_created must be the listed creation identity.")?,
+                )),
+                _ => return Err("Supply both memory_pid and memory_created, or omit both.".into()),
+            };
             let pid = command.args["pid"]
                 .as_u64()
                 .and_then(|p| u32::try_from(p).ok())
@@ -435,6 +465,7 @@ fn native_command(
                 created,
                 command.args["window"].as_u64(),
                 models,
+                memory,
             )?;
             let session = reversebolt_core::live::LiveSession::attach(
                 Box::new(target),
@@ -444,8 +475,10 @@ fn native_command(
             engine.event(
                 &command.source,
                 format!(
-                    "Connected to {} (PID {}) for window and memory observation.",
-                    session.view.process.name, pid
+                    "Connected to {} (window PID {}, memory PID {}) for observation.",
+                    session.view.process.name,
+                    pid,
+                    session.view.memory_process.as_ref().unwrap().pid
                 ),
             );
             engine.live = Some(session);

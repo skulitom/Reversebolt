@@ -101,6 +101,14 @@ pub trait NativeTarget {
         None
     }
     fn info(&self) -> &ProcessInfo;
+    /// The fixed address space for every region, read and write in this target.
+    /// It can differ from the process whose window supplies image/input evidence.
+    fn memory_info(&self) -> &ProcessInfo {
+        self.info()
+    }
+    fn memory_sources(&self) -> Result<Vec<ProcessInfo>> {
+        Ok(vec![self.info().clone()])
+    }
     fn regions(&self) -> Result<Vec<Region>>;
     fn query(&self, address: u64) -> Result<Option<Region>> {
         Ok(self.regions()?.into_iter().find(|r| {
@@ -200,6 +208,13 @@ pub struct LocalObservationWarning {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    /// None in historical records means the selected window process.
+    #[serde(default)]
+    pub memory_process: Option<ProcessInfo>,
+    #[serde(default)]
+    pub memory_sources: Vec<ProcessInfo>,
+    #[serde(default)]
+    pub memory_sources_error: Option<String>,
     /// Bounded notices for this batch. Optional image interpretation can fail
     /// while independent image, text and memory collection remains available.
     #[serde(default)]
@@ -252,6 +267,18 @@ pub struct LiveSession {
 }
 
 impl LiveSession {
+    pub fn refresh_memory_sources(&mut self) {
+        match self.target.memory_sources() {
+            Ok(sources) => {
+                self.view.memory_sources = sources;
+                self.view.memory_sources_error = None;
+            }
+            Err(error) => {
+                self.view.memory_sources.clear();
+                self.view.memory_sources_error = Some(error);
+            }
+        }
+    }
     pub fn start_inputs(
         &self,
         cancel: std::sync::Arc<std::sync::atomic::AtomicBool>,
@@ -280,7 +307,7 @@ impl LiveSession {
             epoch: self.image_epoch,
             frame: self.view.sample_count,
             prediction: check.id.clone(),
-            process: self.view.process.clone(),
+            process: self.target.memory_info().clone(),
             track,
             label: series.label.clone(),
             bounds: series.bounds,
@@ -609,6 +636,9 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            memory_process: Some(target.memory_info().clone()),
+            memory_sources: vec![],
+            memory_sources_error: None,
             local_observation_warnings: vec![],
             rule_checks: vec![],
             rule_error: None,
@@ -633,7 +663,7 @@ impl LiveSession {
             connected: true,
             phase: "Connected for observation. Capture while the program changes.".into(),
         };
-        Ok(Self {
+        let mut session = Self {
             view,
             target,
             plan,
@@ -649,7 +679,9 @@ impl LiveSession {
             screen_size: None,
             image_epoch: 0,
             capture_clock: Instant::now(),
-        })
+        };
+        session.refresh_memory_sources();
+        Ok(session)
     }
 
     pub fn capture(&mut self) -> Result<()> {
@@ -1223,7 +1255,7 @@ impl LiveSession {
         if changed {
             let bytes = serde_json::to_vec_pretty(&serde_json::json!({
                 "schema_version": 1, "investigation_id": self.view.investigation_id,
-                "memory_batch": self.view.coverage.batch, "process": self.view.process,
+                "memory_batch": self.view.coverage.batch, "process": self.view.process,"memory_process":self.view.memory_process,
                 "temporal_tracks": tracks, "limitation": temporal::LIMITATION,
             }))
             .map_err(|e| e.to_string())?;
@@ -1239,7 +1271,7 @@ impl LiveSession {
         let bytes = serde_json::to_vec_pretty(&serde_json::json!({
             "schema_version":1,
             "investigation_id":self.view.investigation_id,
-            "process":self.view.process,
+            "process":self.view.process,"memory_process":self.view.memory_process,
             "frames":self.view.frames,
             "visual_tracks":tracks,
             "number_tracks":self.view.tracks,
@@ -1267,7 +1299,7 @@ impl LiveSession {
         let persist = || -> Result<()> {
             let bytes=serde_json::to_vec_pretty(&serde_json::json!({
                 "schema_version":1,"investigation_id":self.view.investigation_id,"batch":self.view.coverage.batch,
-                "process":self.view.process,"checks":checks,"frames":self.view.frames,
+                "process":self.view.process,"memory_process":self.view.memory_process,"checks":checks,"frames":self.view.frames,
                 "number_tracks":self.view.tracks,"visual_tracks":self.view.visual_tracks,
                 "action_patterns":self.view.action_patterns,"scope":crate::rule_checks::LIMITATION,
             })).map_err(|e|e.to_string())?;
@@ -1382,7 +1414,7 @@ impl LiveSession {
 
     fn persist_prediction_check(&self, check: &PredictionCheck) -> Result<()> {
         let bytes = serde_json::to_vec_pretty(&serde_json::json!({"schema_version":1,
-            "process":self.view.process, "check":check,
+            "process":self.view.process,"memory_process":self.view.memory_process, "check":check,
             "scope":"Historical frozen predictions. Non-atomic captures, provisional observations and unverified allocation continuity. Never editing authority."}))
             .map_err(|e| e.to_string())?;
         write_evidence(&self.directory.join("prediction-check.json"), &bytes)

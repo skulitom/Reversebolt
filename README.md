@@ -49,6 +49,13 @@ samples up to 16 MiB per moment, not the whole process. Capture support varies
 by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
 application running. The connection invalidates when the original process exits.
 
+For applications that keep state in another process, **Inspect application →
+Memory source** lists accessible child processes. Choosing a source keeps watching
+the same window and starts automatic observation in a fresh investigation.
+Agents can use the same selection through MCP. The source's role in gameplay
+is still unknown; automatic source selection is not implemented. See the
+[process-scope checks](research/memory-sources/README.md).
+
 Observation jobs also sample pressed keys and mouse buttons while the selected
 window is active. **Inspect → Capture input context** shows a short summary;
 agents receive the same timed samples with recorded frames. Pausing, stopping,

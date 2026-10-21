@@ -538,3 +538,22 @@ the accessible move menu with no diagnostic sections in the main view. It is
 responding in the user's desktop session with all eight history entries and the
 local model choice retained. Compact receipt:
 `research/interface/evidence/control-cards-v2.json`.
+
+
+## Memory source isolation — 2026-10-21
+
+The window process and selected memory process now have separate identities.
+All 136 workspace tests, strict Clippy and the release build pass. The owned
+Anode fixture's 12 native captures produce six child-arena correspondence
+hypotheses while preserving the parent window. Invalid identities, unrelated
+processes, source switching and child exit are covered. Accessibility actions
+also start and complete a fresh automatic 16-capture pass via the source selector.
+No game control or manual screenshot review was used.
+
+The final packaged native check writes/restores four bytes in an owned child and
+rejects stale bytes, allocation changes and creation-identity changes. The
+30-tool smoke is `test-results/smoke-fc5b99ed/report.json`. Preview
+`0.1.0-20261021-064710` is running with eight history entries and the local-model
+setting preserved. Scope limitations and compact evidence are in
+[the process-source study](../research/memory-sources/README.md). No independent
+gameplay authority or automatic choice of a memory process is claimed.

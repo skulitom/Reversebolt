@@ -28,8 +28,12 @@ impl State {
 struct Target {
     state: Rc<State>,
     info: ProcessInfo,
+    memory: Option<ProcessInfo>,
 }
 impl NativeTarget for Target {
+    fn memory_info(&self) -> &ProcessInfo {
+        self.memory.as_ref().unwrap_or(&self.info)
+    }
     fn info(&self) -> &ProcessInfo {
         &self.info
     }
@@ -101,6 +105,15 @@ impl NativeTarget for Target {
 
 #[test]
 fn session_prepares_trials_checks_source_evidence_and_revokes_passive_predictions() {
+    session_contract(false);
+}
+
+#[test]
+fn child_address_space_keeps_screen_evidence_but_binds_edits_to_its_own_identity() {
+    session_contract(true);
+}
+
+fn session_contract(separate: bool) {
     let root =
         std::env::temp_dir().join(format!("reversebolt-live-change-{}", uuid::Uuid::new_v4()));
     let state = Rc::new(State {
@@ -113,6 +126,11 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
     });
     let mut session = LiveSession::attach(
         Box::new(Target {
+            memory: separate.then(|| ProcessInfo {
+                pid: 92,
+                created: "child-a".into(),
+                ..Default::default()
+            }),
             state: state.clone(),
             info: ProcessInfo {
                 pid: 91,
@@ -126,6 +144,11 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
     )
     .unwrap();
     let mut store = Store::open(root.join("changes")).unwrap();
+    assert_eq!(session.view.process.pid, 91);
+    assert_eq!(
+        session.view.memory_process.as_ref().unwrap().pid,
+        if separate { 92 } else { 91 }
+    );
     for value in [40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48.] {
         state.set(value);
         session.capture().unwrap();
@@ -168,6 +191,29 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
         .prepare_change(id, 53., "agent", &mut store)
         .unwrap();
     assert_eq!(change.phase, Phase::Prepared);
+    assert_eq!(change.scope.process.pid, if separate { 92 } else { 91 });
+    if separate {
+        let mut wrong = Target {
+            state: state.clone(),
+            info: session.view.process.clone(),
+            memory: Some(ProcessInfo {
+                pid: 92,
+                created: "child-restarted".into(),
+                ..Default::default()
+            }),
+        };
+        let scope = session.change_scope(id).unwrap();
+        assert!(change.check_target(&wrong, &scope).is_err());
+        wrong.memory.as_mut().unwrap().created = "child-a".into();
+        wrong.memory.as_mut().unwrap().pid = 93;
+        assert!(change.check_target(&wrong, &scope).is_err());
+        assert_eq!(state.calls.get(), 0);
+        let evidence: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(root.join("captures/evidence.json")).unwrap())
+                .unwrap();
+        assert_eq!(evidence["process"]["pid"], 91);
+        assert_eq!(evidence["memory_process"]["pid"], 92);
+    }
     assert_eq!(state.calls.get(), 0);
     assert!(change.models.len() >= 2);
     assert_eq!(change.watches.len(), 2);

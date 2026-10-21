@@ -14,12 +14,17 @@ use windows_sys::Win32::{
     Foundation::*,
     Graphics::Gdi::*,
     System::{
-        Diagnostics::Debug::{ReadProcessMemory, WriteProcessMemory},
+        Diagnostics::{
+            Debug::{ReadProcessMemory, WriteProcessMemory},
+            ToolHelp::*,
+        },
         Memory::*,
         Threading::*,
     },
     UI::WindowsAndMessaging::*,
 };
+
+mod process_tree;
 
 #[link(name = "kernel32")]
 unsafe extern "system" {
@@ -32,6 +37,56 @@ unsafe extern "system" {
 
 struct ProcessHandle(HANDLE);
 
+fn running(handle: HANDLE) -> bool {
+    let mut code = 0;
+    unsafe { GetExitCodeProcess(handle, &mut code) != 0 && code == 259 }
+}
+
+fn window_owner(window: u64) -> u32 {
+    let mut pid = 0;
+    unsafe {
+        GetWindowThreadProcessId(window as HWND, &mut pid);
+    }
+    pid
+}
+
+fn memory_sources(root: &ProcessInfo) -> Result<Vec<ProcessInfo>> {
+    let current = process_info(root.pid, root.window as HWND)?;
+    if current.created != root.created
+        || (root.window != 0 && window_owner(root.window) != root.pid)
+    {
+        return Err("The original application is no longer available.".into());
+    }
+    let raw = unsafe { CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) };
+    if raw == INVALID_HANDLE_VALUE {
+        return Err(std::io::Error::last_os_error().to_string());
+    }
+    let snapshot = ProcessHandle(raw);
+    let mut entry = PROCESSENTRY32W {
+        dwSize: std::mem::size_of::<PROCESSENTRY32W>() as u32,
+        ..Default::default()
+    };
+    let mut parents = std::collections::BTreeMap::new();
+    let mut more = unsafe { Process32FirstW(snapshot.0, &mut entry) };
+    while more != 0 {
+        if parents.len() >= 32768 {
+            return Err("The process snapshot exceeded its inventory budget.".into());
+        }
+        parents.insert(entry.th32ProcessID, entry.th32ParentProcessID);
+        more = unsafe { Process32NextW(snapshot.0, &mut entry) };
+    }
+    if unsafe { GetLastError() } != ERROR_NO_MORE_FILES {
+        return Err(std::io::Error::last_os_error().to_string());
+    }
+    let result = process_tree::descendants(root, &parents, |pid| {
+        process_info(pid, std::ptr::null_mut())
+    })?;
+    if process_info(root.pid, root.window as HWND)?.created != root.created {
+        return Err("The application changed during the process inventory.".into());
+    }
+    Ok(result)
+}
+
 /// Regression-only entry point. It creates and owns its target; no PID or
 /// address is accepted from the command line and no discovery claim is made.
 pub fn trial_write_smoke(output: &Path) -> Result<()> {
@@ -41,18 +96,28 @@ pub fn trial_write_smoke(output: &Path) -> Result<()> {
     }
     let child = crate::target::ChildTarget::start(8433)?;
     let (base, _) = child.arena();
-    let info = process_info(child.pid(), std::ptr::null_mut())?;
+    let memory_info = process_info(child.pid(), std::ptr::null_mut())?;
+    let info = process_info(std::process::id(), std::ptr::null_mut())?;
     let raw = unsafe { OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, child.pid()) };
     if raw.is_null() {
         return Err(std::io::Error::last_os_error().to_string());
     }
-    let process = Process {
+    let mut process = Process {
+        memory_info: Some(memory_info),
+        window_handle: None,
         inputs: std::cell::RefCell::new(None),
         handle: ProcessHandle(raw),
         info,
         observer: std::cell::RefCell::new(None),
         models: PathBuf::new(),
     };
+    if !process
+        .memory_sources()?
+        .iter()
+        .any(|p| p.pid == child.pid() && p.created == process.memory_info().created)
+    {
+        return Err("The owned child was missing from the ancestry inventory.".into());
+    }
     let region = process
         .query(base as u64)?
         .ok_or("Owned arena unavailable.")?;
@@ -64,6 +129,13 @@ pub fn trial_write_smoke(output: &Path) -> Result<()> {
         before: original.clone(),
         after: after.clone(),
     };
+    let identity = process.memory_info().created.clone();
+    process.memory_info.as_mut().unwrap().created = "0000000000000000".into();
+    let identity_guard = process.guarded_write(&patch, &region);
+    process.memory_info.as_mut().unwrap().created = identity;
+    if identity_guard.attempted {
+        return Err("A changed child identity reached the write call.".into());
+    }
     let write = process.guarded_write(&patch, &region);
     if !write.attempted || write.error.is_some() || write.observed_after.as_ref() != Some(&after) {
         return Err(format!("Owned write failed: {write:?}"));
@@ -89,7 +161,7 @@ pub fn trial_write_smoke(output: &Path) -> Result<()> {
     if mapping.attempted {
         return Err("Wrong mapping reached the write call.".into());
     }
-    let report = serde_json::json!({"scope":"Owned child-process native write API check. Known arena, not discovery or gameplay evidence.","pid":child.pid(),"write":write,"stale_guard":stale,"restore":undo,"mapping_guard":mapping,"restored":true});
+    let report = serde_json::json!({"scope":"Owned child-process native write API check. Known arena, not discovery or gameplay evidence.","window_process":process.info(),"memory_process":process.memory_info(),"identity_guard":identity_guard,"pid":child.pid(),"write":write,"stale_guard":stale,"restore":undo,"mapping_guard":mapping,"restored":true});
     if let Some(parent) = output.parent() {
         std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
@@ -130,6 +202,9 @@ fn process_info(pid: u32, window: HWND) -> Result<ProcessInfo> {
         return Err(std::io::Error::last_os_error().to_string());
     }
     let handle = ProcessHandle(handle);
+    if !running(handle.0) {
+        return Err("The process has exited.".into());
+    }
     let mut path = vec![0u16; 32768];
     let mut size = path.len() as u32;
     if unsafe {
@@ -151,8 +226,8 @@ fn process_info(pid: u32, window: HWND) -> Result<ProcessInfo> {
         unsafe { GetWindowTextW(window, title.as_mut_ptr(), 1024) }.max(0) as usize
     };
     let mut session = 0;
-    unsafe {
-        ProcessIdToSessionId(pid, &mut session);
+    if unsafe { ProcessIdToSessionId(pid, &mut session) } == 0 {
+        return Err("The process session is unavailable.".into());
     }
     Ok(ProcessInfo {
         pid,
@@ -191,6 +266,8 @@ pub fn processes() -> Result<Vec<ProcessInfo>> {
 }
 
 pub struct Process {
+    memory_info: Option<ProcessInfo>,
+    window_handle: Option<ProcessHandle>,
     inputs: std::cell::RefCell<Option<crate::input_monitor::Monitor>>,
     handle: ProcessHandle,
     info: ProcessInfo,
@@ -203,6 +280,7 @@ impl Process {
         expected_created: &str,
         expected_window: Option<u64>,
         models: PathBuf,
+        memory: Option<(u32, &str)>,
     ) -> Result<Self> {
         let info = processes()?
             .into_iter()
@@ -211,7 +289,32 @@ impl Process {
         if info.created != expected_created {
             return Err("The process identity changed. Refresh the list and reconnect.".into());
         }
-        let handle = unsafe { OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, pid) };
+        // Keep the original window process alive as an identity handle even when
+        // the selected address space belongs to a child without a window.
+        let window_raw = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) };
+        if window_raw.is_null() {
+            return Err("The selected window process is unavailable.".into());
+        }
+        let window_handle = ProcessHandle(window_raw);
+        if format!("{:016X}", created(window_handle.0)?) != expected_created
+            || !running(window_handle.0)
+        {
+            return Err("The window process restarted while connecting.".into());
+        }
+        let memory_info = if let Some((memory_pid, memory_created)) = memory {
+            Some(memory_sources(&info)?.into_iter().find(|p| p.pid == memory_pid && p.created == memory_created)
+                .ok_or("The selected memory process is no longer an accessible member of this application family. Refresh the sources.")?)
+        } else {
+            None
+        };
+        let memory_target = memory_info.as_ref().unwrap_or(&info);
+        let handle = unsafe {
+            OpenProcess(
+                PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
+                0,
+                memory_target.pid,
+            )
+        };
         if handle.is_null() {
             return Err(format!(
                 "Could not read this process: {}",
@@ -219,10 +322,12 @@ impl Process {
             ));
         }
         let handle = ProcessHandle(handle);
-        if format!("{:016X}", created(handle.0)?) != expected_created {
+        if format!("{:016X}", created(handle.0)?) != memory_target.created || !running(handle.0) {
             return Err("The process restarted while connecting.".into());
         }
         Ok(Self {
+            memory_info,
+            window_handle: Some(window_handle),
             inputs: std::cell::RefCell::new(None),
             handle,
             info,
@@ -233,6 +338,12 @@ impl Process {
 }
 
 impl NativeTarget for Process {
+    fn memory_info(&self) -> &ProcessInfo {
+        self.memory_info.as_ref().unwrap_or(&self.info)
+    }
+    fn memory_sources(&self) -> Result<Vec<ProcessInfo>> {
+        memory_sources(&self.info)
+    }
     fn start_inputs(
         &self,
         clock_id: &str,
@@ -255,8 +366,9 @@ impl NativeTarget for Process {
         &self.info
     }
     fn alive(&self) -> bool {
-        let mut exit = 0;
-        unsafe { GetExitCodeProcess(self.handle.0, &mut exit) != 0 && exit == 259 }
+        running(self.handle.0)
+            && self.window_handle.as_ref().is_none_or(|h| running(h.0))
+            && (self.info.window == 0 || window_owner(self.info.window) == self.info.pid)
     }
     fn regions(&self) -> Result<Vec<Region>> {
         let mut address = 0usize;
@@ -415,7 +527,7 @@ impl NativeTarget for Process {
                         | PROCESS_VM_WRITE
                         | PROCESS_VM_OPERATION,
                     0,
-                    self.info.pid,
+                    self.memory_info().pid,
                 )
             };
             if raw.is_null() {
@@ -425,7 +537,7 @@ impl NativeTarget for Process {
                 ));
             }
             let handle = ProcessHandle(raw);
-            if format!("{:016X}", created(handle.0)?) != self.info.created {
+            if format!("{:016X}", created(handle.0)?) != self.memory_info().created {
                 return Err("The process identity changed.".into());
             }
             if self.read(patch.address, patch.before.len())? != patch.before {

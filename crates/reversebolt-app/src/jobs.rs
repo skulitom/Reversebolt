@@ -114,6 +114,7 @@ fn read_only(action: &str) -> bool {
             | "read_sequence"
             | "read_change_evidence"
             | "list_processes"
+            | "list_memory_processes"
     )
 }
 fn pop(inbox: &mut VecDeque<Request>) -> Option<Request> {
@@ -913,6 +914,9 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                memory_process: None,
+                memory_sources: vec![],
+                memory_sources_error: None,
                 local_observation_warnings: vec![],
                 rule_checks: vec![],
                 rule_error: None,

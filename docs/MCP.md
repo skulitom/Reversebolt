@@ -23,6 +23,23 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+## Memory process selection
+
+`reversebolt_list_memory_processes` refreshes the connected application's accessible
+family and returns `data.processes`, `data.error` and a scope limitation. The same
+list is in `state.live.memory_sources`, with refresh failures in
+`memory_sources_error`. Inaccessible or exited ancestry branches can be omitted.
+
+Keep the original `live.process` identity when calling `attach_process` again;
+add both `memory_pid` and `memory_created` from the refreshed inventory. The
+window, image and input source remain the original process, while every memory
+region, address, candidate and trial belongs to `live.memory_process`. Omit both
+optional fields to use the window process. Do not combine addresses from two
+sources or reuse old jobs/matches: attachment starts a new investigation and
+requires fresh evidence. Default automatic observation is unchanged. One process
+is sampled per investigation; no ownership or semantic role is inferred from
+ancestry. See [native checks and limits](../research/memory-sources/README.md).
+
 ## Available tools
 
 Observation jobs now attach optional `input_context` to recorded frames. The
@@ -44,7 +61,9 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_job_control` | Pause, resume or cancel a current observation job |
 | `reversebolt_job_events` | Read bounded, ordered job events after a cursor |
 | `reversebolt_list_processes` | Application windows with title, PID, creation identity and window handle |
+| `reversebolt_list_memory_processes` | Refresh the connected window process's accessible descendants and exact identities |
 | `reversebolt_attach_process` | Connect an exact process/window for observation; default 16 MiB capture budget |
+| `reversebolt_set_observer_model` | Set or disable the installed local vision model used by future automatic jobs |
 | `reversebolt_capture` | Window image, OCR and bounded memory snapshot from connected application |
 | `reversebolt_read_capture` | A recorded PNG as MCP image content, with frame identity and checksum |
 | `reversebolt_submit_observation` | Add an image interpretation with its source, uncertainty and explanation |
