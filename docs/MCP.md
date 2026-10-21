@@ -72,6 +72,7 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
 | `reversebolt_start_prediction_check` | Freeze one series' mappings and check fresh observations without refitting |
 | `reversebolt_prepare_change` | Prepare a bounded OCR-number trial; no process write |
+| `reversebolt_prepare_probe` | Review a test of one candidate location, retaining overlapping interpretations and rival predictions; no process write |
 | `reversebolt_apply_change` | Explicitly attempt the prepared native write and record a screen-number check |
 | `reversebolt_restore_change` | Restore original bytes only while the original scope and complete interpretations still match |
 | `reversebolt_observe_change` | Add a source-hashed post-trial reading without writing process memory |
@@ -142,6 +143,23 @@ byte actions produce an unavailable plan. No arbitrary address is accepted.
 The requested difference must be greater than 1.1 and no more than 20. Preparation
 does not write, and does not imply an instruction to call `apply_change`.
 
+`prepare_probe` additionally takes the exact `prediction_id` and zero-based
+`candidate` index from that check. This explicitly tests one location when
+different locations remain plausible. Every transitively overlapping surviving
+interpretation must have fresh evidence and propose the same patch. Unresolved
+overlaps cannot be discarded. Nonoverlapping rivals remain in `change.probe`,
+including unreadable alternatives with explicit errors and conditional
+`predicted_if_written` values. The same preparation, expiry, journal, application
+and restoration guards apply. No address argument or automatic write is added.
+
+After a written probe, `observations[].probe_comparisons` compares the observed
+number with each alternative's conditional prediction (`agreed`, `differed`, or
+`unavailable`). These comparisons do not eliminate hypotheses or establish causal
+authority: effects can propagate between locations, and reads are sequential.
+Restored observations do not reuse predictions for the written patch. On desktop,
+the selection is under the card's **Inspect → Test a possibility**; applying the
+reviewed test remains an explicit card action.
+
 `apply_change`, `restore_change` and `observe_change` take the returned
 `change_id`. The first two are annotated destructive and open-world because they
 change the selected application's process memory. They obey the same human hold
@@ -186,7 +204,7 @@ Older records without a baseline explicitly lack this evidence.
 
 ## Image-grounded agent observations
 
-There are now 29 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 31 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's

@@ -19,10 +19,14 @@ struct State {
     dead: Cell<bool>,
     secondary: Cell<Option<f64>>,
     screen_bias: Cell<f32>,
+    mirror: Cell<bool>,
 }
 impl State {
     fn set(&self, value: f32) {
         self.bytes.borrow_mut()[32..36].copy_from_slice(&value.to_le_bytes());
+        if self.mirror.get() {
+            self.bytes.borrow_mut()[64..68].copy_from_slice(&value.to_le_bytes());
+        }
     }
 }
 struct Target {
@@ -113,6 +117,201 @@ fn child_address_space_keeps_screen_evidence_but_binds_edits_to_its_own_identity
     session_contract(true);
 }
 
+#[test]
+fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
+    for selected_offset in [32, 64] {
+        let root = std::env::temp_dir().join(format!("reversebolt-probe-{}", uuid::Uuid::new_v4()));
+        let state = Rc::new(State {
+            bytes: RefCell::new(vec![0; 128]),
+            calls: Cell::new(0),
+            resize: Cell::new(false),
+            dead: Cell::new(false),
+            secondary: Cell::new(Some(25.)),
+            screen_bias: Cell::new(0.),
+            mirror: Cell::new(true),
+        });
+        let mut session = LiveSession::attach(
+            Box::new(Target {
+                state: state.clone(),
+                memory: None,
+                info: ProcessInfo {
+                    pid: 91,
+                    created: "probe-fixture".into(),
+                    window: 100,
+                    ..Default::default()
+                },
+            }),
+            1,
+            root.join("captures"),
+        )
+        .unwrap();
+        let mut store = Store::open(root.join("changes")).unwrap();
+        for value in [40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        session.correlate().unwrap();
+        let track = session.view.tracks[0].id;
+        session
+            .start_prediction_check(
+                &session.view.investigation_id.clone(),
+                1,
+                12,
+                Source::Ocr,
+                track,
+            )
+            .unwrap();
+        for value in [52., 52., 50., 50.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        let check = session.view.prediction_check.as_ref().unwrap();
+        let id = check.id.clone();
+        let selected = check
+            .candidates
+            .iter()
+            .position(|c| c.address == format!("0x{:X}", 65536 + selected_offset))
+            .unwrap();
+        let choices = reversebolt_core::probes::choices(check).unwrap();
+        assert_eq!(choices.len(), 2);
+        assert!(choices.iter().all(|c| c.eligible && c.indices.len() >= 2));
+        let ordinary = session
+            .prepare_change(track, 53., "test", &mut store)
+            .unwrap();
+        assert_eq!(
+            ordinary.phase,
+            Phase::Unavailable,
+            "Different addresses cannot imply consensus"
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., ("stale", selected), "test", &mut store)
+                .is_err()
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., (&id, 200), "test", &mut store)
+                .is_err()
+        );
+        // An unresolved overlapping interpretation blocks the probe; a rival at
+        // another location stays in the evidence without voting on this patch.
+        let group = reversebolt_core::probes::select(
+            session.view.prediction_check.as_ref().unwrap(),
+            selected,
+        )
+        .unwrap();
+        let alias = *group.iter().find(|i| **i != selected).unwrap();
+        let samples = std::mem::take(
+            &mut session.view.prediction_check.as_mut().unwrap().candidates[alias].samples,
+        );
+        assert!(
+            session
+                .prepare_probe(track, 53., (&id, selected), "test", &mut store)
+                .is_err()
+        );
+        session.view.prediction_check.as_mut().unwrap().candidates[alias].samples = samples;
+        let rival = choices
+            .iter()
+            .find(|c| !c.indices.contains(&selected))
+            .unwrap()
+            .indices[0];
+        session.view.prediction_check.as_mut().unwrap().candidates[rival]
+            .samples
+            .clear();
+        let prepared = session
+            .prepare_probe(track, 53., (&id, selected), "test", &mut store)
+            .unwrap();
+        assert_eq!(prepared.phase, Phase::Prepared);
+        assert_eq!(state.calls.get(), 0, "Preparation is read-only");
+        let probe = prepared.probe.as_ref().unwrap();
+        assert_eq!(
+            probe.alternatives.len(),
+            session
+                .view
+                .prediction_check
+                .as_ref()
+                .unwrap()
+                .candidates
+                .len()
+        );
+        assert_eq!(
+            probe.alternatives[rival].assessment,
+            reversebolt_core::prediction::Assessment::NeedsContrastingEvidence
+        );
+        for a in &probe.alternatives {
+            assert!(
+                (a.predicted_if_written.unwrap() - if a.in_test_group { 53. } else { 50. }).abs()
+                    < 0.55
+            );
+        }
+        let applied = session
+            .execute_change(&prepared.id, false, &mut store)
+            .unwrap();
+        assert_eq!(applied.phase, Phase::Written);
+        let observed = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(observed.observations[0].agrees, selected_offset == 32);
+        assert_eq!(
+            observed.observations[0].value,
+            Some(if selected_offset == 32 { 53. } else { 50. })
+        );
+        for result in &observed.observations[0].probe_comparisons {
+            let agrees = probe.alternatives[result.index].in_test_group == (selected_offset == 32);
+            assert_eq!(
+                result.fit,
+                if agrees {
+                    reversebolt_core::probes::Fit::Agreed
+                } else {
+                    reversebolt_core::probes::Fit::Differed
+                }
+            );
+        }
+        assert!(
+            session
+                .view
+                .prediction_check
+                .as_ref()
+                .unwrap()
+                .invalidated
+                .is_some()
+        );
+        assert!(
+            session
+                .prepare_probe(track, 56., (&id, selected), "test", &mut store)
+                .is_err()
+        );
+        session
+            .execute_change(&prepared.id, false, &mut store)
+            .unwrap();
+        assert_eq!(state.calls.get(), 1, "Completed probes are never replayed");
+        let restored = session
+            .execute_change(&prepared.id, true, &mut store)
+            .unwrap();
+        assert_eq!(restored.phase, Phase::Restored);
+        assert_eq!(
+            f32::from_le_bytes(
+                state.bytes.borrow()[selected_offset..selected_offset + 4]
+                    .try_into()
+                    .unwrap()
+            ),
+            50.
+        );
+        drop(store);
+        let reopened = Store::open(root.join("changes")).unwrap();
+        assert_eq!(
+            reopened
+                .get(&prepared.id)
+                .unwrap()
+                .probe
+                .unwrap()
+                .alternatives
+                .len(),
+            probe.alternatives.len()
+        );
+        assert_eq!(root.parent(), Some(std::env::temp_dir().as_path()));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
+
 fn session_contract(separate: bool) {
     let root =
         std::env::temp_dir().join(format!("reversebolt-live-change-{}", uuid::Uuid::new_v4()));
@@ -123,6 +322,7 @@ fn session_contract(separate: bool) {
         dead: Cell::new(false),
         secondary: Cell::new(Some(25.)),
         screen_bias: Cell::new(0.),
+        mirror: Cell::new(false),
     });
     let mut session = LiveSession::attach(
         Box::new(Target {

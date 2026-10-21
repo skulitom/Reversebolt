@@ -1,0 +1,53 @@
+{
+  "frozen_utc": "2026-10-21T07:02:50.950410+00:00",
+  "base_commit": "563c90bca0c8d122ac0ab18073d8fa2a218d18aa",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-080250",
+  "binaries": {
+    "Reversebolt.exe": "e882375cac3fa09ee4f555e74f5eae84316ac9fdd4056d1e8d05ec9c7d13a6d3",
+    "reversebolt-mcp.exe": "80c420d64ce6b06d470afbdf363d7b46c3f962f6b0bc5f0f8b39a532b41c4f62"
+  },
+  "method_sha256": {
+    "fixture.ps1": "66497c588912dae516e49b31472bb0ae1417f753ab68bc98004ff692f0d32fe6",
+    "run.py": "7d83879c04eaac5aa23eb73cec444db7b62b69cc59fed12f026968ccec37377f",
+    "PROTOCOL.md": "3c91f308b9280e26ef4a2d52e43e102774b488ae138a8dfaafcc86d8c60c9a9e"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/service.rs": "0b9b403900da6d6896ac6a0e9e31766b773f16f9fe85cb7ccf91594635b98db3",
+    "crates/reversebolt-app/src/ui_live.rs": "879e423306ead21b52a8b27766cca43558a01401a24b5afe5216996c855eebe3",
+    "crates/reversebolt-core/src/changes.rs": "a4fb6d235ece0fc1cc6b488200d1148631bb271690c91c806f61cb2083121daa",
+    "crates/reversebolt-core/src/lib.rs": "616b943ad92f479f40911f85a1b1ed70ab6a263251e4fa9ea37c4f271eb1f95d",
+    "crates/reversebolt-core/src/live.rs": "08ae2649ebc7596ef0e48cf5caa87c55900e75605ef186c61c5952a6387f6abb",
+    "crates/reversebolt-core/tests/live_changes.rs": "494c4dba2031b4065de1be0760f7c3292bcc96dec688eafae0ad5976e13112f4",
+    "crates/reversebolt-mcp/src/main.rs": "7d3712c6460372554156fccecdac2afd986b0166133b48ed8bb44c6460db8412",
+    "crates/reversebolt-core/src/probes.rs": "704686125321a4e1214317cbb75140bad802e655116b58384172443d3904d2d6"
+  },
+  "values": [
+    40,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "cases": [
+    {
+      "slot": 0,
+      "execution": "MCP"
+    },
+    {
+      "slot": 1,
+      "execution": "UI apply/restore"
+    }
+  ],
+  "selection": "lowest active OCR track with matches; candidate index zero; no replacement or rerun"
+}

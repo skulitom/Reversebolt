@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest explicit location tests (2026-10-21): **27%**. A reviewed test can now
+investigate one candidate location while retaining competing predictions and
+requiring agreement across overlapping interpretations. Two fixed native cases
+tested a source and an unused copy, observed the different responses, and restored
+the original bytes; one case used desktop apply/restore controls. All 146 tests
+and packaged checks pass. The main UI remains short draggable cards; additional
+test choices stay behind Inspect. Desktop preview `0.1.0-20261021-080250` is
+running with history preserved. General discovery moves from 4/20 to **5/20**
+for explicit experimental planning and retained alternatives. Validation remains
+2/15 and independent-game generalization remains 0/10: these fixture tests do
+not establish gameplay authority. Other credits remain foundation 4/10, native
+access 6/10, observation 5/15, intent 0/10 and agent collaboration 5/10.
+[Evidence and limits](../research/location-probes/README.md).
+
 Latest capture timing (2026-10-21): **26% unchanged**. Fresh checks now bracket
 images with bounded candidate reads. Changed or unbracketed values count neither
 for nor against a match, and late observations cannot bypass that rule. Controlled

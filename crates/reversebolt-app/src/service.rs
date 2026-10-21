@@ -151,6 +151,7 @@ impl EngineHandle {
                         | "read_change_evidence"
                         | "submit_temporal_observation"
                         | "prepare_change"
+                        | "prepare_probe"
                         | "apply_change"
                         | "restore_change"
                         | "observe_change"
@@ -181,6 +182,7 @@ impl EngineHandle {
                                 | "read_change_evidence"
                                 | "submit_temporal_observation"
                                 | "prepare_change"
+                                | "prepare_probe"
                                 | "apply_change"
                                 | "restore_change"
                                 | "observe_change"
@@ -270,7 +272,7 @@ fn native_command(
                 json!({"change_id":id,"observation":index,"baseline":baseline,"after":after,"images":images,"limitation":reversebolt_core::effects::LIMITATION}),
             );
         }
-        "prepare_change" => {
+        "prepare_change" | "prepare_probe" => {
             let session = engine
                 .live
                 .as_mut()
@@ -288,8 +290,24 @@ fn native_command(
             let value = command.args["value"]
                 .as_f64()
                 .ok_or("Supply a finite requested value.")?;
-            let change =
-                session.prepare_change(track, value, &command.source, &mut engine.changes)?;
+            let change = if command.action == "prepare_probe" {
+                let prediction = command.args["prediction_id"]
+                    .as_str()
+                    .ok_or("Choose the current prediction check.")?;
+                let candidate = command.args["candidate"]
+                    .as_u64()
+                    .and_then(|n| usize::try_from(n).ok())
+                    .ok_or("Choose a possibility to test.")?;
+                session.prepare_probe(
+                    track,
+                    value,
+                    (prediction, candidate),
+                    &command.source,
+                    &mut engine.changes,
+                )?
+            } else {
+                session.prepare_change(track, value, &command.source, &mut engine.changes)?
+            };
             engine.event(
                 &command.source,
                 format!(

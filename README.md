@@ -110,6 +110,12 @@ another reading. Details stay behind **Inspect**. Trial changes are limited to
 memory or an uncertain earlier write can prevent a trial. Connecting never
 starts writes automatically. See [trial behavior and limits](docs/research/LIVE_TRIAL_EDITS.md).
 
+When several separate locations remain plausible, **Inspect → Test a possibility**
+can prepare a test of one location. Overlapping interpretations still have to
+agree. The card offers **Try test** only after review; competing predictions and
+their observed outcomes stay in Inspect and the shared agent API. A response
+does not automatically turn the finding into a verified gameplay control.
+
 Reviewing an edit now saves a fresh before-image and checks the selected number.
 Subsequent checks also compare up to 31 other observed numbers. A card flags
 other values that changed, and their cards show the fresh readings. **Inspect**

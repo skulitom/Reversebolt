@@ -121,6 +121,8 @@ pub struct Observation {
     pub untracked_numbers: usize,
     #[serde(default)]
     pub comparison: Option<crate::effects::Comparison>,
+    #[serde(default)]
+    pub probe_comparisons: Vec<crate::probes::Comparison>,
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
@@ -153,6 +155,10 @@ pub struct Change {
     pub omitted_tracks: usize,
     #[serde(default)]
     pub baseline: Option<Observation>,
+    /// A separately reviewed location test. Other locations remain competing
+    /// hypotheses, not consenting interpretations or verified controls.
+    #[serde(default)]
+    pub probe: Option<crate::probes::Probe>,
 }
 
 fn agrees_region(target: &dyn NativeTarget, model: &Model) -> Result<()> {
@@ -292,6 +298,7 @@ impl Change {
             watches: vec![],
             omitted_tracks: 0,
             baseline: None,
+            probe: None,
         })
     }
 

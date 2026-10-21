@@ -86,6 +86,7 @@ pub struct LivePane {
     image: Option<(String, egui::TextureHandle)>,
     detail: Option<(String, CardSource, usize)>,
     requested: std::collections::BTreeMap<usize, f64>,
+    probe_choice: std::collections::BTreeMap<usize, usize>,
     edit_scope: String,
     card_order: Vec<(CardSource, usize)>,
     show_inspector: bool,
@@ -274,6 +275,7 @@ impl LivePane {
         let edit_scope = format!("{}:{}", live.investigation_id, live.coverage.batch);
         if self.edit_scope != edit_scope {
             self.requested.clear();
+            self.probe_choice.clear();
             self.card_order.clear();
             self.show_inspector = false;
             self.edit_scope = edit_scope;
@@ -564,6 +566,7 @@ impl LivePane {
                                                 handle.submit("prepare_change",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"track":id,"value":*requested}));
                                             }
                                         });
+
                                     }
                                     if let Some(change)=change {
                                         if let Some(comparison)=change.observations.last().and_then(|o|o.comparison.as_ref()) {
@@ -574,9 +577,11 @@ impl LivePane {
                                         match change.phase {
                                             Phase::Prepared => {
                                                 ui.label(RichText::new(format!("Try {} → {}",change.observed,change.desired)).color(ACCENT));
-                                                ui.label(RichText::new("Experimental edit. Gameplay effects are unverified.").size(12.).color(MUTED));
-                                                let still_requested=self.requested.get(id).is_some_and(|v|*v==change.desired);
-                                                if ui.add_enabled(!busy && still_requested && live.connected,egui::Button::new("Try edit")).clicked() {handle.submit("apply_change",json!({"change_id":change.id}));}
+                                                ui.label(RichText::new(if change.probe.is_some() {"Tests one possibility; other explanations remain."} else {"Experimental edit. Gameplay effects are unverified."}).size(12.).color(MUTED));
+                                                if let Some(probe)=&change.probe {self.probe_choice.entry(*id).or_insert(probe.selected);}
+                                                let still_requested=self.requested.get(id).is_some_and(|v|*v==change.desired)
+                                                    && change.probe.as_ref().is_none_or(|p|self.probe_choice.get(id)==Some(&p.selected));
+                                                if ui.add_enabled(!busy && still_requested && live.connected,egui::Button::new(if change.probe.is_some() {"Try test"} else {"Try edit"})).clicked() {handle.submit("apply_change",json!({"change_id":change.id}));}
                                             }
                                             Phase::Written => {
                                                 ui.label(RichText::new("Trial applied").color(ACCENT));
@@ -673,6 +678,33 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if external==CardSource::Ocr
+                        && let Some(observed)=value.parse::<f64>().ok().filter(|v|v.is_finite())
+                        && let Some(check)=live.prediction_check.as_ref().filter(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id && c.invalidated.is_none())
+                        && let Ok(choices)=reversebolt_core::probes::choices(check)
+                        && choices.len()>1 && choices.iter().any(|c|c.eligible) {
+                        let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id);
+                        let requested=self.requested.entry(id).or_insert(observed);
+                        let selected=self.probe_choice.entry(id).or_insert_with(||change.and_then(|c|c.probe.as_ref()).map_or_else(||choices.iter().find(|c|c.eligible).unwrap().indices[0],|p|p.selected));
+                        if !choices.iter().any(|c|c.eligible && c.indices.contains(selected)) {
+                            *selected=choices.iter().find(|c|c.eligible).unwrap().indices[0];
+                        }
+                        egui::CollapsingHeader::new("Test a possibility").id_salt(("probe",id)).show(ui,|ui| {
+                            ui.label("Several locations match this value. Test one to see what changes.");
+                            let label=ui.label("Try value");
+                            ui.add_enabled(!busy && live.connected,egui::DragValue::new(requested).speed(1.).range((observed-20.)..=(observed+20.))).labelled_by(label.id);
+                            let ordinal=choices.iter().position(|c|c.indices.contains(selected)).unwrap()+1;
+                            egui::ComboBox::from_id_salt(("probe-choice",id)).selected_text(format!("Possibility {ordinal}")).show_ui(ui,|ui| {
+                                for (n,c) in choices.iter().enumerate() {
+                                    ui.add_enabled_ui(c.eligible,|ui| {ui.selectable_value(selected,c.indices[0],format!("Possibility {}",n+1));});
+                                }
+                            });
+                            if ui.add_enabled(!busy && live.connected && (*requested-observed).abs()>1.1,egui::Button::new("Review test")).clicked() {
+                                handle.submit("prepare_probe",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"prediction_id":check.id,"track":id,"candidate":*selected,"value":*requested}));
+                                self.detail=None;
+                            }
+                        });
+                    }
                     if let Some(error)=&live.rule_error {ui.colored_label(WARNING,error);}
                     if let Some(e)=action_evidence(live,external,id) {
                         for check in live.rule_checks.iter().filter(|c|c.source==e.source && c.track==e.track) {
@@ -720,6 +752,16 @@ impl LivePane {
                     }
                     if external==CardSource::Ocr && let Some(change)=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id) {
                         ui.label(&change.reason);
+                        if let Some(probe)=&change.probe {
+                            ui.label(&probe.limitation);
+                            egui::CollapsingHeader::new("What the possibilities predict").show(ui,|ui| {
+                                for a in &probe.alternatives {
+                                    ui.label(format!("{} {}: {}",if a.in_test_group {"Tested interpretation"} else {"Rival interpretation"},a.index+1,
+                                        a.predicted_if_written.map_or_else(||"unavailable".into(),|v|format!("{v:.2}"))));
+                                    if let Some(error)=&a.error {ui.label(error);}
+                                }
+                            });
+                        }
                         if let Some(receipt)=change.restoration.as_ref().or(change.write.as_ref()) && let Some(error)=&receipt.error {ui.colored_label(ERROR,error);}
                         if let Some(observation)=change.observations.last() {
                             ui.label(format!("Trial reading: {} · expected {}",observation.value.map_or_else(||"unavailable".into(),|v|v.to_string()),observation.expected));

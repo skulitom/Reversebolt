@@ -330,6 +330,28 @@ impl LiveSession {
         actor: &str,
         store: &mut crate::changes::Store,
     ) -> Result<crate::changes::Change> {
+        self.prepare_change_inner(track, desired, actor, store, None)
+    }
+
+    pub fn prepare_probe(
+        &mut self,
+        track: usize,
+        desired: f64,
+        selection: (&str, usize),
+        actor: &str,
+        store: &mut crate::changes::Store,
+    ) -> Result<crate::changes::Change> {
+        self.prepare_change_inner(track, desired, actor, store, Some(selection))
+    }
+
+    fn prepare_change_inner(
+        &mut self,
+        track: usize,
+        desired: f64,
+        actor: &str,
+        store: &mut crate::changes::Store,
+        probe: Option<(&str, usize)>,
+    ) -> Result<crate::changes::Change> {
         if self.refresh_connection() || !self.view.connected {
             return Err("The original application is no longer connected.".into());
         }
@@ -342,13 +364,25 @@ impl LiveSession {
         {
             return Err("This value needs a current screen-number prediction check before a trial can be prepared.".into());
         }
-        // Keep unresolved rivals. A missing or invalidated rival cannot disappear
-        // from the action vote simply because reading it is inconvenient.
+        let group = if let Some((id, selected)) = probe {
+            if id != check.id {
+                return Err(
+                    "The prediction check changed. Review the current possibilities.".into(),
+                );
+            }
+            Some(crate::probes::select(check, selected)?)
+        } else {
+            None
+        };
+        // Ordinary edits require consensus across every remaining explanation.
+        // An explicit location test keeps all overlapping rivals in its vote;
+        // other locations are retained below as competing predictions.
         let survivors: Vec<_> = check
             .candidates
             .iter()
             .enumerate()
             .filter(|(_, c)| c.assessment(check) != prediction::Assessment::Contradicted)
+            .filter(|(i, _)| group.as_ref().is_none_or(|g| g.contains(i)))
             .collect();
         if survivors.is_empty()
             || survivors.iter().any(|(_, c)| {
@@ -398,6 +432,67 @@ impl LiveSession {
             });
         }
         let mut change = crate::changes::Change::prepare(scope, models, observed, desired, actor)?;
+        if let Some((_, selected)) = probe {
+            let group = group.unwrap();
+            let alternatives = check
+                .candidates
+                .iter()
+                .enumerate()
+                .map(|(index, c)| {
+                    let address = c.chunk_address + c.offset_in_chunk as u64;
+                    let bytes = if let Some(model) = change.models.iter().find(|m| m.index == index)
+                    {
+                        Ok(model.before.clone())
+                    } else {
+                        (|| -> Result<Vec<u8>> {
+                            let chunk = self
+                                .plan
+                                .iter()
+                                .find(|p| p.address == c.chunk_address)
+                                .ok_or("The rival is outside the memory batch.")?;
+                            if self.invalid_chunks.contains(&chunk.address)
+                                || !self
+                                    .target
+                                    .query(chunk.address)?
+                                    .is_some_and(|r| chunk.covered_by(&r))
+                            {
+                                return Err("The rival's memory mapping is unavailable.".into());
+                            }
+                            let bytes = self.target.read(address, c.mapping.kind.width())?;
+                            if bytes.len() != c.mapping.kind.width() {
+                                return Err("Incomplete rival bytes.".into());
+                            }
+                            Ok(bytes)
+                        })()
+                    };
+                    let predicted_if_written = bytes.as_ref().ok().and_then(|b| {
+                        change
+                            .patch
+                            .as_ref()
+                            .and_then(|p| crate::probes::prediction(&c.mapping, address, b, p))
+                    });
+                    let (before, error) = match bytes {
+                        Ok(b) => (Some(b), None),
+                        Err(e) => (None, Some(e)),
+                    };
+                    crate::probes::Alternative {
+                        index,
+                        address,
+                        mapping: c.mapping.clone(),
+                        assessment: c.assessment(check),
+                        in_test_group: group.contains(&index),
+                        before,
+                        predicted_if_written,
+                        error,
+                    }
+                })
+                .collect();
+            change.probe = Some(crate::probes::Probe { selected, group, alternatives,
+                limitation: "Tests one possible location. Other locations remain rival explanations. Predictions assume these byte mappings and unchanged other bytes; reads are sequential. A visible response is not proof of gameplay authority, and restoring bytes cannot undo all effects.".into() });
+            if change.phase == crate::changes::Phase::Prepared {
+                change.reason = "Overlapping interpretations agree on this location test. Other locations remain competing explanations. Review the predicted outcomes before explicitly trying it.".into();
+            }
+        }
         if change.phase == crate::changes::Phase::Prepared {
             let mut tracks: Vec<_> = self.view.tracks.iter().filter(|t| t.active).collect();
             tracks.sort_by_key(|t| (t.id != track, t.id));
@@ -472,6 +567,12 @@ impl LiveSession {
             ObservationStage::AfterEdit
         };
         let mut observation = self.capture_change(&change, store, stage, expected)?;
+        if change.phase == Phase::Written
+            && let Some(probe) = &change.probe
+        {
+            observation.probe_comparisons =
+                probe.compare(observation.value.filter(|_| observation.error.is_none()));
+        }
         if let Some(baseline) = &change.baseline {
             observation.comparison = Some(crate::effects::compare(
                 &change.watches,
@@ -509,6 +610,7 @@ impl LiveSession {
             readings: vec![],
             untracked_numbers: 0,
             comparison: None,
+            probe_comparisons: vec![],
         };
         let result = (|| -> Result<()> {
             let begin_us = self.capture_clock.elapsed().as_micros() as u64;
