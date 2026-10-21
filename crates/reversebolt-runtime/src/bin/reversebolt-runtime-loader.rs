@@ -113,16 +113,17 @@ fn call(process: HANDLE, address: usize, argument: usize, label: &str) -> Result
 fn run() -> Result<()> {
     let a: Vec<String> = std::env::args().collect();
     if a.len() != 7 && a.len() != 9 {
-        return Err("usage: probe-loader PID CREATION_HEX SESSION HELPER_ABSOLUTE_PATH SHA256 OUTPUT_ABSOLUTE_PATH [ROOT_START EXPECTED_ROOT_CATALOG_SHA256]".into());
+        return Err("usage: reversebolt-runtime-loader PID CREATION_HEX SESSION HELPER_ABSOLUTE_PATH SHA256 OUTPUT_ABSOLUTE_PATH [ROOT_START EXPECTED_ROOT_CATALOG_SHA256 | --paths-file LOCATORS_JSON]".into());
     }
     let pid: u32 = a[1].parse().map_err(|_| "invalid PID")?;
     let expected_session: u32 = a[3].parse().map_err(|_| "invalid session")?;
-    let root_start: usize = if a.len() == 9 {
+    let path_mode = a.len() == 9 && a[7] == "--paths-file";
+    let root_start: usize = if a.len() == 9 && !path_mode {
         a[7].parse().map_err(|_| "invalid root start")?
     } else {
         0
     };
-    let expected = if a.len() == 9 {
+    let expected = if a.len() == 9 && !path_mode {
         if a[8].len() != 64 || !a[8].bytes().all(|b| b.is_ascii_hexdigit()) {
             return Err("invalid root catalog fingerprint".into());
         }
@@ -133,8 +134,36 @@ fn run() -> Result<()> {
     if root_start > 10_000 {
         return Err("root start exceeds discovery budget".into());
     }
+    let paths: Vec<reversebolt_core::runtime::Locator> = if path_mode {
+        use std::io::Read;
+        let mut bytes = Vec::new();
+        std::fs::File::open(&a[8])
+            .map_err(|e| e.to_string())?
+            .take(65537)
+            .read_to_end(&mut bytes)
+            .map_err(|e| e.to_string())?;
+        if bytes.len() > 65536 {
+            return Err("paths file exceeds 64 KiB".into());
+        }
+        let paths: Vec<reversebolt_core::runtime::Locator> =
+            serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+        if paths.is_empty() || paths.len() > reversebolt_core::runtime::MAX_REFRESH_PATHS {
+            return Err("path count outside refresh budget".into());
+        }
+        let scope = reversebolt_core::runtime::Scope {
+            pid,
+            created: a[2].clone(),
+            session: expected_session,
+        };
+        for path in &paths {
+            path.validate(&scope)?;
+        }
+        paths
+    } else {
+        Vec::new()
+    };
     let request =
-        json!({"output":a[6],"root_start":root_start,"expected_root_catalog_sha256":expected})
+        json!({"output":a[6],"root_start":root_start,"expected_root_catalog_sha256":expected,"paths":paths})
             .to_string();
     if request.encode_utf16().count() >= 32768 {
         return Err("request too long".into());

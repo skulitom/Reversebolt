@@ -1,5 +1,7 @@
 //! Runtime-derived graph discovery. Not yet wired to automatic desktop attachment.
+mod paths;
 pub mod win;
+use reversebolt_core::runtime::{Locator, Scope, TypeKey};
 use serde_json::{Value, json};
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -82,6 +84,8 @@ api! {
     il2cpp_field_get_offset: unsafe extern "C" fn(Ptr)->usize,
     il2cpp_field_get_type: unsafe extern "C" fn(Ptr)->Ptr,
     il2cpp_type_get_type: unsafe extern "C" fn(Ptr)->i32,
+    il2cpp_type_get_assembly_qualified_name: unsafe extern "C" fn(Ptr)->*mut u8,
+    il2cpp_free: unsafe extern "C" fn(Ptr),
     il2cpp_type_is_byref: unsafe extern "C" fn(Ptr)->bool,
     il2cpp_object_get_class: unsafe extern "C" fn(Ptr)->Ptr,
     il2cpp_object_header_size: unsafe extern "C" fn()->u32,
@@ -116,6 +120,7 @@ struct Field {
     flags: i32,
 }
 struct Class {
+    key: TypeKey,
     address: usize,
     name: String,
     namespace: String,
@@ -154,6 +159,15 @@ struct Catalog {
 }
 fn text(p: *const u8) -> Result<String> {
     win::text_pointer(p as usize)
+}
+fn qualified_name(api: &Api, typ: Ptr) -> Result<String> {
+    let pointer = unsafe { (api.il2cpp_type_get_assembly_qualified_name)(typ) };
+    if pointer.is_null() {
+        return Err("runtime type name unavailable".into());
+    }
+    let result = text(pointer);
+    unsafe { (api.il2cpp_free)(pointer.cast()) };
+    result
 }
 fn width(kind: i32) -> usize {
     match kind {
@@ -215,7 +229,7 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
         let image_id = if let Some(id) = c.images.iter().position(|n| *n == image_name) {
             id
         } else {
-            c.images.push(image_name);
+            c.images.push(image_name.clone());
             c.images.len() - 1
         };
         let kind = (api.il2cpp_type_get_type)((api.il2cpp_class_get_type)(class));
@@ -248,6 +262,11 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
         };
         let class_id = c.classes.len();
         let mut entry = Class {
+            key: TypeKey {
+                image: image_name,
+                type_name: qualified_name(api, (api.il2cpp_class_get_type)(class))?,
+                layout_sha256: String::new(),
+            },
             address: class as usize,
             name: text((api.il2cpp_class_get_name)(class))?,
             namespace: text((api.il2cpp_class_get_namespace)(class))?,
@@ -310,6 +329,30 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
             }
             entry.fields.push(f);
         }
+        use sha2::{Digest, Sha256};
+        let shape = match entry.shape {
+            Shape::Object => json!(["object"]),
+            Shape::String => json!(["string"]),
+            Shape::Array {
+                stride,
+                kind,
+                reference,
+            } => json!(["array", stride, kind, reference]),
+            Shape::UnsupportedArray => json!(["unsupported_array"]),
+        };
+        let fields: Vec<_> = entry
+            .fields
+            .iter()
+            .map(|f| json!([f.name, f.offset, f.kind, f.width, f.reference, f.flags]))
+            .collect();
+        entry.key.layout_sha256 = format!(
+            "{:x}",
+            Sha256::digest(
+                serde_json::to_vec(&json!([entry.size, shape, fields]))
+                    .map_err(|e| e.to_string())?
+            )
+        );
+        entry.key.validate()?;
         c.lookup.insert(entry.address, class_id);
         c.classes.push(entry);
     }
@@ -701,7 +744,7 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
     unknown.dedup();
     let nodes_json:Vec<_>=nodes.iter().enumerate().map(|(id,n)|json!({"id":id,"address":format!("0x{:x}",n.address),"class":if n.class==usize::MAX{Value::Null}else{json!(n.class)},"depth":n.depth,"status":if n.class==usize::MAX{"uncatalogued_runtime_type"}else{"catalogued"}})).collect();
     let roots_json:Vec<_>=roots.iter().map(|r|{let root=&c.roots[r.root];json!({"root":r.root,"class":root.class,"field":root.field,"reference":format!("0x{:x}",r.address),"node":node_json(r.node),"read_ok":r.ok})}).collect();
-    let reads_json:Vec<_>=reads.iter().map(|r|json!({"node":r.node,"declaring_class":r.class,"field":if r.element{Value::Null}else{json!(r.field)},"element_index":if r.element{json!(r.field)}else{Value::Null},"read_ok":r.ok,"bytes":&r.bytes[..r.width],"value":if !r.ok||r.reference{Value::Null}else{value(r.kind,r.bytes)},"reference":if r.reference{node_json(r.child)}else{Value::Null}})).collect();
+    let reads_json:Vec<_>=reads.iter().map(|r|json!({"node":r.node,"declaring_class":r.class,"field":if r.element{Value::Null}else{json!(r.field)},"element_index":if r.element{json!(r.field)}else{Value::Null},"type_code":r.kind,"read_ok":r.ok,"bytes":&r.bytes[..r.width],"value":if !r.ok||r.reference{Value::Null}else{value(r.kind,r.bytes)},"reference":if r.reference{node_json(r.child)}else{Value::Null}})).collect();
     let strings_json:Vec<_>=texts.iter().map(|t|{let units:Vec<_>=t.bytes[..t.count*2].as_chunks::<2>().0.iter().map(|b|u16::from_le_bytes(*b)).collect();json!({"node":t.node,"length":t.length,"read_ok":t.ok,"truncated":t.length>TEXT_LIMIT as i32,"text":if t.ok{json!(String::from_utf16_lossy(&units))}else{Value::Null}})}).collect();
     let arrays_json:Vec<_>=arrays.iter().map(|a|json!({"node":a.node,"length":a.length,"elements_read":a.attempted,"supported":a.supported,"truncated":a.attempted<a.length})).collect();
     let value = json!({"root_start":root_start,"root_end":root_end,"pause_held_us":held_us,"stop_to_resume_us":total_us,"helper_allocations_while_paused":PAUSED_ALLOCS.load(Ordering::Relaxed)-allocations_before,"helper_deallocations_while_paused":PAUSED_FREES.load(Ordering::Relaxed)-frees_before,"time_or_read_budget_reached":budget,"node_capacity_reached":nodes.len()==MAX_NODES,"processed_nodes":cursor,"nodes":nodes_json,"roots":roots_json,"reads":reads_json,"strings":strings_json,"arrays":arrays_json});
@@ -724,10 +767,28 @@ pub struct InspectionRequest {
     pub root_start: usize,
     #[serde(default)]
     pub expected_root_catalog_sha256: Option<String>,
+    #[serde(default)]
+    pub paths: Vec<Locator>,
 }
 fn inspect(request: &InspectionRequest) -> Result<Value> {
     use sha2::{Digest, Sha256};
     let pid = unsafe { GetCurrentProcessId() };
+    let scope = Scope {
+        pid,
+        created: win::creation(unsafe { GetCurrentProcess() })?,
+        session: win::session(pid)?,
+    };
+    if request.paths.len() > reversebolt_core::runtime::MAX_REFRESH_PATHS {
+        return Err("too many runtime paths".into());
+    }
+    if !request.paths.is_empty()
+        && (request.root_start != 0 || request.expected_root_catalog_sha256.is_some())
+    {
+        return Err("path refresh and root continuation cannot be combined".into());
+    }
+    for path in &request.paths {
+        path.validate(&scope)?;
+    }
     let matches: Vec<_> = win::modules(pid)?
         .into_iter()
         .filter_map(|m| unsafe { Api::load(m.base).ok().map(|a| (m, a)) })
@@ -751,6 +812,9 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
     let start = Instant::now();
     let mut c = catalog(&api, start)?;
     let catalog_ms = start.elapsed().as_millis() as u64;
+    if !request.paths.is_empty() {
+        return paths::refresh(&api, &mut c, &request.paths, &scope, start, catalog_ms);
+    }
     let descriptor: Vec<_> = c
         .roots
         .iter()
@@ -857,9 +921,9 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
             used.insert(r["declaring_class"].as_u64().unwrap() as usize);
         }
     }
-    let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"shape":shape,"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"reference":f.reference,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
+    let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"key":k.key,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"shape":shape,"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"width":f.width,"reference":f.reference,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
     Ok(
-        json!({"schema":3,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
+        json!({"schema":4,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
     )
 }
 /// # Safety

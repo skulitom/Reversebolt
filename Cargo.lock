@@ -2874,6 +2874,7 @@ dependencies = [
 name = "reversebolt-runtime"
 version = "0.1.0"
 dependencies = [
+ "reversebolt-core",
  "serde",
  "serde_json",
  "sha2",

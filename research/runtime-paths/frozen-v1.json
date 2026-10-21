@@ -1,0 +1,125 @@
+{
+  "frozen_utc": "2026-10-21T14:17:10.622537+00:00",
+  "files": [
+    {
+      "path": "research/runtime-paths/freeze.py",
+      "sha256": "53b9639e5268aaeb17751b969993a78e63b25dfc5ee38d4ab9472d4debfb683f",
+      "bytes": 956
+    },
+    {
+      "path": "research/runtime-paths/game_case.py",
+      "sha256": "00583542ba2935e39632a7a3be4537ced45de96563430b050266aca3187bd677",
+      "bytes": 2989
+    },
+    {
+      "path": "research/runtime-paths/mock/Cargo.lock",
+      "sha256": "744eec1bec2f9123913750a577e25e38acaab0efaf6f1a2c00a94a3e8279f229",
+      "bytes": 168
+    },
+    {
+      "path": "research/runtime-paths/mock/Cargo.toml",
+      "sha256": "17eb36188961c43034a442cf261733e57ce711c1f19c53eaae4af804d210249d",
+      "bytes": 137
+    },
+    {
+      "path": "research/runtime-paths/mock/src/lib.rs",
+      "sha256": "524d8a5c419aa32a3fe56f8888398f85d7b0e807ce08407879c5aa86a5683e21",
+      "bytes": 13186
+    },
+    {
+      "path": "research/runtime-paths/mock_case.py",
+      "sha256": "c8963b6af6610292bd73f81f129f34da224d6c77ad479e7d20206ba7fec4eaef",
+      "bytes": 6374
+    },
+    {
+      "path": "research/runtime-paths/PROTOCOL.md",
+      "sha256": "b5f308fe62b9a539a5d3c2766c7f1ce89be5e325df0f94731eb9ec0ed05d648c",
+      "bytes": 3194
+    },
+    {
+      "path": "crates/reversebolt-runtime/Cargo.toml",
+      "sha256": "583682199c3b7c8ce21205613c7a6cbc36ee18a71a7e83dda4c1a1ca171324ce",
+      "bytes": 568
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/bin/reversebolt-runtime-candidates.rs",
+      "sha256": "72dfe2cba4b4b3901c19a42db81a74949113ae6930201e61572f8f8da56de34e",
+      "bytes": 1474
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/bin/reversebolt-runtime-loader.rs",
+      "sha256": "b5444bd2048c3fee1f5d3b13aaf6e2c8f5f275b0220f8ad525f37bdfa9ec6e24",
+      "bytes": 11589
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/lib.rs",
+      "sha256": "6bd3cbf79e0bbdda57fb7f753732c64aee86aaeda3420d2a067044dac72bfa0e",
+      "bytes": 38462
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/paths.rs",
+      "sha256": "6d413523bf6a1712ac0237207c84973418b486928011f206cf6c8dbb8a2cf923",
+      "bytes": 9706
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/win.rs",
+      "sha256": "42b79d1040df53725ff5cc76bd68f6d133171bbe862099f22574fcb24d398258",
+      "bytes": 3993
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "b378526acc87fab2b4d5423a9428151c5a65487867f1b61ffdefd9fe8e8e1ea0",
+      "bytes": 528
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256": "278fddd75d744a6f03d8a5a736d7e2ff22f3712ab2f3125533b4e059caac7a03",
+      "bytes": 115754
+    },
+    {
+      "path": "crates/reversebolt-core/src/lib.rs",
+      "sha256": "5d73a178c2eb7113887f560cc345ff0d7011d9c5d7b8b2591c3f1583ba6320d1",
+      "bytes": 1161
+    },
+    {
+      "path": "crates/reversebolt-core/src/runtime.rs",
+      "sha256": "3e346c279c518f5856ea93d14021bfd205ab5c41f18d82943adf3daa2551ab85",
+      "bytes": 13806
+    },
+    {
+      "path": "crates/reversebolt-core/tests/runtime_paths.rs",
+      "sha256": "1ed135c56fe4d6d0c3867e519aadb54e3518d21e5c02e150b83cf3965b4a5c30",
+      "bytes": 3759
+    },
+    {
+      "path": "research/runtime-objects/probe/src/bin/object-host.rs",
+      "sha256": "e5dd0a0ad33c46ccbed7ee618c5695e74767bcb7e47a482e293fc7c1fcffe43d",
+      "bytes": 1621
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/object-host.exe",
+      "sha256": "bdc3490aebcddf96bdd4f98dd21edd169a126e129aedf22a8e9ac3705293cfb3",
+      "bytes": 351232
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt-runtime-candidates.exe",
+      "sha256": "60635eb4374f78ac2b1c7ea90834bc7c9d747ff076ea974e600e89fb429dcf06",
+      "bytes": 550912
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt-runtime-loader.exe",
+      "sha256": "5cfa4d79819f7a74b2f9404474b88dd9c7efae86810189c6827fcb76af66613d",
+      "bytes": 515584
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt_path_fixture.dll",
+      "sha256": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+      "bytes": 204288
+    },
+    {
+      "path": "test-results/runtime-paths-v1/bin/reversebolt_runtime.dll",
+      "sha256": "aa83aa2fc2a824b03a9c925f67eabd34b11a5c1c596c638313686c0c963b3569",
+      "bytes": 661504
+    }
+  ]
+}

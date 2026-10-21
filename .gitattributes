@@ -38,3 +38,6 @@
 /research/runtime-objects/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/runtime-traversal/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /crates/reversebolt-runtime/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/runtime-paths/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/crates/reversebolt-core/src/runtime.rs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/crates/reversebolt-core/tests/runtime_paths.rs -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

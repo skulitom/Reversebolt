@@ -13,6 +13,7 @@ pub mod prediction;
 pub mod probes;
 pub mod references;
 pub mod rule_checks;
+pub mod runtime;
 pub mod temporal;
 pub mod value_search;
 pub mod visual;
