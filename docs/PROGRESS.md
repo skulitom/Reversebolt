@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest deeper runtime traversal (2026-10-21): **31% unchanged**. The reusable
+Rust reader completed 4,267 supported Blue Prince root slots in 67 final batches,
+with 93 preparatory snapshots. It reached 7,747 non-root node occurrences,
+including 26 deeper main-game scalar reads, plus arrays and text without images
+or gameplay input. All 160 pauses had zero helper Rust heap operations; maximum
+stop-to-resume time was 5.216 ms, full loader cycle 15.252 s. Root completion is
+not graph completion: depth, array, type and node limits remain explicit.
+The owned deeper fixture, continuation/rejection checks, full-workspace tests
+and result-consistency audit passed. The audit separately records that subsequent
+workspace testing replaced one frozen binary in the shared build directory;
+original loader hash receipts remain. Gameplay authority, durable identity and
+app/MCP integration remain unfinished. Preview `0.1.0-20261021-122703` remains
+running with 29 history entries. All weighted credits and the full goal stay
+unchanged. [Method, evidence and limitations](../research/runtime-traversal/README.md).
+
 Latest live-object feasibility study (2026-10-21): **31% unchanged**. The unchanged
 Rust reader took two Blue Prince snapshots with 1,871 instance scalar reads each,
 including 45 in the main game image. Managed read sections lasted 7.302/6.057 ms;

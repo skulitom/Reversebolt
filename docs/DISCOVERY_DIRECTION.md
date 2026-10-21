@@ -66,11 +66,22 @@ hit the 1,024-node limit; 492 objects had uncatalogued runtime types, and the fu
 root queue prevented discovering additional child objects.
 See [object evidence and contract](../research/runtime-objects/README.md).
 
-Next widen constructed-type, collection and root coverage, establish refreshable
-reference paths and validate useful effects. Neither snapshot addresses nor
-field names establish persistent identity or edit authority. Static values may
-be defaults from uninitialized classes. Keep automatic reads separate from
-mechanisms that execute code in the target, and expose unsupported paths.
+A reusable runtime component now batches roots and describes encountered types
+between fresh snapshots. One unchanged Blue Prince request read 4,267 supported
+root slots and reached 7,747 non-root node occurrences, including 26 deeper
+main-game scalar reads. It also read text and supported arrays without images.
+These occurrences can repeat between batches; they are not distinct controls.
+Coverage remains bounded and partial, and the component is not yet connected to
+the app/MCP dispatchers. See [traversal results and limits](../research/runtime-traversal/README.md).
+
+Next expose typed candidates through the shared investigation API, establish
+refreshable reference paths and validate useful effects. Neither snapshot
+addresses nor field names establish persistent identity or edit authority.
+Static values may be defaults from uninitialized classes. Keep automatic reads
+separate from mechanisms that execute code in the target, and expose unsupported
+paths. Runtime structure should get priority when available; memory-change
+discovery remains necessary where metadata is absent or incomplete. Images,
+motion and sound provide context and outcome evidence without gating discovery.
 
 Supporting a runtime does encode platform knowledge, much like supporting PE or
 numeric encodings. It must not encode particular game classes, field names or
@@ -80,11 +91,13 @@ Unreal reflection support is a separate adapter, not a generic promise to read
 all shipped Unreal state. Evaluate usefulness against the raw-memory path using
 unchanged adapters on independent software, including hidden values.
 
-The next implementation milestone is evidence that runtime structure yields
-useful nonvisual candidates and live values. The existing memory engine, change
-journal, MCP authority and card interface should be reused. Improve adaptive
-observation and dynamic mapping checks in support of this direction rather than
-continuing to optimize visible-counter matching as the sole route.
+The next acceptance milestone is a useful hidden control with a refreshable
+reference and an independently checked effect. The existing memory engine, change
+journal, MCP authority and card interface should be reused. Compare approaches
+by validated controls, incorrect labels, time to a useful result and runtime/model
+cost. Raw field counts and screenshot counts are not success metrics. Improve
+adaptive observation and dynamic mapping checks in support of this direction
+rather than optimizing visible-counter matching as the sole route.
 
 ## Primary-source basis and limits
 
