@@ -1,6 +1,5 @@
 //! Bounded input-response experiments. Descriptive screen effects are not a
 //! semantic name, physical quantity, persistent actor identity or edit authority.
-//! This protocol is not yet exposed by the desktop or MCP command dispatcher.
 use crate::{
     Result,
     changes::Phase as TrialPhase,
@@ -14,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 pub const MAX_TESTS: usize = 8;
+pub const LIFETIME_MS: u128 = 15 * 60 * 1000;
 pub const FRAMES_PER_CONDITION: usize = 6;
 pub const MAX_GAP_US: u64 = 50_000;
 pub const METRIC_ID: &str = "rgb601-triangle640x360-crop24,40,592,296-gaussian1-mad-v1";
@@ -239,6 +239,9 @@ pub struct Test {
     /// Hypothesis supplied by the caller, never a verified semantic label.
     pub hypothesis: String,
     pub actions: Vec<Action>,
+    pub prepared_revision: u64,
+    pub created_unix_ms: u128,
+    pub preparation: Option<crate::runtime_trials::Evidence>,
     pub metric: String,
     pub revision: u64,
     pub phase: Phase,
@@ -285,6 +288,25 @@ impl Test {
         }
         if encode(self.candidate.type_code, &self.value)? == self.candidate.bytes {
             return Err("The planned edit must differ from the observed value.".into());
+        }
+        if let Some(e) = &self.preparation {
+            if !e.valid()
+                || e.report["scope"] != serde_json::json!(self.scope)
+                || e.report["operation"] != "refresh_runtime_paths"
+                || e.report["checks"].as_array().is_none_or(|c| c.len() != 1)
+            {
+                return Err("Experiment preparation evidence is inconsistent.".into());
+            }
+            let patch = crate::runtime_patch::Patch::prepare(
+                self.candidate.locator.clone(),
+                &e.report["checks"][0],
+                &self.value,
+                self.created_unix_ms,
+            )?;
+            if patch.type_code != self.candidate.type_code || patch.expected != self.candidate.bytes
+            {
+                return Err("Preparation contradicts the planned candidate.".into());
+            }
         }
         Ok(())
     }
@@ -424,6 +446,18 @@ impl Test {
     pub fn sync_trial(&mut self, trial: &Trial) -> Result<()> {
         trial.validate()?;
         self.validate_plan()?;
+        if let Some(e) = &self.preparation
+            && crate::runtime_patch::Patch::prepare(
+                self.candidate.locator.clone(),
+                &e.report["checks"][0],
+                &self.value,
+                trial.patch.prepared_unix_ms,
+            )?
+            .id()
+                != trial.patch.id()
+        {
+            return Err("The reference or value differs from the observed baseline.".into());
+        }
         if trial.id != self.change_id
             || trial.candidate_id != self.candidate.id
             || trial.context.investigation != self.investigation
@@ -471,7 +505,6 @@ impl Test {
     }
     pub fn complete(&mut self, trial: &Trial, revision: u64) -> Result<()> {
         self.check_cursor(revision)?;
-        self.sync_trial(trial)?;
         if self.phase != Phase::Restored
             || trial.phase != TrialPhase::Restored
             || self
@@ -481,6 +514,7 @@ impl Test {
         {
             return Err("Complete all three conditions and restore the linked edit first.".into());
         }
+        self.sync_trial(trial)?;
         self.assessment = Some(self.assess(trial));
         self.phase = Phase::Complete;
         self.reason = self.assessment.as_ref().unwrap().reason.clone();
@@ -598,6 +632,8 @@ impl Test {
     pub fn summary(&self) -> Value {
         serde_json::json!({"id":self.id,"change_id":self.change_id,"hypothesis":self.hypothesis,
             "candidate_id":self.candidate.id,"phase":self.phase,"revision":self.revision,"pending_capture":self.pending_capture,
-            "frames":self.conditions.each_ref().map(|c|c.frames.len()),"reason":self.reason,"assessment":self.assessment})
+            "frames":self.conditions.each_ref().map(|c|c.frames.len()),"reason":self.reason,"assessment":self.assessment,
+            "actor":self.actor,"investigation_id":self.investigation,"catalog_id":self.catalog_id,
+            "actions":self.actions,"created_unix_ms":self.created_unix_ms,"active":self.active()})
     }
 }

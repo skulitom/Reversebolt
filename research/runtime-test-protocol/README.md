@@ -1,5 +1,9 @@
 # Input-response test protocol foundation
 
+Follow-up, 2026-10-21: the [live integration](../runtime-tests-live/README.md)
+now supplies engine-owned evidence, MCP actions and desktop interruption. The
+account below records the earlier foundation and its original validation scope.
+
 The shared Rust core now models a bounded baseline / changed / recovered
 comparison. This is a **library foundation**, not a live desktop or MCP feature.
 The existing live edits, Freeze and Undo continue to use their established paths.

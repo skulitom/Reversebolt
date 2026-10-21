@@ -107,11 +107,12 @@ pub struct Handle {
 }
 fn control(c: &Command) -> bool {
     c.source == "desktop"
-        && c.action == "job_control"
-        && matches!(
-            c.args["operation"].as_str(),
-            Some("pause" | "cancel" | "take_control")
-        )
+        && (c.action == "stop_runtime_test"
+            || (c.action == "job_control"
+                && matches!(
+                    c.args["operation"].as_str(),
+                    Some("pause" | "cancel" | "take_control")
+                )))
 }
 fn read_only(action: &str) -> bool {
     matches!(
@@ -122,6 +123,7 @@ fn read_only(action: &str) -> bool {
             | "read_capture"
             | "read_sequence"
             | "read_change_evidence"
+            | "read_runtime_test"
             | "search_runtime_values"
             | "list_processes"
             | "list_memory_processes"
@@ -701,7 +703,21 @@ impl Controller {
         }
     }
     fn command(&mut self, (mut command, reply): Request) {
-        let stopping = command.action == "set_runtime_freeze" && command.args["enabled"] == false;
+        let stopping = (command.action == "set_runtime_freeze" && command.args["enabled"] == false)
+            || command.action == "stop_runtime_test";
+        if command.source == "desktop"
+            && command.action == "stop_runtime_test"
+            && self
+                .engine
+                .view
+                .read()
+                .unwrap()
+                .runtime_tests
+                .iter()
+                .any(|t| t["active"] == true && t["id"] == command.args["test_id"])
+        {
+            self.engine.test_abort.store(true, Ordering::SeqCst);
+        }
         if stopping
             && (self.manual.is_some() || self.executor.flight.is_some())
             && self.freeze_stops.len() < 16
@@ -814,6 +830,20 @@ impl Controller {
                 "advance_memory" => command.args["auto_observe"] == true,
                 _ => false,
             };
+            // Clear a previous test's stop only at admission, on this controller
+            // thread. A takeover during preparation must survive the helper.
+            if command.action == "prepare_runtime_test"
+                && !self
+                    .engine
+                    .view
+                    .read()
+                    .unwrap()
+                    .runtime_tests
+                    .iter()
+                    .any(|t| t["active"] == true)
+            {
+                self.engine.test_abort.store(false, Ordering::SeqCst);
+            }
             let response = self.engine.start_command(command.clone())?;
             self.manual = Some(Manual {
                 response,
@@ -1205,6 +1235,12 @@ impl Controller {
             binding,
             action,
         })?;
+        if self.jobs.snapshot().human_hold.is_some() {
+            self.engine.test_abort.store(true, Ordering::SeqCst);
+        }
+        if reply.ack.rejection.is_none() && command.action != "job_control" {
+            self.engine.test_abort.store(true, Ordering::SeqCst);
+        }
         self.stop_revoked_analysis();
         *self.errors.write().unwrap() = None;
         Ok(json!(reply))
@@ -1696,6 +1732,7 @@ mod tests {
             source: "desktop".into(),
         };
         assert!(c.job_command(&human).unwrap()["ack"]["rejection"].is_null());
+        assert!(c.engine.test_abort.load(Ordering::SeqCst));
         assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Paused);
         let resume = request(&c, "job_control", json!({"operation":"resume","job":id}));
         assert!(c.job_command(&resume).unwrap()["ack"]["rejection"].is_string());
@@ -1711,6 +1748,8 @@ mod tests {
             "prepare_runtime_change",
             "apply_runtime_change",
             "restore_runtime_change",
+            "prepare_runtime_test",
+            "observe_runtime_test",
         ] {
             for held in [false, true] {
                 let engine = EngineHandle::test_worker(initial_view(), |_, _| {
@@ -1744,6 +1783,69 @@ mod tests {
                 assert!(c.manual.is_none());
             }
         }
+    }
+
+    #[test]
+    fn a_stale_desktop_stop_does_not_interrupt_a_different_experiment() {
+        let mut view = initial_view();
+        view.runtime_tests = vec![json!({"id":"current","active":true})];
+        let engine = EngineHandle::test_worker(view, |_, _| json!({"ok":true}));
+        let mut c = controller(engine);
+        c.command((
+            Command {
+                source: "desktop".into(),
+                action: "stop_runtime_test".into(),
+                args: json!({"test_id":"earlier"}),
+            },
+            None,
+        ));
+        assert!(!c.engine.test_abort.load(Ordering::SeqCst));
+        c.command((
+            Command {
+                source: "desktop".into(),
+                action: "stop_runtime_test".into(),
+                args: json!({"test_id":"current"}),
+            },
+            None,
+        ));
+        assert!(c.engine.test_abort.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn takeover_during_test_preparation_survives_the_pending_command() {
+        let (release, held) = mpsc::channel();
+        let (sent, received) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            sent.send(command.action).unwrap();
+            held.recv().unwrap();
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        c.engine.test_abort.store(true, Ordering::SeqCst);
+        let prepare = request(&c, "prepare_runtime_test", json!({"test_id":"new"}));
+        c.command((prepare.clone(), None));
+        assert_eq!(
+            received.recv_timeout(Duration::from_secs(2)).unwrap(),
+            "prepare_runtime_test"
+        );
+        assert!(!c.engine.test_abort.load(Ordering::SeqCst));
+        let human = Command {
+            source: "desktop".into(),
+            action: "job_control".into(),
+            args: json!({"operation":"take_control"}),
+        };
+        assert!(c.job_command(&human).unwrap()["ack"]["rejection"].is_null());
+        c.command((prepare, None));
+        assert!(c.engine.test_abort.load(Ordering::SeqCst));
+        release.send(()).unwrap();
+        let end = Instant::now() + Duration::from_secs(2);
+        while c.manual.is_some() && Instant::now() < end {
+            c.finish_manual();
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(c.manual.is_none());
+        assert!(c.engine.test_abort.load(Ordering::SeqCst));
+        assert!(received.try_recv().is_err());
     }
 
     #[test]

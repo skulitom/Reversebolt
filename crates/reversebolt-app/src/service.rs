@@ -34,6 +34,7 @@ pub(crate) struct EngineHandle {
     sender: mpsc::SyncSender<Job>,
     pub view: Arc<RwLock<View>>,
     pub busy: Arc<AtomicBool>,
+    pub test_abort: Arc<AtomicBool>,
 }
 
 impl EngineHandle {
@@ -63,6 +64,7 @@ impl EngineHandle {
             sender,
             view: published,
             busy,
+            test_abort: Arc::new(AtomicBool::new(false)),
         }
     }
     pub fn start(path: PathBuf) -> Result<Self> {
@@ -72,6 +74,8 @@ impl EngineHandle {
         let busy = Arc::new(AtomicBool::new(false));
         let published = view.clone();
         let working = busy.clone();
+        let test_abort = Arc::new(AtomicBool::new(false));
+        let worker_abort = test_abort.clone();
         std::thread::spawn(move || {
             let live_directory = path
                 .parent()
@@ -87,6 +91,7 @@ impl EngineHandle {
             *published.write().unwrap() = engine.view.clone();
             let _ = ready_tx.send(Ok(()));
             let mut analysis = crate::observation_pipeline::Pipeline::default();
+            let mut tests = crate::runtime_test_bridge::Session::new(worker_abort);
             loop {
                 analysis.poll(&mut engine, &published);
                 working.store(analysis.busy(), Ordering::SeqCst);
@@ -101,6 +106,16 @@ impl EngineHandle {
                 {
                     engine.view.live = Some(session.view.clone());
                     *published.write().unwrap() = engine.view.clone();
+                }
+                match tests.maintain(&mut engine) {
+                    Ok(true) => {
+                        let _ = crate::runtime_test_bridge::checkpoint(&mut engine, &published);
+                    }
+                    Err(error) => {
+                        engine.view.error = Some(error);
+                        *published.write().unwrap() = engine.view.clone();
+                    }
+                    _ => {}
                 }
                 let (command, reply, cancel) = match job {
                     Ok(job) => job,
@@ -124,67 +139,83 @@ impl EngineHandle {
                         | "read_capture"
                         | "read_sequence"
                         | "read_change_evidence"
+                        | "read_runtime_test"
                 );
-                let result = if command.action == "open_practice" {
-                    engine.view.error = None;
-                    let seed = command.args["seed"].as_u64().unwrap_or_else(|| {
-                        let bytes = uuid::Uuid::new_v4();
-                        u64::from_le_bytes(bytes.as_bytes()[..8].try_into().unwrap())
-                    });
-                    ChildTarget::start(seed)
-                        .and_then(|target| engine.open(Box::new(target), &command.source))
-                        .map(|_| json!(engine.view))
-                } else if matches!(
-                    command.action.as_str(),
-                    "list_processes"
-                        | "list_memory_processes"
-                        | "set_observer_model"
-                        | "attach_process"
-                        | "capture"
-                        | "correlate"
-                        | "start_prediction_check"
-                        | "advance_memory"
-                        | "recheck_findings"
-                        | "search_number"
-                        | "start_change_search"
-                        | "finish_change_search"
-                        | "detach_process"
-                        | "read_capture"
-                        | "submit_observation"
-                        | "read_sequence"
-                        | "read_change_evidence"
-                        | "submit_temporal_observation"
-                        | "set_observed_value"
-                        | "prepare_change"
-                        | "prepare_probe"
-                        | "apply_change"
-                        | "restore_change"
-                        | "observe_change"
-                        | "inspect_runtime"
-                        | "set_runtime_value"
-                        | "set_runtime_freeze"
-                        | "_tick_runtime_freeze"
-                        | "prepare_runtime_change"
-                        | "apply_runtime_change"
-                        | "restore_runtime_change"
-                        | "search_runtime_values"
-                        | "show_runtime_values"
-                ) {
-                    engine.view.error = None;
-                    native_command(
-                        &mut engine,
-                        &command,
-                        &live_directory,
-                        cancel.as_ref(),
-                        &mut analysis,
-                        &published,
-                    )
-                } else {
-                    engine.execute(&command)
-                };
+                let result = tests.before(&mut engine, &command).and_then(|()| {
+                    if command.action == "open_practice" {
+                        engine.view.error = None;
+                        let seed = command.args["seed"].as_u64().unwrap_or_else(|| {
+                            let bytes = uuid::Uuid::new_v4();
+                            u64::from_le_bytes(bytes.as_bytes()[..8].try_into().unwrap())
+                        });
+                        ChildTarget::start(seed)
+                            .and_then(|target| engine.open(Box::new(target), &command.source))
+                            .map(|_| json!(engine.view))
+                    } else if matches!(
+                        command.action.as_str(),
+                        "list_processes"
+                            | "list_memory_processes"
+                            | "set_observer_model"
+                            | "attach_process"
+                            | "capture"
+                            | "correlate"
+                            | "start_prediction_check"
+                            | "advance_memory"
+                            | "recheck_findings"
+                            | "search_number"
+                            | "start_change_search"
+                            | "finish_change_search"
+                            | "detach_process"
+                            | "read_capture"
+                            | "submit_observation"
+                            | "read_sequence"
+                            | "read_change_evidence"
+                            | "submit_temporal_observation"
+                            | "set_observed_value"
+                            | "prepare_change"
+                            | "prepare_probe"
+                            | "apply_change"
+                            | "restore_change"
+                            | "observe_change"
+                            | "inspect_runtime"
+                            | "set_runtime_value"
+                            | "set_runtime_freeze"
+                            | "_tick_runtime_freeze"
+                            | "prepare_runtime_change"
+                            | "apply_runtime_change"
+                            | "restore_runtime_change"
+                            | "search_runtime_values"
+                            | "show_runtime_values"
+                            | "prepare_runtime_test"
+                            | "observe_runtime_test"
+                            | "stop_runtime_test"
+                            | "read_runtime_test"
+                    ) {
+                        engine.view.error = None;
+                        native_command(
+                            &mut engine,
+                            &command,
+                            &live_directory,
+                            cancel.as_ref(),
+                            &mut analysis,
+                            &published,
+                            &mut tests,
+                        )
+                    } else {
+                        engine.execute(&command)
+                    }
+                });
+                let synced = tests.after(&mut engine);
+                let result = result.and_then(|data| synced.map(|()| data));
                 engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
                 engine.view.changes = engine.changes.records.clone();
                 engine.view.runtime_trials = engine.runtime_trials.records.clone();
+                engine.view.runtime_tests = engine
+                    .runtime_tests
+                    .records
+                    .iter()
+                    .map(|t| t.summary())
+                    .collect();
                 let (data, mut error) = match result {
                     Ok(data) => (
                         if matches!(
@@ -211,6 +242,10 @@ impl EngineHandle {
                                 | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
+                                | "prepare_runtime_test"
+                                | "observe_runtime_test"
+                                | "stop_runtime_test"
+                                | "read_runtime_test"
                         ) {
                             data
                         } else {
@@ -228,6 +263,13 @@ impl EngineHandle {
                     );
                 }
                 if !read_only && let Err(message) = engine.save() {
+                    let _=tests.stop(&mut engine,"Session persistence failed; the experiment stopped. Check the edit history for recovery.");
+                    engine.view.runtime_tests = engine
+                        .runtime_tests
+                        .records
+                        .iter()
+                        .map(|t| t.summary())
+                        .collect();
                     if command.action == "set_runtime_freeze" {
                         for f in &mut engine.view.freezes {
                             if command.args["freeze_id"] == f.id {
@@ -248,7 +290,12 @@ impl EngineHandle {
             }
         });
         ready_rx.recv().map_err(|e| e.to_string())??;
-        Ok(Self { sender, view, busy })
+        Ok(Self {
+            sender,
+            view,
+            busy,
+            test_abort,
+        })
     }
 
     pub fn start_command(&self, command: Command) -> Result<mpsc::Receiver<Value>> {
@@ -274,6 +321,7 @@ fn native_command(
     owner: Option<&OperationOwner>,
     analysis: &mut crate::observation_pipeline::Pipeline,
     published: &Arc<RwLock<View>>,
+    tests: &mut crate::runtime_test_bridge::Session,
 ) -> Result<Value> {
     if let Some(scope) = command.args.get("scope") {
         let live = engine
@@ -326,6 +374,17 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "prepare_runtime_test"
+        | "observe_runtime_test"
+        | "stop_runtime_test"
+        | "read_runtime_test" => {
+            return tests.command(
+                engine,
+                command,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+                published,
+            );
+        }
         "set_runtime_freeze" => return crate::freeze_bridge::command(engine, command),
         "_tick_runtime_freeze" => {
             return crate::freeze_bridge::tick(
@@ -471,6 +530,7 @@ fn native_command(
                     owner,
                     analysis,
                     published,
+                    tests,
                 );
             }
             return Ok(json!(change));

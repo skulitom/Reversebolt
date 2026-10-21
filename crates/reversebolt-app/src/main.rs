@@ -11,6 +11,7 @@ mod native;
 mod observation_pipeline;
 mod ocr;
 mod runtime_bridge;
+mod runtime_test_bridge;
 mod runtime_trial_bridge;
 mod service;
 mod target;

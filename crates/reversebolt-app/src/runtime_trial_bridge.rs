@@ -161,6 +161,7 @@ pub fn command(
             desired,
             end,
         )?;
+        crate::runtime_test_bridge::check_patch(engine, direct_id, &patch)?;
         let mut trial = Trial::prepare(
             context,
             candidate.name,

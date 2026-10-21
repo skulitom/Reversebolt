@@ -4,6 +4,37 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Shared live response tests (2026-10-21): **34%**. The bounded comparison now runs
+through the shared engine and MCP with durable capture intents, engine-owned
+image/input evidence, guarded before/change/recovery reads, stop/replay rules
+and a small desktop **Stop test / Take control** strip. A stale Stop cannot
+interrupt a newer test; takeover during preparation survives the pending read.
+Undo remains independent when a comparison stops. This earns one agent/human
+collaboration point for the new shared, interruptible investigation workflow.
+
+The final frozen native fixture passed 52 workflow checks, 257 workspace tests,
+strict Clippy, formatting and the 49-tool smoke. Its 24 images were evaluated
+automatically; none was manually reviewed. Twelve input holds, four writes
+including restores, 18 helper operations and 45 balanced pauses were audited.
+The maximum fixture pause was 66 microseconds, with no helper heap operations
+while paused. An independent byte oracle checked restoration; the actual desktop
+takeover control stopped the test and held further agent observation. Earlier
+failed evaluator attempts, source identities and limitations remain recorded.
+
+Credits: foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent collaboration **6/10**, generalization 0/10:
+**34/100**. The evaluator selected the candidate and input plan in owned software;
+this adds no validation or independent-game generalization credit. Automatic
+planning, supported gameplay names, broader effects and recovery remain unfinished.
+The full goal stays active.
+
+Preview `0.1.0-20261021-210458` is running on the desktop, with all 44 history
+entries, model setting, trials, changes and Freeze records preserved. Its four
+binaries match the tested copies. The named-card/direct-number/Freeze experience
+remains unchanged. Next: connect provisional semantic proposals to these bounded
+comparisons and selection of informative actions without publishing unsupported
+meanings. [Implementation, evidence and limits](../research/runtime-tests-live/README.md).
+
 Response-test foundation and numeric editing (2026-10-21): **33% unchanged**.
 The shared Rust library now defines a bounded, cursor-checked baseline / changed /
 recovered comparison. It rejects incomplete input, repeated taps, changed references,

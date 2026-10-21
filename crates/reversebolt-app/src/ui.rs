@@ -150,6 +150,19 @@ impl eframe::App for Workbench {
             .show(ui, |ui| {
                 egui::ScrollArea::vertical().show(ui, |ui| {
                     crate::jobs::panel(ui,&self.handle,&job_state);
+                    for test in state.runtime_tests.iter().filter(|t|t["active"]==true) {
+                        ui.horizontal_wrapped(|ui| {
+                            ui.label(RichText::new("Checking an effect").color(ACCENT));
+                            ui.label(test["hypothesis"].as_str().unwrap_or("Comparing responses"));
+                            if ui.button("Stop test").clicked() {
+                                self.handle.submit("stop_runtime_test",json!({"test_id":test["id"]}));
+                            }
+                            if job_state.history.human_hold.is_none() && test["actor"]!="desktop"
+                                && ui.button("Take control").clicked() {
+                                self.handle.submit("job_control",json!({"operation":"take_control"}));
+                            }
+                        });
+                    }
                     if self.show_live {
                         self.live.show(ui, &self.handle, &state, busy);
                     } else {

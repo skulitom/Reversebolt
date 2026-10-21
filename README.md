@@ -186,6 +186,12 @@ test session; `--headless` runs the same engine without the window.
 to the running desktop's authenticated loopback API. Agent edits and desktop
 edits appear in the same history. See [MCP setup](docs/MCP.md).
 
+Agents can also run a bounded before/change/recovery comparison through the
+shared engine. It retains images, sampled input and checked values while the
+desktop offers **Stop test** and **Take control**. This compares an explicitly
+chosen hypothesis; it does not yet plan experiments or confirm gameplay names
+automatically. [Workflow and evidence](research/runtime-tests-live/README.md).
+
 ## Develop and verify
 
 ```powershell

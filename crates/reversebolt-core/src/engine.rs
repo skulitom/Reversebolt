@@ -103,6 +103,8 @@ pub struct View {
     pub runtime_trials: Vec<crate::runtime_trials::Trial>,
     #[serde(default)]
     pub freezes: Vec<crate::freezes::Freeze>,
+    #[serde(default)]
+    pub runtime_tests: Vec<Value>,
 }
 
 impl Default for View {
@@ -125,6 +127,7 @@ impl Default for View {
             changes: vec![],
             runtime_trials: vec![],
             freezes: vec![],
+            runtime_tests: vec![],
         }
     }
 }
@@ -137,6 +140,7 @@ pub struct Engine {
     pub live: Option<crate::live::LiveSession>,
     pub changes: crate::changes::Store,
     pub runtime_trials: crate::runtime_trials::Store,
+    pub runtime_tests: crate::runtime_test_store::Store,
 }
 
 impl Engine {
@@ -172,6 +176,12 @@ impl Engine {
                 .join("runtime-trials"),
         )?;
         view.runtime_trials = runtime_trials.records.clone();
+        let runtime_tests = crate::runtime_test_store::Store::open(
+            path.parent()
+                .unwrap_or(std::path::Path::new("."))
+                .join("runtime-tests"),
+        )?;
+        view.runtime_tests = runtime_tests.records.iter().map(|t| t.summary()).collect();
         for freeze in &mut view.freezes {
             freeze.recover();
         }
@@ -183,6 +193,7 @@ impl Engine {
             live: None,
             changes,
             runtime_trials,
+            runtime_tests,
         })
     }
 

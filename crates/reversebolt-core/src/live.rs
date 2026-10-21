@@ -294,7 +294,53 @@ pub struct LiveSession {
     capture_clock: Instant,
 }
 
+pub struct TestCapture {
+    pub screen: Screen,
+    pub interval: CaptureInterval,
+    pub started_unix_ms: u128,
+    pub completed_unix_ms: u128,
+    pub input: Option<crate::inputs::Window>,
+}
+
 impl LiveSession {
+    /// Image and sampled input only: no OCR, memory scan or gameplay input.
+    pub fn capture_runtime_test(
+        &self,
+        test: &crate::runtime_tests::Test,
+        path: &std::path::Path,
+    ) -> Result<TestCapture> {
+        let info = self.target.memory_info();
+        if !self.target.alive()
+            || test.investigation != self.view.investigation_id
+            || test.catalog_id != self.view.runtime.catalog_id
+            || test.window != self.target.info().window
+            || test.scope.pid != info.pid
+            || test.scope.created != info.created.to_ascii_lowercase()
+            || test.scope.session != info.session
+        {
+            return Err("Experiment target or catalogue changed.".into());
+        }
+        let started_unix_ms = crate::changes::now_ms();
+        let begin_us = self.capture_clock.elapsed().as_micros() as u64;
+        let screen = self.target.screen(path)?;
+        let interval = CaptureInterval {
+            clock_id: self.view.investigation_id.clone(),
+            begin_us,
+            end_us: self.capture_clock.elapsed().as_micros() as u64,
+        };
+        let previous = test.conditions[test.condition_index()?]
+            .frames
+            .last()
+            .map_or(begin_us, |f| f.interval.end_us);
+        let input = self.target.input_window(previous, interval.end_us);
+        Ok(TestCapture {
+            screen,
+            interval,
+            started_unix_ms,
+            completed_unix_ms: crate::changes::now_ms(),
+            input,
+        })
+    }
     pub fn refresh_memory_sources(&mut self) {
         match self.target.memory_sources() {
             Ok(sources) => {

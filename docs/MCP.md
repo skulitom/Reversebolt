@@ -780,6 +780,39 @@ Capture reads screen and memory sequentially without pausing the target.
 Unavailable pages are reported and excluded from correlation; coverage and
 timing are visible. A window-rendering timeout preserves memory evidence.
 
+## Explicit runtime response comparisons
+
+Four tools share a durable comparison with the desktop:
+`reversebolt_prepare_runtime_test`, `reversebolt_observe_runtime_test`,
+`reversebolt_stop_runtime_test` and `reversebolt_read_runtime_test`.
+
+Prepare with new `test_id`/`change_id` UUIDs, the current `investigation_id`,
+`catalog_id`, runtime `after_revision`, a visible runtime `candidate_id`, proposed
+string `value`, provisional `hypothesis`, and four `actions` containing sorted
+Windows virtual-key `keys` and `hold_ms`. Each action has one to three keys and
+a 100–1000 ms hold. Generic modifier keys are excluded; use sided key codes.
+Preparation reads and pins the original value and reference chain without writing.
+
+Inspect `state.runtime_tests` for the current phase/revision. Observe six frames
+per condition with `test_id` and exact `after_revision`: an idle pair, then one
+frame after each planned action. Input is external and must occur only in the
+selected foreground application, with at least 250 ms released before capture.
+The engine checks retained sampled states; callers cannot submit their own images
+or input attestations. An old cursor never produces another capture.
+
+At `ready_to_apply`, use the existing runtime edit action with the plan's exact
+`change_id`, candidate/value and current runtime revision. At `ready_to_restore`,
+use `reversebolt_restore_runtime_change`; gather the recovery condition only after
+the linked trial is restored. Read returns the complete test; optional zero-based
+`condition` (0–2) and `frame` (0–5) return a checksum-checked native MCP image and
+its sampled input window. A stopped plan is immutable and cannot be resumed.
+
+Only one test can be active; the limit is eight retained tests, 15 minutes per
+active test and 64 MiB evidence per test. Human takeover, unrelated mutation,
+disconnect and restart stop the comparison. Stop does not automatically Undo.
+Rendered-response suppression is provisional evidence, not a gameplay name or
+edit authority. See [integration and verification](../research/runtime-tests-live/README.md).
+
 ## Frozen prediction checks
 
 `live.rule_checks` separately exposes automatic conditional outcome checks.

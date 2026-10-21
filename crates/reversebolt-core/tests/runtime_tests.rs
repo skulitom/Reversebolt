@@ -100,6 +100,9 @@ fn fixture() -> (Test, Trial, Trial) {
             };
             4
         ],
+        prepared_revision: 0,
+        created_unix_ms: 1000,
+        preparation: None,
         metric: METRIC_ID.into(),
         revision: 0,
         phase: Phase::Baseline,
@@ -386,4 +389,58 @@ fn invalid_plans_are_rejected_before_capture_and_without_mutation() {
         assert!(t.begin_capture(0).is_err());
         assert!(!t.pending_capture);
     }
+}
+
+#[test]
+fn saved_capture_intent_is_not_replayed_after_restart_or_storage_failure() {
+    use reversebolt_core::runtime_test_store::Store;
+    let dir = std::env::temp_dir().join(format!("reversebolt-test-{}", uuid()));
+    let mut store = Store::open(dir.clone()).unwrap();
+    let (mut t, _, _) = fixture();
+    store.record(t.clone()).unwrap();
+    t.begin_capture(0).unwrap();
+    store.record(t.clone()).unwrap();
+    store.reserve(&t, 0, 0).unwrap();
+    assert!(store.reserve(&t, 0, 0).is_err());
+    drop(store);
+    let mut store = Store::open(dir.clone()).unwrap();
+    let recovered = store.get(&t.id).unwrap();
+    assert_eq!(recovered.phase, Phase::Stopped);
+    assert!(recovered.pending_capture);
+    let (new, _, _) = fixture();
+    std::fs::create_dir(dir.join(format!("{}.pending", new.id))).unwrap();
+    assert!(store.record(new.clone()).is_err());
+    assert!(store.fault.is_some());
+    assert!(store.get(&new.id).is_err());
+    assert!(store.record(fixture().0).is_err());
+    drop(store);
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn retained_evidence_paths_and_checksums_are_enforced() {
+    use reversebolt_core::runtime_test_store::Store;
+    let dir = std::env::temp_dir().join(format!("reversebolt-evidence-{}", uuid()));
+    let mut store = Store::open(dir.clone()).unwrap();
+    let (mut t, _, _) = fixture();
+    let (mut f, w) = next(&t, 6.);
+    t.begin_capture(0).unwrap();
+    store.record(t.clone()).unwrap();
+    let (image_path, input_path) = store.reserve(&t, 0, 0).unwrap();
+    let png = b"\x89PNG\r\n\x1a\nfixture"; // storage checks bytes; decoding is the vision adapter's task
+    std::fs::write(image_path, png).unwrap();
+    std::fs::write(&input_path, serde_json::to_vec(&Some(&w)).unwrap()).unwrap();
+    f.path = format!("{}/0-0.png", t.id);
+    f.input_path = format!("{}/0-0.input.json", t.id);
+    f.sha256 = digest(png);
+    t.finish_capture(f, Some(&w)).unwrap();
+    store.record(t.clone()).unwrap();
+    assert_eq!(store.read_image(&t, 0, 0).unwrap(), png);
+    assert!(store.read_input(&t, 0, 0).unwrap().is_some());
+    std::fs::write(input_path, b"null").unwrap();
+    assert!(store.read_input(&t, 0, 0).is_err());
+    t.conditions[0].frames[0].path = "../../other.png".into();
+    assert!(store.read_image(&t, 0, 0).is_err());
+    drop(store);
+    std::fs::remove_dir_all(dir).unwrap();
 }
