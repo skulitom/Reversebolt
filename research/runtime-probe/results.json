@@ -1,0 +1,297 @@
+{
+  "audit_passed": true,
+  "frozen_files_verified": 17,
+  "helper_sha256": "1c2fc389ddff8117ec155c583b610a4bce6045c897e1be1341e2d6d7f26b8de3",
+  "runtime_sha256": "88a2507c06bd540ddd5f78e4d039b4cc21de7ac7774a2004d5771271b26ab111",
+  "mock_cases": [
+    {
+      "label": "wrong-identity",
+      "exit_code": 1,
+      "expected_success": false
+    },
+    {
+      "label": "wrong-session",
+      "exit_code": 1,
+      "expected_success": false
+    },
+    {
+      "label": "wrong-hash",
+      "exit_code": 1,
+      "expected_success": false
+    },
+    {
+      "label": "probe-0",
+      "exit_code": 0,
+      "expected_success": true
+    },
+    {
+      "label": "probe-1",
+      "exit_code": 0,
+      "expected_success": true
+    },
+    {
+      "label": "existing-output",
+      "exit_code": 1,
+      "expected_success": false
+    }
+  ],
+  "game_identity": {
+    "pid": 78240,
+    "created": "01dd615582524cbc",
+    "session": 2,
+    "path": "d:\\steam\\steamapps\\common\\Blue Prince\\BLUE PRINCE.exe",
+    "window": 0,
+    "responding": true,
+    "started_utc": "2026-10-21T12:12:57.7529020Z",
+    "runtime_path": "D:\\Steam\\steamapps\\common\\Blue Prince\\GameAssembly.dll",
+    "runtime_sha256": "88a2507c06bd540ddd5f78e4d039b4cc21de7ac7774a2004d5771271b26ab111",
+    "runtime_loaded": true
+  },
+  "reports": [
+    {
+      "index": 0,
+      "raw_sha256": "5514be7b03148dbb6da3ee792c931fe73038a94772872b1590ac374f719818c0",
+      "images": 87,
+      "classes": 16955,
+      "fields": 87225,
+      "successful_static_fields": 989,
+      "intra_pair_changes": 0,
+      "game_main_image": {
+        "image": {
+          "text": "Assembly-CSharp.dll"
+        },
+        "reported_classes": 2672,
+        "fields": 17733,
+        "live_static_attempts": 38,
+        "successful_static_reads": 38
+      },
+      "name_errors": 0,
+      "reasons": {
+        "instance_object_required": 51837,
+        "unsupported_type": 5627,
+        "literal": 28515,
+        "runtime_api_static_storage": 989,
+        "open_generic": 257
+      },
+      "enumeration_ms": 1335,
+      "total_loader_ms": 14107,
+      "helper_unloaded": true
+    },
+    {
+      "index": 1,
+      "raw_sha256": "b3f8ca7883b69ca6732363ee77cebc48e569c1ab65d763dabf87c61c47ba2e80",
+      "images": 87,
+      "classes": 16955,
+      "fields": 87225,
+      "successful_static_fields": 989,
+      "intra_pair_changes": 0,
+      "game_main_image": {
+        "image": {
+          "text": "Assembly-CSharp.dll"
+        },
+        "reported_classes": 2672,
+        "fields": 17733,
+        "live_static_attempts": 38,
+        "successful_static_reads": 38
+      },
+      "name_errors": 0,
+      "reasons": {
+        "instance_object_required": 51837,
+        "unsupported_type": 5627,
+        "literal": 28515,
+        "runtime_api_static_storage": 989,
+        "open_generic": 257
+      },
+      "enumeration_ms": 1296,
+      "total_loader_ms": 14235,
+      "helper_unloaded": true
+    }
+  ],
+  "two_pass": {
+    "common_successful_static_fields": 989,
+    "equal": 977,
+    "different": 12
+  },
+  "screenshots": 0,
+  "gameplay_inputs": 0,
+  "game_field_write_calls": 0,
+  "claim": "runtime metadata and static scalar feasibility only; no gameplay authority",
+  "progress_percent": 31,
+  "desktop": {
+    "pid": 67560,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703\\Reversebolt.exe",
+    "session": 1,
+    "ok": true,
+    "status_keys": [
+      "data",
+      "error",
+      "jobs",
+      "ok",
+      "state"
+    ],
+    "sha256": "2bdd4f38631d445cb2b8c5c73e3b4b16bf00fff5c24ab139abd522b1219a50cf",
+    "changed_this_turn": false,
+    "history_count": 29,
+    "observer_model": "qwen3.8:latest"
+  },
+  "cleanup": {
+    "remaining_owned_processes": [],
+    "lease_released": true,
+    "owned_game_window_absent": true,
+    "steam_sessions": [
+      1
+    ],
+    "mock_job": "j_a96bdbd3aa7a422b80a5c809e253f5cd",
+    "mock_exit": 0,
+    "game_job": "j_b6e617ef5fc84347b207ed75c9636d1f",
+    "game_exit": 0,
+    "checked_utc": "2026-10-21T12:18:21.5464721Z"
+  },
+  "raw_artifacts": [
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-0.json",
+      "sha256": "5514be7b03148dbb6da3ee792c931fe73038a94772872b1590ac374f719818c0",
+      "bytes": 14832039
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-0.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-0.stdout.jsonl",
+      "sha256": "a29e5fbe98ceed24444a3081c30e6678b6622ebef038696f100ace80874a0829",
+      "bytes": 788
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-1.json",
+      "sha256": "b3f8ca7883b69ca6732363ee77cebc48e569c1ab65d763dabf87c61c47ba2e80",
+      "bytes": 14831917
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-1.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/probe-1.stdout.jsonl",
+      "sha256": "c22c46e3ffc6964a01d99124fc47f087d5d4bb78b6bdb61edc957b5c2eb5c49c",
+      "bytes": 788
+    },
+    {
+      "path": "test-results/runtime-probe-v1/blue-prince/summary.json",
+      "sha256": "b80ba614d2de3db49139bfc080c68775556036277fa81c5c9547908d80eac5dc",
+      "bytes": 45098
+    },
+    {
+      "path": "test-results/runtime-probe-v1/cleanup.json",
+      "sha256": "5a59ee505ef50ce2f4ea6815af09350ec73c0fa88a0bf52a7d9b6da237ab29e2",
+      "bytes": 335
+    },
+    {
+      "path": "test-results/runtime-probe-v1/desktop.json",
+      "sha256": "d2d643620c03fb035b362ff3a0f96503f977b15c742881fef0397cf30f03e6c5",
+      "bytes": 400
+    },
+    {
+      "path": "test-results/runtime-probe-v1/game-after.json",
+      "sha256": "5a0ff4c0bdd935232c4cb888a5b90015db714778268841d51998e90bec9c8bc3",
+      "bytes": 165
+    },
+    {
+      "path": "test-results/runtime-probe-v1/game-identity.json",
+      "sha256": "980a99337f2d0194b094f44c4aad2443aa0329249f23c12879000d5c3d721284",
+      "bytes": 433
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/cases.json",
+      "sha256": "de25ba852ca540ed5a8a623c37dccf3edda1e990504deb709f8c744e8dc20f65",
+      "bytes": 678
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/existing-output.stderr.jsonl",
+      "sha256": "ea0ee01b61c9d334637991321f2665ec14d3ce80cf1e0815768378e3e63babbd",
+      "bytes": 66
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/existing-output.stdout.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/host.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/identity.json",
+      "sha256": "ce95e6601e31f85f53c709226c82cc197e8accceccdd388992c802365d0258d9",
+      "bytes": 132
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-0.json",
+      "sha256": "9e70b37287baec3bf3ba6dd18e1f8804b19ee72f2626a590042e8e10c845308f",
+      "bytes": 2547
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-0.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-0.stdout.jsonl",
+      "sha256": "92916c5a9e425bf9ec36336c53138f03e870b7020aad57306b960e1ee1c22af4",
+      "bytes": 777
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-1.json",
+      "sha256": "fcc84acec38abf8aeaaef8c4a10318f25ce6b956353d2442daac785dde9fba32",
+      "bytes": 2547
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-1.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/probe-1.stdout.jsonl",
+      "sha256": "72f8a3174c59c7550b76007e3cc987accc2f0f1196b8bad3df896b281fc0fae5",
+      "bytes": 777
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/stop",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-hash.stderr.jsonl",
+      "sha256": "3c9894d8ed9469b8641db8fad642bbd2dfb9adcb8ead72c25e9d721973efc466",
+      "bytes": 36
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-hash.stdout.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-identity.stderr.jsonl",
+      "sha256": "9cda1c20864d1d1eb1eefd7d8c227cb7a22a65e14f2699417d016b7b460355c7",
+      "bytes": 48
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-identity.stdout.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-session.stderr.jsonl",
+      "sha256": "511b2ff19fce454d89c45328889e779b24b98f11dc62b8962023298aa4e80e6c",
+      "bytes": 77
+    },
+    {
+      "path": "test-results/runtime-probe-v1/mock/wrong-session.stdout.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

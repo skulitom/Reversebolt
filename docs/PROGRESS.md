@@ -4,6 +4,19 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest runtime feasibility study (2026-10-21): **31% unchanged**. A standalone
+Rust IL2CPP probe completed two unchanged inspections of Blue Prince: 16,955
+types, 87,225 fields and 989 scalar reads per pass, with 38 reads in the game's
+main code image. Twelve values changed between passes. No screenshots or player
+input were used. Both helpers unloaded and the game remained responsive before
+owned-process cleanup. Six owned ABI harness cases and the frozen-artifact audit
+passed. Metadata names and static storage do not establish useful gameplay
+controls; 51,837 instance fields still require live object resolution, and
+static class initialization was not established. This is explicit research
+instrumentation, not a shipping adapter or generalization acceptance. Production
+preview remains `0.1.0-20261021-122703`. Weighted credits and full goal unchanged.
+[Evidence, access model and next step](../research/runtime-probe/README.md).
+
 Latest independent-game watch evaluation (2026-10-21): **31% unchanged**.
 2048 completed discovery and a trial watch across ordinary moves. Its learned
 mapping continued matching newer values, while changed bytes correctly blocked
@@ -11,8 +24,8 @@ restoration. Tetris abstained on selection readings 60, 70, 70, 80; no edit ran.
 The fixed cases retain 56 discovery captures, six trial images and 202 verified
 native pulses. All 22 owned processes exited. No production binary changed.
 The next discovery work prioritizes runtime structure and memory behaviour so
-screen numbers do not gate hidden-value discovery. Runtime adapters remain
-unimplemented; the full scope and weighted credits are unchanged.
+screen numbers do not gate hidden-value discovery. At that evaluation runtime
+adapters remained unimplemented; the full scope and weighted credits were unchanged.
 See [evaluation](../research/game-change-watch/README.md) and
 [architecture direction](DISCOVERY_DIRECTION.md).
 

@@ -1,0 +1,90 @@
+{
+  "frozen_utc": "2026-10-21T12:12:42.114088+00:00",
+  "files": [
+    {
+      "path": "research/runtime-probe/Cargo.lock",
+      "bytes": 5384,
+      "sha256": "caa5315457064f9c0dbe59fbca23de655ac72b2fdf47ba71b04f25a866da1ba7"
+    },
+    {
+      "path": "research/runtime-probe/Cargo.toml",
+      "bytes": 412,
+      "sha256": "50c32aaec133f1e66ef145bcc3adf580ccba4382e970f0434d036a5fa308e07b"
+    },
+    {
+      "path": "research/runtime-probe/freeze.py",
+      "bytes": 967,
+      "sha256": "4b1ef866dff666ebe60eeb0b7a16dbfc3bcb6163eae8a95ddd6475ea4c373dfb"
+    },
+    {
+      "path": "research/runtime-probe/game_case.py",
+      "bytes": 3362,
+      "sha256": "3dfd2839ab91352077531e5b067b2a3417328e3e936731ad6381274533f33e5d"
+    },
+    {
+      "path": "research/runtime-probe/mock/Cargo.toml",
+      "bytes": 126,
+      "sha256": "6b7c7b00f2485bffaa3d5680c7b19332b25d25c785bb2b23704ba0d34cf0af26"
+    },
+    {
+      "path": "research/runtime-probe/mock/src/lib.rs",
+      "bytes": 3429,
+      "sha256": "c801e639061adbd6f2ec6c500f97baaed1f654a160defd19ccf1cd50ac094962"
+    },
+    {
+      "path": "research/runtime-probe/mock_case.py",
+      "bytes": 3585,
+      "sha256": "0f358ce757531bba231a2ad2837bfb5f1987f7157a3eeb1b32b41ad2697f6f71"
+    },
+    {
+      "path": "research/runtime-probe/probe/Cargo.toml",
+      "bytes": 230,
+      "sha256": "384eb4c058cc15220ad308a9d79cea51c10b5ce9825cdc735e66cc12210d0d17"
+    },
+    {
+      "path": "research/runtime-probe/probe/src/bin/mock-host.rs",
+      "bytes": 1451,
+      "sha256": "7aed8c9960634f2f97ad7055fb7488ebe4758cd1f09be3441558e0a9b17e97c5"
+    },
+    {
+      "path": "research/runtime-probe/probe/src/bin/probe-loader.rs",
+      "bytes": 9650,
+      "sha256": "64c292bd2ceabb3a2d3103ed6b95f10ae728fed6f80a927fac182cd782469a6c"
+    },
+    {
+      "path": "research/runtime-probe/probe/src/lib.rs",
+      "bytes": 12774,
+      "sha256": "c6e322d800e8239ab0a2f8224acaef8a60bbb6ce010a3df8223d541168b0a63f"
+    },
+    {
+      "path": "research/runtime-probe/probe/src/win.rs",
+      "bytes": 3993,
+      "sha256": "42b79d1040df53725ff5cc76bd68f6d133171bbe862099f22574fcb24d398258"
+    },
+    {
+      "path": "research/runtime-probe/PROTOCOL.md",
+      "bytes": 3148,
+      "sha256": "c4f421c25ffc8acb7cd29d06cd7e9a34a9bb0d337bcd51b9ed41b9c8b3750420"
+    },
+    {
+      "path": "target/runtime-probe/debug/reversebolt_runtime_probe.dll",
+      "bytes": 427008,
+      "sha256": "1c2fc389ddff8117ec155c583b610a4bce6045c897e1be1341e2d6d7f26b8de3"
+    },
+    {
+      "path": "target/runtime-probe/debug/probe-loader.exe",
+      "bytes": 613376,
+      "sha256": "33dd4763097ea261d8effba1fd9acb7bfa970d111fb4b0a96df525ff90e69cfe"
+    },
+    {
+      "path": "target/runtime-probe/debug/reversebolt_mock_runtime.dll",
+      "bytes": 123392,
+      "sha256": "15de70ec95a4bceeaa64d4156a590a68cace0b747af6b0d5dea617b0d7f754e8"
+    },
+    {
+      "path": "target/runtime-probe/debug/mock-host.exe",
+      "bytes": 337920,
+      "sha256": "3259689542b1b7f5dee65f86ff5117a8798039b670841e1352b08055862bebcb"
+    }
+  ]
+}

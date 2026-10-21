@@ -34,3 +34,4 @@
 /research/change-watch-v3/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/change-watch-v3/product.patch -whitespace
 /research/game-change-watch/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/runtime-probe/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

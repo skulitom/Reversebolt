@@ -1,7 +1,8 @@
 # Discovery direction — 2026-10-21
 
-Status: next implementation direction, not a claim that runtime adapters or
-general causal controls already exist. The full goal and 31% weighted estimate
+Status: runtime feasibility demonstrated in a separate research probe; no runtime
+adapter is integrated into the product and general causal controls do not yet
+exist. The full goal and 31% weighted estimate
 remain unchanged. The user's requirement is named, understandable, interactive
 cards for humans and agents, including values and rules that never appear as HUD
 numbers. Generalization excludes per-game profiles, offsets, signatures and
@@ -46,15 +47,22 @@ would reduce ambiguity, and use the same bounded operations as the desktop.
 Image/model calls should be occasional and purpose-driven. Discovery success is
 a useful, validated control, not a large set of correlations or readable labels.
 
-## Runtime-aware feasibility work comes next
+## Runtime-aware feasibility and next work
 
-Start with detecting managed runtimes and demonstrating a generic read-only
-type/field inventory for Mono/.NET. Then demonstrate live object/value identity
-and relocation handling on multiple independent programs without recompiling or
-adding game rules. A type inventory alone is not a live-value reader. Surface
-unsupported access paths explicitly; the embedding API is not automatically a
-remote-process inspection API. Keep automatic reads separate from any mechanism
-that executes code in the target.
+Installed Blue Prince uses IL2CPP, so the first feasibility probe targets its
+exported runtime APIs instead of the initially proposed Mono/.NET path. The
+unchanged Rust probe listed 87,225 fields and read 989 scalar storage locations
+twice in the real game, including 38 in its main code image. It used zero images
+and no game-specific filters. Both helpers unloaded. This is explicit temporary
+instrumentation, not a passive remote-memory API or a production feature.
+See [method, evidence and limits](../research/runtime-probe/README.md).
+
+Next demonstrate live instance object/value identity, lifetime handling and
+relocation on independent programs without adding game rules. The current probe
+leaves 51,837 instance fields unresolved; even its static values may be defaults
+from uninitialized classes. A type inventory or a readable value alone does not
+establish a useful control. Keep automatic reads separate from mechanisms that
+execute code in the target, and expose unsupported access paths explicitly.
 
 Supporting a runtime does encode platform knowledge, much like supporting PE or
 numeric encodings. It must not encode particular game classes, field names or

@@ -1,0 +1,13 @@
+[package]
+name = "reversebolt-runtime-probe"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+windows-sys.workspace = true
