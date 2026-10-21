@@ -1,0 +1,293 @@
+{
+  "kind": "post-run audit, not predeclared acceptance",
+  "protocol_sha256": "ca945b83882c8bd87332373301dafa168c17758255ff69217910c04a0d6cd191",
+  "cases": [
+    {
+      "slot": 0,
+      "outcome": "encoded distant field selected, fitted on twelve new moments, four fresh agreements",
+      "png_hashes_verified": 21,
+      "stage_ids": {
+        "initial": [
+          "9a301ba6-c855-403f-98f2-dbc9e6691dc1"
+        ],
+        "selection": [
+          "4408fa69-9651-403c-a26c-d01910553ff5",
+          "8a3c0281-9b34-40d5-ab80-e8936d43088b",
+          "86bd2895-d9a9-4cc4-b4ff-b7f53febc972",
+          "900eb42c-d7dd-46df-9311-ca458cd6e8e2"
+        ],
+        "focused": [
+          "e908d83b-6649-4af1-ab48-034919273cf9",
+          "91a115be-1314-474a-9070-ad8d5912c8a8",
+          "c02b0250-08f3-4b0d-8e16-1bd366784c7a",
+          "dc72d050-bdb8-4662-882a-6cce9404b9a9",
+          "64383f4c-c269-4e33-bd04-902aa69ff7e2",
+          "d4d57842-f535-4db7-9011-88ea480891dd",
+          "5337367e-4c04-43d9-a4ba-d86870d158b2",
+          "6c6b3360-2228-448e-99bc-79779d6cc025",
+          "9cf2556f-afec-45ef-ab5b-90c66438645b",
+          "b71db24e-5a05-4182-835c-d9b196e1496a",
+          "915ad66d-b73d-45c9-8ca3-27faa1cf430e",
+          "8e59298b-e5e3-41e0-a197-81011ad9aa46",
+          "9e193c2a-9e4a-4614-ac62-03cf587826b1",
+          "e5abe8ac-e639-4630-a5e0-79628c84f188",
+          "d4a3b05e-7f46-4d3f-a2cf-fa6f44551751",
+          "db88b7f4-1d25-4190-a911-d8fa394dc8dd"
+        ]
+      },
+      "commands": {
+        "list_processes": 1,
+        "set_observer_model": 1,
+        "attach_process": 1,
+        "start_observation_job": 1,
+        "start_change_search": 1
+      },
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          221.0,
+          70.0,
+          72.0,
+          61.0
+        ],
+        "complete_bytes": 108662784,
+        "elapsed_ms": 1096,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\change-search-v1\\case-0\\engine\\captures\\d1d7c4cd-383a-4c11-ad38-47778fdd564f\\change-search-01.json",
+        "label": "Number at 221, 70",
+        "matched_windows": 6,
+        "observations": [
+          20.0,
+          80.0,
+          30.0,
+          70.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 108797952,
+        "reason": null,
+        "retained_windows": 6,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 0,
+        "status": "selected"
+      },
+      "coverage": {
+        "analyzed_current_bytes": 0,
+        "archive_bytes": 1279787,
+        "attempted_bytes": 435841040,
+        "batch": 3,
+        "changed_or_unavailable_bytes": 507904,
+        "complete_trajectory_bytes": 384,
+        "image_budget_bytes": 192281,
+        "image_disk_bytes": 192281,
+        "read_bytes": 435841040,
+        "read_unique_bytes": 109744128,
+        "selected_unique_bytes": 109846528
+      },
+      "owned_pids": [
+        80400,
+        68676,
+        86996
+      ],
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 1,
+          "binding": {
+            "generation": 1,
+            "session": "140c80d3-57b5-4b2b-892c-0b0f5303edac",
+            "target": "74d08ab4-4747-4995-9807-8d20f2faa07d/1/01DD6148B7B7889C/15270976"
+          }
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4,
+          "binding": {
+            "generation": 2,
+            "session": "140c80d3-57b5-4b2b-892c-0b0f5303edac",
+            "target": "74d08ab4-4747-4995-9807-8d20f2faa07d/2/01DD6148B7B7889C/15270976"
+          }
+        },
+        "3": {
+          "phase": "Completed",
+          "steps": 16,
+          "binding": {
+            "generation": 3,
+            "session": "140c80d3-57b5-4b2b-892c-0b0f5303edac",
+            "target": "74d08ab4-4747-4995-9807-8d20f2faa07d/3/01DD6148B7B7889C/15270976"
+          }
+        }
+      },
+      "independent_field_witness_values": [
+        20.0,
+        80.0,
+        30.0,
+        70.0
+      ],
+      "field_offset_mib": 24.9500732421875,
+      "selected_bytes_per_fresh_capture": 384,
+      "checks": [
+        {
+          "source": "ocr",
+          "track": 0,
+          "candidates": [
+            {
+              "address": "0x15DFEEF3380",
+              "mapping": {
+                "exact": false,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 0,
+                "slope": 2.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "samples": [
+                {
+                  "frame": 13,
+                  "observed": 54.0,
+                  "predicted": 54.0,
+                  "outcome": "agrees"
+                },
+                {
+                  "frame": 14,
+                  "observed": 54.0,
+                  "predicted": 54.0,
+                  "outcome": "agrees"
+                },
+                {
+                  "frame": 15,
+                  "observed": 50.0,
+                  "predicted": 50.0,
+                  "outcome": "agrees"
+                },
+                {
+                  "frame": 16,
+                  "observed": 50.0,
+                  "predicted": 50.0,
+                  "outcome": "agrees"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "raw_json_sha256": {
+        "attached.json": "ee4f1336f441a0ce56e0ac5e5d11c1c0c090a406befe62ad3342f90580e665b9",
+        "commands.json": "0a5310386161f99fee0cd0818cef9916e0ec4cccb5f01305d841dcb81b471ba6",
+        "final-status.json": "884076b9596a6f729d222c4aafa97313961d8697ac98a93493fdfd5be43bae2a",
+        "focused-completed-state.json": "64bf300824f3c0504dcd8f256f59ba16e2cae406a8ffedb213924e212c55505d",
+        "focused-states.json": "ad08ea803c18828df449ee84672e5307f64137be71eca6f0464b317818df913b",
+        "initial-completed-state.json": "ff05314a9647a2dee87dc46eb4d31451adcf17f0199ae4b1e03ebab092f49eac",
+        "initial-states.json": "18ced7ede9127f2f0d15836ae5341230ba9cff8d966b46c824b5f9857d00b583",
+        "oracle.json": "e912ca746ac5e16bd0fe952ae1216a53538f055ea94f12db4d959ee666c7a3c7",
+        "report.json": "8b46319860bfd0f48dd391c2fc44c73486a16009d0a5bbbcd6569c5e1cfbcac7",
+        "selection-completed-state.json": "acfc7827c4c0fa90d1a036fa5fd0a0f7979eeda79f638161047e6d4e86b4753d",
+        "selection-states.json": "97ddb799eb6664c3bb243f582fbba7ba85b045dd951e3adb7257edc8184816e6",
+        "selection.json": "e8487c4c0110910f0db55e8dc671b4eab2d94e47041392ec41c98d4ca7502943",
+        "started.json": "96b4ff937410e0d84eae2c725ea29c9c44a73ae78b1e9ac76fe280b3cb616c09"
+      }
+    },
+    {
+      "slot": 1,
+      "outcome": "insufficient contrast abstained; no fresh batch or job",
+      "png_hashes_verified": 5,
+      "stage_ids": {
+        "initial": [
+          "f7965cf0-6fad-4606-adfa-bbde1d6217be"
+        ],
+        "selection": [
+          "b9e3ae14-f261-4ed1-9fac-50197a197360",
+          "caee2c90-eed7-4117-87d0-ee1a9e7e2b47",
+          "1d314fd0-4294-4187-96c2-25f6e3e9f3a2",
+          "31a304f0-2e5e-4b1c-9804-fddea33e4e41"
+        ]
+      },
+      "commands": {
+        "list_processes": 1,
+        "set_observer_model": 1,
+        "attach_process": 1,
+        "start_observation_job": 1,
+        "start_change_search": 1
+      },
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          221.0,
+          70.0,
+          72.0,
+          61.0
+        ],
+        "complete_bytes": 0,
+        "elapsed_ms": 0,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\change-search-v1\\case-1\\engine\\captures\\b664e16e-364d-42f9-b097-e61f3b5b304e\\change-search-01.json",
+        "label": "Number at 221, 70",
+        "matched_windows": 0,
+        "observations": [
+          20.0,
+          20.0,
+          20.0,
+          20.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 107941888,
+        "reason": "The number needs repeated changes during these four moments. No areas were selected.",
+        "retained_windows": 0,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 0,
+        "status": "no_selection"
+      },
+      "coverage": {
+        "analyzed_current_bytes": 0,
+        "archive_bytes": 176996,
+        "attempted_bytes": 432451584,
+        "batch": 2,
+        "changed_or_unavailable_bytes": 466944,
+        "complete_trajectory_bytes": 0,
+        "image_budget_bytes": 46264,
+        "image_disk_bytes": 46264,
+        "read_bytes": 432451584,
+        "read_unique_bytes": 108888064,
+        "selected_unique_bytes": 108990464
+      },
+      "owned_pids": [
+        20588,
+        74428,
+        79460
+      ],
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 1,
+          "binding": {
+            "generation": 1,
+            "session": "47af3e3a-c9ae-4fa6-b5e0-8be2362d7a29",
+            "target": "41069509-0fe5-4387-8034-2b32fe24aaba/1/01DD6149002C7C26/14156646"
+          }
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4,
+          "binding": {
+            "generation": 2,
+            "session": "47af3e3a-c9ae-4fa6-b5e0-8be2362d7a29",
+            "target": "41069509-0fe5-4387-8034-2b32fe24aaba/2/01DD6149002C7C26/14156646"
+          }
+        }
+      },
+      "raw_json_sha256": {
+        "attached.json": "6256fc8e927620d77d216dea4352f121380f87480c1005d83c9da369660656dc",
+        "commands.json": "2c83781ea700913867a1609d55a9a6d4d8d128cdce0ebaee160ec801e897ed34",
+        "final-status.json": "dc3db5d772e07be24141e1504427510bea72a251bb4ef99ee2d70a4fa2cbb374",
+        "initial-completed-state.json": "ab6cc1f4da861abecf82a233bdbfea99d57acc178262061a8f84e3b57b563464",
+        "initial-states.json": "5c207760e38e6c9833e84e4f00bd9614785245b9066208148d8e673577a08569",
+        "oracle.json": "768da14496856991228b6748f4fa77dc2798111d551d0d0e3d941bd4a6af36d6",
+        "report.json": "4d64b8472db92c82844a51a4f08d7be24e7ba4647b19e5c8495be71017376d50",
+        "selection-completed-state.json": "3e845e3508828832aa21f4322f1f82d0cc49cb0da679299b426a383b79eb7241",
+        "selection-states.json": "0e9ef060b2c38640fa544c829feed26280b7981e806b858937e8e53bca6bf362",
+        "selection.json": "85f2b903f52ec2c8861cbe4809e6a6916d8f4e632d05f6662541bfafa3c6dcee",
+        "started.json": "a7df1861f2a134b760f6a8a7d2938381f3ffb854fbd357f92ac8eaa0ca28faaa"
+      }
+    }
+  ]
+}

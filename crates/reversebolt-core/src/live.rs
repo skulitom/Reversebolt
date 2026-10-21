@@ -18,6 +18,7 @@ use std::{
 const MAX_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
+mod change_search;
 
 struct Recheck {
     checks: Vec<PredictionCheck>,
@@ -224,6 +225,8 @@ pub struct LocalObservationWarning {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    #[serde(default)]
+    pub change_searches: Vec<crate::change_search::Summary>,
     /// Historical address-selection receipts, never current numeric evidence.
     #[serde(default)]
     pub value_searches: Vec<crate::value_search::Summary>,
@@ -816,6 +819,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            change_searches: vec![],
             value_searches: vec![],
             memory_process: Some(target.memory_info().clone()),
             memory_sources: vec![],
@@ -979,6 +983,11 @@ impl LiveSession {
     }
 
     pub fn capture_mode(&mut self, mode: CaptureMode) -> Result<()> {
+        if self.collecting_change_search()
+            && (self.view.sample_count >= crate::change_search::MOMENTS || !mode.is_full())
+        {
+            return Err("Change search needs exactly four full observations, then selection before further captures.".into());
+        }
         if self.refresh_connection() || !self.view.connected {
             return Err(
                 "The selected process has exited. Reconnect before collecting more evidence."

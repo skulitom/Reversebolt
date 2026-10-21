@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest search by changing observations (2026-10-21): **31%**. “Follow changes”
+uses four broad observations to nominate areas through scale/offset relationships,
+then automatically gathers sixteen wholly new fitting/checking moments. The
+native encoded-field case selected the distant F32 field from six small areas
+and passed four fresh checks; the constant-value case abstained. All 184 tests,
+strict Clippy and the 35-tool packaged smoke pass. Desktop preview
+`0.1.0-20261021-114033` is running, preserving all 29 history entries and settings;
+the prior disconnected session's evidence was saved before replacement.
+General discovery moves from 7/20 to **8/20**. Other credits remain foundation
+4/10, native 6/10, observation 5/15, validation 2/15, intent/editing 1/10, agent
+collaboration 5/10 and generalization 0/10. This is native fixture evidence, not
+independent-game control; the full goal stays active.
+[Implementation, frozen method and limits](../research/change-search/README.md).
+
 Latest independent-game wider-search evaluation (2026-10-21): **30% unchanged**.
 The unchanged published build completed sixteen initial and sixteen fresh Tetris
 observations. A 27.48 MiB search retained 127 small areas, but its new exact

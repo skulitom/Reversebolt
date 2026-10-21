@@ -146,6 +146,8 @@ impl EngineHandle {
                         | "advance_memory"
                         | "recheck_findings"
                         | "search_number"
+                        | "start_change_search"
+                        | "finish_change_search"
                         | "detach_process"
                         | "read_capture"
                         | "submit_observation"
@@ -612,7 +614,11 @@ fn native_command(
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }
-        "advance_memory" | "recheck_findings" | "search_number" => {
+        "advance_memory"
+        | "recheck_findings"
+        | "search_number"
+        | "start_change_search"
+        | "finish_change_search" => {
             let investigation = command.args["investigation_id"]
                 .as_str()
                 .ok_or("Read the current investigation identity first.")?;
@@ -624,7 +630,7 @@ fn native_command(
                 .live
                 .as_mut()
                 .ok_or("Connect an application first.")?;
-            if command.action == "search_number" {
+            if command.action == "search_number" || command.action == "start_change_search" {
                 let after_frame = command.args["after_frame"]
                     .as_u64()
                     .and_then(|n| usize::try_from(n).ok())
@@ -633,7 +639,25 @@ fn native_command(
                     .as_u64()
                     .and_then(|n| usize::try_from(n).ok())
                     .ok_or("Supply the observed number's track.")?;
-                session.search_number(investigation, batch, after_frame, track, &engine.changes)?;
+                if command.action == "start_change_search" {
+                    session.start_change_search(
+                        investigation,
+                        batch,
+                        after_frame,
+                        track,
+                        &engine.changes,
+                    )?;
+                } else {
+                    session.search_number(
+                        investigation,
+                        batch,
+                        after_frame,
+                        track,
+                        &engine.changes,
+                    )?;
+                }
+            } else if command.action == "finish_change_search" {
+                session.finish_change_search(investigation, batch, &engine.changes)?;
             } else if command.action == "recheck_findings" {
                 session.recheck_findings(investigation, batch, &engine.changes)?;
             } else {

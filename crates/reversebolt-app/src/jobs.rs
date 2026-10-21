@@ -162,11 +162,12 @@ impl Handle {
                 errors,
                 draining: false,
                 next_capture: None,
+                change_continuation: None,
+                change_child: None,
             };
             loop {
                 let Some(inbox) = inbox.upgrade() else { break };
                 controller.refresh_binding();
-                controller.finish_manual();
                 // Human controls lead other clients without reordering one source.
                 for _ in 0..24 {
                     let request = pop(&mut inbox.lock().unwrap());
@@ -174,6 +175,7 @@ impl Handle {
                     controller.command(request);
                 }
                 drop(inbox);
+                controller.finish_manual();
                 controller.tick();
                 controller.publish();
                 std::thread::sleep(Duration::from_millis(25));
@@ -442,6 +444,11 @@ struct Manual {
     reply: Option<mpsc::Sender<Value>>,
     automatic: Option<String>,
 }
+struct ChangeContinuation {
+    job: u64,
+    scope: Scope,
+    source: String,
+}
 struct Controller {
     jobs: job::Jobs<FileJournal>,
     executor: CaptureExecutor,
@@ -451,6 +458,8 @@ struct Controller {
     errors: Arc<RwLock<Option<String>>>,
     draining: bool,
     next_capture: Option<(u64, usize, Instant)>,
+    change_continuation: Option<ChangeContinuation>,
+    change_child: Option<(u64, u64)>,
 }
 
 impl Controller {
@@ -488,7 +497,16 @@ impl Controller {
                     && let Some(source) = manual.automatic
                 {
                     match self.start_automatic_observation(source) {
-                        Ok(receipt) => value["data"] = json!({"automatic_observation":receipt}),
+                        Ok(receipt) => {
+                            if let Some(parent) = self.change_continuation.as_ref()
+                                && Scope::from_view(&self.engine.view.read().unwrap())
+                                    .is_some_and(|s| s.key() != parent.scope.key())
+                                && let Some(child) = receipt["ack"]["job"].as_u64()
+                            {
+                                self.change_child = Some((parent.job, child));
+                            }
+                            value["data"] = json!({"automatic_observation":receipt});
+                        }
                         Err(error) => {
                             self.error(format!(
                                 "Connected, but automatic observation could not start: {error}"
@@ -515,6 +533,12 @@ impl Controller {
     fn start_automatic_observation(&mut self, source: String) -> Result<Value> {
         let snapshot = self.jobs.snapshot();
         let state = self.engine.view.read().unwrap();
+        let changing = state.live.as_ref().is_some_and(|live| {
+            live.change_searches.last().is_some_and(|s| {
+                s.status == "collecting" && s.selection_batch == live.coverage.batch
+            })
+        });
+        let search_scope = changing.then(|| Scope::from_view(&state)).flatten();
         let recheck = state.live.as_ref().is_some_and(|live| {
             live.sample_count == 0
                 && live
@@ -522,7 +546,7 @@ impl Controller {
                     .iter()
                     .any(|c| c.rechecked_from.is_some())
         });
-        let model = if recheck {
+        let model = if recheck || changing {
             None
         } else {
             state.observer_model.clone()
@@ -535,8 +559,8 @@ impl Controller {
         };
         let command = Command {
             action: "start_observation_job".into(),
-            source,
-            args: json!({"count":if recheck {4} else {16},"interval_ms":1000,"compare":!recheck,
+            source: source.clone(),
+            args: json!({"count":if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
                 "local_model":model,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
@@ -545,9 +569,88 @@ impl Controller {
         if let Some(error) = receipt["ack"]["rejection"].as_str() {
             return Err(error.into());
         }
+        if let Some(scope) = search_scope {
+            self.change_continuation = Some(ChangeContinuation {
+                job: receipt["ack"]["job"]
+                    .as_u64()
+                    .ok_or("Missing change-search job receipt")?,
+                scope,
+                source,
+            });
+        }
         Ok(receipt)
     }
-    fn command(&mut self, (command, reply): Request) {
+    fn continue_change_search(&mut self) {
+        let Some(pending) = self.change_continuation.take() else {
+            return;
+        };
+        let snapshot = self.jobs.snapshot();
+        if snapshot.human_hold.is_some()
+            || self.draining
+            || self.jobs.view().fence.is_some()
+            || snapshot
+                .current
+                .as_ref()
+                .is_none_or(|b| b.target != pending.scope.key())
+        {
+            return;
+        }
+        let Some(job) = snapshot.jobs.get(&pending.job) else {
+            return;
+        };
+        if !job.phase.terminal() {
+            self.change_continuation = Some(pending);
+            return;
+        }
+        if job.phase != job::Phase::Completed || job.invalidated {
+            return;
+        }
+        if self.executor.flight.is_some() || self.engine.view.read().unwrap().analysis.is_some() {
+            self.change_continuation = Some(pending);
+            return;
+        }
+        let source = if job.controller.role == job::Role::Human {
+            "desktop".into()
+        } else {
+            pending.source.clone()
+        };
+        self.command((Command{action:"finish_change_search".into(),source,
+            args:json!({"investigation_id":pending.scope.investigation_id,"batch":pending.scope.batch})},None));
+        if self.manual.is_some() {
+            self.change_continuation = Some(pending);
+        }
+    }
+    fn command(&mut self, (mut command, reply): Request) {
+        // The selection worker is read-only and may already be settling after
+        // its parent job completed. A human stop/pause takes control so that
+        // its future capture job cannot start after the click is acknowledged.
+        if command.source == "desktop"
+            && command.action == "job_control"
+            && matches!(command.args["operation"].as_str(), Some("cancel" | "pause"))
+            && self.manual.is_some()
+            && self
+                .change_continuation
+                .as_ref()
+                .is_some_and(|p| command.args["job"].as_u64() == Some(p.job))
+        {
+            command.args["operation"] = json!("take_control");
+        }
+        // A click on the just-completed parent's Stop control stops its fresh
+        // follow-up too. Never rewrite an agent's binding or authority envelope.
+        if command.source == "desktop"
+            && command.action == "job_control"
+            && matches!(command.args["operation"].as_str(), Some("cancel" | "pause"))
+            && let Some((parent, child)) = self.change_child
+            && command.args["job"].as_u64() == Some(parent)
+            && self
+                .jobs
+                .snapshot()
+                .jobs
+                .get(&child)
+                .is_some_and(|j| !j.phase.terminal())
+        {
+            command.args["job"] = json!(child);
+        }
         let result: Result<Value> = (|| {
             if matches!(command.action.as_str(), "status" | "history") {
                 return Ok(Value::Null);
@@ -606,9 +709,11 @@ impl Controller {
                 return Err("auto_observe must be true or false.".into());
             }
             let automatic = match command.action.as_str() {
-                "attach_process" | "recheck_findings" | "search_number" => {
-                    command.args["auto_observe"].as_bool().unwrap_or(true)
-                }
+                "attach_process"
+                | "recheck_findings"
+                | "search_number"
+                | "start_change_search"
+                | "finish_change_search" => command.args["auto_observe"].as_bool().unwrap_or(true),
                 "advance_memory" => command.args["auto_observe"] == true,
                 _ => false,
             };
@@ -629,6 +734,21 @@ impl Controller {
             Ok(data) => {
                 if is_job {
                     let rejection = data["ack"]["rejection"].as_str().map(str::to_owned);
+                    if rejection.is_none()
+                        && command.action == "job_control"
+                        && (command.args["operation"] == "take_control"
+                            || (command.args["operation"] == "cancel"
+                                && self
+                                    .change_continuation
+                                    .as_ref()
+                                    .is_some_and(|p| command.args["job"].as_u64() == Some(p.job))))
+                    {
+                        self.change_continuation = None;
+                        if let Some(manual) = &mut self.manual {
+                            manual.automatic = None;
+                        }
+                    }
+
                     if let Some(error) = &rejection {
                         self.error(error.clone());
                     }
@@ -853,6 +973,10 @@ impl Controller {
         if self.manual.is_some() {
             return;
         }
+        self.continue_change_search();
+        if self.manual.is_some() {
+            return;
+        }
         self.stop_revoked_analysis();
         let view = self.jobs.view();
         // A stopped capture sequence may still have one pure image request draining.
@@ -937,6 +1061,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                change_searches: vec![],
                 value_searches: vec![],
                 memory_process: None,
                 memory_sources: vec![],
@@ -991,6 +1116,8 @@ mod tests {
             errors: Arc::new(RwLock::new(None)),
             draining: false,
             next_capture: None,
+            change_continuation: None,
+            change_child: None,
         };
         c.refresh_binding();
         c
@@ -1007,6 +1134,217 @@ mod tests {
             args,
             source: "agent".into(),
         }
+    }
+
+    fn change_view() -> EngineView {
+        let mut view = initial_view();
+        let frame = reversebolt_core::visual::FrameRef {
+            sampling: None,
+            input_context: None,
+            id: "source".into(),
+            number: 1,
+            sha256: "source".into(),
+            width: 100,
+            height: 100,
+            epoch: 0,
+            started_unix_ms: 0,
+            capture_interval: None,
+        };
+        view.live.as_mut().unwrap().change_searches.push(
+            reversebolt_core::change_search::Summary {
+                source_batch: 0,
+                source_track: 0,
+                source_frame: frame,
+                label: "Number".into(),
+                bounds: [0., 0., 10., 10.],
+                selection_batch: 1,
+                planned_bytes: 1048576,
+                status: "collecting".into(),
+                reason: None,
+                observations: vec![],
+                basis: vec![],
+                complete_bytes: 0,
+                matched_windows: 0,
+                retained_windows: 0,
+                omitted_windows: 0,
+                boundary_matches: 0,
+                elapsed_ms: 0,
+                evidence: "fixture".into(),
+            },
+        );
+        view
+    }
+    fn complete_fake(command: &Command, view: &mut EngineView) -> Value {
+        let live = view.live.as_mut().unwrap();
+        match command.action.as_str() {
+            "capture" => live.sample_count += 1,
+            "finish_change_search" => {
+                assert_eq!(live.sample_count, 4);
+                live.coverage.batch += 1;
+                live.sample_count = 0;
+                live.planned_bytes = 64;
+                live.change_searches[0].status = "completed".into();
+            }
+            _ => panic!("Unexpected command {}", command.action),
+        }
+        json!({"ok":true,"error":null,"state":view})
+    }
+    fn drive_change(c: &mut Controller) {
+        c.finish_manual();
+        if let Some((job, step, _)) = c.next_capture {
+            c.next_capture = Some((job, step, Instant::now()));
+        }
+        c.tick();
+        std::thread::sleep(Duration::from_millis(3));
+    }
+    #[test]
+    fn change_search_hands_off_once_from_four_selection_captures_to_sixteen_fresh_ones() {
+        let (sent, received) = mpsc::channel();
+        let engine = EngineHandle::test_worker(change_view(), move |command, view| {
+            sent.send(command.clone()).unwrap();
+            complete_fake(&command, view)
+        });
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("agent".into()).unwrap();
+        let parent = receipt["ack"]["job"].as_u64().unwrap();
+        assert_eq!(c.jobs.snapshot().jobs[&parent].steps.len(), 4);
+        let mut commands = vec![];
+        for _ in 0..1500 {
+            drive_change(&mut c);
+            commands.extend(received.try_iter());
+            if c.jobs.snapshot().jobs.len() == 2
+                && c.jobs
+                    .snapshot()
+                    .jobs
+                    .values()
+                    .all(|j| j.phase == job::Phase::Completed)
+            {
+                break;
+            }
+        }
+        assert_eq!(
+            commands.iter().filter(|c| c.action == "capture").count(),
+            20
+        );
+        assert_eq!(
+            commands
+                .iter()
+                .filter(|c| c.action == "finish_change_search")
+                .count(),
+            1
+        );
+        assert_eq!(
+            c.engine
+                .view
+                .read()
+                .unwrap()
+                .live
+                .as_ref()
+                .unwrap()
+                .sample_count,
+            16
+        );
+        assert_eq!(c.change_child.unwrap().0, parent);
+        for _ in 0..5 {
+            drive_change(&mut c);
+        }
+        assert!(received.try_recv().is_err());
+    }
+    #[test]
+    fn stop_during_selection_suppresses_followup_and_rejected_takeover_does_not() {
+        let (sent, received) = mpsc::channel();
+        let (release, held) = mpsc::channel();
+        let engine = EngineHandle::test_worker(change_view(), move |command, view| {
+            sent.send(command.clone()).unwrap();
+            if command.action == "finish_change_search" {
+                held.recv().unwrap();
+            }
+            complete_fake(&command, view)
+        });
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("agent".into()).unwrap();
+        let parent = receipt["ack"]["job"].as_u64().unwrap();
+        let bad = request(&c, "job_control", json!({"operation":"take_control"}));
+        let (tx, rx) = mpsc::channel();
+        c.command((bad, Some(tx)));
+        assert_eq!(rx.recv().unwrap()["ok"], false);
+        assert!(c.change_continuation.is_some());
+        let mut selecting = false;
+        for _ in 0..600 {
+            drive_change(&mut c);
+            if received
+                .try_iter()
+                .any(|v| v.action == "finish_change_search")
+            {
+                selecting = true;
+                break;
+            }
+        }
+        assert!(selecting);
+        assert!(c.manual.is_some());
+        let (tx, rx) = mpsc::channel();
+        c.command((
+            Command {
+                source: "desktop".into(),
+                action: "job_control".into(),
+                args: json!({"operation":"cancel","job":parent}),
+            },
+            Some(tx),
+        ));
+        assert_eq!(rx.recv().unwrap()["ok"], true);
+        assert!(c.manual.as_ref().unwrap().automatic.is_none());
+        release.send(()).unwrap();
+        for _ in 0..100 {
+            drive_change(&mut c);
+            if c.manual.is_none() {
+                break;
+            }
+        }
+        assert_eq!(c.jobs.snapshot().jobs.len(), 1);
+        assert!(c.change_continuation.is_none());
+        assert!(received.try_recv().is_err());
+    }
+    #[test]
+    fn a_stale_desktop_stop_on_the_parent_cancels_its_queued_fresh_job() {
+        let engine =
+            EngineHandle::test_worker(change_view(), |command, view| complete_fake(&command, view));
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("desktop".into()).unwrap();
+        let parent = receipt["ack"]["job"].as_u64().unwrap();
+        for _ in 0..600 {
+            c.finish_manual();
+            if c.change_child.is_some() {
+                break;
+            }
+            if let Some((job, step, _)) = c.next_capture {
+                c.next_capture = Some((job, step, Instant::now()));
+            }
+            c.tick();
+            std::thread::sleep(Duration::from_millis(3));
+        }
+        let child = c.change_child.unwrap().1;
+        let (tx, rx) = mpsc::channel();
+        c.command((
+            Command {
+                source: "desktop".into(),
+                action: "job_control".into(),
+                args: json!({"operation":"cancel","job":parent}),
+            },
+            Some(tx),
+        ));
+        assert_eq!(rx.recv().unwrap()["ok"], true);
+        assert_eq!(c.jobs.snapshot().jobs[&child].phase, job::Phase::Cancelled);
+        assert_eq!(
+            c.engine
+                .view
+                .read()
+                .unwrap()
+                .live
+                .as_ref()
+                .unwrap()
+                .sample_count,
+            0
+        );
     }
     #[test]
     fn cancel_ack_is_responsive_and_waits_for_the_actual_engine_outcome() {

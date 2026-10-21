@@ -1,0 +1,57 @@
+{
+  "protocol_sha256": "ca945b83882c8bd87332373301dafa168c17758255ff69217910c04a0d6cd191",
+  "jobs": [
+    {
+      "slot": 0,
+      "job_id": "j_cf95b77954634b7e98901a9133438778",
+      "exit_code": 0,
+      "elapsed_ms": 95413,
+      "cursor": "1279"
+    },
+    {
+      "slot": 1,
+      "job_id": "j_8859632db2504db88c8ffd97b0089100",
+      "exit_code": 0,
+      "elapsed_ms": 18360,
+      "cursor": "625"
+    }
+  ],
+  "cleanup": [
+    {
+      "slot": 0,
+      "owned_pids": [
+        80400,
+        68676,
+        86996
+      ],
+      "remaining": []
+    },
+    {
+      "slot": 1,
+      "owned_pids": [
+        20588,
+        74428,
+        79460
+      ],
+      "remaining": []
+    }
+  ],
+  "desktop": {
+    "pid": 62456,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-114033\\Reversebolt.exe",
+    "sha256": "220C6AB8FE2DEEC3ED7776ED8695D6BC434120B2D117EFF2D45BBA7B9820BE82",
+    "history_count": 29,
+    "history_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "prior_disconnected_evidence": "C:\\DEV\\Reversebolt\\test-results\\desktop-before-change-search.json"
+  },
+  "smoke": "test-results/smoke-e846a1d4/report.json",
+  "workspace_tests": 184,
+  "clippy": "passed",
+  "format": "passed",
+  "anode_lease_released": true,
+  "viewer_already_visible_left_unchanged": true,
+  "manual_screenshot_views": 0,
+  "memory_writes": 0
+}

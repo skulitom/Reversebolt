@@ -570,6 +570,10 @@ impl LivePane {
                                             .on_hover_text("Use this observed number to search more widely, then watch fresh changes. Earlier findings stay in history.").clicked() {
                                             handle.submit("search_number",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
                                         }
+                                        if ui.add_enabled(!busy && live.connected && !unrestored && live.change_searches.len()<reversebolt_core::change_search::MAX_SEARCHES,
+                                            egui::Button::new("Follow changes")).on_hover_text("Watch this number across a larger memory sample, including values stored with a different scale or offset. Keep playing while it watches, then checks fresh changes.").clicked() {
+                                            handle.submit("start_change_search",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
+                                        }
                                     }
                                     if let Some(observed)=observed.filter(|_|eligible) {
                                         let requested=self.requested.entry(*id).or_insert_with(|| {
@@ -1054,6 +1058,20 @@ impl LivePane {
                         search.retained_windows,search.omitted_windows,search.stop));
                     ui.label(RichText::new("Selected from a past observation; fresh changing values must validate them. Other representations and unscanned memory remain unknown.").size(12.).color(MUTED));
                 }
+            });
+        }
+        if !live.change_searches.is_empty() {
+            egui::CollapsingHeader::new("Searches following changes").show(ui,|ui| {
+                for search in &live.change_searches {
+                    ui.label(format!("{} · {} · {:.1} MiB sampled per moment · {} areas retained, {} omitted",
+                        search.label,search.status,search.planned_bytes as f64/1_048_576.,search.retained_windows,search.omitted_windows));
+                    if let Some(reason)=&search.reason {ui.label(reason);}
+                    if search.status=="collecting" && search.selection_batch==live.coverage.batch && live.sample_count==4 &&
+                        ui.add_enabled(!busy,egui::Button::new("Compare changes")).clicked() {
+                        handle.submit("finish_change_search",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch}));
+                    }
+                }
+                ui.label(RichText::new("Four moments only select possible areas. New fitting and later checks are required; these selections are not editable controls.").size(12.).color(MUTED));
             });
         }
         if !live.coverage.batches.is_empty() {

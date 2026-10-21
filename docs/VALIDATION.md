@@ -1,5 +1,23 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Search by changing observations — 2026-10-21
+
+All 184 workspace tests, strict Clippy, formatting, release build and the 35-tool
+packaged smoke pass. The frozen native matrix passed both an encoded-field
+selection → fresh fitting → four future agreements workflow and constant-value
+abstention. The product owned the automatic four-to-sixteen handoff. No memory
+writes, manual screenshot inspection or game interaction were used. The post-run
+audit independently decodes the fixture-field witnesses and verifies all 26 PNG
+hashes, budgets, job results and disjoint selection/fresh frame identities.
+
+Smoke evidence is `test-results/smoke-e846a1d4/report.json`. Preview
+`0.1.0-20261021-114033` is running with 29 history entries and the model setting
+preserved. The previous game had exited; its disconnected evidence was saved
+before restart. Six owned native-test processes exited and Anode was released.
+The new card action was routed through MCP in the native matrix; it was not
+separately clicked in a native UI test. Independent-game authority remains
+unverified. [Evidence and limitations](../research/change-search/README.md).
+
 ## Independent-game wider-search evaluation — 2026-10-21
 
 The unchanged `0.1.0-20261021-105104` build completed initial/search/fresh automatic

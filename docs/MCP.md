@@ -25,6 +25,37 @@ never creates a private simulator or duplicate session.
 
 ## Searching more widely for an observed number
 
+`reversebolt_start_change_search` backs **Follow changes**. Pass the current
+investigation, batch, sample count as `after_frame`, and an active readable OCR
+track. It archives the current batch, selects up to 128 MiB of unvisited memory,
+and automatically collects four full observations. The same number region must
+remain readable and show repeated variation. Complete, mapping-consistent
+trajectories can nominate areas through little-endian, naturally aligned
+i32/f32/f64 affine relationships; the displayed value need not equal stored bytes.
+At most 4096 64-byte areas survive deterministic sampling, with omissions explicit.
+
+Selection evidence, frame identities and retained raw witnesses are saved before
+the new batch. The product then schedules sixteen wholly fresh observations for
+fitting and prospective checks. The four selection moments are never counted as
+those fresh observations. This is bounded address selection, not identification
+of gameplay authority or support for arbitrary nonlinear encodings.
+
+Use `auto_observe:false` for explicit agent scheduling. After exactly four full
+captures, `reversebolt_finish_change_search` performs selection and defaults to
+the fresh sixteen-capture pass. A stopped workflow can be completed explicitly;
+cancel, human takeover, failure and restart do not automatically resume it.
+Pause/resume during collection preserves the current job. A desktop stop/pause
+during the read-only selection handoff takes control and suppresses later capture;
+a late desktop Stop on the completed parent also stops its fresh child job.
+Agent envelopes retain their original scope and authority checks.
+
+Each investigation permits eight change searches and retains at most 512 MiB of
+raw snapshot data. They share the existing 24-batch, 4 GiB requested-read, image,
+and archive budgets. Applied or uncertain writes block selection. Status exposes
+`live.change_searches`; inspect its status/current batch after uncertain delivery
+instead of issuing another search with a new scope. Technical details and manual
+completion after interruption are available under application Inspect.
+
 `reversebolt_search_number` backs the card's **Find this value** action. Supply
 the current investigation, batch, sample count as `after_frame`, and an active
 OCR track with a readable latest value. The engine takes the seed from that

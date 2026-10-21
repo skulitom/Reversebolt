@@ -1,0 +1,64 @@
+{
+  "frozen_utc": "2026-10-21T10:41:14.142969+00:00",
+  "base_commit": "debbf63b5545d993f33bca8f03a219c17773292a",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-114033",
+  "binaries": {
+    "Reversebolt.exe": "220c6ab8fe2deec3ed7776ed8695d6bc434120b2d117eff2d45bba7b9820be82",
+    "reversebolt-mcp.exe": "1424dca2508007ad7bc2e354d2e57811790557ab2aecd63d317d0524df0ca717"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "6584a7f23e7fd76ac751767f66825b966447b57b74a901087e2e8213835653f2",
+    "run.py": "edd1212d254ebf5fe71efe197a4fdf92b66a50afd74951b71a1e61520c09447c",
+    "fixture.ps1": "6a2751530ea7a25b3ece4da145503ddf99fd529e9c9d7142aef310c06cb21c39",
+    "product.patch": "c05aaa73543212843d5092eb846bbe7a2162af5129d806b09c2e311d9fda68ab"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/jobs.rs": "0cb67ad5bed027163b9c01bd6548cdd979a56c94e88db21e850700f60e765429",
+    "crates/reversebolt-app/src/service.rs": "29433b70f7da32ec58c95e26789559a72de6a346f4095e142eb9df279fb56395",
+    "crates/reversebolt-app/src/ui_live.rs": "568ea74b18439c783a193f5d1b46382a38f0345996040d13602617bdb9b5c7a9",
+    "crates/reversebolt-core/src/change_search.rs": "4965c5fcc99225dbba93c3be7081a0cd4ce06e927d42d5c605dd43909d1712a0",
+    "crates/reversebolt-core/src/lib.rs": "6531e9facc8d7689d2512dd115410ee73d12ba45596eca6890d7dd2c062dc658",
+    "crates/reversebolt-core/src/live.rs": "355405e20fb8806b055c76b54a5a08e3d9adcd22bb31567886d3b2d1f182256e",
+    "crates/reversebolt-core/src/live/change_search.rs": "92de391a6f02339996cef682be972742400517f3cdd9aef9964b1abec8964a3e",
+    "crates/reversebolt-core/src/rule_checks.rs": "2c3ba1d0b7dbffa3f615bf986a95d65dc9029f3b62c9c2897afb9a31408b1807",
+    "crates/reversebolt-core/tests/change_search.rs": "6ab641626eb252964e88a211dae0fee25f895a51e64a1e9e3e4b97ad81b190f1",
+    "crates/reversebolt-mcp/src/main.rs": "de3c5556a717934f279acf27a1894108e2db1e4f7fa1836b9746b3a0eb03ed3a",
+    "scripts/smoke.py": "09c9b228d331eec53550fbccdd16d60ca2c013c4434b231c5cfdbb317e29871b"
+  },
+  "selection_values": {
+    "0": [
+      20,
+      80,
+      30,
+      70
+    ],
+    "1": [
+      20,
+      20,
+      20,
+      20
+    ]
+  },
+  "fresh_values": [
+    70,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "order": [
+    0,
+    1
+  ]
+}
