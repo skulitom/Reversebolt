@@ -1,0 +1,88 @@
+{
+  "artifact_audit_passed": true,
+  "native_run_completed": false,
+  "missing_binaries": [
+    "Reversebolt.exe"
+  ],
+  "outcome": "Eight question groups abstained; restart blocked by Windows security (225).",
+  "desktop_updated": false,
+  "planned_holds_ms": [
+    199,
+    197,
+    198,
+    198
+  ],
+  "artifact_root": "test-results\\comparison-planner-v1",
+  "frozen_sha256": "be7770c8964cc60e82fcba655c400f2fb9eee22142cbc785045d8426b508aecd",
+  "native_checks": 6,
+  "workspace_tests": 274,
+  "mcp_tools": 53,
+  "observation_images": 15,
+  "observation_evaluator_holds": 4,
+  "comparison_images": 0,
+  "product_holds": 0,
+  "execution_receipts": 0,
+  "post_review_core_mcp_tests": 158,
+  "post_review_tests_sha256": "737b4a3a0a6a30b5cb08ec6d0fec28c3cf1dde2891e3ce8745f71ed509feaac1",
+  "post_review_clippy_sha256": "05798ae665d9bdfee4ef184ccf75611d9b0483a2db4ef83fdcf656407138a4c1",
+  "post_review_changed_sources": {
+    "crates/reversebolt-core/src/runtime_planning.rs": "6bc25d978286ccb78b69583f5e9a62ea97419217d3961bbbc05feadf32153969",
+    "crates/reversebolt-mcp/src/main.rs": "caa82b7157509299b227d18134b5c4409ebf1ebe7b8aa7267963f7289f7d91a8"
+  },
+  "manual_measurement_images": 0,
+  "setup_screenshots": 4,
+  "activity_accepted": true,
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "server_version": "0.40.7",
+  "model_error": null,
+  "metadata_stages": 9,
+  "accepted_hypotheses": 0,
+  "rejected_hypotheses": 0,
+  "comparisons": [],
+  "helpers": 1,
+  "helper_receipts": [
+    {
+      "path": "data\\runtime\\80420-01dd61a9213c67af\\2f37c7e3-8dae-414b-ad6c-a7a704234c95\\stdout.jsonl",
+      "sha256": "5819b70c2425359a18d06cc7cd2dccf91137e7fecc26ad684d4610b4fce520b0",
+      "report_sha256": "ed4e62de905c5d8ec9056a4ef2062d0d20257f29aa82bd0294d163d25ce8035e"
+    }
+  ],
+  "reported_pauses": 110,
+  "maximum_stop_to_resume_us": 5169,
+  "helper_heap_while_paused": 0,
+  "writes_including_restore": 0,
+  "children": [
+    {
+      "pid": 4568,
+      "exit_code": 1
+    },
+    {
+      "pid": 84360,
+      "exit_code": 1
+    }
+  ],
+  "input_workers_exited": 0,
+  "storage_changes": {
+    "Player-prev.log": "changed",
+    "Player.log": "changed",
+    "Saves\\SaveSlot3.data": "changed",
+    "Saves\\Screenshot3.jpg": "changed"
+  },
+  "user_saves_1_2_preserved": true,
+  "preview": "0.1.0-20261021-225832",
+  "desktop_pid": 53660,
+  "history_entries": 44,
+  "limitations": [
+    "Previously explored game and scene, not held-out generalization.",
+    "Four exploratory setup inputs are evaluator supplied; subsequent comparison actions/timing and field choices come from the product.",
+    "The evaluator orchestrates API steps; this is not a self-running autonomous investigation.",
+    "Rendered contrast is not verified gameplay semantics, physical speed, persistent actor identity or world rollback.",
+    "No independent real-game pause or memory oracle; helper receipts and retained image/input evidence are audited.",
+    "Audit authored after the frozen run; no prompt, field or input substitution.",
+    "Source copies retained after execution only after matching the pre-launch hashes.",
+    "The v1 quarantined executable cannot be rehashed; its pre-launch digest is retained. Protection was not changed.",
+    "The v1 restart check did not run. Cleanup failed after engine exit; zero pre-restart edits and exited children resolve its retained recovery flag.",
+    "The v1 desktop remains on the preceding build."
+  ]
+}

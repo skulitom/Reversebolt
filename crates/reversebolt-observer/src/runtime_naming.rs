@@ -142,29 +142,62 @@ impl Observer {
             receipt.batch = Some(h::validate(selection, h::Proposals { hypotheses: vec![] })?);
             return Ok(());
         }
-        let rows: Vec<_> = selection
-            .rows
-            .iter()
-            .map(|r| {
-                json!({"candidate":r.id,"field_name":r.field_name,
-            "type_name":r.type_name,"object_text":r.object_text,"observed_value":r.value})
-            })
-            .collect();
-        let stage = self
-            .naming_stage(
-                format!(
-                    "{PROPOSE_PROMPT}{activity_context}\nObserved paths: {}",
-                    json!(rows)
-                ),
-                h::proposal_schema(),
-                4096,
-            )
-            .await?;
-        receipt.stages.push(stage);
-        let proposed: h::Proposals =
-            serde_json::from_str(response_text(&receipt.stages.last().unwrap().response)?)
-                .map_err(|e| e.to_string())?;
-        receipt.batch = Some(h::validate(receipt.selection.as_ref().unwrap(), proposed)?);
+        let mut hypotheses = vec![];
+        // Give each selected type an explicit budget. A visually plausible story
+        // must not consume the entire review before other mechanisms are queried.
+        for (index, type_id) in selection.selected_types.iter().enumerate() {
+            if cancel.load(Ordering::SeqCst) {
+                return Ok(());
+            }
+            let rows: Vec<_> = selection
+                .rows
+                .iter()
+                .filter(|r| r.type_id == *type_id)
+                .collect();
+            if rows.is_empty() {
+                continue;
+            }
+            let quota = if index < 12usize.saturating_sub(selection.selected_types.len()) {
+                2
+            } else {
+                1
+            };
+            let table: Vec<_> = rows
+                .iter()
+                .map(|r| {
+                    json!({"candidate":r.id,"field_name":r.field_name,
+                "type_name":r.type_name,"object_text":r.object_text,"observed_value":r.value})
+                })
+                .collect();
+            let mut schema = h::proposal_schema();
+            schema["properties"]["hypotheses"]["maxItems"] = json!(quota);
+            let prompt = format!(
+                "{PROPOSE_PROMPT}{activity_context}\nThis group has a budget of {quota} questions. Consider distinct fields that could explain or help distinguish the observed response. The image description is uncertain: a change in viewpoint may come from different mechanisms, not only a camera setting. Prefer separate candidate mechanisms and avoid duplicate aliases. Abstain if this group's evidence is unrelated.\nObserved paths: {}",
+                json!(table)
+            );
+            let stage = self.naming_stage(prompt, schema, quota * 850).await?;
+            receipt.stages.push(stage);
+            let proposed: h::Proposals =
+                serde_json::from_str(response_text(&receipt.stages.last().unwrap().response)?)
+                    .map_err(|e| e.to_string())?;
+            if proposed.hypotheses.len() > quota
+                || proposed.hypotheses.iter().any(|p| {
+                    !rows.iter().any(|r| r.id == p.candidate)
+                        || p.alternatives
+                            .iter()
+                            .any(|a| !rows.iter().any(|r| r.id == *a))
+                })
+            {
+                return Err(
+                    "A grouped proposal exceeded its budget or cited another group's rows.".into(),
+                );
+            }
+            hypotheses.extend(proposed.hypotheses);
+        }
+        receipt.batch = Some(h::validate(
+            receipt.selection.as_ref().unwrap(),
+            h::Proposals { hypotheses },
+        )?);
         Ok(())
     }
 }

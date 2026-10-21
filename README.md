@@ -17,6 +17,10 @@ Agents can also submit their own cited hypotheses through MCP and connect an exa
 candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.
 See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
+Source builds also expose a read-only comparison planner using retained play
+timing and cited field hypotheses. The first actual-game run abstained and its
+restart was blocked by Windows security; the desktop preview remains on the
+preceding build. See [comparison planning and its limits](research/comparison-planner/README.md).
 Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.

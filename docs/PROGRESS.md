@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Activity-derived comparison planning (2026-10-21): **35% unchanged**. A new
+read-only shared command derives actions and timing bounds from retained play,
+interleaves distinct field hypotheses and retains prior comparison outcomes.
+Question generation has a per-type budget. These are experimental planning
+rules; they do not establish gameplay meanings or initiate edits automatically.
+
+The frozen Manifold Garden run retained fifteen automatic images and four
+evaluator holds. The planner recovered their durations, but all eight metadata
+question groups abstained. No comparison, product input or gameplay write
+occurred. Windows security then blocked the owned-engine restart (error 225)
+and removed its test executable. That restart check remains incomplete; no
+protection was bypassed. The pre-restart state contains no edits or active
+holds, owned processes exited, the helper unloaded, and user saves 1/2 are
+unchanged. The audit preserves the failure and the executable's missing status.
+
+The frozen build passed 274 tests, strict Clippy, release compilation and a
+53-tool smoke before this run. Integer planning, conservative timing bounds and
+read-only annotation fixes pass 158 core/MCP tests and strict workspace Clippy
+after the run. Desktop preview `0.1.0-20261021-225832` remains
+running with 44 history entries; the new build was not published. Credits remain
+foundation 4/10, native 6/10, observation 5/15, discovery 8/20, validation 4/15,
+intent 1/10, agent collaboration 7/10 and generalization 0/10. The full goal stays
+active. [Protocol, results and limits](../research/comparison-planner/README.md).
+
 Product-owned comparison inputs (2026-10-21): **35%**. The shared MCP can now
 explicitly execute the next immutable test action, record its intent/outcome,
 capture the result and retain failures. A short-lived worker checks target

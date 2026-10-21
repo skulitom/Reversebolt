@@ -141,6 +141,7 @@ impl EngineHandle {
                         | "read_play_evidence"
                         | "read_change_evidence"
                         | "read_runtime_test"
+                        | "plan_runtime_comparisons"
                 );
                 let result = tests.before(&mut engine, &command).and_then(|()| {
                     if command.action == "open_practice" {
@@ -188,6 +189,7 @@ impl EngineHandle {
                             | "restore_runtime_change"
                             | "search_runtime_values"
                             | "show_runtime_values"
+                            | "plan_runtime_comparisons"
                             | "read_runtime_inventory"
                             | "submit_runtime_hypotheses"
                             | "prepare_runtime_test"
@@ -247,6 +249,7 @@ impl EngineHandle {
                                 | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
+                                | "plan_runtime_comparisons"
                                 | "read_runtime_inventory"
                                 | "submit_runtime_hypotheses"
                                 | "prepare_runtime_test"
@@ -381,7 +384,7 @@ fn native_command(
         }
     }
     match command.action.as_str() {
-        "read_runtime_inventory" | "submit_runtime_hypotheses" => {
+        "plan_runtime_comparisons" | "read_runtime_inventory" | "submit_runtime_hypotheses" => {
             return crate::runtime_naming_bridge::command(
                 engine,
                 command,

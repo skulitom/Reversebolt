@@ -43,6 +43,9 @@ fn read_archive(path: &Path) -> Result<Value> {
 
 /// Agent-supplied proposals use the same inventory and validation as local inference.
 pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) -> Result<Value> {
+    if c.action == "plan_runtime_comparisons" {
+        return plan_comparisons(engine, c);
+    }
     use reversebolt_core::{runtime_hypotheses as h, runtime_inventory as inventory};
     #[derive(serde::Deserialize)]
     #[serde(deny_unknown_fields)]
@@ -141,6 +144,55 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     )?;
     publish(view, &p.catalog_id, review.clone(), false)?;
     Ok(json!({"review":review,"replayed":false,"published":true}))
+}
+
+fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Value> {
+    use reversebolt_core::runtime_planning as p;
+    let session = engine
+        .live
+        .as_ref()
+        .ok_or("Connect an application first.")?;
+    let rt = &session.view.runtime;
+    let review = rt
+        .naming
+        .as_ref()
+        .ok_or("Wait for a completed activity-informed review.")?;
+    if c.args["catalog_id"] != rt.catalog_id || c.args["review_id"] != review.evidence_id {
+        return Err("The catalogue or hypothesis review changed.".into());
+    }
+    let context = review
+        .play_context
+        .as_ref()
+        .ok_or("No consistent observed activity is available for a comparison plan.")?;
+    let response = crate::play_evidence::read(
+        session,
+        &json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()}),
+    )?;
+    let evidence =
+        serde_json::from_value(response["evidence"].clone()).map_err(|e| e.to_string())?;
+    let actions = p::actions(context, &session.view.frames, &evidence)?;
+    let inventory =
+        reversebolt_core::runtime_inventory::build(&crate::runtime_bridge::catalog_report(rt)?)?;
+    let choices = p::choices(
+        review,
+        &inventory,
+        &actions,
+        &engine.runtime_tests.records,
+        &session.view.investigation_id,
+        &rt.catalog_id,
+    )?;
+    let busy = engine.runtime_trials.holds(&inventory.scope)
+        || engine.runtime_tests.records.iter().any(|t| t.active())
+        || engine.view.freezes.iter().any(|f| f.active());
+    let next = if busy {
+        None
+    } else {
+        choices.iter().find(|v| v["status"] == "untried")
+    };
+    Ok(
+        json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
+        "report_sha256":review.report_sha256,"observed_actions":actions,"choices":choices,"next":next,"busy":busy,"limitation":p::LIMITATION}),
+    )
 }
 
 pub(crate) fn publish(
