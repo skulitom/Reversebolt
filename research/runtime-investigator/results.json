@@ -1,0 +1,266 @@
+{
+  "audit_passed": true,
+  "artifact_root": "test-results\\runtime-investigator-v1",
+  "frozen_sha256": "c46303bf10ddc1c3cdefe2750eaea5c92283533bbbeb8cc864e806601a0589ea",
+  "product_revision": "cce6bee0a5615f5ff0a56b8f4bd15f96d0672316",
+  "preview": "0.1.0-20261021-215403",
+  "failure": {
+    "error": "AssertionError('No eligible competing hypothesis; policy abstained')",
+    "outcomes": [],
+    "input_actions": []
+  },
+  "accepted_hypotheses": 12,
+  "rejected_hypotheses": 0,
+  "outcomes": [],
+  "images": 0,
+  "input_holds": 0,
+  "input_witnesses_match": null,
+  "manual_measurement_image_review": 0,
+  "setup_screenshots_reviewed": 4,
+  "helpers": 1,
+  "helper_receipts": [
+    {
+      "path": "data\\runtime\\87892-01dd619f0ae40bdf\\e81639f8-4f50-4023-a240-1c41810a66d0\\stdout.jsonl",
+      "sha256": "640602d10f43cf78d8dc5fd3a1bb88bea9e3717148d2786c0f08f81abbf4ff97",
+      "report_sha256": "c216cb5c33823a7e162ef0acbc1a5983536bdd343d6372d3f810c7aa08aa8cbd"
+    }
+  ],
+  "pauses": 110,
+  "maximum_stop_to_resume_us": 5206,
+  "helper_heap_operations_while_paused": 0,
+  "confirmed_writes_including_restore": 0,
+  "trials": [],
+  "existing_saves_1_2_unchanged": true,
+  "storage_changes": {
+    "Player-prev.log": "changed",
+    "Player.log": "changed",
+    "Saves\\SaveSlot3.data": "changed",
+    "Saves\\Screenshot3.jpg": "changed"
+  },
+  "owned_children_exited": [
+    {
+      "pid": 21028,
+      "exit_code": 1
+    },
+    {
+      "pid": 66352,
+      "exit_code": 1
+    }
+  ],
+  "limitations": [
+    "Exploratory test on an already inspected game and scene; not held-out generalization.",
+    "Fresh model hypothesis selection; movement inputs come from the earlier evaluator, not learned action meaning.",
+    "Image response is not physical speed or verified gameplay semantics; byte restoration is not world rollback.",
+    "Audit written after protocol freeze; original source and binary hashes checked without changing effect criteria."
+  ],
+  "workflow_status": "abstained_before_comparison",
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "server_version": "0.40.7",
+  "model_stage_elapsed_ms": [
+    51107,
+    79227
+  ],
+  "selected_types": [
+    7,
+    16,
+    18,
+    31,
+    90,
+    111,
+    125,
+    128
+  ],
+  "path_samples": 256,
+  "distinct_fields": 195,
+  "questions": [
+    {
+      "name": "spring",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "spring",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "spring",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "damper",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "damper",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "damper",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "breakDistance",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "breakDistance",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "breakDistance",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "holdDistance",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "holdDistance",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "holdDistance",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "detectionRayLength",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "detectionRayLength",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "detectionRayLength",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "cubeSideSize",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "cubeSideSize",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "cubeSideSize",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "extraDist",
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "extraDist",
+      "alternatives": [
+        {
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "extraDist",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "currentLineFillDistance",
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "_currentLineFillDistance",
+      "alternatives": [
+        {
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "_currentLineFillDistance",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "fillSpeed",
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "fillSpeed",
+      "alternatives": [
+        {
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "fillSpeed",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "unfillSpeed",
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "unfillSpeed",
+      "alternatives": [
+        {
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "unfillSpeed",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "smallEmitterSegmentDifference",
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "smallEmitterSegmentDifference",
+      "alternatives": [
+        {
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "smallEmitterSegmentDifference",
+          "same_declared_field": true
+        }
+      ]
+    },
+    {
+      "name": "lineLoopEmitterInterval",
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "field": "lineLoopEmitterInterval",
+      "alternatives": [
+        {
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "field": "lineLoopEmitterInterval",
+          "same_declared_field": true
+        }
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 27,
+      "accepted_questions": 7
+    },
+    {
+      "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 12,
+      "accepted_questions": 0
+    },
+    {
+      "type": "DarkModeController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 16,
+      "accepted_questions": 0
+    },
+    {
+      "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 13,
+      "accepted_questions": 5
+    },
+    {
+      "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 85,
+      "accepted_questions": 0
+    },
+    {
+      "type": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 25,
+      "accepted_questions": 0
+    },
+    {
+      "type": "WorldWrapManager, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 10,
+      "accepted_questions": 0
+    },
+    {
+      "type": "iOSHapticFeedback+iOSFeedbackTypeSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "distinct_fields": 7,
+      "accepted_questions": 0
+    }
+  ],
+  "audit_sha256": "f25abde5eda444def0e06c216b0800663a280b54eaa9e3447cad4f6f3add8876",
+  "goal_progress_percent": 34
+}

@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Fresh-model real-game investigator (2026-10-21): **34% unchanged**. The unchanged
+desktop binaries completed automatic discovery and local metadata review in
+Manifold Garden's existing evaluator save. Twelve cited questions were accepted,
+but every alternative was another path to the same declared field. The frozen
+policy required competing fields and abstained before preparing a response test.
+There were no gameplay holds, measurement images or writes. This is a failed
+discovery-to-comparison handoff, not real-game verification of the new workflow.
+
+The post-run audit verifies frozen source/binary hashes, the retained review,
+helper unloading, process cleanup and preservation of user saves 1/2. One helper
+recorded 110 pauses, maximum 5.206 ms, with no helper heap operations while paused.
+Four setup screenshots were reviewed. Test slot 3 and game logs changed normally;
+no save rollback was performed. The existing desktop preview remains running.
+
+Credits remain foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent collaboration 6/10, generalization 0/10.
+Next: relate observed actions and consequences to a hypothesis, distinguish path
+ambiguity from competing properties, and retain unsupported plans explicitly.
+The planned walking inputs were inherited from earlier exploration, not learned
+here. No held-out generalization credit; the full goal remains active.
+[Protocol, failed handoff and audit](../research/runtime-investigator/README.md).
+
 Agent hypotheses connected to response tests (2026-10-21): **34% unchanged**.
 Agents can read the exact retained runtime inventory and submit cited questions
 through the same validator as the local model. A comparison can select a primary
