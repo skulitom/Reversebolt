@@ -92,14 +92,52 @@ fn runtime_name(name: &str) -> String {
 fn identified_name(name: &str) -> bool {
     let name = name.trim();
     let lower = name.to_lowercase();
-    name.chars().filter(|c| c.is_alphabetic()).count() >= 3
+    let words: Vec<_> = lower
+        .split(|c: char| !c.is_alphabetic())
+        .filter(|s| !s.is_empty())
+        .collect();
+    name.chars().filter(|c| c.is_alphabetic()).count() >= 2
         && name.chars().count() <= 80
-        && !matches!(lower.as_str(), "value" | "number" | "internal value")
-        && !["unidentified", "unknown", "internal value", "value "]
-            .iter()
-            .any(|p| lower.starts_with(p))
+        && !matches!(
+            words.as_slice(),
+            ["value" | "number" | "field" | "item" | "scalar" | "float" | "int" | "bool"]
+                | ["internal", "value"]
+        )
+        && ![
+            "unidentified",
+            "unknown",
+            "unnamed",
+            "unlabelled",
+            "unlabeled",
+            "internal value",
+            "value ",
+        ]
+        .iter()
+        .any(|p| lower.starts_with(p))
         && !name.contains(['<', '>', '$', '{', '}'])
         && !name.chars().any(|c| c.is_control())
+}
+fn observation_description(text: &str) -> Option<String> {
+    let text = text.trim();
+    let lower = text.to_lowercase();
+    // A placeholder does not explain an observation. Keep investigating it in
+    // the engine, but do not manufacture wording just to fill a card.
+    if text.is_empty()
+        || text.chars().any(|c| c.is_control() && !c.is_whitespace())
+        || matches!(
+            lower.trim_end_matches('.'),
+            "unknown"
+                | "unknown effect"
+                | "no explanation"
+                | "n/a"
+                | "a provisional visual finding"
+                | "visual finding with an unknown effect"
+                | "a change over time with an unknown effect"
+        )
+    {
+        return None;
+    }
+    Some(brief_description(text))
 }
 fn runtime_owner(name: &str) -> String {
     let plain = name.split([',', '`', '[']).next().unwrap_or("");
@@ -394,7 +432,7 @@ impl LivePane {
                     });
                     if let Some(page)=&live.runtime.search {
                         ui.label(RichText::new(format!("{} matches from discovery.",page.matches)).size(12.).color(MUTED));
-                        for candidate in &page.candidates {
+                        for candidate in page.candidates.iter().filter(|c| identified_name(&runtime_name(&c.name))) {
                             ui.horizontal_wrapped(|ui|{
                                 ui.label(runtime_name(&candidate.name));
                                 if let Some(hint)=candidate.context.first() {
@@ -458,7 +496,7 @@ impl LivePane {
                 title.clone(),
                 value,
                 brief_description(&format!(
-                    "{title} setting for {}. Gameplay effect not yet checked.",
+                    "{title} in {}; gameplay effect is still being checked.",
                     runtime_owner(context)
                 )),
                 card.status == "read",
@@ -522,6 +560,11 @@ impl LivePane {
                 continue;
             }
             let latest = track.observations.iter().rev().flatten().next();
+            let Some(description) =
+                latest.and_then(|o| observation_description(&o.input.explanation))
+            else {
+                continue;
+            };
             let readable = track.observations.last().is_some_and(Option::is_some)
                 && latest.is_some_and(|o| {
                     o.input.quality != reversebolt_core::visual::Quality::Uncertain
@@ -535,18 +578,7 @@ impl LivePane {
                 track.id,
                 track.label.clone(),
                 value,
-                if track.submitted_by == "local-model" {
-                    track
-                        .observations
-                        .iter()
-                        .rev()
-                        .flatten()
-                        .next()
-                        .map(|o| brief_description(&o.input.explanation))
-                        .unwrap_or_else(|| "A provisional visual finding.".into())
-                } else {
-                    "Visual finding with an unknown effect.".into()
-                },
+                description,
                 readable,
                 latest
                     .and_then(|o| live.frames.iter().find(|f| f.id == o.input.frame_id))
@@ -558,6 +590,9 @@ impl LivePane {
                 continue;
             }
             let Some(latest) = track.observations.last() else {
+                continue;
+            };
+            let Some(description) = observation_description(&latest.input.explanation) else {
                 continue;
             };
             let current = latest
@@ -578,12 +613,7 @@ impl LivePane {
                 track.id,
                 track.label.clone(),
                 value,
-                if current {
-                    "A change over time with an unknown effect."
-                } else {
-                    "An earlier change. Waiting for a fresh observation."
-                }
-                .into(),
+                description,
                 readable,
                 latest
                     .evidence
@@ -665,7 +695,10 @@ impl LivePane {
                                         Some("Checking why the outcome varies.".into())
                                     } else {e.patterns.iter().find_map(|p|p.brief())}
                                 });
-                                ui.label(RichText::new(brief_description(pattern.as_deref().unwrap_or(description))).size(13.0).color(MUTED));
+                                let explanation = ui.label(RichText::new(brief_description(description)).size(13.0).color(MUTED));
+                                if let Some(pattern) = pattern {
+                                    explanation.on_hover_text(pattern);
+                                }
                                 ui.add_space(12.0);
                                 match external {
                                     CardSource::Runtime => {
@@ -1483,5 +1516,49 @@ fn prediction_button(
         .on_hover_text("Freeze these predictions, then collect fresh captures with both stable values and distinct changes. At least four capture slots are needed. No memory edits are made.").clicked() {
         handle.submit("start_prediction_check", json!({"investigation_id":live.investigation_id,
             "batch":live.coverage.batch,"after_frame":live.sample_count,"source":source,"track":track}));
+    }
+}
+
+#[cfg(test)]
+mod card_copy_tests {
+    use super::*;
+
+    #[test]
+    fn placeholders_stay_hidden_but_short_names_and_meaningful_counts_survive() {
+        for name in [
+            "Unidentified 4",
+            "Unknown",
+            "Unnamed field",
+            "Value42",
+            "field_17",
+            "Item [2]",
+            "float32",
+            "m_InternalValue",
+            "<Speed>k__BackingField",
+        ] {
+            assert!(!identified_name(&runtime_name(name)), "{name}");
+        }
+        for name in ["HP", "XP", "m_WalkSpeed", "ItemCount", "Health", "生命值"] {
+            assert!(identified_name(&runtime_name(name)), "{name}");
+        }
+    }
+
+    #[test]
+    fn cards_require_an_explanation_instead_of_placeholder_copy() {
+        for description in [
+            "",
+            "  ",
+            "Unknown effect.",
+            "A provisional visual finding.",
+            "Visual finding with an unknown effect.",
+        ] {
+            assert!(observation_description(description).is_none());
+        }
+        assert_eq!(
+            observation_description(
+                "The character's arm moves faster during the attack animation."
+            ),
+            Some("The character's arm moves faster during the attack animation.".into())
+        );
     }
 }

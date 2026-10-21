@@ -37,6 +37,15 @@ pub fn text(value: &Value) -> String {
         })
 }
 
+pub fn supported_value(kind: i32, value: &Value) -> bool {
+    if kind == 2 {
+        return value["raw"]
+            .as_u64()
+            .is_some_and(|raw| raw <= 1 && value["boolean"].as_bool() == Some(raw == 1));
+    }
+    (4..=13).contains(&kind) && encode(kind, &text(value)).is_ok()
+}
+
 fn offset(kind: i32, anchor: &str, current: &str) -> Option<f64> {
     if (4..=11).contains(&kind) {
         Some((current.parse::<i128>().ok()? - anchor.parse::<i128>().ok()?) as f64)
@@ -68,9 +77,13 @@ pub fn draw(
     enabled: bool,
     bounds: Option<std::ops::RangeInclusive<f64>>,
 ) -> Option<String> {
+    let enabled = enabled && supported_value(kind, value);
+    #[cfg(test)]
+    {
+        editor.slider_rect = None;
+    }
     if kind == 2 {
         let mut checked = value["boolean"].as_bool().unwrap_or(false);
-        let canonical = value["raw"].as_u64().is_some_and(|v| v <= 1);
         let label = if checked { "On" } else { "Off" };
         let changed = ui
             .scope(|ui| {
@@ -79,7 +92,7 @@ pub fn draw(
                 ui.visuals_mut().widgets.inactive.bg_fill = egui::Color32::from_rgb(61, 66, 75);
                 ui.visuals_mut().widgets.inactive.fg_stroke = egui::Stroke::new(2., ACCENT);
                 ui.add_enabled(
-                    enabled && canonical,
+                    enabled,
                     egui::Checkbox::new(&mut checked, RichText::new(label).size(28.).color(ACCENT)),
                 )
                 .changed()
@@ -137,7 +150,19 @@ pub fn draw(
         editor.error = None;
     }
     let size = if editor.text.len() > 14 { 25. } else { 38. };
-    let mut step = 0.;
+    let mut step = if enabled && focused {
+        ui.input_mut(|input| {
+            if input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowUp) {
+                1.
+            } else if input.consume_key(egui::Modifiers::NONE, egui::Key::ArrowDown) {
+                -1.
+            } else {
+                0.
+            }
+        })
+    } else {
+        0.
+    };
     let response = ui
         .horizontal(|ui| {
             let decrease = ui.add_enabled(
@@ -182,9 +207,9 @@ pub fn draw(
     ui.ctx().accesskit_node_builder(value_id, |node| {
         node.add_action(egui::accesskit::Action::SetValue)
     });
-    response
-        .clone()
-        .on_hover_text("Click to type a value, then press Enter or click away to apply.");
+    response.clone().on_hover_text(
+        "Click to type, then press Enter or click away to apply. Use ↑ or ↓ to adjust by one.",
+    );
     editor.dirty |= response.changed();
     if response.changed() {
         editor.error = None;
@@ -352,6 +377,79 @@ pub fn ocr(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn numeric_cards_only_offer_sliders_for_known_small_ranges() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        for (bounds, has_slider) in [
+            (None, false),
+            (Some(1.0..=5.0), true),
+            (Some(0.0..=1000.0), false),
+            (Some(f64::NAN..=5.0), false),
+        ] {
+            let mut output = ctx.run_ui(egui::RawInput::default(), |ui| {
+                assert!(draw(ui, &mut editor, 8, &json!("3"), true, bounds.clone()).is_none());
+            });
+            output.textures_delta.clear();
+            assert_eq!(editor.slider_rect.is_some(), has_slider);
+        }
+    }
+
+    #[test]
+    fn arrows_step_the_visible_draft_once_and_obey_disabled_state() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        let render = |editor: &mut Editor, events, enabled| {
+            let mut requested = None;
+            let mut output = ctx.run_ui(
+                egui::RawInput {
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    requested = draw(ui, editor, 11, &json!("3"), enabled, None);
+                },
+            );
+            output.textures_delta.clear();
+            requested
+        };
+        let key = |key| egui::Event::Key {
+            key,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        };
+        assert!(render(&mut editor, vec![], true).is_none());
+        ctx.memory_mut(|m| m.request_focus(editor.value_id.unwrap()));
+        editor.text = "18446744073709551614".into();
+        editor.dirty = true;
+        editor.focused = true;
+        assert_eq!(
+            render(&mut editor, vec![key(egui::Key::ArrowUp)], true).as_deref(),
+            Some("18446744073709551615")
+        );
+        assert!(render(&mut editor, vec![], true).is_none());
+        assert!(render(&mut editor, vec![key(egui::Key::ArrowDown)], false).is_none());
+    }
+
+    #[test]
+    fn unsupported_readings_cannot_offer_edit_or_freeze() {
+        assert!(supported_value(11, &json!("18446744073709551615")));
+        assert!(supported_value(2, &json!({"raw": 1, "boolean": true})));
+        for (kind, value) in [
+            (2, json!({"raw": 2, "boolean": true})),
+            (2, json!({"raw": 0, "boolean": true})),
+            (2, json!({"raw": 0})),
+            (13, json!("NaN")),
+            (13, json!("Infinity")),
+            (3, json!("A")),
+        ] {
+            assert!(!supported_value(kind, &value));
+        }
+    }
+
     #[test]
     fn slider_adjustments_keep_large_integer_precision() {
         assert_eq!(

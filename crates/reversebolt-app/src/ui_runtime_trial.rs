@@ -34,6 +34,7 @@ pub fn controls(
             && f.candidate == card.candidate.id
     });
     let frozen = freeze.is_some_and(|f| f.active());
+    let supported = crate::ui_value_control::supported_value(card.candidate.type_code, &card.value);
     let mut holding = frozen;
     let mut freeze_changed = false;
     let requested = if card.status == "read" {
@@ -51,8 +52,12 @@ pub fn controls(
     };
     let mut undo = None;
     ui.horizontal(|ui| {
-        freeze_changed=ui.add_enabled(frozen || (enabled && card.status=="read"), egui::Checkbox::new(&mut holding,"Freeze"))
-            .on_hover_text("Keep this value at the chosen number or state. Uncheck to let it change again. Checks pause while discovery runs.").changed();
+        freeze_changed=ui.add_enabled(frozen || (enabled && card.status=="read" && supported), egui::Checkbox::new(&mut holding,"Freeze"))
+            .on_hover_text(if supported || frozen {
+                "Keep this value at the chosen number or state. Uncheck to let it change again. Checks pause while discovery runs."
+            } else {
+                "Freeze needs a supported number or On/Off value."
+            }).changed();
         if let Some(f)=freeze.filter(|f|f.phase=="uncertain" || (f.phase=="stopped" && f.reason.contains("changed"))) {
             ui.label(RichText::new("Stopped").small().color(WARNING)).on_hover_text(&f.reason);
         } else if latest.is_some_and(|t|t.phase.unresolved()) {

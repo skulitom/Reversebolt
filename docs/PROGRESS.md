@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Control presentation follow-up (2026-10-22): **35% unchanged**. Generic numbered
+labels are now hidden from both cards and the add-controls picker; short names
+such as HP remain eligible. Visual and temporal cards use their retained
+observation explanations and omit empty/placeholder descriptions. Investigation
+status no longer replaces a card's explanation. Raw runtime labels remain
+provisional clues, not verified gameplay meanings.
+
+Numeric cards retain exact click-to-edit entry and +/- buttons, and now support
+up/down keys while focused. Sliders still require known small domain bounds;
+current raw discoveries provide none. Edit/Freeze affordances reject unsupported,
+non-finite or noncanonical readings, while stopping an existing Freeze remains
+available. The 66 app tests, strict app Clippy and formatting pass, including nine
+UI regressions. No game, model inference or screenshots were used. The existing
+desktop preview `0.1.0-20261021-225832` remains responsive; these source refinements
+have not been published while the prior Windows detection remains unresolved.
+No semantic-discovery/generalization credit is added. The full goal stays active.
+
 Same-object context during type selection (2026-10-21): **35% unchanged**.
 A bounded index now shares complete path-scoped text examples across types,
 keeps every field label and reports omitted examples. The known context fixture
