@@ -1,0 +1,355 @@
+{
+  "audit_passed": true,
+  "artifact_root": "test-results\\metadata-independence-v1",
+  "model": [
+    "qwen3.8:latest",
+    "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "0.40.7"
+  ],
+  "cases": {
+    "baseline": [
+      {
+        "case": "latest",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [
+          7,
+          16,
+          18,
+          32,
+          91,
+          112,
+          126,
+          129
+        ],
+        "omitted_samples": 134,
+        "receipt_sha256": "b927f6d322c1292e40b0045a8f1c4365871dd1e0c25d77c0757361ea17adb021",
+        "seconds": 38.878037452697754
+      },
+      {
+        "case": "manifold",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [
+          7,
+          16,
+          19,
+          33,
+          37,
+          73,
+          95,
+          116
+        ],
+        "omitted_samples": 120,
+        "receipt_sha256": "624d4910dd64531b31a903bc501b600be71ab152c3c4530567289f41e6f2bfbd",
+        "seconds": 25.72998809814453
+      },
+      {
+        "case": "menu",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [
+          15,
+          18,
+          19,
+          100,
+          93,
+          214,
+          207,
+          12
+        ],
+        "omitted_samples": 0,
+        "receipt_sha256": "9bece5947ebeb27452c073dc9e675d3e83155f9af59ef9db5abb1c30b79025b2",
+        "seconds": 21.63735342025757
+      },
+      {
+        "case": "fixture",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [],
+        "omitted_samples": 0,
+        "receipt_sha256": "0e1e2b128f26d7c69103cf35d47f69d5189efa378b3b0bf8839afd6bed44ca37",
+        "seconds": 0.6596403121948242
+      },
+      {
+        "case": "opaque",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [],
+        "omitted_samples": 0,
+        "receipt_sha256": "db923677761a33eeb90c2d29f975a0e8142d7aff6c478d40ebb9cf1e535373aa",
+        "seconds": 15.94898271560669
+      }
+    ],
+    "revised": [
+      {
+        "case": "latest",
+        "accepted": 10,
+        "rejected": 1,
+        "distinct_fields": 10,
+        "distinct_types": 7,
+        "names": [
+          "spring",
+          "breakDistance",
+          "light fill speed",
+          "require cube dropped",
+          "max screen shake",
+          "fill speed",
+          "unfill speed",
+          "minimumPitch",
+          "move speed",
+          "grow speed"
+        ],
+        "fields": [
+          "spring",
+          "breakDistance",
+          "LightFillSpeed",
+          "RequireCubeDropped",
+          "MaxScreenShake",
+          "fillSpeed",
+          "unfillSpeed",
+          "minimumPitch",
+          "moveSpeed",
+          "growSpeed"
+        ],
+        "rejections": [
+          {
+            "name": "transition duration",
+            "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+          }
+        ],
+        "selected_types": [
+          7,
+          16,
+          18,
+          32,
+          67,
+          91,
+          112,
+          126
+        ],
+        "omitted_samples": 136,
+        "receipt_sha256": "4a7cfa9670f109e27414a8dccc5a95a6f819315fdbd1f2ee0a1a53b0d127dd99",
+        "seconds": 47.21885013580322
+      },
+      {
+        "case": "manifold",
+        "accepted": 10,
+        "rejected": 1,
+        "distinct_fields": 10,
+        "distinct_types": 7,
+        "names": [
+          "spring",
+          "breakDistance",
+          "light fill speed",
+          "require cube dropped",
+          "max screen shake",
+          "fillSpeed",
+          "unfillSpeed",
+          "minimumPitch",
+          "run speed",
+          "grow speed"
+        ],
+        "fields": [
+          "spring",
+          "breakDistance",
+          "LightFillSpeed",
+          "RequireCubeDropped",
+          "MaxScreenShake",
+          "fillSpeed",
+          "unfillSpeed",
+          "minimumPitch",
+          "runSpeed",
+          "growSpeed"
+        ],
+        "rejections": [
+          {
+            "name": "transition duration",
+            "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+          }
+        ],
+        "selected_types": [
+          7,
+          16,
+          19,
+          33,
+          37,
+          70,
+          95,
+          116
+        ],
+        "omitted_samples": 114,
+        "receipt_sha256": "514917431f3ea43867e179b158cf40f6c906842a172b776f5912eb18538357ec",
+        "seconds": 47.17935919761658
+      },
+      {
+        "case": "menu",
+        "accepted": 0,
+        "rejected": 2,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [
+          {
+            "name": "geometry render queue",
+            "reason": "Alternative is missing or repeats the same path."
+          },
+          {
+            "name": "global noise scale",
+            "reason": "Alternative is missing or repeats the same path."
+          }
+        ],
+        "selected_types": [
+          12,
+          15,
+          18,
+          19,
+          100,
+          93,
+          214,
+          207
+        ],
+        "omitted_samples": 0,
+        "receipt_sha256": "5624960b972b64857641358bf08815a6ffaabe3b276190247831913f6e9acc61",
+        "seconds": 25.71755051612854
+      },
+      {
+        "case": "fixture",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [
+          0,
+          2
+        ],
+        "omitted_samples": 0,
+        "receipt_sha256": "3178a365a94769fcb3c615dcf2568c7ae4285113333cefa8ab1c4ea7b73da029",
+        "seconds": 1.6097090244293213
+      },
+      {
+        "case": "opaque",
+        "accepted": 0,
+        "rejected": 0,
+        "distinct_fields": 0,
+        "distinct_types": 0,
+        "names": [],
+        "fields": [],
+        "rejections": [],
+        "selected_types": [],
+        "omitted_samples": 0,
+        "receipt_sha256": "05401d0fe9684a943216b5d3b73bd4da2bf4b08cf15ad7fd9780c6165a80dfbb",
+        "seconds": 16.45813488960266
+      },
+      {
+        "case": "latest-with-activity",
+        "accepted": 10,
+        "rejected": 1,
+        "distinct_fields": 10,
+        "distinct_types": 7,
+        "names": [
+          "spring",
+          "breakDistance",
+          "light fill speed",
+          "require cube dropped",
+          "max screen shake",
+          "fill speed",
+          "unfill speed",
+          "minimumPitch",
+          "move speed",
+          "grow speed"
+        ],
+        "fields": [
+          "spring",
+          "breakDistance",
+          "LightFillSpeed",
+          "RequireCubeDropped",
+          "MaxScreenShake",
+          "fillSpeed",
+          "unfillSpeed",
+          "minimumPitch",
+          "moveSpeed",
+          "growSpeed"
+        ],
+        "rejections": [
+          {
+            "name": "transition duration",
+            "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+          }
+        ],
+        "selected_types": [
+          7,
+          16,
+          18,
+          32,
+          67,
+          91,
+          112,
+          126
+        ],
+        "omitted_samples": 136,
+        "receipt_sha256": "8bbb6bcead502ee1bebf024e8c2f5f1647aa1c1cee9f7489807c87c5ced1887e",
+        "seconds": 65.07222437858582
+      }
+    ]
+  },
+  "same_metadata_prompts_selection_and_references_with_activity": true,
+  "identical_full_batch": false,
+  "accepted_wording_changes": 6,
+  "initial_audit_failure": {
+    "assertion": "plain[batch] == paired[batch]",
+    "outcome": "failed",
+    "audit_sha256": "41f95d617d8c44260973019961ef5fc14728bea0fbd74a7d03526892961b1f29",
+    "observation": "Metadata prompts, selection, candidate rows and alternatives match; model-generated explanations/questions vary. No model call is repeated."
+  },
+  "activity_observation": {
+    "consistent_visible_change": true,
+    "description": "In both pairs, the central trapezoidal floor area shifts slightly rightward and its left edge becomes more pronounced, while the right-side geometry appears to compress. The overall perspective of the room and ceiling elements remains stable.",
+    "uncertainty": "The shift is subtle and could be attributed to minor camera drift or rendering variance rather than a discrete control action. No other elements change consistently to confirm a specific input effect."
+  },
+  "activity_error": null,
+  "invalid_manifests_rejected": 4,
+  "observer_tests": 17,
+  "strict_clippy": true,
+  "runner_processes_exited": 11,
+  "desktop_updated": false,
+  "progress_percent": 35,
+  "limits": [
+    "Development replay on already explored reports; no fresh independent-game evidence.",
+    "More accepted questions are broader candidate coverage, not semantic precision, useful controls or verified effects.",
+    "Metadata-only and image-only evidence stay separate; their causal relationship is not learned here.",
+    "Fixed seed and temperature did not produce byte-identical wording. The initial exact-batch audit failed; original outputs are retained without retry.",
+    "The known fixture may still abstain before same-object text reaches the second stage.",
+    "No gameplay process was opened, no image was manually reviewed, and no edit or input was attempted.",
+    "The separate desktop executable remains blocked by Windows security; it was not restored or repackaged."
+  ]
+}

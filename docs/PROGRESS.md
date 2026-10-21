@@ -4,6 +4,29 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Metadata discovery independent of the current clip (2026-10-21): **35% unchanged**.
+The metadata pass now runs before the separate image interpretation and includes
+hidden/inactive properties. A saved clip no longer filters type/field discovery.
+The observer-only runner can replay hash-bound activity images without opening
+a game or using the blocked desktop executable.
+
+Five frozen paired replays improve from zero to ten cited questions in each of
+two saved gameplay reports. The menu has zero accepted/two rejected questions;
+the context fixture and opaque-label case still abstain. A sixth revised run
+with saved images preserves metadata requests, selection and ten exact candidate
+references. Six generated descriptions/questions vary; an initial audit's
+overly strong whole-batch equality assertion failed and is retained. No model
+call was repeated. These counts measure candidate coverage, not useful controls
+or semantic correctness. Four malformed image manifests are rejected before
+inference. Seventeen observer tests, strict Clippy and the offline build pass.
+
+No game launch, memory edit, input or manual image review was needed. The desktop
+preview remains `0.1.0-20261021-225832`; Windows protection is unchanged and the
+new desktop build is not published. Weighted credits remain foundation 4/10,
+native 6/10, observation 5/15, discovery 8/20, validation 4/15, intent 1/10,
+agent collaboration 7/10 and generalization 0/10. The full goal stays active.
+[Method, evidence and limits](../research/metadata-independence/README.md).
+
 Activity-derived comparison planning (2026-10-21): **35% unchanged**. A new
 read-only shared command derives actions and timing bounds from retained play,
 interleaves distinct field hypotheses and retains prior comparison outcomes.

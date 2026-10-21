@@ -13,6 +13,8 @@ runtime descriptions are provisional metadata labels, not verified game meanings
 An installed local model can retain evidence-linked questions and competing
 fields after runtime discovery. These remain shared engine/MCP investigation
 hints and do not rename cards. See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
+Metadata discovery considers hidden and inactive properties before separately
+interpreting the current clip. See [the saved-evidence comparison](research/metadata-independence/README.md).
 Agents can also submit their own cited hypotheses through MCP and connect an exact
 candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.

@@ -15,8 +15,12 @@ bound into a content-addressed request document before job admission. This keeps
 real process/window/investigation identities within the journal's 256-byte step
 limit and detects changes to the saved request. A refresh cannot request naming.
 
-At most two local calls select eight observed types and propose twelve questions
-from 256 paths. All observed field labels are available to type selection; path
+The current implementation uses at most nine metadata calls to select eight
+observed types and propose twelve questions from 256 paths, with a per-type
+budget. It runs before the separate optional activity-image review, so hidden
+properties do not need to explain a visible response. See the subsequent
+[paired replay](../metadata-independence/README.md). The original two-call
+evaluation below remains historical evidence. All observed field labels are available to type selection; path
 sampling shares its budget across fields and types before additional instances.
 The model sees one candidate ID per row; the engine retains full report-bound
 paths. Same-object text belongs only to its observed path, never a global label.
@@ -40,7 +44,8 @@ takes effect; subsequent requests and publication stop. Status and job controls
 remain responsive, while other engine operations wait for the owning job.
 
 Current bounds include 110,000 prompt bytes, 16 KiB model response content,
-32,768 context tokens, 600/4,096 output tokens and 12 MiB per archive document.
+32,768 context tokens, 600 selection tokens, 850 output tokens per allowed
+question in each group, and 12 MiB per archive document.
 The shared observer uses an already installed local vision-capable model; no
 model is downloaded. Archives do not yet have automatic retention pruning.
 
