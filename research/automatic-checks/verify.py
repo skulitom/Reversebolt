@@ -69,7 +69,11 @@ def audit(name):
             assessment = ("invalidated" if check["invalidated"] or candidate["invalidated"] else
                 "contradicted" if any(s["outcome"] == "contradicts" for s in candidate["samples"]) else
                 "consistent_in_observed_scope" if len(good) >= 4 and any(d <= .55 for d in deltas) and any(d > 1.1 for d in deltas) else "needs_contrasting_evidence")
-            predictions.append({"address":candidate["address"],"mapping":candidate["mapping"],"assessment_replayed":assessment,"samples":candidate["samples"]})
+            samples = [{**{k:s[k] for k in ["frame","bytes","predicted","observed","outcome","before_image"]},
+                "read":s["read"],
+                "image":{k:s["image"].get(k) for k in ["id","number","sha256","capture_interval"]} if s["image"] else None}
+                for s in candidate["samples"]]
+            predictions.append({"address":candidate["address"],"mapping":candidate["mapping"],"assessment_replayed":assessment,"samples":samples})
     if fixture:
         assert check and len(predictions) == 2
         assert all(p["assessment_replayed"] == "consistent_in_observed_scope" for p in predictions)
