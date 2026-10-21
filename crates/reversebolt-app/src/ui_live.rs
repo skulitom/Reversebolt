@@ -649,7 +649,7 @@ impl LivePane {
                                     }
                                     CardSource::Ocr => {
                                         let editor = self.ocr_editors.entry(*id).or_default();
-                                        crate::ui_value_control::ocr(ui, handle, state, *id, editor, !busy && live.connected);
+                                        crate::ui_value_control::ocr(ui, handle, state, *id, value, editor, !busy && live.connected);
                                     }
                                     _ => {
                                         ui.label(RichText::new(value).size(38.).color(ACCENT));

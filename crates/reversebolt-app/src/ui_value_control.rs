@@ -180,17 +180,15 @@ pub fn ocr(
     handle: &Handle,
     state: &View,
     track: usize,
+    displayed: &str,
     editor: &mut Editor,
     enabled: bool,
 ) {
     let Some(live) = &state.live else {
         return;
     };
-    let value = live
-        .tracks
-        .iter()
-        .find(|t| t.id == track)
-        .and_then(|t| t.samples.last().copied().flatten());
+    // The card already chooses the newest trial observation over older scan samples.
+    let value = displayed.parse::<f64>().ok().filter(|v| v.is_finite());
     let eligible = live.prediction_checks.iter().any(|check| {
         check.source == reversebolt_core::prediction::Source::Ocr
             && check.track == track
@@ -201,7 +199,7 @@ pub fn ocr(
         ui,
         editor,
         13,
-        &value.map(|v| json!(v.to_string())).unwrap_or(Value::Null),
+        &value.map(|v| json!(v.to_string())).unwrap_or(json!("—")),
         enabled && eligible && value.is_some(),
     );
     let trial = state.changes.iter().rev().find(|c| {

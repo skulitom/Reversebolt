@@ -28,13 +28,18 @@ pub fn controls(
         return;
     };
     let latest = trials(state, card).next_back();
-    let requested = crate::ui_value_control::draw(
-        ui,
-        editor,
-        card.candidate.type_code,
-        &card.value,
-        enabled && card.status == "read",
-    );
+    let requested = if card.status == "read" {
+        crate::ui_value_control::draw(
+            ui,
+            editor,
+            card.candidate.type_code,
+            &card.value,
+            enabled && card.status == "read",
+        )
+    } else {
+        ui.label(RichText::new("—").size(38.).color(MUTED));
+        None
+    };
     let mut undo = None;
     ui.horizontal(|ui| {
         let label = latest.map_or(
