@@ -4,7 +4,14 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
-Latest interface refinement (2026-10-21): **25% unchanged**. The main surface is
+Latest independent-game baseline (2026-10-21): **25% unchanged**. Four automatic
+runs of original 2048 and Javascript Tetris retained 64 captures, including an
+optional-model failure. No verified editable control emerged. The evidence
+exposes limitations in text-region handling, useful-object coverage, process
+scope and input cadence; see [the baseline](../research/independent-games/README.md).
+All weighted credits remain unchanged and the full goal remains active.
+
+Interface refinement (2026-10-21): **25% unchanged**. The main surface is
 now focused on short named cards, with drag arrangement and accessible move
 actions. Activity and application diagnostics open separately. Numeric trial
 controls still use the existing engine's eligibility and explicit review gates;
@@ -637,3 +644,30 @@ See [conditional prediction evidence](research/CONDITIONAL_PREDICTIONS.md).
 Next: evaluate these predictions against less controlled behavior and genuinely
 independent software, retain failures, and improve motion/appearance observations
 and active selection of reachable distinguishing contexts.
+
+## 2026-10-21 — independent browser-game failure baseline: still 25%
+
+The unchanged published product and installed local model were evaluated on
+two fresh sessions each of independently authored 2048 and Javascript Tetris.
+All 64 captures, 664 delivered input pulses, original source hashes, model
+responses and final states were retained and audited. No oracle observations,
+game profiles or memory addresses entered the product; no edits were attempted.
+
+Tetris's changing score was correct in 30 captures, with two unscorable moments.
+2048's score produced nine correct readings, one wrong reading, one conflict,
+five abstentions and 16 unscorable moments. Constant-zero row readings are kept
+separate. Temporary Tetris memory matches disappeared later. No visual/temporal
+tracks, conditional checks or verified controls emerged. One completed capture
+sequence ended in a failed job after its optional model exceeded a summary limit.
+
+The full goal remains active with unchanged credits: foundation 4, native access
+5, observation 5, discovery 4, validation 2, intent 0, agent collaboration 5 and
+generalization 0. Total **25 / 100**. Collecting independent failures adds useful
+evidence but does not pass independent-game acceptance. No new desktop binary
+was needed; preview `0.1.0-20261021-053218` remains running with the card interface.
+
+Next: preserve usable text when one region exceeds recognition limits; broaden
+grounded visual objects beyond actors and held components; isolate optional
+model failures. Use saved-image regression first, followed by fresh evaluation.
+Process relationships and active capture/input planning also remain unresolved.
+See [method, results and artifact audit](../research/independent-games/README.md).

@@ -1,0 +1,659 @@
+{
+  "protocol_sha256": "1c023d19d2d46fff5e12f51481580da525570759ad59000e44c546bf12d41306",
+  "product_binaries": {
+    "Reversebolt.exe": "3e7341c1c79edbe0b5860fe31ff3587eb31f9e5fd0f83b7df0accafa680fef03",
+    "reversebolt-mcp.exe": "3db9969bd591008374e208f1ebb51cb22347da7015e28222e4c23311ce246cc3"
+  },
+  "scope": "Independent browser-game baseline, not withheld final acceptance. Product unchanged, no native writes, no oracle observations submitted.",
+  "runs": [
+    {
+      "game": "2048",
+      "replicate": 1,
+      "raw_directory": "test-results/independent-games-v1/2048-1-attempt-01",
+      "run_errors": [],
+      "job_phases": [
+        "Completed"
+      ],
+      "captures": 16,
+      "counters": {
+        "score": {
+          "outcomes": {
+            "abstention": 2,
+            "unscorable": 8,
+            "correct": 5,
+            "wrong": 1
+          },
+          "distinct_value_count": 119,
+          "range": [
+            0,
+            2116
+          ]
+        },
+        "best": {
+          "outcomes": {
+            "abstention": 1,
+            "unscorable": 8,
+            "correct": 7
+          },
+          "distinct_value_count": 119,
+          "range": [
+            0,
+            2116
+          ]
+        }
+      },
+      "input": {
+        "injected_pulses": 174,
+        "browser_keydowns": 174,
+        "trusted_keydowns": 174,
+        "by_key": {
+          "ArrowLeft": 44,
+          "ArrowUp": 44,
+          "ArrowRight": 43,
+          "ArrowDown": 43
+        },
+        "sampled_polls": 3122,
+        "poll_fields": [
+          "begin_us",
+          "down",
+          "end_us",
+          "focus"
+        ],
+        "capture_contexts": 16
+      },
+      "window_process": {
+        "created": "01DD61165CBE0826",
+        "name": "chrome.exe",
+        "pid": 74948,
+        "session": 2,
+        "title": "2048 \u2013 Google Chrome for Testing",
+        "window": 9110092
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 74948,
+          "cpuTime": 2.158007
+        },
+        {
+          "type": "renderer",
+          "id": 87216,
+          "cpuTime": 0.033285
+        },
+        {
+          "type": "renderer",
+          "id": 60160,
+          "cpuTime": 5.454823
+        },
+        {
+          "type": "renderer",
+          "id": 9288,
+          "cpuTime": 0.271517
+        },
+        {
+          "type": "GPU",
+          "id": 81264,
+          "cpuTime": 5.686611
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 43448,
+          "cpuTime": 0.180451
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 21140,
+          "cpuTime": 0.048157
+        }
+      ],
+      "planned_bytes": 16777216,
+      "eligible_bytes": 60272640,
+      "numeric_matches_at_end": 0,
+      "transient_matches": [],
+      "vision_warnings": {
+        "PP-OCRv6 text recognition: Text line exceeds 1024-pixel recognition budget": 16
+      },
+      "visual_tracks": 0,
+      "temporal_tracks": 0,
+      "action_pattern_states": {},
+      "rule_checks": 0,
+      "model_calls": [
+        {
+          "id": "211515ea-4bd5-4fc0-ae02-615814f8df62",
+          "sha256": "11fa4413e89c2cadb6b5514fce897d48627a78c3aaef22e6a5db0f1f017701f4",
+          "error": null,
+          "summary_characters": 83,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        },
+        {
+          "id": "85554705-a41a-4832-b0f0-14daf1d458c6",
+          "sha256": "12189d3bfb791f3ac201db9b3f401334e52643e19cdbe3faa308b322ac9e53f1",
+          "error": null,
+          "summary_characters": 235,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        }
+      ],
+      "oracle_nonnumeric": {
+        "unique_tiles": 978,
+        "unique_current_pieces": null,
+        "actual_display_score_disagreements": null
+      },
+      "artifact_hashes": {
+        "run.json": "a0c4ff46cd51fe22f9f858859c9deddf5ba65dccdc6054521c8a817ddf5587e1",
+        "score.json": "feefcc8385915d4efc150bb1997f88b88582f689381ae0b9c1db9f6e2f9c45a8",
+        "oracle.json": "bff834b3bdaa0d6c3a7122b839b7622953efd60b2b8d91dd9fe213504ca3798e",
+        "states.json": "d05588a19c6febd71a0e839919e8ada65e892b04dcb8a7b440570d34e8ad1d7d",
+        "final-status.json": "1515f3d290607797e8e18403909136f659c77b7e220a3a551c978f7e1bc57210",
+        "delivered-keys.json": "e9d7cd79d1a069d6f71e153cfcb64e13289899e9158c5bf1d2df7c7ed9764562",
+        "input.jsonl": "f087f097675c57e3092b4cdac2438814bdcee54da7e6f1f59f604298a7acf846"
+      }
+    },
+    {
+      "game": "tetris",
+      "replicate": 1,
+      "raw_directory": "test-results/independent-games-v1/tetris-1-attempt-01",
+      "run_errors": [
+        "Error: Observation job did not complete\n    at file:///C:/DEV/Reversebolt/research/independent-games/run.mjs:145:48"
+      ],
+      "job_phases": [
+        "Failed"
+      ],
+      "captures": 16,
+      "counters": {
+        "score": {
+          "outcomes": {
+            "correct": 15,
+            "unscorable": 1
+          },
+          "distinct_value_count": 69,
+          "range": [
+            0,
+            220
+          ]
+        },
+        "rows": {
+          "outcomes": {
+            "correct": 16
+          },
+          "distinct_value_count": 1,
+          "range": [
+            0,
+            0
+          ]
+        }
+      },
+      "input": {
+        "injected_pulses": 158,
+        "browser_keydowns": 158,
+        "trusted_keydowns": 158,
+        "by_key": {
+          " ": 1,
+          "ArrowDown": 127,
+          "ArrowLeft": 8,
+          "ArrowUp": 15,
+          "ArrowRight": 7
+        },
+        "sampled_polls": 2765,
+        "poll_fields": [
+          "begin_us",
+          "down",
+          "end_us",
+          "focus"
+        ],
+        "capture_contexts": 16
+      },
+      "window_process": {
+        "created": "01DD61169CCD2157",
+        "name": "chrome.exe",
+        "pid": 78912,
+        "session": 2,
+        "title": "Javascript Tetris \u2013 Google Chrome for Testing",
+        "window": 5768100
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 78912,
+          "cpuTime": 1.863566
+        },
+        {
+          "type": "renderer",
+          "id": 77084,
+          "cpuTime": 0.030841
+        },
+        {
+          "type": "renderer",
+          "id": 41240,
+          "cpuTime": 2.160423
+        },
+        {
+          "type": "renderer",
+          "id": 25640,
+          "cpuTime": 0.265245
+        },
+        {
+          "type": "GPU",
+          "id": 88316,
+          "cpuTime": 2.372684
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 78516,
+          "cpuTime": 0.15232
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 88432,
+          "cpuTime": 0.02491
+        }
+      ],
+      "planned_bytes": 16777216,
+      "eligible_bytes": 64364544,
+      "numeric_matches_at_end": 0,
+      "transient_matches": [
+        {
+          "frame": 12,
+          "matches": 2
+        },
+        {
+          "frame": 13,
+          "matches": 2
+        }
+      ],
+      "vision_warnings": {},
+      "visual_tracks": 0,
+      "temporal_tracks": 0,
+      "action_pattern_states": {
+        "learning": 5
+      },
+      "rule_checks": 0,
+      "model_calls": [
+        {
+          "id": "1f23064d-0ee9-42e6-803f-1ab52d2c8921",
+          "sha256": "e9832378a4c37bcd55bc4711b4b01911374bba64230cbcb59fd3253b6850afea",
+          "error": null,
+          "summary_characters": 156,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        },
+        {
+          "id": "6070e86b-5fbb-486e-b1d0-a700dec284fc",
+          "sha256": "1720e7c2dce2097e18dbdf3f46f57e41f59458fac427cbd466f66243c0b5a1ab",
+          "error": "Local model returned an invalid proposal: Invalid observation size or summary.",
+          "summary_characters": 306,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        }
+      ],
+      "oracle_nonnumeric": {
+        "unique_tiles": null,
+        "unique_current_pieces": 218,
+        "actual_display_score_disagreements": 51
+      },
+      "artifact_hashes": {
+        "run.json": "270f74b3d278cb30ff70548ea2f40418f801411de9b8bef98a4351b499cfcfdb",
+        "score.json": "d6247ad29dd358206853b18ab0a53e5e713b47403dd573609da18a02afcfba0c",
+        "oracle.json": "48e4e5b5d8038fcd319c36a36b8e643985c34942390c370f34fbd59d679c3fc8",
+        "states.json": "f2ed1f84ce5d2ebfc3d8eec7503405eeffa11c2e46e3cb649fc71d6fe5b411c4",
+        "final-status.json": "7700d1fe9ac112c959fb97e5a7866599a419afe2959e866d2f0871dfa575ff28",
+        "delivered-keys.json": "4af825f871a10eb66e001e9dd5cade54d527b2b349fdeaa90f69bf219e525976",
+        "input.jsonl": "8d0fd12e8fa8ac364e21c5bd1ad1f55a0191e814dc6648aab56e0ab64e37da54"
+      }
+    },
+    {
+      "game": "2048",
+      "replicate": 2,
+      "raw_directory": "test-results/independent-games-v1/2048-2-attempt-01",
+      "run_errors": [],
+      "job_phases": [
+        "Completed"
+      ],
+      "captures": 16,
+      "counters": {
+        "score": {
+          "outcomes": {
+            "unscorable": 8,
+            "abstention": 3,
+            "correct": 4,
+            "conflicting": 1
+          },
+          "distinct_value_count": 115,
+          "range": [
+            0,
+            2164
+          ]
+        },
+        "best": {
+          "outcomes": {
+            "unscorable": 8,
+            "correct": 5,
+            "conflicting": 1,
+            "abstention": 2
+          },
+          "distinct_value_count": 115,
+          "range": [
+            0,
+            2164
+          ]
+        }
+      },
+      "input": {
+        "injected_pulses": 173,
+        "browser_keydowns": 173,
+        "trusted_keydowns": 173,
+        "by_key": {
+          "ArrowLeft": 44,
+          "ArrowUp": 43,
+          "ArrowRight": 43,
+          "ArrowDown": 43
+        },
+        "sampled_polls": 3107,
+        "poll_fields": [
+          "begin_us",
+          "down",
+          "end_us",
+          "focus"
+        ],
+        "capture_contexts": 16
+      },
+      "window_process": {
+        "created": "01DD6116D3BB7286",
+        "name": "chrome.exe",
+        "pid": 83180,
+        "session": 2,
+        "title": "2048 \u2013 Google Chrome for Testing",
+        "window": 7865414
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 83180,
+          "cpuTime": 2.102269
+        },
+        {
+          "type": "renderer",
+          "id": 76232,
+          "cpuTime": 0.032093
+        },
+        {
+          "type": "renderer",
+          "id": 33492,
+          "cpuTime": 5.361818
+        },
+        {
+          "type": "renderer",
+          "id": 84132,
+          "cpuTime": 0.273663
+        },
+        {
+          "type": "GPU",
+          "id": 46120,
+          "cpuTime": 5.501235
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 4540,
+          "cpuTime": 0.177079
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 22148,
+          "cpuTime": 0.049355
+        }
+      ],
+      "planned_bytes": 16777216,
+      "eligible_bytes": 61243392,
+      "numeric_matches_at_end": 0,
+      "transient_matches": [],
+      "vision_warnings": {
+        "PP-OCRv6 text recognition: Text line exceeds 1024-pixel recognition budget": 15
+      },
+      "visual_tracks": 0,
+      "temporal_tracks": 0,
+      "action_pattern_states": {},
+      "rule_checks": 0,
+      "model_calls": [
+        {
+          "id": "34902804-d815-403a-a262-5103fe730fe4",
+          "sha256": "bd53d905ab44397e9e58649cbe028288e2bab17bf4e29976558c5017531f2e8a",
+          "error": null,
+          "summary_characters": 229,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        },
+        {
+          "id": "bb20d806-7e5f-4f75-ab36-5c0a473e5049",
+          "sha256": "be819b7cc7ed65926bfe66f1208536c2bd683803c1c80c9cbbdb481c8d931073",
+          "error": null,
+          "summary_characters": 217,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        }
+      ],
+      "oracle_nonnumeric": {
+        "unique_tiles": 968,
+        "unique_current_pieces": null,
+        "actual_display_score_disagreements": null
+      },
+      "artifact_hashes": {
+        "run.json": "82ce263c17bab118e65309561c11c156dcaa2fdfe3d2835f34620941bd735dd2",
+        "score.json": "e41a14550c14c321af373f7286a247819753cc8d09f2570340737083cdd00ca9",
+        "oracle.json": "db7759384a457a0e0ece402453535f935adb6a2304045b897b6df6dbedb4f60a",
+        "states.json": "bd5ba87dd4ccfe23317f7f4d34504660fdb6074f2b3f5eb81d390bd642179405",
+        "final-status.json": "a56c1cfc471daee2962f2f4411c437549c67d9e30fd65306ad61078450d85bf8",
+        "delivered-keys.json": "0f2d792dae644f002a760eaf6164bec75d56f6c4333b1c2b45e7eb89f62605b3",
+        "input.jsonl": "4c5420417c058de475f16d7c17c223efc618a52994f00838dbc8bc4dfad35ecc"
+      }
+    },
+    {
+      "game": "tetris",
+      "replicate": 2,
+      "raw_directory": "test-results/independent-games-v1/tetris-2-attempt-01",
+      "run_errors": [],
+      "job_phases": [
+        "Completed"
+      ],
+      "captures": 16,
+      "counters": {
+        "score": {
+          "outcomes": {
+            "correct": 15,
+            "unscorable": 1
+          },
+          "distinct_value_count": 44,
+          "range": [
+            0,
+            140
+          ]
+        },
+        "rows": {
+          "outcomes": {
+            "correct": 16
+          },
+          "distinct_value_count": 1,
+          "range": [
+            0,
+            0
+          ]
+        }
+      },
+      "input": {
+        "injected_pulses": 159,
+        "browser_keydowns": 159,
+        "trusted_keydowns": 159,
+        "by_key": {
+          " ": 1,
+          "ArrowDown": 127,
+          "ArrowLeft": 8,
+          "ArrowUp": 15,
+          "ArrowRight": 8
+        },
+        "sampled_polls": 2744,
+        "poll_fields": [
+          "begin_us",
+          "down",
+          "end_us",
+          "focus"
+        ],
+        "capture_contexts": 16
+      },
+      "window_process": {
+        "created": "01DD611713BFC005",
+        "name": "chrome.exe",
+        "pid": 67148,
+        "session": 2,
+        "title": "Javascript Tetris \u2013 Google Chrome for Testing",
+        "window": 5506160
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 67148,
+          "cpuTime": 1.848833
+        },
+        {
+          "type": "renderer",
+          "id": 73172,
+          "cpuTime": 0.029608
+        },
+        {
+          "type": "renderer",
+          "id": 51000,
+          "cpuTime": 2.113626
+        },
+        {
+          "type": "renderer",
+          "id": 77740,
+          "cpuTime": 0.268852
+        },
+        {
+          "type": "GPU",
+          "id": 85944,
+          "cpuTime": 2.179605
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 87344,
+          "cpuTime": 0.155034
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 71004,
+          "cpuTime": 0.026945
+        }
+      ],
+      "planned_bytes": 16777216,
+      "eligible_bytes": 65802240,
+      "numeric_matches_at_end": 0,
+      "transient_matches": [
+        {
+          "frame": 12,
+          "matches": 4
+        }
+      ],
+      "vision_warnings": {},
+      "visual_tracks": 0,
+      "temporal_tracks": 0,
+      "action_pattern_states": {
+        "learning": 5
+      },
+      "rule_checks": 0,
+      "model_calls": [
+        {
+          "id": "e4cf9d7e-93fd-498c-9617-998ebb99765e",
+          "sha256": "aed6ea3902a41bf7e8ec6d1fbe5bc7e1c527ba7ac18a1e98b6c98b2059073933",
+          "error": null,
+          "summary_characters": 209,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        },
+        {
+          "id": "f9404866-9902-4edd-b7f9-e60563dd1b10",
+          "sha256": "40e4320c416229ecb1c5054fb06e3f0419b6bb6e0b1aa70ef381c8ee189e5153",
+          "error": null,
+          "summary_characters": 232,
+          "entity_kinds": [
+            "other",
+            "other",
+            "other",
+            "other"
+          ],
+          "proposed_observations": 0
+        }
+      ],
+      "oracle_nonnumeric": {
+        "unique_tiles": null,
+        "unique_current_pieces": 171,
+        "actual_display_score_disagreements": 31
+      },
+      "artifact_hashes": {
+        "run.json": "6ba3b474da4a1b4127ae4ade0686170e9fc9090469d8f769631c0ac3d1b57915",
+        "score.json": "919d179f12aea926f337db155091aca618725ea137229c713a773e2465c4c3f9",
+        "oracle.json": "f9d1f7cf719d3bb750d9c42ed09740467cef95dd2c1ad5b91e3447685e38985b",
+        "states.json": "926c7ea017f1fa34134f0130a40fc6a9133eba6a1079df5e7c03701dd498f333",
+        "final-status.json": "29000f38ec171c9245d761f18e8847c91fb8a161cda38e13806372537bdd791e",
+        "delivered-keys.json": "acca655321787565253f5bdff259366ed95b39b76e143053cebf3c9d0592c076",
+        "input.jsonl": "f589b34529b750e012da823d7e3e568fbf9a39a8f8bed7cf83d7a15287401ca8"
+      }
+    }
+  ],
+  "image_hashes_checked": 64,
+  "delivered_keydowns": 664,
+  "input_sequence_verified": true,
+  "progress_percent": 25,
+  "limitations": [
+    "DOM scoring rectangles include transient overlays; a wrong score-region reading need not be a misrecognized glyph.",
+    "Animation/timing ambiguity is unscorable; constant zero row counters are separate.",
+    "Read-only evaluator instrumentation can allocate copies and add timing overhead.",
+    "No controlling memory, hidden behavior or causal edit was verified.",
+    "No manual screenshot review was used."
+  ]
+}

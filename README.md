@@ -190,6 +190,9 @@ Ocrs/RTen are MIT OR Apache-2.0; windows-capture is MIT. Attribution is retained
 under `models/` and `licenses/`. Independent code originated in the MIT
 GameDiscoveryLab research prototype.
 Its measured failure cases and Squalr study are preserved under `docs/research/`.
+An unchanged-product [independent browser-game baseline](research/independent-games/README.md)
+records automatic 2048 and Tetris runs, including missing controls and retained
+failures. These first-exposure runs do not satisfy the independent-game release gate.
 Squalr was evaluated as a reference/backend candidate. It is GPL-3.0; no Squalr
 source has been copied into this MIT implementation. Any future integration must
 make its licensing implications explicit.

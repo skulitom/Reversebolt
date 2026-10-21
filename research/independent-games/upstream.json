@@ -1,0 +1,59 @@
+[
+  {
+    "name": "2048",
+    "repository": "https://github.com/gabrielecirulli/2048",
+    "commit": "478b6ec346e3787f589e4af751378d06ded4cbbc",
+    "archive_url": "https://codeload.github.com/gabrielecirulli/2048/zip/478b6ec346e3787f589e4af751378d06ded4cbbc",
+    "archive_sha256": "aba89e4aa20419312f712d7f6d4d038f0e25096591120e2f483f7364108ced29",
+    "files": {
+      ".gitignore": "aafbfded8b0c7484bd01d3c5c5d1fec731c67eea81a8e9768bc8b1e005dcfa73",
+      ".jshintrc": "ec03f099782176782186a0b7471fb4720f830a3de5753ba06f4844c2c7f1e075",
+      "CONTRIBUTING.md": "58fb2761927455cea8edb9b6490a34889258dd1d4d2418cfe8efbab2c07ff4e4",
+      "LICENSE.txt": "57e12c39a6ad9d98b2e451065bfdfbd15fc9e0c2ed3bf4dc1d09acab41ff02fc",
+      "README.md": "3b624490f45eb6315b00bcaac65cefa713678401c42971b0e65cad8d8ff0ccfc",
+      "Rakefile": "e1adbf7a3ca7d79bd31bd26bb01275b0e5324b9d445588cc16e0714a43196160",
+      "favicon.ico": "392935e5853c28b5cd4ebd9ee2fc06bcfd87523c1e4bf059d948dcd0b5708b00",
+      "index.html": "7a76f74c23aeb8ee6af73ff796343834b82f75271a610b7174a8ea6707cc8c77",
+      "js/animframe_polyfill.js": "b97db8f8973c6c883d415e376f15ba657971e5704c8ecfd62e62a9adfec2792e",
+      "js/application.js": "5fc43863225b371c458615ef431fac73003546f437aa32026641de48817bd27a",
+      "js/bind_polyfill.js": "90e671a58a24122ffac4fc28b9a967a3769398c906c348568bf731118d7fdf52",
+      "js/classlist_polyfill.js": "6abb09a37567fb3735e95d7096d30a01190a8eee016c781d51ae6b8b037261cd",
+      "js/game_manager.js": "b02baa6b75f8c8cad8606e680b6f73b7c843c61e3a643ee48410022499a649f0",
+      "js/grid.js": "169428f5ff7f726c38112fcf1c918028cbca3a1d9f9239838fbc7eb4396b9f9a",
+      "js/html_actuator.js": "67b796d4f640b927e517b2281f8230c4f65c08b07558001e2c0dc9ea2e2145cf",
+      "js/keyboard_input_manager.js": "7d579ab5b67dddf339cf28a7d06e4e24eca08b0187204ce352d67c49ae1e48de",
+      "js/local_storage_manager.js": "8e12c6a9aa34097c0b634b1f6690da091b1b4ac158ff914097a8ac83c86b5bc6",
+      "js/tile.js": "13699e51d62179a6d36874108831a29901a98d6e11329918e64cfb5ee82d58e3",
+      "meta/apple-touch-icon.png": "d7b9d5872e420480a4b93134b095dbbe8f035fdf9ec2154971bc28e0a4d897b2",
+      "meta/apple-touch-startup-image-640x1096.png": "76eede71ed7b0fdf2995352fd685498a70cbb9109fb09fd693ef79e6f2cee6a6",
+      "meta/apple-touch-startup-image-640x920.png": "a5c99e300ae48deec8a3d7e8598093ee60747d094ba6ad8d8f5e0c910afcd694",
+      "style/fonts/ClearSans-Bold-webfont.eot": "820a4c29047173d9284d9cdba13e8c2788b76b06cf2efb7b3d2841966a11b2c5",
+      "style/fonts/ClearSans-Bold-webfont.svg": "a669c919329969e1538d8bce550d37495587be1aceb587242eac901f4abaae36",
+      "style/fonts/ClearSans-Bold-webfont.woff": "b16e36cc53aa72023c67ab31c38290de77905dd2285f331189b2236100b8f849",
+      "style/fonts/ClearSans-Light-webfont.eot": "77ef51b080b166fcf499df857408a5ba77acc5289053a8684d152aa0a2741e06",
+      "style/fonts/ClearSans-Light-webfont.svg": "5080487cca23fe9b6dae38256b7b4f6ff714e91861ccb9f01c43b9ef84069f71",
+      "style/fonts/ClearSans-Light-webfont.woff": "465697ff07395574f9771970ca020bf64019dfbd96c2c64ba419c5d074336d90",
+      "style/fonts/ClearSans-Regular-webfont.eot": "4d1fe136c3c876669fbfb56c419ca7d875bce3c133999021b67588520d98963d",
+      "style/fonts/ClearSans-Regular-webfont.svg": "5d7fbc7adb4b5909809d02e48db0981c11ff99981b9e2bdecbca51d90cb057b3",
+      "style/fonts/ClearSans-Regular-webfont.woff": "8c94cd2fdc93f5a86f1761c0ce14bb695f20e16dc1a585ccad7f0289bd3dbc76",
+      "style/fonts/clear-sans.css": "ada5fc5f508d57bf4f8d32ac354f1ebfc25b75c991948aa920f9d25defea5307",
+      "style/helpers.scss": "4ff6b7bd784c8c914f3a62be3c492e276b36ad4bf47170d74247234e6920bdc5",
+      "style/main.css": "2e0fd51d6950afe1cb0af861f92b9d01111e56b825aa46de9475e8afa1a13f1b",
+      "style/main.scss": "197c634a51c1b8063515d18e628e22c85d6a6f75c78f8e63f911c6234d6aabe6"
+    }
+  },
+  {
+    "name": "tetris",
+    "repository": "https://github.com/jakesgordon/javascript-tetris",
+    "commit": "e5c0c42f7dac0f3514a55eff656c6e22e95d68ed",
+    "archive_url": "https://codeload.github.com/jakesgordon/javascript-tetris/zip/e5c0c42f7dac0f3514a55eff656c6e22e95d68ed",
+    "archive_sha256": "0b22208ea3c60b14f84165161a4271cdc2e99a36e2cd997db5c6af26be92bf7c",
+    "files": {
+      "LICENSE": "31744bd674567634d06949f7bbc581ef148583106751dfbafa362b1a3cea116b",
+      "README.md": "f1ed7e3419a320d1500c737f3464f62db11d2df4ec33ed72c830c1b3c71f05af",
+      "index.html": "b18ad94ae7c0c3199d1b42507a20a7c30de35b2e5393c8a05b22bf2ee8e9b468",
+      "stats.js": "a58c25488ff7ac0a9868dffd0b521d4e4dbd0473ef1bccab641e10e74b44f701",
+      "texture.jpg": "d3b48e9dc8b9cc92433c4425b96a71bdcbcd7811c6fed67d96865b591b648522"
+    }
+  }
+]
