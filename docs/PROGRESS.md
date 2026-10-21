@@ -4,6 +4,16 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest automatic prospective checks (2026-10-21): **27% unchanged**. Connection
+can now choose a numeric finding, freeze predictions and check later observations
+without manual capture/check commands. A controlled fixture completed the full
+sixteen-capture flow; original Tetris automatically froze nine score candidates,
+contradicted four and kept five unresolved because the fresh sequence lacked a
+hold. Original 2048 still had no usable memory matches. No gameplay control was
+verified. All 149 tests and packaged checks pass; desktop preview
+`0.1.0-20261021-081604` is running with history preserved. All weighted credits
+remain unchanged. [Evidence and limits](../research/automatic-checks/README.md).
+
 Latest explicit location tests (2026-10-21): **27%**. A reviewed test can now
 investigate one candidate location while retaining competing predictions and
 requiring agreement across overlapping interpretations. Two fixed native cases

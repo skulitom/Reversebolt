@@ -6,6 +6,10 @@ Part of the Bolt family. Humans and agents use the same engine and session.
 **Research preview:** connect a running application, capture its window and
 bounded memory, and compare changing screen numbers with memory trajectories.
 Connecting starts observation automatically; values appear as simple cards.
+When a numeric finding has matches early enough in the observation pass,
+Reversebolt automatically freezes its predictions and checks later readings.
+It chooses by investigation effort and reading coverage, not an invented gameplay
+meaning. No edits happen automatically; findings can remain uncertain or fail.
 The main view keeps names, short descriptions and relevant actions together.
 Drag a card's arrange handle to reorder it, or click the handle for accessible
 move actions. Editable trial values can be dragged or typed. Detailed evidence

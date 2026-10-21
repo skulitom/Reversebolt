@@ -96,7 +96,7 @@ tool call as a successful edit.
 Application investigation: list processes → attach using `pid`, `created` and
 `window` returned by the list → watch automatic discovery in status → inspect
 evidence → detach. Connection starts one durable 16-capture pass with no initial
-delay and one second between completed captures. Comparisons refresh from
+delay and one second between completed captures. Comparisons begin at
 capture 12. Attachment returns `data.automatic_observation`, its job receipt;
 read the returned `jobs` for the advanced client request counter. An unsuccessful
 automatic start is reported separately without undoing a successful connection.
@@ -108,6 +108,24 @@ Use `auto_observe:false` on `attach_process` for controlled manual experiments.
 false). A timed observation job can use `compare:true` to update its findings after
 each capture with enough evidence; this never refits an active prediction check.
 The desktop uses the same controller and displays progress and pause/stop controls.
+
+With at least four future captures scheduled in that same job and available in
+the batch budget, comparison automatically selects one currently readable OCR
+series with matches and starts a prospective check. Ranking prefers fewer
+transitively overlapping location groups, then more readable moments, fewer
+interpretations and finally track ID. This estimates investigation effort, not
+gameplay relevance or confidence in a control. Labels never affect the choice.
+Selection and ranked evidence are persisted in
+`state.live.prediction_check.automatic_selection` before later captures occur.
+Those captures challenge immutable mappings; they do not refit them. No trial
+preparation or write is automatic. Pause/stop still bounds the job; a scheduled
+capture is not a promise it will happen or provide useful contrast.
+
+Only one numeric series can currently have a check in a batch. Other findings
+remain on their cards, but are not automatically checked in parallel. An existing
+explicit check is preserved. For an agent-selected series, use manual attachment
+and a job with `compare:false`, then `correlate` and `start_prediction_check`.
+Old job plans without a remaining-capture count do not start automatic checks.
 
 `capture` and `start_observation_job` accept `mode: "full"` (default) or
 `mode: "visual"`. Full mode includes text recognition. Visual mode keeps the

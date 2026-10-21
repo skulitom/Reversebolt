@@ -1157,12 +1157,36 @@ impl LiveSession {
     /// Automatic first-pass reporting uses the same captures and matcher.
     /// Insufficient variation is a normal observation result, not a failed capture.
     pub fn capture_for_report(&mut self) -> Result<()> {
+        self.capture_for_discovery(0)
+    }
+
+    /// Compare observations and, with enough scheduled future captures, freeze
+    /// one promising OCR finding before any fresh evidence is available.
+    pub fn capture_for_discovery(&mut self, remaining: usize) -> Result<()> {
         self.capture()?;
-        if self.view.sample_count >= 12
-            && self.view.prediction_check.is_none()
-            && let Err(reason) = self.correlate()
-        {
-            self.view.phase = format!("Observations collected; no comparison yet. {reason}");
+        if self.view.sample_count >= 12 && self.view.prediction_check.is_none() {
+            if let Err(reason) = self.correlate() {
+                self.view.phase = format!("Observations collected; no comparison yet. {reason}");
+                return Ok(());
+            }
+            let available = MAX_SAMPLES
+                .min(RETAINED_MEMORY_BUDGET / self.view.planned_bytes.max(1))
+                .saturating_sub(self.view.sample_count)
+                .min(remaining);
+            if let Some(selection) = crate::investigation::select(&self.view.tracks, available) {
+                let track = selection.ranked[0].track;
+                if let Err(reason) = self.freeze_prediction_check(
+                    &self.view.investigation_id.clone(),
+                    self.view.coverage.batch,
+                    self.view.sample_count,
+                    prediction::Source::Ocr,
+                    track,
+                    Some(selection),
+                ) {
+                    self.view.phase =
+                        format!("Comparison completed; a fresh check could not start. {reason}");
+                }
+            }
         }
         Ok(())
     }
@@ -1542,6 +1566,18 @@ impl LiveSession {
         source: prediction::Source,
         track_id: usize,
     ) -> Result<()> {
+        self.freeze_prediction_check(investigation, batch, after_frame, source, track_id, None)
+    }
+
+    fn freeze_prediction_check(
+        &mut self,
+        investigation: &str,
+        batch: usize,
+        after_frame: usize,
+        source: prediction::Source,
+        track_id: usize,
+        automatic_selection: Option<crate::investigation::Selection>,
+    ) -> Result<()> {
         if self.refresh_connection() || !self.view.connected {
             return Err("The selected process closed.".into());
         }
@@ -1603,6 +1639,7 @@ impl LiveSession {
             });
         }
         let check = PredictionCheck {
+            automatic_selection,
             id: uuid::Uuid::new_v4().to_string(),
             investigation_id: investigation.into(),
             batch,

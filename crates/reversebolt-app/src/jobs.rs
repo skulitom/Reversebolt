@@ -243,6 +243,8 @@ struct CaptureStep {
     source: String,
     #[serde(default, skip_serializing_if = "is_false")]
     compare: bool,
+    #[serde(default, skip_serializing_if = "is_zero")]
+    remaining: usize,
     #[serde(
         default,
         skip_serializing_if = "reversebolt_core::live::CaptureMode::is_full"
@@ -256,6 +258,10 @@ struct CaptureStep {
 
 fn is_false(value: &bool) -> bool {
     !value
+}
+
+fn is_zero(value: &usize) -> bool {
+    *value == 0
 }
 
 struct Flight {
@@ -346,7 +352,7 @@ impl job::Executor for CaptureExecutor {
         }
         let command = Command {
             action: "capture".into(),
-            args: json!({"scope":step.scope,"compare":step.compare,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model}),
+            args: json!({"scope":step.scope,"compare":step.compare,"remaining":step.remaining,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model}),
             source: step.source,
         };
         if self
@@ -782,6 +788,7 @@ impl Controller {
                         },
                         source: command.source.clone(),
                         compare,
+                        remaining: if compare { count - index - 1 } else { 0 },
                         mode,
                         background_model: local_model.is_some() && index == 1 && index != count - 1,
                         local_model: if index == 1 || index == count - 1 {

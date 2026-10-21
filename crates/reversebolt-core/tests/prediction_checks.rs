@@ -103,6 +103,13 @@ fn capture(session: &mut LiveSession, flags: &Flags, mode: CaptureMode) {
 }
 
 fn setup_mode(mode: CaptureMode) -> (LiveSession, Rc<Flags>, PathBuf) {
+    let (mut session, flags, root) = fresh();
+    for _ in 0..12 {
+        capture(&mut session, &flags, mode);
+    }
+    (session, flags, root)
+}
+fn fresh() -> (LiveSession, Rc<Flags>, PathBuf) {
     let flags = Rc::new(Flags::default());
     let root =
         std::env::temp_dir().join(format!("reversebolt-prediction-{}", uuid::Uuid::new_v4()));
@@ -110,11 +117,91 @@ fn setup_mode(mode: CaptureMode) -> (LiveSession, Rc<Flags>, PathBuf) {
         info: ProcessInfo::default(),
         flags: flags.clone(),
     };
-    let mut session = LiveSession::attach(Box::new(target), 1, root.clone()).unwrap();
-    for _ in 0..12 {
-        capture(&mut session, &flags, mode);
-    }
+    let session = LiveSession::attach(Box::new(target), 1, root.clone()).unwrap();
     (session, flags, root)
+}
+
+#[test]
+fn automatic_discovery_freezes_before_fresh_evidence_without_manual_commands() {
+    let (mut session, flags, root) = fresh();
+    for n in 1..=12 {
+        flags.frame.set(n);
+        session.capture_for_discovery(16 - n).unwrap();
+        if n < 12 {
+            assert!(session.view.prediction_check.is_none());
+        }
+    }
+    let frozen = session.view.prediction_check.clone().unwrap();
+    assert_eq!(frozen.after_frame, 12);
+    assert!(frozen.candidates.iter().all(|c| c.samples.is_empty()));
+    let selection = frozen.automatic_selection.as_ref().unwrap();
+    assert_eq!(selection.scheduled_fresh_captures, 4);
+    assert_eq!(selection.ranked[0].track, frozen.track);
+    assert!(root.join("prediction-check.json").exists());
+    for n in 13..=16 {
+        flags.frame.set(n);
+        session.capture_for_discovery(16 - n).unwrap();
+    }
+    let check = session.view.prediction_check.as_ref().unwrap();
+    assert_eq!(check.id, frozen.id);
+    for (before, after) in frozen.candidates.iter().zip(&check.candidates) {
+        assert_eq!(
+            serde_json::to_value(&before.mapping).unwrap(),
+            serde_json::to_value(&after.mapping).unwrap()
+        );
+        assert_eq!(
+            after.samples.iter().map(|s| s.frame).collect::<Vec<_>>(),
+            vec![13, 14, 15, 16]
+        );
+    }
+    assert!(
+        check
+            .candidates
+            .iter()
+            .any(|c| c.assessment(check) == Assessment::ConsistentInObservedScope)
+    );
+    assert!(
+        check
+            .candidates
+            .iter()
+            .any(|c| c.assessment(check) == Assessment::Contradicted)
+    );
+    let saved: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(root.join("prediction-check.json")).unwrap())
+            .unwrap();
+    assert_eq!(
+        saved["check"]["automatic_selection"]["ranked"][0]["track"],
+        check.track
+    );
+    // Cancelling the job does not enqueue captures or experiments in the core.
+    assert_eq!(session.view.sample_count, 16);
+    assert!(root.starts_with(std::env::temp_dir()));
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn automatic_checks_need_a_future_budget_and_preserve_explicit_checks() {
+    let (mut session, flags, root) = fresh();
+    for n in 1..=12 {
+        flags.frame.set(n);
+        session.capture_for_discovery(15 - n).unwrap();
+    }
+    assert!(session.view.prediction_check.is_none());
+    assert!(session.view.tracks.iter().any(|t| !t.matches.is_empty()));
+    start(&mut session, Source::Ocr).unwrap();
+    let id = session.view.prediction_check.as_ref().unwrap().id.clone();
+    flags.frame.set(13);
+    session.capture_for_discovery(7).unwrap();
+    let check = session.view.prediction_check.as_ref().unwrap();
+    assert_eq!(check.id, id);
+    assert!(check.automatic_selection.is_none());
+    // Older persisted checks remain readable and never invent automatic provenance.
+    let mut old = serde_json::to_value(check).unwrap();
+    old.as_object_mut().unwrap().remove("automatic_selection");
+    let old: reversebolt_core::prediction::PredictionCheck = serde_json::from_value(old).unwrap();
+    assert!(old.automatic_selection.is_none());
+    assert!(root.starts_with(std::env::temp_dir()));
+    std::fs::remove_dir_all(root).unwrap();
 }
 fn submit(session: &mut LiveSession, number: usize) {
     let frame = session

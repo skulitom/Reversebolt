@@ -1,0 +1,108 @@
+{
+  "frozen_at_utc": "2026-10-21T07:16:05.325963+00:00",
+  "product_commit": "c875e9595f9665ee5c65819f6085b51c948530cc plus automatic-check patch",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-081604",
+  "binaries": {
+    "Reversebolt.exe": "d5b63de9ea610717d7e5b7995d69d720b69647c46ed2fac715913a65d952d191",
+    "reversebolt-mcp.exe": "a13c2d046391fad58b55db6add8d7263823613910a2e2f0aa1ffbb3ae5f25a52"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 300,
+  "order": [
+    [
+      "2048",
+      1
+    ],
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        37,
+        38,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        39,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "cpu_probe_ms": 3000,
+  "fresh_captures": 8,
+  "method_sha256": {
+    "PROTOCOL.md": "630975d18e29cdf1183a55374598afdb85195297da62c19f0511ee9cc637d8e7",
+    "run.mjs": "02c86d0b6571d92d92216ddc74d7b850863061959e208c04a95a31e33c14fefb",
+    "score.py": "c6e592dc637ac5a3e5dec9b30e4b9938022bb73bfa53c16bdbc18b381758c351",
+    "fixture-run.py": "b852c52e068c52a86edb91ba49e98eeba09d80b2e01e35a5bfa2270dd643dda0",
+    "fixture.ps1": "66497c588912dae516e49b31472bb0ae1417f753ab68bc98004ff692f0d32fe6",
+    "../independent-games/input.py": "917191154e5958d20c9bfc13975251eeb9fdb8318f782d11119e10999e0df275"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/jobs.rs": "24e033b05ea5254ec66a11bb92cc811ef478cd30ebec630fee18e5c2a8555165",
+    "crates/reversebolt-app/src/service.rs": "0f7fc31db93e1481dd46ea9497d33852aa37c178adb9bf063e86c86db93f2219",
+    "crates/reversebolt-app/src/ui_live.rs": "bba500c20b5a2b32170eef534549b6473cd55d85bce88cfaffe0e5c34a1ae5a8",
+    "crates/reversebolt-core/src/lib.rs": "a3e5803175eaa0b77d4e50278abb9618d8583e8cecc070b811273a17d170abb8",
+    "crates/reversebolt-core/src/live.rs": "a6cd0a3ec50510332cd73aae7778ce3ec95f4f37aa4fe53a00dbd8bc7a83984e",
+    "crates/reversebolt-core/src/prediction.rs": "b194b36f534c53d56e9aad25752f8f225dca6da55e8e76c275b228b29bb4a7d1",
+    "crates/reversebolt-core/src/probes.rs": "2958b32661fef7713efa5482c9659b22775e909ae6e64cbfa708adc8c5cb40b9",
+    "crates/reversebolt-core/tests/prediction_checks.rs": "2f054e75a809aae16f816991eb341e669839f0bbc33247ac77134a1910258487",
+    "crates/reversebolt-core/src/investigation.rs": "3f950ee79affe619f29d67e0a30ff7bc9ab776e5a44066985b46ff7401765c9a"
+  },
+  "values": [
+    40,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ]
+}

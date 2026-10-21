@@ -541,7 +541,12 @@ fn native_command(
             let input_warning =
                 owner.and_then(|owner| session.start_inputs(owner.cancel.clone()).err());
             if command.args["compare"] == true {
-                session.capture_for_report()?;
+                let remaining = if owner.is_some() {
+                    command.args["remaining"].as_u64().unwrap_or(0).min(16) as usize
+                } else {
+                    0
+                };
+                session.capture_for_discovery(remaining)?;
             } else {
                 session.capture_mode(mode)?;
             }

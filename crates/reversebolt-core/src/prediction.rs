@@ -103,6 +103,8 @@ pub struct FrozenCandidate {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PredictionCheck {
+    #[serde(default)]
+    pub automatic_selection: Option<crate::investigation::Selection>,
     pub id: String,
     pub investigation_id: String,
     pub batch: usize,
@@ -248,6 +250,7 @@ mod tests {
 
     fn check(predictions: &[f64]) -> PredictionCheck {
         PredictionCheck {
+            automatic_selection: None,
             id: "check".into(),
             investigation_id: "session".into(),
             batch: 1,

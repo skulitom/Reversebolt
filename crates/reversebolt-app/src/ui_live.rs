@@ -527,6 +527,8 @@ impl LivePane {
                                                     })
                                             {
                                                 "Earlier"
+                                            } else if *external == CardSource::Ocr && live.prediction_check.as_ref().is_some_and(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==*id && c.invalidated.is_none() && c.automatic_selection.is_some() && c.candidates.iter().any(|m|m.samples.len()<reversebolt_core::prediction::MIN_FRESH)) {
+                                                "Checking"
                                             } else if *readable {
                                                 "Learning"
                                             } else {
@@ -554,7 +556,7 @@ impl LivePane {
                                 if *external==CardSource::Ocr {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
                                     let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
-                                    let eligible=live.prediction_check.as_ref().is_some_and(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && check.invalidated.is_none());
+                                    let eligible=live.prediction_check.as_ref().is_some_and(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && reversebolt_core::probes::choices(check).is_ok_and(|groups|groups.iter().any(|g|g.eligible)));
                                     if let Some(observed)=observed.filter(|_|eligible) {
                                         let requested=self.requested.entry(*id).or_insert_with(|| {
                                             change.filter(|c| c.phase==reversebolt_core::changes::Phase::Prepared).map_or(observed, |c| c.desired)
@@ -678,6 +680,14 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if external==CardSource::Ocr && let Some(check)=live.prediction_check.as_ref().filter(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id)
+                        && let Some(selection)=&check.automatic_selection {
+                        egui::CollapsingHeader::new("Why this value was checked").show(ui,|ui| {
+                            ui.label(&selection.rationale);
+                            ui.label(format!("Chosen after moment {} with {} fresh moments scheduled; {} findings considered.",check.after_frame,selection.scheduled_fresh_captures,selection.ranked.len()));
+                            ui.label(check.summary());
+                        });
+                    }
                     if external==CardSource::Ocr
                         && let Some(observed)=value.parse::<f64>().ok().filter(|v|v.is_finite())
                         && let Some(check)=live.prediction_check.as_ref().filter(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id && c.invalidated.is_none())
