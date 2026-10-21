@@ -11,11 +11,19 @@ Reference tokens: Agentbolt's `crates/agentbolt-desk/src/theme.rs` and Anode's
 `src/Anode/Daemon/ViewerTheme.cs`. Reversebolt's shared tokens live in
 `crates/reversebolt-app/src/theme.rs`.
 
-The left rail identifies Reversebolt and the session's observation source.
-The main workspace follows a clear sequence: open practice, observe, discover,
-test evidence, edit. The observation strip and small actual sample traces remain
-visible. Candidate counts and evidence explain why a value can or cannot yet be
-edited. History occupies a separate compact area below the work.
+The main application workspace is a collection of useful controls, not a report.
+Selecting an application starts discovery automatically. Each finding appears
+as a card with a plain name, a short description, a value or state, and an action
+appropriate to what the engine can actually do. Numbers can be dragged or typed
+when a trial is available; actions use buttons. Future verified switches and
+sliders must use the same shared engine rather than introducing display-only
+controls. Do not invent gameplay meanings or editable ranges to fill the layout.
+
+Keep uncertainty and age compact on the card. Put explanations, screenshots,
+candidate lists and technical evidence behind Inspect or Investigation details.
+Pause and stop remain easy to reach. The left rail holds application selection,
+agent connection and optional practice. Practice retains its explicit staged
+observe/discover/test/edit flow; it is separate from automatic application use.
 
 The first build's practice environment must be unmissably labeled. It supplies
 numeric observations and an arena boundary; it is not screen recognition or an

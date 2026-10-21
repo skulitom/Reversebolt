@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/google-deepmind/tapnet",
+  "revision": "730cda1c730877cfedbe01bf87fb1cadb78a565d",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/google-deepmind/tapnet/730cda1c730877cfedbe01bf87fb1cadb78a565d/LICENSE",
+      "path": "research/learned-tracking/vendor/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/google-deepmind/tapnet/730cda1c730877cfedbe01bf87fb1cadb78a565d/tapnet/torch/nets.py",
+      "path": "research/learned-tracking/vendor/tapnet/torch/nets.py",
+      "sha256": "4961a8e4882e8c9ac219c4714f6f2c811cc1ab665a439d4d2e79942002a9517c"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/google-deepmind/tapnet/730cda1c730877cfedbe01bf87fb1cadb78a565d/tapnet/torch/utils.py",
+      "path": "research/learned-tracking/vendor/tapnet/torch/utils.py",
+      "sha256": "a4267b3a6bd8ecf2dfe5effacab9f7a43664dc5d08966c98f6a0cc68f5ccedd3"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/google-deepmind/tapnet/730cda1c730877cfedbe01bf87fb1cadb78a565d/tapnet/torch/tapir_model.py",
+      "path": "research/learned-tracking/vendor/tapnet/torch/tapir_model.py",
+      "sha256": "87c05fb17d48d0f4353a00b67c9d40d3a264e13e43d88e3f7b5829119845e3ba"
+    }
+  ],
+  "model": {
+    "url": "https://huggingface.co/google/tapnet/resolve/5d3fb48e76c5422841e38501514121e251beabb7/causal_bootstapir_checkpoint.pt",
+    "revision": "5d3fb48e76c5422841e38501514121e251beabb7",
+    "path": "test-results/point-tracking-v1/assets/causal_bootstapir_checkpoint.pt",
+    "sha256": "87c1e752cf5ce56e3e2f7da460aeb4d40fc826d04ef2939bade86a5c7495377f",
+    "bytes": 218887028
+  },
+  "model_card": {
+    "url": "https://huggingface.co/google/tapnet/raw/5d3fb48e76c5422841e38501514121e251beabb7/README.md",
+    "sha256": "0e0d6ab776cc25383a323ce8316132e110611a772212ce2b87a7c1b09c8a2004"
+  },
+  "license": "Apache-2.0; see vendor/LICENSE and pinned official model card"
+}

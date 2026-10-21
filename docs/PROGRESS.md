@@ -515,3 +515,29 @@ and a separate published-build UI/MCP run pass. Preview
 See [effect observations and limits](research/EFFECT_OBSERVATIONS.md).
 Next: grounded action/context measurements and controlled contrasts to separate
 ordinary activity from intervention effects, including nonnumeric behavior.
+
+## 2026-10-21 — learned point tracking: remains 22%
+
+An isolated causal BootsTAPIR runner now supplies source-bound point trajectories
+to original Rust box aggregation. It uses pinned Apache-licensed upstream code
+and weights, with no game profiles or labels entering the tracker. Five new
+Rust checks cover geometric fit, missing/scattered points, malformed input and
+permanent loss. The controlled translation probe has 0.451px median point error.
+
+Automated replay of the same 48 saved-game windows improves gated moving-endpoint
+retention from 1/15 to 11/15, but loses all three cases with displacement at least
+four annotation pixels. Four false initial seeds still survive. The result is
+research-only; it does not establish meaningful motion, gameplay control or
+unseen-game generalization. A full repeat after an input-validation correction
+has identical outcome metrics. See [results and limitations](research/LEARNED_TRACKING.md).
+
+Category credits and the fixed denominator stay unchanged at **22 / 100**.
+The full goal remains active. The current card-based desktop preview remains
+running; this experiment adds no desktop model dependency or report view.
+The interface design explicitly retains named controls, short descriptions and
+appropriate direct actions, with evidence under Inspect. All 110 workspace
+tests, strict Clippy, formatting and the receipt-chain verification pass.
+The desktop check confirms the previous preview is responsive with eight
+history entries and the local model setting retained. Next: foreground point
+selection and supported deformation, while retaining fresh detection and simple
+hold baselines and preserving all failed cases.

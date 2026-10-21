@@ -9,6 +9,7 @@ use std::{
     time::{Duration, Instant},
 };
 
+pub mod point_tracks;
 pub mod review;
 pub mod tracking;
 

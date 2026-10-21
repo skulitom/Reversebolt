@@ -2,3 +2,8 @@
 # including the verbatim third-party snapshots, on every checkout platform.
 /research/action-equivalence/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /scripts/action-equivalence-verify.py -text
+/research/learned-tracking/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/scripts/point-tracking-*.py -text
+/scripts/fetch-point-tracker.py -text
+/crates/reversebolt-observer/src/point_tracks.rs -text
+/crates/reversebolt-observer/src/bin/reversebolt-point-track.rs -text
