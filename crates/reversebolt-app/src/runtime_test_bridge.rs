@@ -1,4 +1,4 @@
-//! Shared live response experiments. Input is supplied externally; capture and
+//! Shared live response experiments. Input is external or explicitly planned; capture and
 //! evidence are engine-owned. A screen contrast never promotes a semantic name.
 use crate::{runtime_bridge, runtime_trial_bridge};
 use reversebolt_core::{
@@ -216,7 +216,7 @@ impl Session {
             .ok_or("Choose an experiment from the shared session.")?;
         let mut test = engine.runtime_tests.get(id)?.clone();
         if c.action == "read_runtime_test" {
-            let mut result = json!({"test":test,"limitation":runtime_tests::LIMITATION});
+            let mut result = json!({"test":test,"executions":engine.runtime_tests.read_executions(&test)?,"limitation":runtime_tests::LIMITATION});
             if c.args.get("condition").is_some() || c.args.get("frame").is_some() {
                 let condition = c.args["condition"]
                     .as_u64()
@@ -251,10 +251,16 @@ impl Session {
         let revision = c.args["after_revision"]
             .as_u64()
             .ok_or("Supply the exact current experiment revision.")?;
+        let perform_action = match c.args.get("perform_action") {
+            None => false,
+            Some(v) => v
+                .as_bool()
+                .ok_or("Choose whether to perform the planned action.")?,
+        };
         let (condition, index) = test.begin_capture(revision)?;
         engine.runtime_tests.record(test.clone())?;
         checkpoint(engine, published)?;
-        let result = self.capture(engine, &mut test, condition, index, base);
+        let result = self.capture(engine, &mut test, condition, index, base, perform_action);
         if let Err(error) = &result {
             test.stop(error);
             self.cancel();
@@ -480,11 +486,33 @@ impl Session {
         condition: usize,
         index: usize,
         base: &Path,
+        perform_action: bool,
     ) -> Result<()> {
         if self.abort.load(Ordering::SeqCst) || self.deadline.is_none_or(|d| Instant::now() >= d) {
             return Err("The desktop stopped this comparison.".into());
         }
         let (path, input_path) = engine.runtime_tests.reserve(test, condition, index)?;
+        if perform_action {
+            let session = engine
+                .live
+                .as_ref()
+                .ok_or("The original application disconnected.")?;
+            if !session.view.connected
+                || session.view.investigation_id != test.investigation
+                || session.view.runtime.catalog_id != test.catalog_id
+                || session.view.process.window != test.window
+            {
+                return Err("The planned input target changed.".into());
+            }
+            crate::test_input::execute(
+                &session.view.process,
+                test,
+                condition,
+                index,
+                &path,
+                &self.abort,
+            )?;
+        }
         let capture = engine
             .live
             .as_ref()

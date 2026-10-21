@@ -17,6 +17,7 @@ mod runtime_test_bridge;
 mod runtime_trial_bridge;
 mod service;
 mod target;
+mod test_input;
 mod theme;
 mod ui;
 mod ui_live;
@@ -26,6 +27,13 @@ mod ui_value_control;
 use fs2::FileExt;
 
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("--runtime-test-input") {
+        let result = std::env::args()
+            .nth(2)
+            .ok_or_else(|| "Missing saved input plan.".to_string())
+            .and_then(|path| test_input::worker(std::path::Path::new(&path)));
+        std::process::exit(if result.is_ok() { 0 } else { 1 });
+    }
     if let Err(error) = run() {
         eprintln!("{error}");
         let directory = reversebolt_core::data_dir();

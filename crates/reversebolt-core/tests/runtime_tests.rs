@@ -438,6 +438,27 @@ fn retained_evidence_paths_and_checksums_are_enforced() {
     store.record(t.clone()).unwrap();
     assert_eq!(store.read_image(&t, 0, 0).unwrap(), png);
     assert!(store.read_input(&t, 0, 0).unwrap().is_some());
+    let plan_path = dir.join(&t.id).join("0-0.action.json");
+    let plan = serde_json::json!({"schema":1,"test_id":t.id,"condition":0,"frame":0,
+        "target":{"window":t.window,"session":t.scope.session},"action":null});
+    let plan_bytes = serde_json::to_vec(&plan).unwrap();
+    std::fs::write(&plan_path, &plan_bytes).unwrap();
+    assert!(store.read_executions(&t).unwrap()[0]["outcome"].is_null());
+    let outcome = plan_path.with_extension("outcome.json");
+    std::fs::write(
+        &outcome,
+        serde_json::to_vec(
+            &serde_json::json!({"plan_sha256":digest(&plan_bytes),"error":"Focus lost"}),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        store.read_executions(&t).unwrap()[0]["outcome"]["receipt"]["error"],
+        "Focus lost"
+    );
+    std::fs::write(&outcome, b"{\"plan_sha256\":\"other\"}").unwrap();
+    assert!(store.read_executions(&t).is_err());
     std::fs::write(input_path, b"null").unwrap();
     assert!(store.read_input(&t, 0, 0).is_err());
     t.conditions[0].frames[0].path = "../../other.png".into();

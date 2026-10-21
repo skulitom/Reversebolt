@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Product-owned comparison inputs (2026-10-21): **35%**. The shared MCP can now
+explicitly execute the next immutable test action, record its intent/outcome,
+capture the result and retain failures. A short-lived worker checks target
+identity, session and foreground focus, and releases keys if the editor exits.
+The default observation path still sends no input. Restart does not replay an
+interrupted step. This removes the external input-script dependency from a
+prepared comparison; field and action selection remain caller responsibilities.
+
+The frozen owned-fixture run passed 57 assertions: a complete 18-image response
+comparison with 12 product-executed holds, independent byte restoration, stale
+request refusal, focus refusal and release during editor termination. There were
+no external gameplay inputs or manually reviewed images. All 22 input workers
+exited, nine runtime helpers unloaded, and 21 pauses balanced. The 272-test suite,
+strict Clippy, formatting, release build, 52-tool smoke and artifact audit pass.
+
+Agent collaboration increases **6/10 to 7/10** for shared, durable action execution
+with verified interruption/restart behavior. Other credits remain foundation 4,
+native 6, observation 5, discovery 8, validation 4, intent 1 and generalization 0.
+No semantic or independent-game credit is awarded for the owned fixture.
+Preview `0.1.0-20261021-225832` preserves all 44 history entries and existing
+settings/edit records. Next: use these steps to test competing field explanations
+from observed play, then evaluate the unchanged policy on independent games.
+The full goal remains active. [Implementation and evidence](../research/planned-input/README.md).
+
 Activity-informed metadata review (2026-10-21): **34% unchanged**. Two separated
 play response episodes can now supply an image interpretation before the model
 sees metadata. An accepted description informs both type selection and field

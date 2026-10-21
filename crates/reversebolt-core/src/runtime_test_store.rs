@@ -175,6 +175,50 @@ impl Store {
         }
         Ok(bytes)
     }
+    /// Intent/outcome pairs remain readable even when input failed before an image.
+    pub fn read_executions(&self, t: &Test) -> Result<Vec<serde_json::Value>> {
+        Self::validate(t)?;
+        let mut entries = vec![];
+        for c in 0..3 {
+            for i in 0..FRAMES_PER_CONDITION {
+                let plan = self
+                    .directory
+                    .join(&t.id)
+                    .join(format!("{c}-{i}.action.json"));
+                if !plan.exists() {
+                    continue;
+                }
+                let bytes = bounded(&plan, 16_384)?;
+                let value: serde_json::Value =
+                    serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+                let action = i.checked_sub(2).and_then(|n| t.actions.get(n));
+                if value["schema"] != 1
+                    || value["test_id"] != t.id
+                    || value["condition"] != c
+                    || value["frame"] != i
+                    || value["target"]["window"] != t.window
+                    || value["target"]["session"] != t.scope.session
+                    || value["action"] != serde_json::json!(action)
+                {
+                    return Err("Retained input intent differs from the comparison plan.".into());
+                }
+                let outcome = plan.with_extension("outcome.json");
+                let result = if outcome.exists() {
+                    let bytes = bounded(&outcome, 16_384)?;
+                    let receipt: serde_json::Value =
+                        serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+                    if receipt["plan_sha256"] != visual::digest(&bounded(&plan, 16_384)?) {
+                        return Err("Input outcome belongs to a different saved intent.".into());
+                    }
+                    serde_json::json!({"sha256":visual::digest(&bytes),"receipt":receipt})
+                } else {
+                    serde_json::Value::Null
+                };
+                entries.push(serde_json::json!({"condition":c,"frame":i,"plan":value,"plan_sha256":visual::digest(&bytes),"outcome":result}));
+            }
+        }
+        Ok(entries)
+    }
     pub fn read_input(
         &self,
         t: &Test,

@@ -1,0 +1,111 @@
+{
+  "passed": true,
+  "artifact_root": "test-results\\planned-input-v1",
+  "frozen_sha256": "790a24df659d5ad5d196b236b984ea7f54bd126ab8df91e8af242e9b1633d961",
+  "native_checks": 57,
+  "workspace_tests": 272,
+  "mcp_tools": 52,
+  "comparison_images": 18,
+  "interruption_images": 2,
+  "execution_intents": 22,
+  "completed_holds": 12,
+  "interrupted_holds": 1,
+  "external_gameplay_inputs": 0,
+  "manual_images": 0,
+  "assessment": {
+    "limitation": "A comparison of rendered response within these observations. Windows key samples are not proof of delivered game actions. Screen changes do not measure physical speed or identify a gameplay property; unobserved and downstream effects remain unknown.",
+    "medians": [
+      136.84459459459458,
+      0.0,
+      131.80574324324323
+    ],
+    "reason": "Less rendered response was observed after the edit, and response returned after recovery.",
+    "status": "suppression_observed"
+  },
+  "focus_refusal": true,
+  "editor_exit_releases_key": true,
+  "restart_does_not_replay": true,
+  "helpers": 9,
+  "helper_receipts": [
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\08ee0106-ed56-4b48-a324-8ab8659b817c\\stdout.jsonl",
+      "sha256": "9694871fe6a519cf0601b5e8e7cf73bab8f32504c63f5516b79b2520e0b457e0",
+      "report_sha256": "d2f0139b292fc72b4c8683ec43a7282107147fec557cc34e7b2ba1b58eee638e"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\2de9e41c-2551-4017-8417-39b7dcc5ed07\\stdout.jsonl",
+      "sha256": "19a6cd59a28559f19a89f7fdc10eb2c738721023932adb75ab12107e30d7c522",
+      "report_sha256": "229eaf87a3d1ecbf694bc09f56418c888e26bbadcf42a7fdbea1e9a213a81f52"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\2ef80c6c-4599-4b49-b3a7-cf60fa07606f\\stdout.jsonl",
+      "sha256": "408fa66d41cc8e0ed3aafd1237c23dfea7c185144f8249d35d5b6577770abd26",
+      "report_sha256": "2c1b249ea58e278c3bb6a6ef77d610f14d587815ad8816aabe9a1d1c499c5868"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\3a4ce5e3-23a6-4792-b573-efa9b91571b1\\stdout.jsonl",
+      "sha256": "bea47bb07e68cef56d6678f6e0ddf7d591be71ddb228a8d1baa79723af233b81",
+      "report_sha256": "3fc829c3647bf8b59a76d453aba3340dfdb9b53b899dedc7b90f838aba1889f2"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\55d78e30-f0fd-4a90-8512-6de59d538042\\stdout.jsonl",
+      "sha256": "ee15934faf6896bacc947173e024bd03556bf65eac91cfa6e2018a906b6c7a8e",
+      "report_sha256": "8d86a77d94112b7ccbcb6e80226b6b700a17c9f831b9e5e815d918d839a7868b"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\66f86bec-dcc2-421e-b750-e4f630c0be91\\stdout.jsonl",
+      "sha256": "76810e7ee4ff317a2eb25de0b834c68b0583f838eefade86f7e1a32f47df0563",
+      "report_sha256": "1ddde01d710d161b6965e4f6ae3cfc9e1ec4388eabf9eb7e97f09822a0910060"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\7033e09a-62c4-4a40-9243-3e9d5fa1533e\\stdout.jsonl",
+      "sha256": "299207576649ef832b2410ab3f62861b46a95176ac05f593085426fee64aabaf",
+      "report_sha256": "be040578c5eea93fe63983f9f9cdb77a0dd6279af3112098a529f0a95719b15e"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\9153ce19-42fc-4fca-a48f-7f79d85c9e77\\stdout.jsonl",
+      "sha256": "13939a16ae90e369d42ce95f5f7d0e22e63741cd39c30f167f76ffc38cc70b01",
+      "report_sha256": "77289abda12d6bd4fe960c4b704df21cb7e4742c6e69f9337b45e9a9b644f859"
+    },
+    {
+      "path": "case\\data\\runtime\\65248-01dd61a7137e5ca8\\e83ed871-e578-43f1-98f2-056fdf4069e6\\stdout.jsonl",
+      "sha256": "6100e3387a55b400a2eee13f8b394664f784ba66d70923a4b4e66863fc017afc",
+      "report_sha256": "e675785c2dcb62a567972c53b713dc1e42cd704a7b94f829ed7e7fc4d5a78cb2"
+    }
+  ],
+  "balanced_pauses": 21,
+  "maximum_stop_to_resume_us": 58,
+  "helper_heap_while_paused": 0,
+  "writes_including_restore": 2,
+  "input_workers_exited": 22,
+  "children": [
+    {
+      "pid": 65248,
+      "exit_code": 0
+    },
+    {
+      "pid": 68576,
+      "exit_code": 1
+    },
+    {
+      "pid": 84716,
+      "exit_code": 1
+    },
+    {
+      "pid": 81392,
+      "exit_code": 1
+    }
+  ],
+  "preview": "0.1.0-20261021-225832",
+  "desktop_pid": 53660,
+  "history_preserved": 44,
+  "limitations": [
+    "Owned explicitly labelled ABI/renderer fixture; no independent game or semantic/generalization credit.",
+    "Evaluator selects the field and key plan. Product executes it but does not learn action meanings.",
+    "Sampled input and rendered suppression do not establish physical quantities or full world recovery.",
+    "Automatic input is opt-in, same-session foreground only, and restricted to letters, digits, arrows and Space.",
+    "Focus checks are sampled; Windows input acceptance is not proof of game delivery.",
+    "Human takeover wiring is retained; native interruption here is editor exit, not a desktop Take control click.",
+    "Audit authored after the frozen run."
+  ]
+}
