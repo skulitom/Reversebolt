@@ -1,0 +1,444 @@
+{
+  "revision": "da32512de2b2ad7dd7be31788c8b91c93326bc3f",
+  "frozen_sha256": "116d15b03653086cf9ff51d148e8f97c0d54b73058c12e050eddd0d182ced872",
+  "binaries": {
+    "reversebolt-mcp.exe": "8f8bc06bd2a865d9b0515a0a3760c2108e9264feccd1e03c1fd938f3ee6c331a",
+    "reversebolt-runtime-candidates.exe": "8031c2263095dc175ff12c60acbe6a07a95b1eadf27dda4c3a5e6df0dfc8f72f",
+    "reversebolt-runtime-loader.exe": "3773786a489c58dbd39c4d17a0527f7bacd11495e701edf4637c5ff308a09025",
+    "Reversebolt.exe": "0d6fc38e05ba8b0cb14680dc6903cc501a5528bc53d06a9ff26faceac1cf3789",
+    "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+    "reversebolt_runtime.dll": "d9246a462b1b52e15250f50ffd8b6988b6495c63163610934c66900b290cb742"
+  },
+  "source_files": 128,
+  "runs": {
+    "fixture": {
+      "passed": true,
+      "app_pid": 92548,
+      "target_pid": 84844,
+      "owned_fixture": true,
+      "cards": 48,
+      "catalog_matches": 48,
+      "selected_beyond_initial_display": 0,
+      "text_query": "Speed",
+      "text_matches": 3,
+      "images": {
+        "OwnedPathFixture": 48
+      },
+      "selected": [
+        {
+          "id": "fb613d616a5ca60c4d425dbe07bc5fa784758dda0bca32aa7fa0ec2137a4e1bf",
+          "name": "Coefficient",
+          "image": "OwnedPathFixture",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 1
+              },
+              "text": "Speed",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 3
+              },
+              "text": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+              "truncated": true
+            }
+          ],
+          "steps": 2
+        },
+        {
+          "id": "13f85d20fea5b38e110fa187826bd6809476cc6e6afa3619d9ced08f323bf171",
+          "name": "Coefficient",
+          "image": "OwnedPathFixture",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 1
+              },
+              "text": "Speed",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 3
+              },
+              "text": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+              "truncated": true
+            }
+          ],
+          "steps": 2
+        },
+        {
+          "id": "38aeeff7908bab204065f9e45b3c6d62c3c96c4cb79cccd3a719419e4a065996",
+          "name": "Coefficient",
+          "image": "OwnedPathFixture",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 1
+              },
+              "text": "Speed",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "OwnedPathFixture",
+                  "layout_sha256": "fb05a9ceacfec6312016ad39af42654008f187defa39e6522bfb6ec999bccdc4",
+                  "type_name": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+                },
+                "field_id": 3
+              },
+              "text": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+              "truncated": true
+            }
+          ],
+          "steps": 2
+        },
+        {
+          "id": "28f87ad1bfdbc8df22585203f878709091c4be341b417e7c9dda9b50a56236b4",
+          "name": "Identity",
+          "image": "OwnedPathFixture",
+          "context": [],
+          "steps": 1
+        }
+      ],
+      "refresh_ms": 453,
+      "operations": 4,
+      "pauses": 10,
+      "evidence": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\fixture\\data\\runtime\\84844-01dd61701463aed6\\1e010151-e2c6-4968-9a22-959aae746837",
+          "receipt_sha256": "89c4ee87922ad5a9459ab133cf44dd366b193e1e46172960e95f375d33b91d61",
+          "report_sha256": "540d52d72500cb6e2e3ec0986b21da25fe4f84c51c67e87fe79dd6ce41ab898b"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\fixture\\data\\runtime\\84844-01dd61701463aed6\\6a06d387-ff80-42b0-91fd-87de690feb17",
+          "receipt_sha256": "01b63f54589745f8b365c98ab54400702e9b4f5e1cfd959361a9818e076295ff",
+          "report_sha256": "cd8b6f02de65a4417c47c458e5333367843524d0efeacd5b2d1785257e55f65f"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\fixture\\data\\runtime\\84844-01dd61701463aed6\\b846d082-2c80-4c0c-8f3d-7f2d0fa55d89",
+          "receipt_sha256": "d472baa14a6fb43ef18ce07218d41bca7c81fb9fe4165028f81bfffba482aa8c",
+          "report_sha256": "1dd8a07a46495475e82e42b43cd2d456ae030019ce754a66ab1e15fef5a98846"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\fixture\\data\\runtime\\84844-01dd61701463aed6\\dbfeabc6-e0aa-46c0-a7c6-87044d6f98a2",
+          "receipt_sha256": "a21856b1df9abed6669c3bedd4b33c14ff74efb4ea52cec11cd71229bf62647f",
+          "report_sha256": "f0bace316bb4f04d8b5a4658f489b59d206bc9dddac21795626e90f878726c36"
+        }
+      ],
+      "screenshots": 0,
+      "gameplay_input": 0,
+      "gameplay_writes": 0,
+      "verified_controls": 0,
+      "execution": {
+        "app_exit": 1,
+        "host_exit": 0,
+        "mcp_exit": 1
+      },
+      "job": {
+        "cursor": "4328",
+        "outputTruncated": false,
+        "hasMoreOutput": false,
+        "jobId": "j_77c9b772f8074910b0325667296ca266",
+        "agentId": "a_acae742202454efa8bc347cbb1cd9242",
+        "state": "completed",
+        "finished": true,
+        "workerPid": 85548,
+        "session": 2,
+        "exitCode": 0,
+        "error": null,
+        "elapsedMs": 64541
+      }
+    },
+    "game": {
+      "passed": true,
+      "app_pid": 5268,
+      "target_pid": 86048,
+      "owned_fixture": false,
+      "cards": 64,
+      "catalog_matches": 27052,
+      "selected_beyond_initial_display": 4,
+      "text_query": "RewiredSaveData.dat",
+      "text_matches": 9,
+      "images": {
+        "Assembly-CSharp-firstpass.dll": 6,
+        "Assembly-CSharp.dll": 4,
+        "FurySdkProjectUtils.dll": 4,
+        "FuryStudios.FurySDK.dll": 6,
+        "PlayMaker.dll": 6,
+        "Rewired_Core.dll": 6,
+        "Rewired_Windows.dll": 6,
+        "System.dll": 6,
+        "Unity.InputSystem.dll": 5,
+        "Unity.TextMeshPro.dll": 5,
+        "UnityEngine.CoreModule.dll": 5,
+        "UnityEngine.UI.dll": 5
+      },
+      "selected": [
+        {
+          "id": "aad55163fed6e2ce64f535e56c381e236ff7531d1c31d6d647a79378f17f8f4c",
+          "name": "m_CurrentUpdateStepCount",
+          "image": "Unity.InputSystem.dll",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.InputSystem.dll",
+                  "layout_sha256": "89b7f169b05a6a892dde601e4304cb82379f3611c6106b323c1970e7049e0e3c",
+                  "type_name": "UnityEngine.InputSystem.InputControl, Unity.InputSystem, Version=1.14.2.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 4
+              },
+              "text": "Keyboard",
+              "truncated": false
+            }
+          ],
+          "steps": 1
+        },
+        {
+          "id": "207e3ca775e29dc71effd99d3f79fc5508f54913851120beede4a44c6cd20cb9",
+          "name": "m_GetFontFeaturesAtRuntime",
+          "image": "Unity.TextMeshPro.dll",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.TextMeshPro.dll",
+                  "layout_sha256": "f9590bab382ca1a864c2877d74df662200527ab077d7cf0cb1dcba3ed1a97ed4",
+                  "type_name": "TMPro.TMP_Settings, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 1
+              },
+              "text": "2",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.TextMeshPro.dll",
+                  "layout_sha256": "f9590bab382ca1a864c2877d74df662200527ab077d7cf0cb1dcba3ed1a97ed4",
+                  "type_name": "TMPro.TMP_Settings, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 15
+              },
+              "text": "Fonts & Materials/",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.TextMeshPro.dll",
+                  "layout_sha256": "f9590bab382ca1a864c2877d74df662200527ab077d7cf0cb1dcba3ed1a97ed4",
+                  "type_name": "TMPro.TMP_Settings, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 27
+              },
+              "text": "Sprite Assets/",
+              "truncated": false
+            },
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.TextMeshPro.dll",
+                  "layout_sha256": "f9590bab382ca1a864c2877d74df662200527ab077d7cf0cb1dcba3ed1a97ed4",
+                  "type_name": "TMPro.TMP_Settings, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 31
+              },
+              "text": "Color Gradient Presets/",
+              "truncated": false
+            }
+          ],
+          "steps": 1
+        },
+        {
+          "id": "fc64a98855df31ecd80484e8a0333137929efefef4ee7df0acec598186e1078b",
+          "name": "<receiveShadows>k__BackingField",
+          "image": "UnityEngine.CoreModule.dll",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "UnityEngine.CoreModule.dll",
+                  "layout_sha256": "94c2924363fa517a2c56732be07479a7951f231393d068ca55cdb8a722b5a1a9",
+                  "type_name": "UnityEngine.Rendering.SupportedRenderingFeatures, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 32
+              },
+              "text": "Light Probe Groups are unavailable as Probe Volumes have been enabled by the current Render Pipeline.",
+              "truncated": false
+            }
+          ],
+          "steps": 1
+        },
+        {
+          "id": "63643094f0230157dc35159fcbd76db7d03652516f248f40b75afb52c4ac8b66",
+          "name": "m_IncludeForMasking",
+          "image": "UnityEngine.UI.dll",
+          "context": [
+            {
+              "field": {
+                "declaring": {
+                  "image": "Unity.TextMeshPro.dll",
+                  "layout_sha256": "8edbdf2203b320b2b57abcc224a2936c6e83a8e03e8f08aebeca86c03e2d7dcc",
+                  "type_name": "TMPro.TMP_Text, Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+                },
+                "field_id": 0
+              },
+              "text": "Dialog Title",
+              "truncated": false
+            }
+          ],
+          "steps": 2
+        }
+      ],
+      "refresh_ms": 2735,
+      "operations": 2,
+      "pauses": 161,
+      "evidence": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\game\\data\\runtime\\86048-01dd6170d2e43e52\\1d678759-872f-442c-add2-a258b225a26e",
+          "receipt_sha256": "fe29a486beebedfc2293de9b8e641184220012eae2c7d11a3d601187fda85f7f",
+          "report_sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\game\\data\\runtime\\86048-01dd6170d2e43e52\\353d3ab1-f75b-41fd-af89-0e81031a6785",
+          "receipt_sha256": "bca63c33c14c7466bfa845ea194bd725b952bbb0a52e5ed21493c831c3e29e70",
+          "report_sha256": "2129e1f4c03567db73826a1735a11f3ccb80b28d5b276e39349a72a9acc76500"
+        }
+      ],
+      "screenshots": 0,
+      "gameplay_input": 0,
+      "gameplay_writes": 0,
+      "verified_controls": 0,
+      "execution": {
+        "app_exit": 1,
+        "host_exit": null,
+        "mcp_exit": 1
+      },
+      "job": {
+        "cursor": "4421",
+        "outputTruncated": false,
+        "hasMoreOutput": false,
+        "jobId": "j_1dbf3e6889d845f69e0ae772d1f02dff",
+        "agentId": "a_acae742202454efa8bc347cbb1cd9242",
+        "state": "completed",
+        "finished": true,
+        "workerPid": 88916,
+        "session": 2,
+        "exitCode": 0,
+        "error": null,
+        "elapsedMs": 110478
+      }
+    }
+  },
+  "exploratory_replay": {
+    "input_path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\game\\data\\runtime\\61364-01dd616cde246d0e\\f09732af-3fae-4578-bec0-ef2335d52246\\report.json",
+    "input_sha256": "eb2c7a9e9450e1af501726793cafad2c38dd07ee5b742c68fa0c8168ec03b39f",
+    "query": "RookPos",
+    "exploratory": true,
+    "query_matches": 4,
+    "query_fields": [
+      "value",
+      "useVariable",
+      "showInInspector",
+      "networkSync"
+    ],
+    "in_old_display": 0,
+    "in_new_display": 0,
+    "new_cards_with_context": 64,
+    "meaning_verified": false
+  },
+  "game_after": {
+    "pid": 86048,
+    "created": "01dd6170d2e43e52",
+    "session": 2,
+    "responding": true,
+    "helper_absent": true,
+    "exited": true,
+    "parent_close_refused": true
+  },
+  "desktop": {
+    "version": "0.1.0-20261021-163051",
+    "pid": 80632,
+    "session": 1,
+    "window": 4723114,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-163051\\Reversebolt.exe",
+    "history_before": 29,
+    "history_after": 29,
+    "history_exactly_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "frozen_binaries_match": true,
+    "ok": true,
+    "old_pid": 89776,
+    "close_attempts": 2
+  },
+  "smoke": {
+    "sha256": "73fa97060c838199bfe2dc7293f72207db1dc5b073680992d3089e91a1a489fe",
+    "result": {
+      "practice": [
+        {
+          "seed": 8675309,
+          "matches": [
+            4,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 1001,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 20261020,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        }
+      ],
+      "mcp_tools": 39,
+      "shared_session": "passed",
+      "auth_and_origin": "passed",
+      "stale_restore": "rejected",
+      "restart": "history retained; controls invalidated"
+    }
+  },
+  "scope": "Snapshot context and searchable catalogue; no verified gameplay effects or cross-game generalization."
+}

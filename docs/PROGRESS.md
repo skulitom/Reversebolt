@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest runtime context/search (2026-10-21): **31% unchanged**. Search now includes
+direct same-object text and filters the retained catalogue before the display
+limit. Search/show preserve discovery provenance and stale-cursor checks; new
+cards remain historical until refreshed. The owned fixture passed search, refresh,
+replay, null-root and recovery checks with ten balanced pauses. A fresh Blue Prince
+run searched 27,052 candidate paths and refreshed four outside the initial 64,
+using zero screenshots, gameplay input or writes. They were still input/rendering
+fields, not useful verified gameplay controls. Exploratory saved-data search can
+find a contextual label absent from the initial cards, but the new automatic
+ranking still omits it. All 205 workspace tests, strict Clippy, the release build
+and frozen 39-tool smoke passed. The source/binary/receipt audit passed for both
+native cases. Preview `0.1.0-20261021-163051` is running with all 29 history entries
+exactly preserved and the same local model. Next: one useful hidden control with
+an independently checked effect, followed by matched comparison of discovery
+methods. All weighted credits and the full active goal remain unchanged.
+[Implementation and limits](../research/runtime-context/README.md).
+
 Latest integrated internal-value cards (2026-10-21): **31% unchanged**. Selecting
 a supported runtime now starts discovery through the shared managed-job engine;
 humans see provisional cards and agents can discover/refresh through MCP. Exact

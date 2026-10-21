@@ -3,9 +3,17 @@
 An open-source Rust workbench for discovering what controls an unfamiliar game.
 Part of the Bolt family. Humans and agents use the same engine and session.
 
-**Research preview:** connect a running application, capture its window and
-bounded memory, and compare changing screen numbers with memory trajectories.
-Connecting starts observation automatically; values appear as simple cards.
+**Research preview:** connect a running application to start discovery automatically.
+Supported IL2CPP applications provide internal-value candidates through runtime
+inspection without screenshots. Other applications use the existing window and
+bounded-memory observations to compare screen numbers with memory trajectories.
+Values appear as simple cards; their gameplay meaning remains unverified.
+**Find more values** searches the retained runtime catalogue, including nearby
+object text. **Show card** brings a result onto the board; **Refresh value** reads
+its current path again. Text marked **First seen with** belongs to the discovery
+snapshot and is a clue, not a verified description or persistent object identity.
+See the [runtime workflow](research/runtime-product/README.md) and
+[context/search evidence](research/runtime-context/README.md).
 When a numeric finding has matches early enough in the observation pass,
 Reversebolt automatically freezes its predictions and checks later readings.
 It chooses by investigation effort and reading coverage, not an invented gameplay
@@ -42,8 +50,9 @@ cargo run -p reversebolt-app --bin Reversebolt
 ```
 
 Choose **Connect to application**, search by name, title or PID, select a window,
-then **Connect**. Observation starts immediately. Keep playing while a bounded
-16-moment pass discovers values; comparisons begin after 12 moments. Each card
+then **Connect**. Discovery starts immediately. Supported runtimes first produce
+internal-value cards. The visual/memory fallback uses a bounded 16-moment pass
+while you play; comparisons begin after 12 moments. Each card
 has a name, short description and current value. **Learning** means its effect
 and controlling state are still unverified; **Inspect** opens its details.
 Use **Pause** or **Stop** at any time. **Keep looking** starts another pass over
