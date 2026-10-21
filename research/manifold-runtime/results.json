@@ -1,0 +1,56 @@
+{
+  "protocol": "exploratory, not held-out",
+  "product_revision": "348d5c3d32039daedfb34989a9293af1fc82f7d1",
+  "movement_criteria_passed": true,
+  "trial_phase": "restored",
+  "trial_id": "a0caa82f-1827-4885-a1ee-a4cd69283318",
+  "setup_screenshots_reviewed": 4,
+  "measurement_frames_automated": 18,
+  "gameplay_input_pulses": 12,
+  "total_requested_movement_ms": 2400,
+  "gameplay_field_writes": 2,
+  "helper_operations": 4,
+  "pauses": 114,
+  "maximum_stop_to_resume_us": 5178,
+  "helper_allocations_while_paused": 0,
+  "helper_deallocations_while_paused": 0,
+  "evidence": [
+    {
+      "receipt": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\9ab69d58-77f1-4f39-a8c6-ab6024c9e4d1\\stdout.jsonl",
+      "receipt_sha256": "6a69918db43ee0ae2a849effd5a49e92105bcdb00f8e25eca553b09a50dbe079",
+      "report_sha256": "70130d60ef9613bc9ce2dbb10ef00927ac1fa46ba03cd1e11799d424fbbed20f",
+      "pauses": 1
+    },
+    {
+      "receipt": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\a0c79775-ac16-422a-9348-f9cbbf26c72c\\stdout.jsonl",
+      "receipt_sha256": "8fc03ffe539abf13adc1b45d3c152e705d656c073cc427ebb59a79650ac271db",
+      "report_sha256": "f6cf520ee1cb4db18ebd5692b694d13aad0f265b27ad5da79f6de0ff4ced23a0",
+      "pauses": 1
+    },
+    {
+      "receipt": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\a0d8b333-b3dd-436e-951e-eb1a527d7023\\stdout.jsonl",
+      "receipt_sha256": "09737686d90e2a6a679d68efb388b0934c552bf260cbae738a044810a29a9a9f",
+      "report_sha256": "78b58c73debc2d663c16d812d6b1eeb376b97d215180be331980024cd6498918",
+      "pauses": 1
+    },
+    {
+      "receipt": "C:\\DEV\\Reversebolt\\test-results\\manifold-runtime-v1\\data\\runtime\\69972-01dd618378b76b89\\e16ab151-1999-4b16-af71-963def104364\\stdout.jsonl",
+      "receipt_sha256": "d9b379f1987e260561c0c3707947683e06990c40cd6292dfd52b50589aeed1fc",
+      "report_sha256": "276b788da3a350622e537a547a3b4875ea61779e208d0ab0ec99dfc85d038a63",
+      "pauses": 111
+    }
+  ],
+  "storage_changes": {
+    "Settings.txt": "added",
+    "Saves\\Screenshot3.jpg": "added",
+    "Saves\\SaveSlot3.data": "added",
+    "Player.log": "added"
+  },
+  "existing_save_slots_1_2_unchanged": true,
+  "cleanup": {
+    "game_69972_exited": true,
+    "owned_headless_job_cancelled_finished": true,
+    "lease_released": true
+  },
+  "limitation": "An exploratory reversible effect on rendered response to lateral input, not held-out automatic semantic inference, coordinate velocity measurement, persistence across loads, or proof of no downstream effects. Stable camera/scene and no collisions are needed; preserve failures and invalidate ambiguous outcomes."
+}

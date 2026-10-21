@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "frozen_before_first_movement_or_gameplay_write": true,
+  "selection": "Manual exploratory selection from the unchanged automatic runtime catalogue; metadata names are hypotheses, not labels or validation.",
+  "candidate_id": "ef12ce1f687138cd5c7ddd4348d6ea79e490a857c67bd769bc05c0d46c00495a",
+  "catalog_id": "611e036c-fe53-4ba2-8dfe-6b8985a7b57b",
+  "hypothesis": "This float controls ordinary lateral walking speed. Setting it from its observed 8.2 to 0 should suppress view displacement during the same movement input; restoring should recover displacement.",
+  "replacement": "0",
+  "conditions": ["baseline", "changed", "restored"],
+  "per_condition": {"stationary_pair": true, "keys": ["d", "a", "d", "a"], "hold_ms": 200, "minimum_settle_ms": 250},
+  "observation": "Anode PNG screenshots at width 640, saved and evaluated automatically without per-frame model inspection. Verify the game remains the foreground window before input. No camera input.",
+  "measurement": {"crop_xyxy": [24, 40, 616, 336], "grayscale_gaussian_blur_radius": 1, "primary": "mean absolute pixel difference between before/after each pulse", "secondary": "fraction of pixels differing by more than 12 gray levels"},
+  "success_criteria": {"baseline_and_restored_median_difference_min": 5, "baseline_and_restored_stationary_ratio_min": 5, "changed_median_difference_max": "max(2, 0.2 * baseline median)", "restored_to_baseline_ratio_min": 0.5},
+  "limits": "An exploratory reversible effect on rendered response to lateral input, not held-out automatic semantic inference, coordinate velocity measurement, persistence across loads, or proof of no downstream effects. Stable camera/scene and no collisions are needed; preserve failures and invalidate ambiguous outcomes.",
+  "safety": "Only one numeric field, a fresh guarded write and the exact receipt's guarded restoration. No retries after uncertainty. Record file changes; do not silently roll back saves. Stop input on unexpected focus or state. Twelve short movement pulses total."
+}
