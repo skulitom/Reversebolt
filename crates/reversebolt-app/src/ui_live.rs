@@ -564,6 +564,13 @@ impl LivePane {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
                                     let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
                                     let eligible=live.prediction_checks.iter().any(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && reversebolt_core::probes::choices(check).is_ok_and(|groups|groups.iter().any(|g|g.eligible)));
+                                    if !eligible && *readable {
+                                        let unrestored=state.changes.iter().any(|c|c.scope.investigation==live.investigation_id && (c.phase.unresolved() || c.phase==reversebolt_core::changes::Phase::Written));
+                                        if ui.add_enabled(!busy && live.connected && !unrestored && live.value_searches.len()<reversebolt_core::value_search::MAX_SEARCHES,egui::Button::new("Find this value"))
+                                            .on_hover_text("Use this observed number to search more widely, then watch fresh changes. Earlier findings stay in history.").clicked() {
+                                            handle.submit("search_number",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
+                                        }
+                                    }
                                     if let Some(observed)=observed.filter(|_|eligible) {
                                         let requested=self.requested.entry(*id).or_insert_with(|| {
                                             change.filter(|c| c.phase==reversebolt_core::changes::Phase::Prepared).map_or(observed, |c| c.desired)
@@ -1039,6 +1046,16 @@ impl LivePane {
         ui.label(format!("{latest_numbers} provisional numeric readings · {possible_matches} possible memory matches"));
         ui.label(RichText::new("The first pass collects up to 16 moments. Comparisons begin after 12; pause or stop at any time. Matches remain unverified.").size(12.0).color(MUTED));
         ui.add_space(8.0);
+        if !live.value_searches.is_empty() {
+            egui::CollapsingHeader::new("Value-guided searches").show(ui,|ui| {
+                for search in &live.value_searches {
+                    ui.label(format!("{} = {} · {:.1} MiB read · {} areas retained, {} omitted · {}",
+                        search.source_label,search.value,search.read_bytes as f64/1_048_576.,
+                        search.retained_windows,search.omitted_windows,search.stop));
+                    ui.label(RichText::new("Selected from a past observation; fresh changing values must validate them. Other representations and unscanned memory remain unknown.").size(12.).color(MUTED));
+                }
+            });
+        }
         if !live.coverage.batches.is_empty() {
             egui::CollapsingHeader::new("Earlier memory batches").show(ui,|ui| {
                 ui.label("Historical evidence. Addresses and gameplay effects remain unverified.");

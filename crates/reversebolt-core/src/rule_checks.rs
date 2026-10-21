@@ -545,6 +545,7 @@ mod tests {
             }
         }
         let view = LiveView {
+            value_searches: vec![],
             memory_process: None,
             memory_sources: vec![],
             memory_sources_error: None,

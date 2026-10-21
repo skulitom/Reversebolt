@@ -1,5 +1,20 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Value-guided broad search — 2026-10-21
+
+All 176 workspace tests, strict Clippy, formatting, release build and packaged
+checks pass. The fixed native matrix retains a float32 case stopped before
+search by an initial blank capture, a successful distant F64 field discovery
+with twelve new fitting and four prospective observations, and the expected
+miss of a field storing half the visible value. Source/selection/fresh-evidence
+separation and read accounting pass the post-run audit. No game was controlled,
+no screenshot was manually reviewed and no native write was requested.
+
+The 33-tool smoke is `test-results/smoke-caf4a168/report.json`. Preview
+`0.1.0-20261021-105104` is running with eight history entries and the local model
+choice preserved. All owned native processes exited and the Anode lease was
+released. [Frozen method, evidence and limits](../research/value-search/README.md).
+
 ## Fixed-window native capture sampling — 2026-10-21
 
 All 170 workspace tests, strict Clippy, formatting, release build and packaged

@@ -23,6 +23,36 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+## Searching more widely for an observed number
+
+`reversebolt_search_number` backs the card's **Find this value** action. Supply
+the current investigation, batch, sample count as `after_frame`, and an active
+OCR track with a readable latest value. The engine takes the seed from that
+observation; callers cannot supply an address, layout or replacement number.
+Applied/unresolved trials must be restored/resolved first.
+
+The scan looks beyond previously selected memory, reading up to 512 MiB in
+64 KiB requests within the investigation's 4 GiB allowance. A ten-second
+cooperative deadline is checked between requests, not around potentially blocked
+OS calls. Naturally aligned little-endian i32/f32/f64 literal encodings nominate
+64-byte windows. At most 4096 windows survive deterministic address sampling;
+counts of matches, retained/omitted windows, unavailable reads, eligible/planned
+bytes and stop reason are explicit. The scan discards raw bytes, then starts a
+new memory batch only after saving its selection receipt and prior evidence.
+
+Sixteen automatic observations normally follow, with fresh fitting and prospective
+checks. Set `auto_observe:false` for explicit scheduling. The seed contributes
+no training/validation sample or edit authority. Other encodings, values that
+changed since observation, unscanned regions and omitted windows can be missed.
+Ordinary **Keep looking** remains available for broader representation discovery
+without this literal-value filter.
+
+`live.value_searches` retains up to eight receipts per investigation. Selection
+files are charged to the existing archive budget. Completed reads remain charged
+even if persistence fails; that failure preserves the current batch. No-match
+results also preserve it. After uncertain delivery, inspect the receipts and
+current scope; do not invent a new scope and replay the search blindly.
+
 ## Rechecking known findings
 
 `reversebolt_recheck_findings` starts a fresh batch at the current frozen
@@ -124,6 +154,7 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_read_change_evidence` | Read the before-image and one recorded post-edit/restoration image, with hashes and comparisons |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_recheck_findings` | Revisit frozen hypotheses at known addresses with fresh evidence and four automatic captures |
+| `reversebolt_search_number` | Search wider memory using an observed number, then automatically collect fresh evidence |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
 | `reversebolt_observe` | Twenty observation/memory samples |
@@ -310,7 +341,7 @@ Older records without a baseline explicitly lack this evidence.
 
 ## Image-grounded agent observations
 
-There are now 32 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 33 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's

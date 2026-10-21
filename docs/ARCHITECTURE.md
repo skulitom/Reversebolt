@@ -1,5 +1,16 @@
 # Shared engine, two interfaces
 
+Value-guided search is a selection pass, separate from correspondence fitting.
+It scans up to 512 MiB of previously unselected memory for literal encodings of
+an OCR observation, retaining at most 4096 64-byte neighborhoods by stable
+address hashing. Per-region metadata is checked around each read; partial,
+failed or changed reads supply no candidates. The search discards its bytes and
+archives its receipt before using the normal batch transition to collect fresh
+trajectories. The seed never supplies a training or prospective sample. Search
+reads share the 4 GiB ceiling, saved selection files share the archive budget,
+and at most eight searches can occur in one investigation. Ordinary broad
+cohorts remain available for values that do not share their visible encoding.
+
 Windows Graphics Capture samples a short fixed window after the first completed
 frame (80 ms, at most eight frames) and retains the last completed image. Pixel
 content never selects a winner or causes a retry. The native request keeps only

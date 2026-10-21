@@ -606,7 +606,7 @@ impl Controller {
                 return Err("auto_observe must be true or false.".into());
             }
             let automatic = match command.action.as_str() {
-                "attach_process" | "recheck_findings" => {
+                "attach_process" | "recheck_findings" | "search_number" => {
                     command.args["auto_observe"].as_bool().unwrap_or(true)
                 }
                 "advance_memory" => command.args["auto_observe"] == true,
@@ -937,6 +937,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                value_searches: vec![],
                 memory_process: None,
                 memory_sources: vec![],
                 memory_sources_error: None,
@@ -1146,12 +1147,17 @@ mod tests {
     }
 
     #[test]
-    fn successful_connection_starts_one_bounded_report_without_another_command() {
-        for source in ["desktop", "agent"] {
+    fn connection_and_value_search_start_one_bounded_observation_job() {
+        for (source, action) in [
+            ("desktop", "attach_process"),
+            ("agent", "attach_process"),
+            ("desktop", "search_number"),
+            ("agent", "search_number"),
+        ] {
             let (sent, received) = mpsc::channel();
             let engine = EngineHandle::test_worker(EngineView::default(), move |command, view| {
                 sent.send(command.clone()).unwrap();
-                if command.action == "attach_process" {
+                if matches!(command.action.as_str(), "attach_process" | "search_number") {
                     *view = initial_view();
                 }
                 json!({"ok":true,"state":view})
@@ -1160,7 +1166,7 @@ mod tests {
             let (reply, response) = mpsc::channel();
             c.command((
                 Command {
-                    action: "attach_process".into(),
+                    action: action.into(),
                     args: json!({}),
                     source: source.into(),
                 },
@@ -1171,7 +1177,7 @@ mod tests {
                     .recv_timeout(Duration::from_secs(2))
                     .unwrap()
                     .action,
-                "attach_process"
+                action
             );
             for _ in 0..100 {
                 c.finish_manual();

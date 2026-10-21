@@ -1,0 +1,272 @@
+{
+  "protocol_sha256": "e597550452c3d1e7d53f038f5188e01462bcf7627dea064e7116c2dfbe3237aa",
+  "audit": "Post-run; all strict runner failures retained.",
+  "cases": [
+    {
+      "report": {
+        "slot": 0,
+        "errors": [
+          "AssertionError()"
+        ],
+        "protocol_sha256": "e597550452c3d1e7d53f038f5188e01462bcf7627dea064e7116c2dfbe3237aa",
+        "fixture_pid": 70848,
+        "initial_oracle": {
+          "field": 1683420926880,
+          "arena": 1683342491648,
+          "variant": 0,
+          "value": 40
+        },
+        "engine_pid": 62360,
+        "mcp_pid": 43892
+      },
+      "strict_passed": false,
+      "initial_tracks": [
+        {
+          "id": 0,
+          "label": "Number at 225, 71",
+          "samples": [
+            40.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            null,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ]
+        }
+      ],
+      "initial_empty_text_captures": [
+        {
+          "frame": 12,
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "warning": "The image is mostly one color; visible details may be unavailable.",
+          "sampling": {
+            "frames": [
+              {
+                "completed_us": 182506,
+                "compositor_100ns": 1429536212121,
+                "detail_fraction": 0.02374242424242424,
+                "height": 220,
+                "rgba_sha256": "3b1caf7f042be842d006dd0f074be587048400b3e0d944f4a9f9ac70ed7104db",
+                "width": 600
+              },
+              {
+                "completed_us": 242173,
+                "compositor_100ns": 1429536818181,
+                "detail_fraction": 0.00010606060606060606,
+                "height": 220,
+                "rgba_sha256": "3bf28707010e9cd306e6417effdadb31f19f383dfc7d1b386140e32e3166703b",
+                "width": 600
+              }
+            ],
+            "max_frames": 8,
+            "policy": "last_completed_in_fixed_window_v1",
+            "selected": 1,
+            "settle_ms": 80
+          }
+        }
+      ],
+      "raw_sha256": {
+        "attached.json": "31b16ff0ef5ed0be3fb5f7cb31456c12f1615793b90dba432a573438c32b617f",
+        "commands.json": "14dcbb91953724406cba0de7bdadee0ba55f0b3ee3ebd4daca2b01135b7c8cf8",
+        "initial-completed.json": "fafa673ad5b1d614d1d9d7774f5acec98988712d33159f798350a09d9104373e",
+        "initial-states.json": "069350c96f12d67f98d7d878a9d8ae4f7db562d65eabaeb937b70060d0ff570e",
+        "oracle.json": "8acb1e427e7c64e3f27e7bab9826bbc84e738c441ca00d08206b7fd00596300f",
+        "report.json": "d9143c9b171623eb4d00d676a0f535f940520d16932b5069d440712ede912946"
+      }
+    },
+    {
+      "report": {
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "e597550452c3d1e7d53f038f5188e01462bcf7627dea064e7116c2dfbe3237aa",
+        "fixture_pid": 85116,
+        "initial_oracle": {
+          "field": 2442348183272,
+          "arena": 2442273357824,
+          "variant": 1,
+          "value": 40
+        },
+        "engine_pid": 87424,
+        "mcp_pid": 82704,
+        "initial_track": 0,
+        "search_summary": {
+          "attempted_bytes": 226279424,
+          "boundary_matches": 0,
+          "changed_or_unavailable_bytes": 94208,
+          "elapsed_ms": 443,
+          "eligible_bytes": 227311616,
+          "evidence": "C:\\DEV\\Reversebolt\\test-results\\value-search-v1\\case-1\\engine\\captures\\e94e2924-5985-4be1-8fb6-eea9a85a225b\\value-search-01.json",
+          "matched_windows": 2321,
+          "omitted_windows": 0,
+          "planned_scan_bytes": 226279424,
+          "read_bytes": 226185216,
+          "retained_windows": 2321,
+          "source_batch": 1,
+          "source_frame": 16,
+          "source_frame_id": "22359a97-c54e-4d62-a163-9806a44ea866",
+          "source_image_sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "source_label": "Number at 225, 71",
+          "source_track": 0,
+          "stop": "planned range completed",
+          "value": 50.0
+        },
+        "actual_field_retained": true,
+        "actual_field_checks": 1,
+        "outcome": "distant direct field selected, fitted on twelve new moments and agreed on four fresh moments"
+      },
+      "strict_passed": true,
+      "initial_tracks": [
+        {
+          "id": 0,
+          "label": "Number at 225, 71",
+          "samples": [
+            40.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            50.0,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ]
+        }
+      ],
+      "initial_empty_text_captures": [],
+      "selected_snapshot_bytes": 148544,
+      "scan_mib": 215.70703125,
+      "scan_ms": 443,
+      "omitted_windows": 0,
+      "fresh_samples": [
+        54.0,
+        54.0,
+        50.0,
+        50.0
+      ],
+      "field_mapping": {
+        "exact": true,
+        "intercept": 0.0,
+        "kind": "F64",
+        "offset": 40,
+        "slope": 1.0,
+        "train_inliers": 6,
+        "validation_inliers": 6
+      },
+      "raw_sha256": {
+        "attached.json": "3f1783ee8aa0577547878ba7d5292da77bd656c995776f767ba9ad940a907e79",
+        "commands.json": "4d2fa7c392414378563c28cfd5865456ff61d2f56f024773fb06cd5d415cb3ef",
+        "field-check.json": "654f5db553a6706944084fc7b9e1e3c005d1678ab085dd4475c5faa331acc779",
+        "final-status.json": "24d255e3ffea3c3bb524e55e2d7d79086e2b3c076a7da42ea46c253c5999478b",
+        "focused-completed.json": "24d255e3ffea3c3bb524e55e2d7d79086e2b3c076a7da42ea46c253c5999478b",
+        "focused-states.json": "1124bb5a9d3e4ddba76a0a8cf30de313aa3dcb5e96ef543fd844562a179961c3",
+        "initial-completed.json": "670cc3b87010882ff3fa07d833c88784ec1df007c652b5807652f284133d7871",
+        "initial-states.json": "4a810916545149efee681c8ffbbfda4c7e5f27df54f4b10532e1e770bdc1ba25",
+        "oracle.json": "af411cf41953b0cde79830fd600fb99a3f80913e392bbb9412fabd204ccb210d",
+        "report.json": "68f480f70f986a4ef25beca4a37c3e7aeff65021d76b540f65c6e45c117e71d0",
+        "searched.json": "5463c880872797cd679a6731e0def80827b4652e850fad0870b7a3a1a10cfc00",
+        "selection.json": "416dd411fc6dfd5d782411bd89bcf27e537f85e047c9ed04d0b129a8117b45fb"
+      }
+    },
+    {
+      "report": {
+        "slot": 2,
+        "errors": [],
+        "protocol_sha256": "e597550452c3d1e7d53f038f5188e01462bcf7627dea064e7116c2dfbe3237aa",
+        "fixture_pid": 66740,
+        "initial_oracle": {
+          "field": 2803917504496,
+          "arena": 2803824394240,
+          "variant": 2,
+          "value": 40
+        },
+        "engine_pid": 85004,
+        "mcp_pid": 82096,
+        "initial_track": 0,
+        "search_summary": {
+          "attempted_bytes": 226783232,
+          "boundary_matches": 0,
+          "changed_or_unavailable_bytes": 94208,
+          "elapsed_ms": 475,
+          "eligible_bytes": 227815424,
+          "evidence": "C:\\DEV\\Reversebolt\\test-results\\value-search-v1\\case-2\\engine\\captures\\10c55140-b32b-41d9-9e8c-f6411970b2c3\\value-search-01.json",
+          "matched_windows": 2019,
+          "omitted_windows": 0,
+          "planned_scan_bytes": 226783232,
+          "read_bytes": 226689024,
+          "retained_windows": 2019,
+          "source_batch": 1,
+          "source_frame": 16,
+          "source_frame_id": "de6220ac-857a-4efb-95e6-65d974165626",
+          "source_image_sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "source_label": "Number at 225, 71",
+          "source_track": 0,
+          "stop": "planned range completed",
+          "value": 50.0
+        },
+        "actual_field_retained": false,
+        "actual_field_checks": 0,
+        "outcome": "literal matches were sampled; unsupported encoded field remained undiscovered"
+      },
+      "strict_passed": true,
+      "initial_tracks": [
+        {
+          "id": 0,
+          "label": "Number at 225, 71",
+          "samples": [
+            40.0,
+            56.0,
+            31.0,
+            85.0,
+            64.0,
+            27.0,
+            75.0,
+            92.0,
+            44.0,
+            67.0,
+            38.0,
+            50.0,
+            54.0,
+            54.0,
+            50.0,
+            50.0
+          ]
+        }
+      ],
+      "initial_empty_text_captures": [],
+      "selected_snapshot_bytes": 129216,
+      "scan_mib": 216.1875,
+      "scan_ms": 475,
+      "omitted_windows": 0,
+      "raw_sha256": {
+        "attached.json": "cc4422c1c7adc16043d2e2510c77f9a026ab2c9a66719dde7f5380ac343888ec",
+        "commands.json": "26af2952d83017385bbf16a54c8abe64ef47ca22d6a8005d3c304d41d7473391",
+        "final-status.json": "a3239b6fdee21843c5e518fc5e51b824f66aad0679e53425e9e5abf687a9fe63",
+        "focused-completed.json": "a3239b6fdee21843c5e518fc5e51b824f66aad0679e53425e9e5abf687a9fe63",
+        "focused-states.json": "c06b7eb733c23a54433f4749652b8089d49da3861b155d76f7a98dbc5357697e",
+        "initial-completed.json": "ff59118d492e464b5c4cfe363e58fa881a503ad06426ea1944956532e7d4f4a0",
+        "initial-states.json": "d1139abd85e1064f0159f5bbecdd23c6b43b494825337d0bd3bee13a5b680058",
+        "oracle.json": "9284b9ebf28322115fc9c329afcbef74077ddeb6cfdb7998105edbee86ca0d4e",
+        "report.json": "95077222906e859c14d379f2534366301b995c034f8e3a1d11a15e5596472881",
+        "searched.json": "53943316df2e9af2bb5009b7a24950a82dd3f9e061bf44164fe0edbc6345f681",
+        "selection.json": "547461b38271c3cd299431628fa8eaf55dd2d2008cfd80ea9f8dfda8ccd86c0c"
+      }
+    }
+  ]
+}

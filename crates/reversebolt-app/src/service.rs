@@ -145,6 +145,7 @@ impl EngineHandle {
                         | "start_prediction_check"
                         | "advance_memory"
                         | "recheck_findings"
+                        | "search_number"
                         | "detach_process"
                         | "read_capture"
                         | "submit_observation"
@@ -611,7 +612,7 @@ fn native_command(
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }
-        "advance_memory" | "recheck_findings" => {
+        "advance_memory" | "recheck_findings" | "search_number" => {
             let investigation = command.args["investigation_id"]
                 .as_str()
                 .ok_or("Read the current investigation identity first.")?;
@@ -623,7 +624,17 @@ fn native_command(
                 .live
                 .as_mut()
                 .ok_or("Connect an application first.")?;
-            if command.action == "recheck_findings" {
+            if command.action == "search_number" {
+                let after_frame = command.args["after_frame"]
+                    .as_u64()
+                    .and_then(|n| usize::try_from(n).ok())
+                    .ok_or("Supply the current observed moment.")?;
+                let track = command.args["track"]
+                    .as_u64()
+                    .and_then(|n| usize::try_from(n).ok())
+                    .ok_or("Supply the observed number's track.")?;
+                session.search_number(investigation, batch, after_frame, track, &engine.changes)?;
+            } else if command.action == "recheck_findings" {
                 session.recheck_findings(investigation, batch, &engine.changes)?;
             } else {
                 session.advance_memory(investigation, batch)?;

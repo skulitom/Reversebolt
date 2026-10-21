@@ -224,6 +224,9 @@ pub struct LocalObservationWarning {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    /// Historical address-selection receipts, never current numeric evidence.
+    #[serde(default)]
+    pub value_searches: Vec<crate::value_search::Summary>,
     /// None in historical records means the selected window process.
     #[serde(default)]
     pub memory_process: Option<ProcessInfo>,
@@ -813,6 +816,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            value_searches: vec![],
             memory_process: Some(target.memory_info().clone()),
             memory_sources: vec![],
             memory_sources_error: None,
@@ -1336,6 +1340,122 @@ impl LiveSession {
         if batch >= coverage::MAX_BATCHES {
             return Err("The investigation reached its 24-batch limit.".into());
         }
+        Ok(())
+    }
+
+    /// Search previously unselected memory for an encoding of the last observed
+    /// number, then collect a wholly new trajectory. The seed is selection data
+    /// only, not training, validation, a learned mapping or write authority.
+    pub fn search_number(
+        &mut self,
+        investigation: &str,
+        batch: usize,
+        after_frame: usize,
+        track: usize,
+        store: &crate::changes::Store,
+    ) -> Result<()> {
+        use crate::value_search::{self, Summary};
+        self.check_batch_transition(investigation, batch)?;
+        if after_frame != self.view.sample_count {
+            return Err(
+                "The observed moment changed. Read the current card before searching.".into(),
+            );
+        }
+        if self.view.value_searches.len() >= value_search::MAX_SEARCHES {
+            return Err("This investigation reached its eight value-search limit.".into());
+        }
+        if store.records.iter().any(|c| {
+            c.scope.investigation == investigation
+                && (c.phase.unresolved() || c.phase == crate::changes::Phase::Written)
+        }) {
+            return Err("Restore the applied trial before searching. Uncertain writes must stay in their current investigation.".into());
+        }
+        let observed = self
+            .view
+            .tracks
+            .iter()
+            .find(|t| t.id == track && t.active)
+            .ok_or("This number is no longer visible.")?;
+        let value = observed
+            .samples
+            .last()
+            .copied()
+            .flatten()
+            .ok_or("This number needs a readable current observation before searching.")?;
+        let frame = self
+            .view
+            .frames
+            .last()
+            .filter(|f| f.number == after_frame)
+            .ok_or("The observed image is unavailable.")?;
+        let max_windows =
+            value_search::MAX_WINDOWS.min(self.budget_bytes / value_search::WINDOW_BYTES);
+        let reserve = (max_windows * value_search::WINDOW_BYTES * MAX_SAMPLES) as u64;
+        let remaining = coverage::MAX_READ_BYTES.saturating_sub(self.view.coverage.attempted_bytes);
+        let budget = remaining
+            .saturating_sub(reserve)
+            .min(value_search::MAX_SCAN_BYTES as u64) as usize;
+        if budget < coverage::CHUNK_BYTES {
+            return Err(
+                "Not enough read budget remains for a value search and fresh observations.".into(),
+            );
+        }
+        let mut excluded = self.selected.clone();
+        for chunk in &self.plan {
+            excluded.add(chunk.address, chunk.length);
+        }
+        let path = self.root_directory.join(format!(
+            "value-search-{:02}.json",
+            self.view.value_searches.len() + 1
+        ));
+        let summary = Summary {
+            source_batch: batch,
+            source_frame: after_frame,
+            source_track: track,
+            source_label: observed.label.clone(),
+            source_frame_id: frame.id.clone(),
+            source_image_sha256: frame.sha256.clone(),
+            value,
+            evidence: path.to_string_lossy().into_owned(),
+            ..Summary::default()
+        };
+        let outcome = value_search::scan(&*self.target, &excluded, summary, budget, max_windows)?;
+        self.view.coverage.attempted_bytes += outcome.summary.attempted_bytes;
+        self.view.coverage.read_bytes += outcome.summary.read_bytes;
+        self.view.coverage.changed_or_unavailable_bytes +=
+            outcome.summary.changed_or_unavailable_bytes;
+        for (address, length) in &outcome.read_ranges {
+            self.read_ranges.add(*address, *length);
+        }
+        self.view.coverage.read_unique_bytes = self.read_ranges.bytes();
+        self.view.value_searches.push(outcome.summary.clone());
+        // Charge and expose completed reads even if the evidence cannot be saved.
+        // Do not publish a new batch without its source-selection receipt.
+        let evidence = serde_json::to_vec(&serde_json::json!({
+            "schema_version":1,"investigation_id":investigation,"summary":outcome.summary,
+            "windows":outcome.windows,
+            "limitation":"Exact little-endian i32/f32/f64 seeds only; natural alignment; omitted windows and unscanned addresses remain unknown. Selection bytes are discarded. Fresh observations are required; no semantic or gameplay authority."
+        })).map_err(|e| e.to_string())?;
+        if evidence.len() + self.view.coverage.archive_bytes > coverage::MAX_ARCHIVE_BYTES {
+            return Err(
+                "The evidence budget is exhausted. The current findings were preserved.".into(),
+            );
+        }
+        write_evidence(&path, &evidence)?;
+        self.view.coverage.archive_bytes += evidence.len();
+        if self.refresh_connection() || !self.view.connected {
+            return Err(
+                "The process exited during the value search. No new batch was started.".into(),
+            );
+        }
+        if outcome.windows.is_empty() {
+            return Err("No matching locations were found in the searched range. The number may have changed or use a different representation; current findings were preserved.".into());
+        }
+        let count = outcome.windows.len();
+        self.replace_memory_batch(outcome.windows, outcome.summary.eligible_bytes, None)?;
+        self.view.phase = format!(
+            "Found {count} possible areas for the observed number. Watching fresh changes before treating any as a finding."
+        );
         Ok(())
     }
 

@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest value-guided search (2026-10-21): **30%**. A number card's “Find this
+value” action and the shared MCP command search up to 512 MiB beyond the current
+sample, then collect wholly fresh temporal evidence from small selected areas.
+One native case read 215.7 MiB in 443 ms, found the distant F64 field excluded
+from the original one-MiB plan, fitted twelve new moments and passed four fresh
+checks. The encoded-field case reproduced the explicit representation limit;
+the float32 case retained an initial blank-capture failure before search.
+All 176 workspace tests, strict Clippy and the 33-tool packaged checks pass.
+Desktop preview `0.1.0-20261021-105104` is running with history/settings preserved.
+Discovery moves from 6/20 to **7/20** for broad selection with fresh native
+validation. Credits remain foundation 4/10, native 6/10, observation 5/15,
+validation 2/15, intent/editing 1/10, agent collaboration 5/10 and generalization
+0/10. The full goal stays active; game control, hidden semantics and independent
+acceptance remain unfinished. [Evidence and limits](../research/value-search/README.md).
+
 Latest capture sampling (2026-10-21): **29% unchanged**. Native window capture
 now keeps the last completed frame in a fixed 80 ms/eight-frame window, with
 content-independent selection and diagnostic receipts. Three fixed native
