@@ -463,3 +463,32 @@ desktop preview is still running. See [evidence and limits](research/ACTION_EQUI
 Next: operation-level evidence in the shared engine, with real target lifecycle,
 effect observation and recovery capabilities. Keep representation uncertainty
 explicit; a tested requested action does not establish a whole slider range.
+
+## 2026-10-21 — explicit native trial cards: 22%
+
+Native target access increases from **4 / 10 to 5 / 10** for an implemented
+experimental write/restoration path through the shared desktop and MCP engine.
+Other credits remain foundation 4, multimodal observation 4, discovery 2,
+validation 2, intent 0, agent collaboration 5 and generalization 0.
+Total: **22 / 100**. The denominator and full goal remain unchanged and active.
+
+Cards offer a draggable or typed requested number, Review edit, explicit Try
+edit, Restore bytes and Check effect. Every surviving interpretation must agree
+on the requested byte action. The journal records intent before native entry,
+retains actual outcomes and prevents replay of uncertain writes. Restoration
+checks complete model bytes. Visual agreement is separately recorded and does
+not establish gameplay authority or complete recovery.
+
+An owned native fixture was discovered without a supplied field address. MCP
+changed its visible number 50 → 53 → 50. The final UI Automation test edited the
+requested number and performed 50 → 54 → 50 through the card. All 104 workspace
+tests, strict Clippy, formatting, native backend guards and the published
+28-tool smoke pass. Earlier OCR-fallback and fixture failures remain documented.
+No real-game editing or independent-game acceptance credit is earned.
+
+Desktop preview `0.1.0-20261021-030209` is running, retaining the prior eight
+history entries and local model selection. Owned test windows were closed.
+See [operation evidence and limits](research/LIVE_TRIAL_EDITS.md). Next: scoped
+causal effect checks, recovery beyond restoring bytes, and unchanged evaluation
+on independently implemented games; broader visual and hidden-rule discovery
+remain necessary parts of the full goal.

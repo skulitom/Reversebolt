@@ -1,3 +1,4 @@
+pub mod changes;
 pub mod coverage;
 pub mod discovery;
 pub mod engine;

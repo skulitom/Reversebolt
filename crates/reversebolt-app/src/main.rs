@@ -27,6 +27,11 @@ fn main() {
 
 fn run() -> Result<(), String> {
     let args: Vec<String> = std::env::args().collect();
+    if args.get(1).map(String::as_str) == Some("--trial-write-smoke") {
+        return native::trial_write_smoke(std::path::Path::new(
+            args.get(2).ok_or("Supply a new result file.")?,
+        ));
+    }
     if args.get(1).map(String::as_str) == Some("--ocr-sequence") {
         let models = args.get(2).ok_or("Supply the OCR model directory.")?;
         let frames = args.get(3).ok_or("Supply a directory of PNG frames.")?;

@@ -62,6 +62,8 @@ pub struct LivePane {
     focus_search: bool,
     image: Option<(String, egui::TextureHandle)>,
     detail: Option<(String, CardSource, usize)>,
+    requested: std::collections::BTreeMap<usize, f64>,
+    edit_scope: String,
 }
 
 impl LivePane {
@@ -188,7 +190,7 @@ impl LivePane {
             ui.add_space(8.0);
             ui.label(
                 RichText::new(
-                    "This preview observes the selected app. Edits are available in Practice.",
+                    "Connecting only observes. Trial edits require a separate explicit action.",
                 )
                 .size(12.0)
                 .color(MUTED),
@@ -244,6 +246,11 @@ impl LivePane {
             self.investigation(ui, handle, state, busy);
             return;
         };
+        let edit_scope = format!("{}:{}", live.investigation_id, live.coverage.batch);
+        if self.edit_scope != edit_scope {
+            self.requested.clear();
+            self.edit_scope = edit_scope;
+        }
         if self.detail.as_ref().is_some_and(|(scope, _, _)| {
             scope != &format!("{}:{}", live.investigation_id, live.coverage.batch)
         }) {
@@ -291,7 +298,23 @@ impl LivePane {
                 .and_then(|s| s.strip_suffix('”'))
                 .map(str::to_owned)
                 .unwrap_or_else(|| format!("Unidentified value {}", track.id + 1));
-            let value = track.samples.last().copied().flatten();
+            let trial_observation = state
+                .changes
+                .iter()
+                .rev()
+                .filter(|c| {
+                    c.scope.investigation == live.investigation_id
+                        && c.scope.batch == live.coverage.batch
+                        && c.scope.track == track.id
+                })
+                .filter_map(|c| c.observations.last())
+                .find(|o| {
+                    live.latest
+                        .as_ref()
+                        .is_none_or(|f| o.time_ms >= f.started_unix_ms)
+                });
+            let value = trial_observation
+                .map_or_else(|| track.samples.last().copied().flatten(), |o| o.value);
             cards.push((
                 CardSource::Ocr,
                 track.id,
@@ -299,9 +322,13 @@ impl LivePane {
                 value.map_or_else(|| "—".into(), |v| v.to_string()),
                 "Visible in the app. Still identifying what it controls.".into(),
                 value.is_some(),
-                live.frames
-                    .last()
-                    .map(|f| observation_age(f.started_unix_ms, now)),
+                trial_observation
+                    .map(|o| observation_age(o.time_ms, now))
+                    .or_else(|| {
+                        live.frames
+                            .last()
+                            .map(|f| observation_age(f.started_unix_ms, now))
+                    }),
             ));
         }
         for track in live.visual_tracks.iter().filter(|t| t.active) {
@@ -451,6 +478,46 @@ impl LivePane {
                                         *id,
                                     ));
                                 }
+                                if *external==CardSource::Ocr {
+                                    let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
+                                    let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
+                                    let eligible=live.prediction_check.as_ref().is_some_and(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && check.invalidated.is_none());
+                                    if let Some(observed)=observed.filter(|_|eligible) {
+                                        let requested=self.requested.entry(*id).or_insert(observed+3.);
+                                        ui.horizontal(|ui| {
+                                            let label=ui.label("Try value");
+                                            ui.add_enabled(!busy,egui::DragValue::new(requested).speed(1.).range((observed-20.)..=(observed+20.))).labelled_by(label.id).on_hover_text("Drag to adjust, or click to type. Trial changes are limited to 20 from the observed value.");
+                                            if ui.add_enabled(!busy,egui::Button::new("Review edit")).clicked() {
+                                                handle.submit("prepare_change",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"track":id,"value":*requested}));
+                                            }
+                                        });
+                                    }
+                                    if let Some(change)=change {
+                                        use reversebolt_core::changes::Phase;
+                                        match change.phase {
+                                            Phase::Prepared => {
+                                                ui.label(RichText::new(format!("Try {} → {}",change.observed,change.desired)).color(ACCENT));
+                                                ui.label(RichText::new("Experimental edit. Gameplay effects are unverified.").size(12.).color(MUTED));
+                                                let still_requested=self.requested.get(id).is_some_and(|v|*v==change.desired);
+                                                if ui.add_enabled(!busy && still_requested && live.connected,egui::Button::new("Try edit")).clicked() {handle.submit("apply_change",json!({"change_id":change.id}));}
+                                            }
+                                            Phase::Written => {
+                                                ui.label(RichText::new("Trial applied").color(ACCENT));
+                                                if let Some(observation)=change.observations.last() {
+                                                    ui.label(RichText::new(if observation.agrees {"Requested number seen"} else {"Effect not confirmed"}).size(12.).color(MUTED));
+                                                }
+                                                ui.horizontal(|ui| {
+                                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Restore bytes")).on_hover_text("Checks the original value's bytes before restoring. Downstream gameplay effects may remain.").clicked() {handle.submit("restore_change",json!({"change_id":change.id}));}
+                                                    if ui.add_enabled(!busy && live.connected && change.observations.len()<8,egui::Button::new("Check effect")).clicked() {handle.submit("observe_change",json!({"change_id":change.id}));}
+                                                });
+                                            }
+                                            Phase::Restored => {ui.label(RichText::new("Original bytes restored").size(12.).color(MUTED));}
+                                            Phase::Unavailable => {ui.label(RichText::new("Still narrowing down this edit").size(12.).color(MUTED));}
+                                            Phase::Uncertain|Phase::Writing|Phase::Restoring => {ui.colored_label(WARNING,"Write outcome uncertain · edits held");}
+                                            Phase::Refused|Phase::Expired => {ui.label(RichText::new("Trial not applied · prepare again").size(12.).color(MUTED));}
+                                        }
+                                    }
+                                }
                             });
                     });
                 }
@@ -479,7 +546,15 @@ impl LivePane {
                     ui.set_width(440.0);
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
-                    ui.label("Reversebolt can observe this value. It is still identifying the controlling state, so editing is not available yet.");
+                    ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if external==CardSource::Ocr && let Some(change)=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id) {
+                        ui.label(&change.reason);
+                        if let Some(receipt)=change.restoration.as_ref().or(change.write.as_ref()) && let Some(error)=&receipt.error {ui.colored_label(ERROR,error);}
+                        if let Some(observation)=change.observations.last() {
+                            ui.label(format!("Trial reading: {} · expected {}",observation.value.map_or_else(||"unavailable".into(),|v|v.to_string()),observation.expected));
+                            ui.label("Only this screen number was checked. Hidden and downstream effects remain unknown.");
+                        }
+                    }
                     if external == CardSource::Temporal {
                         if let Some(track) = live.temporal_tracks.iter().find(|t| t.id == id)
                             && let Some(observation) = track.observations.last() {

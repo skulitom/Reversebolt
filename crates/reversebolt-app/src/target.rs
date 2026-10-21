@@ -73,6 +73,10 @@ impl Drop for ChildTarget {
 }
 
 impl ChildTarget {
+    /// Used only by the native backend's owned-process regression check.
+    pub(crate) fn arena(&self) -> (usize, usize) {
+        (self.base, self.length)
+    }
     pub fn start(seed: u64) -> Result<Self> {
         let mut child = Command::new(std::env::current_exe().map_err(|e| e.to_string())?)
             .args(["--fixture", &seed.to_string()])

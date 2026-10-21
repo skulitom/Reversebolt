@@ -15,8 +15,9 @@ For shorter sequences, agents can use visual capture mode to skip text
 recognition while retaining images and memory. Actual cadence is measured;
 skipped screen numbers stay missing.
 An optional installed local vision model can now add provisional character and
-held-object cards automatically. General game understanding and live-game edits
-are not implemented yet.
+held-object cards automatically. General game understanding is not implemented.
+Some screen-number findings can now support explicit experimental memory edits;
+these do not establish what the value controls in gameplay.
 The disposable practice environment supports tested edits. The destination is
 documented in [the full vision](docs/VISION.md), with an explicit
 [progress rubric](docs/PROGRESS.md).
@@ -56,6 +57,17 @@ calls. A failed pass stops its job, retaining evidence. See
 For a series with matches, **Challenge these matches** freezes its predictions
 and checks them against fresh observations. Agreement is limited evidence;
 contradictions rule out that mapping. Neither outcome verifies a gameplay control.
+
+When a screen number has sufficient fresh evidence, its card offers **Try value**.
+Drag or type a nearby value, then **Review edit**. Preparation does not write.
+If every remaining interpretation proposes the same byte change, **Try edit**
+explicitly attempts that experimental change and checks the screen number.
+**Restore bytes** checks the complete interpretations before restoring the changed
+bytes; it cannot undo all downstream gameplay effects. **Check effect** records
+another reading. Details stay behind **Inspect**. Trial changes are limited to
+20 from the latest observation and expire after 60 seconds. Ambiguity, changed
+memory or an uncertain earlier write can prevent a trial. Connecting never
+starts writes automatically. See [trial behavior and limits](docs/research/LIVE_TRIAL_EDITS.md).
 
 **Search more memory** archives the current batch's evidence and moves to other
 eligible addresses. Collect fresh changing observations for each batch. The

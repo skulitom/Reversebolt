@@ -1,0 +1,516 @@
+{
+  "date": "2026-10-21",
+  "scope": "Owned native fixtures only; no semantic authority, complete rollback, atomic target-thread access or independent-game compatibility claim.",
+  "tests": {
+    "workspace_passed": 104,
+    "clippy": "passed -D warnings",
+    "formatting": "passed"
+  },
+  "runs": [
+    {
+      "name": "session",
+      "outcome": null,
+      "error": "{'actor': 'agent', 'alternatives': [{'error': None, 'index': 0, 'patch': {'address': 2573998425666, 'after': [84], 'before': [72]}}], 'desired': 53.0, 'id': 'e9753605-6347-4dbf-8e8e-fe96dac172e2', 'models': [{'address': 2573998425664, 'before': [0, 0, 72, 66], 'index': 0, 'mapping': {'exact': True, 'intercept': 0.0, 'kind': 'F32', 'offset': 1600, 'slope': 1.0, 'train_inliers': 6, 'validation_inliers': 6}, 'region': {'allocation_base': 2573998424064, 'base': 2573998424064, 'image': False, 'kind': 131072, 'length': 4096, 'protection': 4}}], 'observations': [{'agrees': False, 'error': 'Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)', 'expected': 53.0, 'image': 'C:\\\\DEV\\\\Reversebolt\\\\test-results\\\\trial-edit-v1\\\\session\\\\changes\\\\e9753605-6347-4dbf-8e8e-fe96dac172e2-0.png', 'image_sha256': '', 'time_ms': 1792547111412, 'value': None}, {'agrees': False, 'error': 'Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)', 'expected': 53.0, 'image': 'C:\\\\DEV\\\\Reversebolt\\\\test-results\\\\trial-edit-v1\\\\session\\\\changes\\\\e9753605-6347-4dbf-8e8e-fe96dac172e2-1.png', 'image_sha256': '', 'time_ms': 1792547111835, 'value': None}], 'observed': 50.0, 'patch': {'address': 2573998425666, 'after': [84], 'before': [72]}, 'phase': 'written', 'prepared_ms': 1792547111354, 'reason': 'Requested bytes were observed after writing. Gameplay effects have not been verified.', 'restoration': None, 'scope': {'batch': 1, 'bounds': [239.0, 87.0, 47.0, 35.0], 'epoch': 0, 'frame': 16, 'image_size': [560, 260], 'investigation': '4ee36a58-0778-487f-9187-750472392ae4', 'label': 'Near \u201cQuantity\u201d', 'prediction': 'f6242001-bfc4-46d9-b287-2eb9d5abe37f', 'process': {'created': '01DD60FD7BAABF5A', 'name': 'powershell.exe', 'pid': 56660, 'session': 2, 'title': 'Reversebolt trial fixture', 'window': 4981988}, 'track': 0}, 'write': {'attempted': True, 'error': None, 'observed_after': [84], 'transferred': 1}}",
+      "matches": 1,
+      "changes": [
+        {
+          "id": "e9753605-6347-4dbf-8e8e-fe96dac172e2",
+          "observed": 50.0,
+          "desired": 53.0,
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              84
+            ],
+            "error": null
+          },
+          "restoration": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              72
+            ],
+            "error": null
+          },
+          "model_count": 1,
+          "types": [
+            "F32"
+          ],
+          "changed_bytes": 1,
+          "observations": [
+            {
+              "expected": 53.0,
+              "value": null,
+              "agrees": false,
+              "error": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "warning": null,
+              "image_sha256": ""
+            },
+            {
+              "expected": 53.0,
+              "value": null,
+              "agrees": false,
+              "error": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "warning": null,
+              "image_sha256": ""
+            },
+            {
+              "expected": 50.0,
+              "value": null,
+              "agrees": false,
+              "error": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "warning": null,
+              "image_sha256": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session-v2",
+      "outcome": null,
+      "error": "No reliable changing number has been observed yet. More varied observations are needed before comparison.",
+      "matches": null,
+      "changes": []
+    },
+    {
+      "name": "session-v3",
+      "outcome": "write and restore observed through MCP",
+      "error": null,
+      "matches": 1,
+      "changes": [
+        {
+          "id": "aa77844d-1292-4673-832f-989791227fc7",
+          "observed": 50.0,
+          "desired": 53.0,
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              84
+            ],
+            "error": null
+          },
+          "restoration": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              72
+            ],
+            "error": null
+          },
+          "model_count": 1,
+          "types": [
+            "F32"
+          ],
+          "changed_bytes": 1,
+          "observations": [
+            {
+              "expected": 53.0,
+              "value": 53.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "62b126b21d63a488186e71331a11165479a98836c31143ea34b0d48bb020d4e3"
+            },
+            {
+              "expected": 53.0,
+              "value": 53.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "62b126b21d63a488186e71331a11165479a98836c31143ea34b0d48bb020d4e3"
+            },
+            {
+              "expected": 53.0,
+              "value": 53.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "62b126b21d63a488186e71331a11165479a98836c31143ea34b0d48bb020d4e3"
+            },
+            {
+              "expected": 50.0,
+              "value": 50.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "eaec999e04d1479fe60a415f84d9d8b88b18eb7d8eefe905887754c0f110d1d8"
+            },
+            {
+              "expected": 50.0,
+              "value": 50.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "eaec999e04d1479fe60a415f84d9d8b88b18eb7d8eefe905887754c0f110d1d8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session-v4",
+      "outcome": "prepared for desktop interaction; no write requested",
+      "error": null,
+      "matches": 1,
+      "changes": [
+        {
+          "id": "1f3a762d-11ff-499a-8717-57dd793cf672",
+          "observed": 50.0,
+          "desired": 53.0,
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              84
+            ],
+            "error": null
+          },
+          "restoration": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              72
+            ],
+            "error": null
+          },
+          "model_count": 1,
+          "types": [
+            "F32"
+          ],
+          "changed_bytes": 1,
+          "observations": [
+            {
+              "expected": 53.0,
+              "value": 53.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd"
+            },
+            {
+              "expected": 50.0,
+              "value": 50.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "session-v5",
+      "outcome": "prepared for desktop interaction; no write requested",
+      "error": null,
+      "matches": 1,
+      "changes": [
+        {
+          "id": "3933ccb9-cf51-45f3-a2f9-95bb9e350d32",
+          "observed": 50.0,
+          "desired": 54.0,
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              88
+            ],
+            "error": null
+          },
+          "restoration": {
+            "attempted": true,
+            "transferred": 1,
+            "observed_after": [
+              72
+            ],
+            "error": null
+          },
+          "model_count": 1,
+          "types": [
+            "F32"
+          ],
+          "changed_bytes": 1,
+          "observations": [
+            {
+              "expected": 54.0,
+              "value": 54.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "6a9820d1c4260ce5b7b5311a9e0e736c5e539a3273d222801190865bcb1c8c8c"
+            },
+            {
+              "expected": 50.0,
+              "value": 50.0,
+              "agrees": true,
+              "error": null,
+              "warning": "Using Windows text recognition only. Neural models unavailable: text-detection.onnx: The system cannot find the path specified. (os error 3)",
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3"
+            }
+          ]
+        },
+        {
+          "id": "8f2be6dd-5811-4bf6-a99a-7cb352eb1235",
+          "observed": 50.0,
+          "desired": 53.0,
+          "phase": "prepared",
+          "reason": "All remaining interpretations propose the same exact byte change. Gameplay effects are unverified.",
+          "write": null,
+          "restoration": null,
+          "model_count": 1,
+          "types": [
+            "F32"
+          ],
+          "changed_bytes": 1,
+          "observations": []
+        }
+      ]
+    }
+  ],
+  "native_api": {
+    "mapping_guard": {
+      "attempted": false,
+      "error": "Trial edits require the same private, writable, non-executable memory allocation.",
+      "observed_after": null,
+      "transferred": 0
+    },
+    "pid": 78184,
+    "restore": {
+      "attempted": true,
+      "error": null,
+      "observed_after": [
+        240,
+        60,
+        246,
+        125
+      ],
+      "transferred": 4
+    },
+    "restored": true,
+    "scope": "Owned child-process native write API check. Known arena, not discovery or gameplay evidence.",
+    "stale_guard": {
+      "attempted": false,
+      "error": "Memory changed before the write. Nothing was overwritten.",
+      "observed_after": null,
+      "transferred": 0
+    },
+    "write": {
+      "attempted": true,
+      "error": null,
+      "observed_after": [
+        165,
+        60,
+        246,
+        125
+      ],
+      "transferred": 4
+    }
+  },
+  "ui_v5": {
+    "requested_value_range": [
+      30,
+      70
+    ],
+    "set_range": 54,
+    "old_plan_disabled_after_value_change": true,
+    "reviewed": 54,
+    "observed_after_apply": 54,
+    "observed_after_restore": 50
+  },
+  "published_smoke": {
+    "practice": [
+      {
+        "seed": 8675309,
+        "matches": [
+          4,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      },
+      {
+        "seed": 1001,
+        "matches": [
+          3,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      },
+      {
+        "seed": 20261020,
+        "matches": [
+          3,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      }
+    ],
+    "mcp_tools": 28,
+    "shared_session": "passed",
+    "auth_and_origin": "passed",
+    "stale_restore": "rejected",
+    "restart": "history retained; controls invalidated"
+  },
+  "delivery": {
+    "version": "0.1.0-20261021-030209",
+    "pid": 69476,
+    "session": 1,
+    "previousPid": 85520,
+    "historyRetained": true,
+    "historyCount": 8,
+    "observerModel": "qwen3.8:latest",
+    "activeJobs": null,
+    "analysis": null,
+    "manifest": {
+      "value": [
+        {
+          "name": "reversebolt-mcp.exe",
+          "sha256": "9735D9983B0AF473631E1A365719E7357498E0746D898F560CA467E7724C6D8D"
+        },
+        {
+          "name": "Reversebolt.exe",
+          "sha256": "C188580BAE6ACD259429683AD41C8BB52FC545890558A173A5006708ADE2E892"
+        }
+      ],
+      "Count": 2
+    },
+    "publishedSmoke": "test-results/smoke-1a8877df/report.json"
+  },
+  "source_files": [
+    {
+      "path": "crates/reversebolt-core/src/changes.rs",
+      "bytes": 19569,
+      "sha256": "c7aed3a1fad61b6aee77765fddbbcc39fec6eeb784be13b0fcaf9d33f34865f6"
+    },
+    {
+      "path": "crates/reversebolt-core/src/live.rs",
+      "bytes": 79966,
+      "sha256": "416e11c1bd8c9e0f439118dba715776756e52b397919318d3daaf51a4847b4fd"
+    },
+    {
+      "path": "crates/reversebolt-app/src/native.rs",
+      "bytes": 30759,
+      "sha256": "8ecd9cd6c5728e69d6884750b79edb4abea8af8f1f41c34f01593e49fbe6df6c"
+    },
+    {
+      "path": "crates/reversebolt-app/src/service.rs",
+      "bytes": 25234,
+      "sha256": "dc043116a125b46a7cee8b673c7130c71d4274e57f97cc0efd6f258a393d5433"
+    },
+    {
+      "path": "crates/reversebolt-app/src/ui_live.rs",
+      "bytes": 50156,
+      "sha256": "8d94ee8edd24600bd1b824f2563f865082f498b742091e35b45da5b970a554eb"
+    },
+    {
+      "path": "crates/reversebolt-mcp/src/main.rs",
+      "bytes": 24170,
+      "sha256": "b699c6a928fbc13671c52d7e8e40e24aab6f77e54837e23eca5e402695003a84"
+    },
+    {
+      "path": "scripts/trial-fixture.ps1",
+      "bytes": 2446,
+      "sha256": "4d91feacaa6d3447a623851dbdd055724b227b4ea871a030335a971d52d2644f"
+    },
+    {
+      "path": "scripts/trial-edit-smoke.py",
+      "bytes": 4963,
+      "sha256": "5944ab5fe2755808b4fd6b9c28275ee8d54c1d14183c2a21023bdcd5d3047122"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "test-results/trial-edit-v1/session/trial-result.json",
+      "bytes": 2047165,
+      "sha256": "c03643e4415414086681d7a7fa4576b1a0d345d4c85234806645adc1c7bd4768"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session/changes/e9753605-6347-4dbf-8e8e-fe96dac172e2.json",
+      "bytes": 3258,
+      "sha256": "04232fe11a64840d1b9a237fac628c8faaad704e9391178393ff757435b2fb93"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v2/trial-result.json",
+      "bytes": 214,
+      "sha256": "73b96a182b984efa737e1168a3727ce868368bf8e2e45be4c76586720b7e50a7"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v3/trial-result.json",
+      "bytes": 3445935,
+      "sha256": "13ab07a959c27cd6b2fe0f3a9bbdd08d4744d97b43d9f52ece3c31243ebf1bb0"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v3/changes/aa77844d-1292-4673-832f-989791227fc7.json",
+      "bytes": 4732,
+      "sha256": "2840a198ac76c479af012e482ecb32888ce570bd7a55e2c217c87112baf30add"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v4/trial-result.json",
+      "bytes": 683257,
+      "sha256": "94b1b44540b85025875d54ced1fd10455deb90b645e4e12cef82614c2371ae18"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v4/changes/1f3a762d-11ff-499a-8717-57dd793cf672.json",
+      "bytes": 3079,
+      "sha256": "c76f0c5564547f30c391086178979512054e813a54fabcb0066060028734e21c"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v5/trial-result.json",
+      "bytes": 682325,
+      "sha256": "132b8599beb16db00bb515650c249200949221b836971054dbfee05385a2a45d"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v5/changes/3933ccb9-cf51-45f3-a2f9-95bb9e350d32.json",
+      "bytes": 3081,
+      "sha256": "713cba0270d99a969c90523bd2a5e221e318341a3f12595b6f1a0befd8efb4ad"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session-v5/changes/8f2be6dd-5811-4bf6-a99a-7cb352eb1235.json",
+      "bytes": 1782,
+      "sha256": "9fdfe590a43a0b7c04e927af6f1647d2261064a0f473c5405b060c4579fe062a"
+    },
+    {
+      "path": "test-results/trial-edit-v1/native-write-published.json",
+      "bytes": 823,
+      "sha256": "46d622b0128de39c75f2640eea561f001b04fa3739d4982aa95d86dba6fa4cc7"
+    },
+    {
+      "path": "test-results/trial-edit-v1/ui-v4.json",
+      "bytes": 37005,
+      "sha256": "6d4a4c21e96df54f7ab4b27e8d6d27fdde12b57143cd3362f1fbcf1183a00fa8"
+    },
+    {
+      "path": "test-results/trial-edit-v1/ui-v5.json",
+      "bytes": 98640,
+      "sha256": "87cec3538e73a90927f360fddef813f3b83e311cbde271eafda857c64d0de6cd"
+    },
+    {
+      "path": "test-results/trial-edit-v1/desktop-delivery.json",
+      "bytes": 1005,
+      "sha256": "a7c3dc3d40ce86436c6841f3742d5c3bc7b89295cf05b95787b6729b9569cb82"
+    },
+    {
+      "path": "test-results/trial-edit-v1/session/recovery-after-ocr-warning.json",
+      "bytes": 641850,
+      "sha256": "930451483920da8db03bc28a85677e1772e4df3fe38fca5e6c679109199e9c6a"
+    },
+    {
+      "path": "test-results/smoke-1a8877df/report.json",
+      "bytes": 653,
+      "sha256": "5888ba8d7d5eba9996c3cbb36a602fcb56089cb1a4a728c3e448c09c46edf4c0"
+    }
+  ]
+}

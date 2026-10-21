@@ -14,7 +14,9 @@ flowchart LR
     Engine --> History[Persistent history and edit records]
     Engine --> Target[Practice target interface]
     Engine --> Live[Selected application session]
-    Live --> Native[Read-only Windows process handle]
+    Live --> Native[Read-only observation handle]
+    Live --> Changes[Explicit trial and recovery journal]
+    Changes --> Write[Temporary guarded write handle]
     Live --> Window[Bounded window capture and OCR]
     Engine --> Observer[Optional installed local vision model]
     Observer --> Evidence
@@ -27,8 +29,8 @@ owns the job journal and dispatches one engine operation at a time. The UI
 renders published snapshots and queues commands. HTTP joins the same controller;
 status and job-control replies do not wait for a native capture. Other commands
 receive their completed engine state. OS file locks protect both the session
-directory and journal. No extra target handles or per-job engine workers are
-created.
+directory and journal. No per-job engine workers are created. Only an explicit
+trial opens a temporary native write handle; normal observation stays read-only.
 
 The practice target is a separate owned process. It reports only its byte-arena boundary
 and observations. Discovery enumerates naturally aligned numeric representations
@@ -262,6 +264,22 @@ restart, never an active handle or write capability. Initial fitting bytes are
 not retained by this check. See [evaluation](research/FROZEN_PREDICTIONS.md).
 
 ## Next architectural boundaries
+
+The `changes` module now supplies a bounded operation journal for explicit
+native trials. It retains every surviving interpretation, compares their exact
+requested byte actions, persists intent before entering the write backend, and
+records actual write/restoration receipts independently of the ordinary session
+save. Restoring checks the complete interpretations, including unchanged bytes
+around the normalized patch. Restart expires prepared plans and turns incomplete
+intents into uncertain outcomes without replay. Uncertain writes hold subsequent
+writes to the same process identity; there is no override or automatic recovery.
+
+These are best-effort native guards, not target-thread exclusion or atomic CAS.
+Allocation metadata cannot detect every reuse. Visible post-trial readings retain
+their image hashes and optional OCR warnings, while successful byte restoration
+does not establish recovery of gameplay state. See [the operation contract and
+evidence](research/LIVE_TRIAL_EDITS.md). Transaction and journal failure semantics
+remain distinct from the existing read-only observation-job ledger.
 
 1. Broader renderer support, efficient incremental snapshots and coverage planning.
 2. A timestamped observation bus: screen tracks, motion, appearance, input, audio.

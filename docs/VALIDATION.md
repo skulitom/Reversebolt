@@ -404,3 +404,26 @@ Owned test windows were closed and the game left paused. Desktop preview
 `0.1.0-20261020-224603` was published with verified models and binaries, launched
 after the prior instance was confirmed idle, and retained all five prior activity
 entries. Local delivery proof: `test-results/ocr-native-v1/desktop-delivery.json`.
+
+## Explicit native trial edits — 2026-10-21
+
+The current release passes 104 workspace tests, strict Clippy and formatting.
+Nine operation tests and one live-session test exercise action disagreement,
+fresh-evidence requirements, scope/byte/allocation conflicts, journal failures,
+uncertain writes, replay refusal, restart and bounded late capture evidence.
+
+The owned native write smoke passes write/readback, stale expected-byte refusal,
+restore and mapping refusal. A separate WinForms process with a randomly
+placed float was then discovered from actual screen/memory observations without
+supplying the field location. MCP produced 50 → 53 → 50; the final card test
+used UI Automation to edit the requested value and perform 50 → 54 → 50.
+The published smoke verifies 28 MCP tools, three practice seeds and shared
+history/authentication/stale restoration/restart behavior:
+`test-results/smoke-1a8877df/report.json`.
+
+Preview `0.1.0-20261021-030209` is running on the desktop with unchanged model
+selection and eight retained history entries. Owned native test windows were
+closed and the Anode lease released. These results demonstrate the experimental
+workflow, not semantic authority, full gameplay rollback, atomic target-thread
+access or independent-game compatibility. See [trial evidence and preserved
+failures](research/LIVE_TRIAL_EDITS.md).

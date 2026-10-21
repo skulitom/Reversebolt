@@ -13,7 +13,11 @@ use std::{
 use windows_sys::Win32::{
     Foundation::*,
     Graphics::Gdi::*,
-    System::{Diagnostics::Debug::ReadProcessMemory, Memory::*, Threading::*},
+    System::{
+        Diagnostics::Debug::{ReadProcessMemory, WriteProcessMemory},
+        Memory::*,
+        Threading::*,
+    },
     UI::WindowsAndMessaging::*,
 };
 
@@ -27,6 +31,73 @@ unsafe extern "system" {
 }
 
 struct ProcessHandle(HANDLE);
+
+/// Regression-only entry point. It creates and owns its target; no PID or
+/// address is accepted from the command line and no discovery claim is made.
+pub fn trial_write_smoke(output: &Path) -> Result<()> {
+    use reversebolt_core::{changes::BytePatch, engine::PracticeTarget};
+    if output.exists() {
+        return Err("Preserve the existing native write evidence.".into());
+    }
+    let child = crate::target::ChildTarget::start(8433)?;
+    let (base, _) = child.arena();
+    let info = process_info(child.pid(), std::ptr::null_mut())?;
+    let raw = unsafe { OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, child.pid()) };
+    if raw.is_null() {
+        return Err(std::io::Error::last_os_error().to_string());
+    }
+    let process = Process {
+        handle: ProcessHandle(raw),
+        info,
+        observer: std::cell::RefCell::new(None),
+        models: PathBuf::new(),
+    };
+    let region = process
+        .query(base as u64)?
+        .ok_or("Owned arena unavailable.")?;
+    let original = process.read(base as u64, 4)?;
+    let mut after = original.clone();
+    after[0] ^= 0x55;
+    let patch = BytePatch {
+        address: base as u64,
+        before: original.clone(),
+        after: after.clone(),
+    };
+    let write = process.guarded_write(&patch, &region);
+    if !write.attempted || write.error.is_some() || write.observed_after.as_ref() != Some(&after) {
+        return Err(format!("Owned write failed: {write:?}"));
+    }
+    let stale = process.guarded_write(&patch, &region);
+    if stale.attempted {
+        return Err("Stale expected bytes reached the write call.".into());
+    }
+    let undo = process.guarded_write(
+        &BytePatch {
+            address: patch.address,
+            before: after,
+            after: original.clone(),
+        },
+        &region,
+    );
+    if undo.error.is_some() || process.read(patch.address, 4)? != original {
+        return Err("Owned restore failed.".into());
+    }
+    let mut bad_region = region.clone();
+    bad_region.allocation_base ^= 4096;
+    let mapping = process.guarded_write(&patch, &bad_region);
+    if mapping.attempted {
+        return Err("Wrong mapping reached the write call.".into());
+    }
+    let report = serde_json::json!({"scope":"Owned child-process native write API check. Known arena, not discovery or gameplay evidence.","pid":child.pid(),"write":write,"stale_guard":stale,"restore":undo,"mapping_guard":mapping,"restored":true});
+    if let Some(parent) = output.parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(
+        output,
+        serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?,
+    )
+    .map_err(|e| e.to_string())
+}
 impl Drop for ProcessHandle {
     fn drop(&mut self) {
         unsafe {
@@ -268,6 +339,109 @@ impl NativeTarget for Process {
             return Err(std::io::Error::last_os_error().to_string());
         }
         Ok(bytes)
+    }
+    fn guarded_write(
+        &self,
+        patch: &reversebolt_core::changes::BytePatch,
+        expected_region: &Region,
+    ) -> reversebolt_core::changes::WriteReceipt {
+        use reversebolt_core::{changes::WriteReceipt, coverage::Chunk};
+        let preflight = (|| -> Result<ProcessHandle> {
+            if patch.before.is_empty()
+                || patch.before.len() > 8
+                || patch.before.len() != patch.after.len()
+                || patch.before == patch.after
+                || patch
+                    .address
+                    .checked_add(patch.after.len() as u64)
+                    .is_none()
+            {
+                return Err("A trial write must change between one and eight bytes.".into());
+            }
+            if !self.alive() {
+                return Err("The original process exited.".into());
+            }
+            if self.info.window != 0 {
+                let mut owner = 0;
+                unsafe {
+                    GetWindowThreadProcessId(self.info.window as HWND, &mut owner);
+                }
+                if owner != self.info.pid {
+                    return Err(
+                        "The selected window no longer belongs to the original application.".into(),
+                    );
+                }
+            }
+            let current = self
+                .query(patch.address)?
+                .ok_or("The memory allocation disappeared.")?;
+            if current.image
+                || current.kind != MEM_PRIVATE
+                || current.protection != PAGE_READWRITE
+                || !(Chunk {
+                    address: patch.address,
+                    length: patch.after.len(),
+                    region: expected_region.clone(),
+                })
+                .covered_by(&current)
+            {
+                return Err("Trial edits require the same private, writable, non-executable memory allocation.".into());
+            }
+            let raw = unsafe {
+                OpenProcess(
+                    PROCESS_QUERY_INFORMATION
+                        | PROCESS_VM_READ
+                        | PROCESS_VM_WRITE
+                        | PROCESS_VM_OPERATION,
+                    0,
+                    self.info.pid,
+                )
+            };
+            if raw.is_null() {
+                return Err(format!(
+                    "Could not open the selected process for an explicit trial: {}",
+                    std::io::Error::last_os_error()
+                ));
+            }
+            let handle = ProcessHandle(raw);
+            if format!("{:016X}", created(handle.0)?) != self.info.created {
+                return Err("The process identity changed.".into());
+            }
+            if self.read(patch.address, patch.before.len())? != patch.before {
+                return Err("Memory changed before the write. Nothing was overwritten.".into());
+            }
+            Ok(handle)
+        })();
+        let handle = match preflight {
+            Ok(handle) => handle,
+            Err(error) => return WriteReceipt::refused(error),
+        };
+        // ReadProcessMemory + WriteProcessMemory is deliberately NOT called CAS.
+        // Target threads can still race this best-effort guard.
+        let mut transferred = 0;
+        let success = unsafe {
+            WriteProcessMemory(
+                handle.0,
+                patch.address as *mut _,
+                patch.after.as_ptr().cast(),
+                patch.after.len(),
+                &mut transferred,
+            )
+        };
+        let mut error = (success == 0).then(|| std::io::Error::last_os_error().to_string());
+        let observed_after = match self.read(patch.address, patch.after.len()) {
+            Ok(bytes) => Some(bytes),
+            Err(read_error) => {
+                error = Some(format!("Post-write read failed: {read_error}"));
+                None
+            }
+        };
+        WriteReceipt {
+            attempted: true,
+            transferred,
+            observed_after,
+            error,
+        }
     }
     fn screen(&self, path: &Path) -> Result<Screen> {
         let mut pid = 0;

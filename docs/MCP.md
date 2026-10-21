@@ -40,6 +40,10 @@ never creates a private simulator or duplicate session.
 | `reversebolt_submit_temporal_observation` | Provisional appearance, screen-motion or change interpretation across several images |
 | `reversebolt_correlate` | Screen-number/memory hypotheses after at least 12 moments; no causal validation |
 | `reversebolt_start_prediction_check` | Freeze one series' mappings and check fresh observations without refitting |
+| `reversebolt_prepare_change` | Prepare a bounded OCR-number trial; no process write |
+| `reversebolt_apply_change` | Explicitly attempt the prepared native write and record a screen-number check |
+| `reversebolt_restore_change` | Restore original bytes only while the original scope and complete interpretations still match |
+| `reversebolt_observe_change` | Add a source-hashed post-trial reading without writing process memory |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
@@ -96,9 +100,44 @@ Only windows on the engine's Windows desktop are listed. For Anode testing,
 launch the engine in Anode with an isolated `--data-dir`. A main-desktop engine
 lists main-desktop applications.
 
+## Explicit experimental changes
+
+`prepare_change` takes `investigation_id`, `batch`, an OCR `track` ID and a
+requested numeric `value`. It requires current frozen predictions with a fresh
+hold and change, excludes contradicted interpretations, and retains all other
+alternatives. Missing/invalid evidence blocks preparation; different proposed
+byte actions produce an unavailable plan. No arbitrary address is accepted.
+The requested difference must be greater than 1.1 and no more than 20. Preparation
+does not write, and does not imply an instruction to call `apply_change`.
+
+`apply_change`, `restore_change` and `observe_change` take the returned
+`change_id`. The first two are annotated destructive and open-world because they
+change the selected application's process memory. They obey the same human hold
+and observation-job ownership checks as other engine mutations. The current
+backend only writes 1–8 bytes in unchanged private PAGE_READWRITE allocations;
+it does not change page protections, suspend threads, inject code or bypass
+access controls. The expected-byte checks are not an atomic transaction with
+the game. A plan expires after 60 seconds or a scope/capture change.
+
+Native receipts appear in `data` and durable `state.changes`. `written` means
+the requested bytes were observed after the native write; `restored` means the
+original bytes were observed again. Neither verifies gameplay meaning or all
+effects. `uncertain` is a held outcome, never permission to retry. Repeating an
+already completed change ID does not write again; it may add a visual check.
+Inspect a failed response and the recorded state before deciding what happened.
+
+The automatic post-write check and `observe_change` capture the original OCR
+region and store its PNG hash, reading, expected value, agreement and warnings.
+Geometry changes and ambiguous readings stay explicit. These checks do not test
+other gameplay effects. Each change allows eight observations; separate trial
+evidence is bounded to 128 MiB, reserving space for late capture completion.
+The journal retains at most 128 changes. No change is resumed or restored after
+restart, target replacement, or memory-batch/geometry changes. Earlier records
+remain history. See [native validation evidence](research/LIVE_TRIAL_EDITS.md).
+
 ## Image-grounded agent observations
 
-There are now 24 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 28 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's
@@ -343,13 +382,16 @@ software with access to the same user's files.
 
 A file lock prevents two engines from owning one data directory. History
 persists; active addresses do not survive engine restart. Observation jobs use
-the receipt/recovery contract above. Other commands remain synchronous and do
-not acquire its idempotency guarantees. Inspect status before repeating them.
+the receipt/recovery contract above. Native trial operations have their separate
+change-ID journal and never replay uncertain writes. Other commands remain
+synchronous and do not acquire those idempotency guarantees. Inspect status
+before repeating them.
 
 The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused
-fixture, not a rollback strategy for a real game. External process handles
-currently request query/read access only. Each batch retains up to 20 moments and
+fixture, not a rollback strategy for a real game. Observation process handles
+request query/read access only; explicit trial operations temporarily request
+write access and use the guards described above. Each batch retains up to 20 moments and
 512 MiB of raw memory; images remain in the data directory. The optional attach
 budget is 1–32 MiB per moment. The desktop uses 16 MiB.
 

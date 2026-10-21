@@ -142,6 +142,10 @@ impl EngineHandle {
                         | "submit_observation"
                         | "read_sequence"
                         | "submit_temporal_observation"
+                        | "prepare_change"
+                        | "apply_change"
+                        | "restore_change"
+                        | "observe_change"
                 ) {
                     engine.view.error = None;
                     native_command(
@@ -156,6 +160,7 @@ impl EngineHandle {
                     engine.execute(&command)
                 };
                 engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
+                engine.view.changes = engine.changes.records.clone();
                 let (data, mut error) = match result {
                     Ok(data) => (
                         if matches!(
@@ -165,6 +170,10 @@ impl EngineHandle {
                                 | "submit_observation"
                                 | "read_sequence"
                                 | "submit_temporal_observation"
+                                | "prepare_change"
+                                | "apply_change"
+                                | "restore_change"
+                                | "observe_change"
                         ) {
                             data
                         } else {
@@ -236,6 +245,68 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "prepare_change" => {
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("Connect an application first.")?;
+            if command.args["investigation_id"] != session.view.investigation_id
+                || command.args["batch"] != session.view.coverage.batch
+            {
+                return Err(
+                    "The investigation changed. Read status before preparing a trial.".into(),
+                );
+            }
+            let track = command.args["track"]
+                .as_u64()
+                .ok_or("Choose a screen number.")? as usize;
+            let value = command.args["value"]
+                .as_f64()
+                .ok_or("Supply a finite requested value.")?;
+            let change =
+                session.prepare_change(track, value, &command.source, &mut engine.changes)?;
+            engine.event(
+                &command.source,
+                format!(
+                    "Prepared trial {} for {}. Gameplay effects remain unverified.",
+                    change.id, change.scope.label
+                ),
+            );
+            return Ok(json!(change));
+        }
+        "apply_change" | "restore_change" | "observe_change" => {
+            let id = command.args["change_id"]
+                .as_str()
+                .ok_or("Supply the prepared change identity.")?;
+            let session = engine
+                .live
+                .as_mut()
+                .ok_or("The original application must still be connected.")?;
+            let change = if command.action == "observe_change" {
+                session.observe_change(id, &mut engine.changes)?
+            } else {
+                let restored = command.action == "restore_change";
+                let mut result = session.execute_change(id, restored, &mut engine.changes)?;
+                if matches!(
+                    result.phase,
+                    reversebolt_core::changes::Phase::Written
+                        | reversebolt_core::changes::Phase::Restored
+                ) && result.observations.len() < 8
+                {
+                    // A separate visual check is evidence only. Failure never hides
+                    // or retries the already journaled native write.
+                    if let Ok(observed) = session.observe_change(id, &mut engine.changes) {
+                        result = observed;
+                    }
+                }
+                result
+            };
+            engine.event(
+                &command.source,
+                format!("Trial {}: {}", change.id, change.reason),
+            );
+            return Ok(json!(change));
+        }
         "set_observer_model" => {
             let value = command
                 .args

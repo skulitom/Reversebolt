@@ -100,6 +100,14 @@ pub trait NativeTarget {
         }))
     }
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>>;
+    /// Best-effort expected-byte guard; never an atomic compare-and-swap.
+    fn guarded_write(
+        &self,
+        _patch: &crate::changes::BytePatch,
+        _region: &Region,
+    ) -> crate::changes::WriteReceipt {
+        crate::changes::WriteReceipt::refused("This target does not support trial writes.")
+    }
     fn screen(&self, path: &Path) -> Result<Screen>;
     /// Run recognition after memory capture to avoid adding inference time to
     /// the screen-to-memory sampling delay. Fixtures may supply words directly.
@@ -215,6 +223,213 @@ pub struct LiveSession {
 }
 
 impl LiveSession {
+    pub fn change_scope(&self, track: usize) -> Result<crate::changes::Scope> {
+        let check = self
+            .view
+            .prediction_check
+            .as_ref()
+            .ok_or("Check this value against fresh observations first.")?;
+        let series = self
+            .view
+            .tracks
+            .iter()
+            .find(|t| t.id == track && t.active)
+            .ok_or("That screen value is not active.")?;
+        let (width, height) = self
+            .screen_size
+            .ok_or("The window geometry is unavailable.")?;
+        Ok(crate::changes::Scope {
+            investigation: self.view.investigation_id.clone(),
+            batch: self.view.coverage.batch,
+            epoch: self.image_epoch,
+            frame: self.view.sample_count,
+            prediction: check.id.clone(),
+            process: self.view.process.clone(),
+            track,
+            label: series.label.clone(),
+            bounds: series.bounds,
+            image_size: [width, height],
+        })
+    }
+
+    pub fn prepare_change(
+        &mut self,
+        track: usize,
+        desired: f64,
+        actor: &str,
+        store: &mut crate::changes::Store,
+    ) -> Result<crate::changes::Change> {
+        if self.refresh_connection() || !self.view.connected {
+            return Err("The original application is no longer connected.".into());
+        }
+        let scope = self.change_scope(track)?;
+        let check = self.view.prediction_check.as_ref().unwrap();
+        if check.source != prediction::Source::Ocr
+            || check.track != track
+            || check.invalidated.is_some()
+            || check.epoch != self.image_epoch
+        {
+            return Err("This value needs a current screen-number prediction check before a trial can be prepared.".into());
+        }
+        // Keep unresolved rivals. A missing or invalidated rival cannot disappear
+        // from the action vote simply because reading it is inconvenient.
+        let survivors: Vec<_> = check
+            .candidates
+            .iter()
+            .enumerate()
+            .filter(|(_, c)| c.assessment(check) != prediction::Assessment::Contradicted)
+            .collect();
+        if survivors.is_empty()
+            || survivors.iter().any(|(_, c)| {
+                c.assessment(check) != prediction::Assessment::ConsistentInObservedScope
+            })
+        {
+            return Err("Some interpretations still need contrasting evidence. Keep observing before preparing an edit.".into());
+        }
+        let observed = self
+            .view
+            .tracks
+            .iter()
+            .find(|t| t.id == track)
+            .and_then(|t| t.samples.last().copied().flatten())
+            .ok_or("The latest screen value is uncertain.")?;
+        let mut models = vec![];
+        for (index, c) in survivors {
+            let address = u64::from_str_radix(c.address.trim_start_matches("0x"), 16)
+                .map_err(|_| "Invalid candidate address.")?;
+            let chunk = self
+                .plan
+                .iter()
+                .find(|p| p.address == c.chunk_address)
+                .ok_or("The candidate is outside the current batch.")?;
+            if self.invalid_chunks.contains(&chunk.address) {
+                return Err("A candidate allocation is no longer available.".into());
+            }
+            let region = self
+                .target
+                .query(address)?
+                .ok_or("A candidate allocation disappeared.")?;
+            if !chunk.covered_by(
+                &self
+                    .target
+                    .query(chunk.address)?
+                    .ok_or("A candidate allocation disappeared.")?,
+            ) {
+                return Err("A candidate allocation changed.".into());
+            }
+            let before = self.target.read(address, c.mapping.kind.width())?;
+            models.push(crate::changes::Model {
+                index,
+                address,
+                mapping: c.mapping.clone(),
+                region,
+                before,
+            });
+        }
+        let change = crate::changes::Change::prepare(scope, models, observed, desired, actor)?;
+        store.insert(change)
+    }
+
+    pub fn execute_change(
+        &mut self,
+        id: &str,
+        restore: bool,
+        store: &mut crate::changes::Store,
+    ) -> Result<crate::changes::Change> {
+        self.refresh_connection();
+        let change = store.get(id)?;
+        let scope = self.change_scope(change.scope.track)?;
+        let result = store.execute(id, &*self.target, &scope, restore)?;
+        // Keep the frozen record for provenance, but do not treat observations
+        // after our own intervention as independent predictive confirmation.
+        if result.write.as_ref().is_some_and(|r| r.attempted) {
+            if let Some(check) = &mut self.view.prediction_check {
+                check.invalidated =
+                    Some("An explicit trial edit interrupted passive observation.".into());
+            }
+            self.save_prediction_check()?;
+        }
+        Ok(result)
+    }
+
+    pub fn observe_change(
+        &mut self,
+        id: &str,
+        store: &mut crate::changes::Store,
+    ) -> Result<crate::changes::Change> {
+        use crate::changes::{Observation, Phase, now_ms};
+        use sha2::{Digest, Sha256};
+        let mut change = store.get(id)?;
+        if !matches!(change.phase, Phase::Written | Phase::Restored) {
+            return Err("There is no settled write to observe.".into());
+        }
+        if change.observations.len() >= 8 {
+            return Err("This trial reached its eight-observation limit.".into());
+        }
+        change.check_target(&*self.target, &self.change_scope(change.scope.track)?)?;
+        let (path, reservation) = store.reserve_image(&change.id)?;
+        let expected = if change.phase == Phase::Restored {
+            change.observed
+        } else {
+            change.desired
+        };
+        let mut observation = Observation {
+            time_ms: now_ms(),
+            image: path.to_string_lossy().into_owned(),
+            image_sha256: String::new(),
+            value: None,
+            expected,
+            agrees: false,
+            error: None,
+            warning: None,
+        };
+        let result = (|| -> Result<()> {
+            let mut screen = self.target.screen(&path)?;
+            if std::fs::metadata(&path).map_err(|e| e.to_string())?.len()
+                > visual::MAX_IMAGE_BYTES as u64
+            {
+                return Err("Trial image exceeded its 10 MiB budget.".into());
+            }
+            // A successful capture has finished writing; an error keeps the
+            // reservation for a possible late worker completion.
+            std::fs::remove_file(&reservation).map_err(|e| e.to_string())?;
+            if [screen.width, screen.height] != change.scope.image_size {
+                return Err(
+                    "Window geometry changed; the old reading region cannot be reused.".into(),
+                );
+            }
+            observation.image_sha256 = format!(
+                "{:x}",
+                Sha256::digest(std::fs::read(&path).map_err(|e| e.to_string())?)
+            );
+            // A supplemental recognizer can fail after Windows OCR supplied
+            // valid words. Keep that warning and evaluate the actual readings.
+            observation.warning = self
+                .target
+                .recognize(&mut screen)
+                .err()
+                .or(screen.warning.clone());
+            let readings: Vec<_> = number_readings(&screen.words)
+                .into_iter()
+                .filter(|r| same_text_region(r.bounds, change.scope.bounds))
+                .collect();
+            if readings.len() != 1 {
+                return Err("The selected number could not be read unambiguously.".into());
+            }
+            observation.value = readings[0].value;
+            observation.agrees = observation
+                .value
+                .is_some_and(|v| (v - expected).abs() <= 0.55);
+            if observation.value.is_none() {
+                return Err("The selected number is uncertain.".into());
+            }
+            Ok(())
+        })();
+        observation.error = result.err();
+        change.observations.push(observation);
+        store.record(change)
+    }
+
     /// Retain the evidence, but revoke the connection and hypotheses on exit.
     pub fn refresh_connection(&mut self) -> bool {
         if self.view.connected && !self.target.alive() {

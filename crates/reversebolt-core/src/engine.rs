@@ -97,6 +97,8 @@ pub struct View {
     /// An owned read-only worker; never resumed from persisted UI state.
     #[serde(default)]
     pub analysis: Option<AnalysisStatus>,
+    #[serde(default)]
+    pub changes: Vec<crate::changes::Change>,
 }
 
 impl Default for View {
@@ -116,6 +118,7 @@ impl Default for View {
             live: None,
             observer_model: None,
             analysis: None,
+            changes: vec![],
         }
     }
 }
@@ -126,6 +129,7 @@ pub struct Engine {
     snapshots: Vec<Vec<u8>>,
     path: PathBuf,
     pub live: Option<crate::live::LiveSession>,
+    pub changes: crate::changes::Store,
 }
 
 impl Engine {
@@ -149,12 +153,19 @@ impl Engine {
         view.error = None;
         view.phase =
             "Open the practice environment to begin. Previous history is preserved.".into();
+        let changes = crate::changes::Store::open(
+            path.parent()
+                .unwrap_or(std::path::Path::new("."))
+                .join("changes"),
+        )?;
+        view.changes = changes.records.clone();
         Ok(Self {
             view,
             target: None,
             snapshots: vec![],
             path,
             live: None,
+            changes,
         })
     }
 
