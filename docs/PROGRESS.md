@@ -4,7 +4,15 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
-Latest independent-game baseline (2026-10-21): **25% unchanged**. Four automatic
+Latest observation resilience (2026-10-21): **25% unchanged**. Unsupported text
+regions no longer discard unrelated readable values; archived optional-model
+failures leave warnings while other captures continue. Paired replay of 100
+saved images improves selected 2048 readings and preserves earlier regressions.
+Native MCP/UI checks confirm continued capture with an unavailable model. These
+changes do not establish controlling state or independent-game acceptance. See
+[evidence and limits](../research/observation-resilience/README.md).
+
+Independent-game baseline (2026-10-21): **25% unchanged**. Four automatic
 runs of original 2048 and Javascript Tetris retained 64 captures, including an
 optional-model failure. No verified editable control emerged. The evidence
 exposes limitations in text-region handling, useful-object coverage, process
@@ -671,3 +679,37 @@ grounded visual objects beyond actors and held components; isolate optional
 model failures. Use saved-image regression first, followed by fresh evaluation.
 Process relationships and active capture/input planning also remain unresolved.
 See [method, results and artifact audit](../research/independent-games/README.md).
+
+## 2026-10-21 — retain partial observation and isolate model failures: still 25%
+
+Valid PP-OCRv6 regions survive alongside explicitly skipped unsupported crops.
+Archived optional inference/validation failures contribute no items, retain
+source-bound warnings and allow other captures to continue. Evidence persistence,
+scope, publication and worker failures still stop the pipeline. Human Inspect
+details and MCP expose the same warnings; no invalid proposal gains edit authority.
+
+Paired replay processes 100 saved images through both old and new executables.
+Across the 2048 runs, selected score readings improve from nine to 13 correct;
+the one wrong reading becomes conflicting. Best-counter readings improve from
+12 to 15 correct. Thirty-four browser-counter opportunities remain unscorable;
+these are never counted correct. Tetris and the previous Blue Prince, Half-Life
+2 and ordinary-window selected fields retain their results. Full-scene precision
+and fresh-game performance remain unmeasured. Extra retained text costs additional
+recognition time in the 2048 sequences.
+
+The exact rejected Tetris proposal is a regression fixture. A real four-step
+MCP job also completes with two deliberately unavailable model reviews while
+its native numeric card remains readable. Accessibility verifies the compact
+notice and optional details; no game control or manual screenshot review was
+needed. All 132 workspace tests, strict Clippy, formatting and release build pass.
+
+All weighted credits remain unchanged: foundation 4, native access 5, observation
+5, discovery 4, validation 2, intent 0, agent collaboration 5 and generalization 0.
+Total **25 / 100**; the full goal remains active. Next: grounded visual items
+beyond actors and held components, followed by fresh evaluation, while addressing
+process scope and the gap between visible values and actual controlling state.
+
+Preview `0.1.0-20261021-060956` is running with eight prior history entries and
+the selected local model preserved. The packaged 29-tool MCP/practice smoke and
+binary/model hash checks pass. No owned Anode fixture remains. Full results,
+reproduction and compact evidence are in the observation-resilience research.

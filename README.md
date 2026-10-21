@@ -73,7 +73,9 @@ were seen. **Earlier** distinguishes an old image finding from
 a current reading; **Inspect** retains its full explanation. No models are
 downloaded and no images are uploaded. **Disable** turns this off for future
 jobs. Stop or pause waits for the active request and prevents subsequent model
-calls. A failed pass stops its job, retaining evidence. See
+calls. An unavailable or rejected model pass contributes no findings and leaves
+a warning under **Inspect application**; other capture continues. Evidence-save
+or scope failures still stop the job. See
 [integration evidence and limits](docs/research/BACKGROUND_OBSERVER.md).
 
 For a series with matches, **Challenge these matches** freezes its predictions
@@ -178,6 +180,8 @@ compatibility path. Windows OCR and the optional PP-OCRv6/RTen reader produce
 source-tagged readings. Conflicting numbers remain gaps in the matching data;
 the desktop exposes their alternatives. Screen tracking is spatial, without
 semantic gameplay labels.
+An unsupported text region is skipped with a warning while other recognized
+regions are retained. See [saved-image regression and failure isolation](research/observation-resilience/README.md).
 General motion, appearance, object and rule inference,
 live-game experiments, broader investigation jobs, and restart revalidation are
 future milestones, not advertised capabilities.

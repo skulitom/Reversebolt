@@ -348,9 +348,16 @@ Pause, cancel and desktop takeover signal the active pass even between capture
 steps. The current HTTP request may finish, but later calls and publication are
 skipped when the flag is observed. Already completed publication is not undone. A pass
 checks a 90-second budget between requests (an active request can add up to
-90 seconds plus bounded metadata checks). Failed passes stop the job, with no
-automatic retry; background failure is checked before the next capture starts.
-An already-running capture can finish before the failure is handled.
+90 seconds plus bounded metadata checks). An inference/validation failure whose
+receipt was saved contributes zero findings and returns a `local_observation.warning`;
+other capture steps continue, with no retry of that pass. The next separately
+scheduled review can still run. `state.live.local_observation_warnings` retains
+up to 32 notices for the current memory batch, including evidence id, owning job,
+source frame ids and message. These notices are not observations or permission
+to edit. A successful job does not imply every optional review succeeded.
+Evidence persistence, scope, publication or worker failures still stop the job;
+background failure is checked before the next capture starts. An already-running
+capture can finish before the failure is handled.
 HTTP timeout means the client stopped waiting, not proof of
 server quiescence. Raw receipts are saved under `captures/model-observations/`.
 

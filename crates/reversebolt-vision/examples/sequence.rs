@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .collect::<Vec<_>>()
         );
         frames.push(serde_json::json!({"path":path,"sha256":format!("{:x}",Sha256::digest(std::fs::read(&path)?)),
-            "elapsed_ms":reading.elapsed_ms,"words":reading.words,"lines":reading.lines}));
+            "elapsed_ms":reading.elapsed_ms,"words":reading.words,"lines":reading.lines,"skipped_regions":reading.skipped_regions}));
     }
     out.write_all(&serde_json::to_vec_pretty(&serde_json::json!({"implementation":"reversebolt-vision native prototype","frames":frames}))?)?;
     Ok(())

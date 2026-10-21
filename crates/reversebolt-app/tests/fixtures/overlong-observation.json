@@ -1,0 +1,68 @@
+{
+  "entities": [
+    {
+      "description": "A blue L-shaped tetromino displayed in the preview box on the left panel.",
+      "kind": "other",
+      "localizations": [
+        {
+          "bounds": [360, 295, 400, 395],
+          "frame": 0
+        }
+      ],
+      "name": "Blue L-shaped piece"
+    },
+    {
+      "description": "A red S-shaped tetromino displayed in the preview box on the left panel.",
+      "kind": "other",
+      "localizations": [
+        {
+          "bounds": [360, 325, 415, 390],
+          "frame": 1
+        }
+      ],
+      "name": "Red S-shaped piece"
+    },
+    {
+      "description": "A blue L-shaped tetromino falling in the upper area of the main game board.",
+      "kind": "other",
+      "localizations": [
+        {
+          "bounds": [515, 265, 575, 325],
+          "frame": 1
+        }
+      ],
+      "name": "Falling blue piece"
+    },
+    {
+      "description": "A cluster of multi-colored square blocks (green, purple, yellow, orange, cyan, blue) stacked in the main game area.",
+      "kind": "other",
+      "localizations": [
+        {
+          "bounds": [480, 485, 650, 830],
+          "frame": 0
+        },
+        {
+          "bounds": [480, 485, 650, 830],
+          "frame": 1
+        }
+      ],
+      "name": "Stacked block pile"
+    },
+    {
+      "description": "A small dark rectangular box in the bottom-left corner displaying FPS information and a cyan bar.",
+      "kind": "other",
+      "localizations": [
+        {
+          "bounds": [385, 755, 460, 825],
+          "frame": 0
+        },
+        {
+          "bounds": [385, 755, 460, 825],
+          "frame": 1
+        }
+      ],
+      "name": "FPS indicator box"
+    }
+  ],
+  "summary": "Two screenshots of a web-based block-stacking game interface. The left panel shows a preview of the next piece (blue L-shape then red S-shape) and score counters. The main board displays a static pile of colored blocks and a falling blue piece in the second frame. No actors or held components are visible."
+}

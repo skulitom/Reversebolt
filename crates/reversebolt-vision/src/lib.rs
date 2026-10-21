@@ -48,7 +48,68 @@ pub struct TextLine {
 pub struct Reading {
     pub words: Vec<Word>,
     pub lines: Vec<TextLine>,
+    /// Unsupported regions are missing observations, never empty text or a zero.
+    pub skipped_regions: Vec<SkippedRegion>,
     pub elapsed_ms: u128,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SkippedRegion {
+    pub polygon: Quad,
+    pub source: Source,
+    pub reason: SkipReason,
+}
+
+#[derive(Debug, PartialEq, Eq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum SkipReason {
+    InvalidCrop,
+    RecognitionWidth { required: usize, maximum: usize },
+}
+
+struct RecognitionCrop {
+    image: RgbImage,
+    polygon: Quad,
+    width: usize,
+}
+
+/// Partition before batching so one unsupported line cannot reject its neighbors.
+fn prepare_crops(
+    image: &RgbImage,
+    quads: &[Quad],
+    source: Source,
+) -> (Vec<RecognitionCrop>, Vec<SkippedRegion>) {
+    let mut crops = vec![];
+    let mut skipped = vec![];
+    for &polygon in quads {
+        let Some((image, polygon)) = crop(image, polygon) else {
+            skipped.push(SkippedRegion {
+                polygon,
+                source,
+                reason: SkipReason::InvalidCrop,
+            });
+            continue;
+        };
+        let width = (u64::from(image.width()) * 48).div_ceil(u64::from(image.height())) as usize;
+        if width > MAX_RECOGNITION_WIDTH {
+            skipped.push(SkippedRegion {
+                polygon,
+                source,
+                reason: SkipReason::RecognitionWidth {
+                    required: width,
+                    maximum: MAX_RECOGNITION_WIDTH,
+                },
+            });
+        } else {
+            crops.push(RecognitionCrop {
+                image,
+                polygon,
+                width,
+            });
+        }
+    }
+    crops.sort_by_key(|crop| crop.width);
+    (crops, skipped)
 }
 
 struct Region {
@@ -210,40 +271,27 @@ impl Reader {
         Ok(quads)
     }
 
-    fn recognize(&self, image: &RgbImage, quads: &[Quad]) -> Result<Vec<TextLine>> {
-        let mut crops = quads
-            .iter()
-            .filter_map(|&q| crop(image, q))
-            .collect::<Vec<_>>();
-        crops.sort_by(|a, b| {
-            (a.0.width() as f32 / a.0.height() as f32)
-                .total_cmp(&(b.0.width() as f32 / b.0.height() as f32))
-        });
+    fn recognize(
+        &self,
+        image: &RgbImage,
+        quads: &[Quad],
+        source: Source,
+    ) -> Result<(Vec<TextLine>, Vec<SkippedRegion>)> {
+        let (crops, skipped) = prepare_crops(image, quads, source);
         let mut lines = vec![];
         for batch in crops.chunks(6) {
             let padded_width = batch
                 .iter()
-                .map(|(im, _)| (48. * im.width() as f32 / im.height() as f32) as usize)
+                .map(|crop| crop.width)
                 .max()
                 .unwrap_or(320)
                 .max(320);
-            if padded_width > MAX_RECOGNITION_WIDTH {
-                return Err(format!(
-                    "Text line exceeds {MAX_RECOGNITION_WIDTH}-pixel recognition budget"
-                ));
-            }
-            let mut widths = vec![];
             let scaled: Vec<_> = batch
                 .iter()
-                .map(|(im, _)| {
-                    let w = ((48. * im.width() as f32 / im.height() as f32).ceil() as usize)
-                        .min(padded_width);
-                    widths.push(w);
-                    resize(im, w as u32, 48)
-                })
+                .map(|crop| resize(&crop.image, crop.width as u32, 48))
                 .collect();
             let input = NdTensor::from_fn([batch.len(), 3, 48, padded_width], |[n, c, y, x]| {
-                if x >= widths[n] {
+                if x >= batch[n].width {
                     0.
                 } else {
                     scaled[n].get_pixel(x as u32, y as u32)[2 - c] as f32 / 127.5 - 1.
@@ -264,7 +312,7 @@ impl Reader {
                 return Err("Nonfinite recognition output".into());
             }
             let classes = self.dictionary.len();
-            for (n, (_, q)) in batch.iter().enumerate() {
+            for (n, crop) in batch.iter().enumerate() {
                 let tokens = decode(
                     &values[n * steps * classes..(n + 1) * steps * classes],
                     classes,
@@ -277,13 +325,13 @@ impl Reader {
                 };
                 let text = tokens.iter().map(|t| t.text).collect::<String>();
                 let words = if score >= 0.5 {
-                    word_spans(&tokens, *q, steps, padded_width, widths[n])
+                    word_spans(&tokens, crop.polygon, steps, padded_width, crop.width)
                 } else {
                     vec![]
                 };
                 lines.push(TextLine {
                     text,
-                    polygon: *q,
+                    polygon: crop.polygon,
                     score,
                     words,
                 });
@@ -299,7 +347,7 @@ impl Reader {
                 w.line = i;
             }
         }
-        Ok(lines)
+        Ok((lines, skipped))
     }
 
     pub fn read(&mut self, image: &RgbImage) -> Result<Reading> {
@@ -324,7 +372,7 @@ impl Reader {
         }
         self.size = Some(image.dimensions());
         let quads = self.detect(image)?;
-        let lines = self.recognize(image, &quads)?;
+        let (lines, mut skipped_regions) = self.recognize(image, &quads, Source::Detected)?;
         let mut words = lines
             .iter()
             .flat_map(|l| l.words.iter().cloned())
@@ -340,7 +388,8 @@ impl Reader {
             .filter(|r| !numeric.iter().any(|w| overlap(r.bounds, bounds(w.polygon))))
             .map(|r| rectangle(r.bounds))
             .collect::<Vec<_>>();
-        let recovered = self.recognize(image, &hints)?;
+        let (recovered, skipped_hints) = self.recognize(image, &hints, Source::Revisited)?;
+        skipped_regions.extend(skipped_hints);
         for (i, line) in recovered.into_iter().enumerate() {
             if line.score >= 0.5 && parse_number(&line.text).is_some() {
                 words.push(Word {
@@ -359,6 +408,7 @@ impl Reader {
         Ok(Reading {
             words,
             lines,
+            skipped_regions,
             elapsed_ms: start.elapsed().as_millis(),
         })
     }
@@ -472,6 +522,52 @@ fn update_regions(regions: &mut Vec<Region>, words: &[Word]) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn oversized_and_invalid_regions_do_not_discard_valid_neighbors() {
+        let image = RgbImage::new(1200, 200);
+        let good = rectangle([10., 10., 60., 24.]);
+        let wide = rectangle([0., 50., 1100., 48.]);
+        let invalid = rectangle([0., 0., 1., 1.]);
+        let (crops, skipped) =
+            prepare_crops(&image, &[good, wide, invalid, good], Source::Detected);
+        assert_eq!(crops.len(), 2);
+        assert!(crops.iter().all(|c| c.polygon == good && c.width == 120));
+        assert_eq!(skipped.len(), 2);
+        assert_eq!(skipped[0].polygon, wide);
+        assert_eq!(skipped[0].source, Source::Detected);
+        assert_eq!(
+            skipped[0].reason,
+            SkipReason::RecognitionWidth {
+                required: 1100,
+                maximum: 1024
+            }
+        );
+        assert_eq!(skipped[1].reason, SkipReason::InvalidCrop);
+    }
+
+    #[test]
+    fn recognition_width_budget_uses_rounded_up_scaled_and_rotated_crop() {
+        let image = RgbImage::new(1100, 1100);
+        let exact = rectangle([0., 0., 1024., 48.]);
+        let beyond = rectangle([0., 0., 1025., 48.]);
+        let fractional = rectangle([0., 0., 1003., 47.]); // 1024.34 rounds up, not down.
+        let tall = rectangle([0., 0., 48., 1025.]);
+        let (crops, skipped) = prepare_crops(
+            &image,
+            &[exact, beyond, fractional, tall],
+            Source::Revisited,
+        );
+        assert_eq!(crops.len(), 1);
+        assert_eq!(crops[0].width, 1024);
+        assert_eq!(skipped.len(), 3);
+        assert!(skipped.iter().all(|s| s.source == Source::Revisited
+            && s.reason
+                == SkipReason::RecognitionWidth {
+                    required: 1025,
+                    maximum: 1024
+                }));
+    }
+
     #[test]
     fn ctc_keeps_repeated_digits_separated_by_blank_and_whitespace() {
         let dictionary = ["", "1", " ", "Q"];

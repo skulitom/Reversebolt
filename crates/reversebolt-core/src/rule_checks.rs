@@ -545,6 +545,7 @@ mod tests {
             }
         }
         let view = LiveView {
+            local_observation_warnings: vec![],
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],

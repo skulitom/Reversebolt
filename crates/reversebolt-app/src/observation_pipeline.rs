@@ -32,6 +32,13 @@ pub fn checkpoint(engine: &mut Engine, published: &Arc<RwLock<View>>) -> Result<
 }
 
 impl Pipeline {
+    #[cfg(test)]
+    pub(crate) fn test_active(worker: Worker) -> Self {
+        Self {
+            active: Some(worker),
+            ..Self::default()
+        }
+    }
     pub fn busy(&self) -> bool {
         self.active.is_some()
     }
@@ -128,13 +135,40 @@ impl Pipeline {
         engine.view.analysis = None;
         match result {
             Ok(value) => {
-                engine.event(
-                    "local-model",
-                    format!(
-                        "Local review {} recorded {} provisional items; cancelled: {}.",
-                        worker.status.evidence_id, value["recorded"], value["cancelled"]
-                    ),
-                );
+                if let Some(warning) = value["warning"].as_str() {
+                    // Publish and persist the notice in the same serialized engine
+                    // checkpoint as the result. This does not cancel the job.
+                    let notices = &mut engine
+                        .live
+                        .as_mut()
+                        .unwrap()
+                        .view
+                        .local_observation_warnings;
+                    if notices.len() >= 32 {
+                        notices.remove(0);
+                    }
+                    notices.push(reversebolt_core::live::LocalObservationWarning {
+                        evidence_id: worker.status.evidence_id.clone(),
+                        job: worker.status.job,
+                        frame_ids: worker.status.frame_ids.clone(),
+                        message: warning.into(),
+                    });
+                    engine.event(
+                        "local-model",
+                        format!(
+                            "Local review {} unavailable: {warning} Other observation continues.",
+                            worker.status.evidence_id
+                        ),
+                    );
+                } else {
+                    engine.event(
+                        "local-model",
+                        format!(
+                            "Local review {} recorded {} provisional items; cancelled: {}.",
+                            worker.status.evidence_id, value["recorded"], value["cancelled"]
+                        ),
+                    );
+                }
                 self.last = Some((worker.status.job, value));
             }
             Err(error) => {

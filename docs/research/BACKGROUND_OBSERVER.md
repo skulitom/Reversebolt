@@ -1,5 +1,11 @@
 # Background image interpretation — 2026-10-21
 
+**Subsequent change:** archived inference/validation failures now leave a scoped
+warning and contribute no findings while other captures continue. Persistence,
+scope and worker failures still stop the pipeline. The historical missing-model
+stop result below describes the earlier build, not current behavior. See
+[the failure-isolation regression](../../research/observation-resilience/README.md).
+
 The first local visual review now runs alongside capture. In the automated
 native fixture, the sequence reached **moment 12 while the review of moments
 1–2 was still outstanding**. It completed all 16 captures and both reviews.

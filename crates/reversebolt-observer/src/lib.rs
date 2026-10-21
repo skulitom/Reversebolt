@@ -20,10 +20,10 @@ pub const PROMPT: &str = "Observe the supplied chronological images of an unfami
 
 pub fn schema() -> Value {
     json!({"type":"object","additionalProperties":false,"required":["summary","entities"],"properties":{
-        "summary":{"type":"string"},
+        "summary":{"type":"string","minLength":1,"maxLength":300},
         "entities":{"type":"array","maxItems":MAX_ENTITIES,"items":{"type":"object","additionalProperties":false,"required":["name","kind","description","localizations"],"properties":{
             "kind":{"enum":["actor","held_component","other","uncertain"]},
-            "name":{"type":"string"},"description":{"type":"string"},
+            "name":{"type":"string","minLength":1,"maxLength":80},"description":{"type":"string","minLength":1,"maxLength":300},
             "localizations":{"type":"array","minItems":1,"maxItems":MAX_FRAMES,"items":{"type":"object","additionalProperties":false,"required":["frame","bounds"],"properties":{
                 "frame":{"type":"integer","minimum":0,"maximum":MAX_FRAMES-1},
                 "bounds":{"type":"array","minItems":4,"maxItems":4,"items":{"type":"number","minimum":0,"maximum":1000}}

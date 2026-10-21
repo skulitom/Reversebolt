@@ -308,6 +308,12 @@ impl Observer {
             let rgb = image::DynamicImage::ImageRgba8(rgba).into_rgb8();
             match reader.read(&rgb) {
                 Ok(reading) => {
+                    if !reading.skipped_regions.is_empty() {
+                        warnings.push(format!(
+                            "PP-OCRv6 could not read {} text regions within its crop/width limits. Other regions were processed.",
+                            reading.skipped_regions.len()
+                        ));
+                    }
                     for word in reading.words {
                         let left = word
                             .polygon

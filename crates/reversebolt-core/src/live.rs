@@ -191,7 +191,19 @@ pub struct MemoryRead {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct LocalObservationWarning {
+    pub evidence_id: String,
+    pub job: u64,
+    pub frame_ids: Vec<String>,
+    pub message: String,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LiveView {
+    /// Bounded notices for this batch. Optional image interpretation can fail
+    /// while independent image, text and memory collection remains available.
+    #[serde(default)]
+    pub local_observation_warnings: Vec<LocalObservationWarning>,
     #[serde(default)]
     pub rule_checks: Vec<crate::rule_checks::Check>,
     #[serde(default)]
@@ -597,6 +609,7 @@ impl LiveSession {
         }
         std::fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         let view = LiveView {
+            local_observation_warnings: vec![],
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
@@ -1072,6 +1085,7 @@ impl LiveSession {
         self.view.rule_error = None;
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
+        self.view.local_observation_warnings.clear();
         self.view.temporal_tracks.clear();
         self.view.prediction_check = None;
         self.image_epoch += 1;

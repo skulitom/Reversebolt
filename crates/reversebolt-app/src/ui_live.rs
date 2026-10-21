@@ -644,6 +644,14 @@ impl LivePane {
         if ui.button("Inspect application").clicked() {
             self.show_inspector = true;
         }
+        if !live.local_observation_warnings.is_empty() {
+            ui.label(
+                RichText::new(
+                    "Some visual items could not be read. Details in Inspect application.",
+                )
+                .color(WARNING),
+            );
+        }
         if self.show_inspector {
             let mut open = true;
             egui::Window::new("Application details")
@@ -893,6 +901,18 @@ impl LivePane {
             });
         }
         ui.label(RichText::new(&live.phase).color(MUTED));
+        if !live.local_observation_warnings.is_empty() {
+            egui::CollapsingHeader::new("Visual review warnings").show(ui, |ui| {
+                for warning in &live.local_observation_warnings {
+                    ui.colored_label(WARNING, &warning.message);
+                    ui.label(format!(
+                        "Evidence: {} · observation job {}",
+                        warning.evidence_id, warning.job
+                    ));
+                }
+                ui.label("These reviews contributed no findings. Other observation continued.");
+            });
+        }
         if let Some(error) = &state.error {
             ui.colored_label(ERROR, error);
         }

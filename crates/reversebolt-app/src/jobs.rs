@@ -913,6 +913,7 @@ mod tests {
     fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                local_observation_warnings: vec![],
                 rule_checks: vec![],
                 rule_error: None,
                 action_patterns: vec![],

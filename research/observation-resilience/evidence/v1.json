@@ -1,0 +1,359 @@
+{
+  "scope": "Paired regression on exposed saved images; no new-game or control-validation claim.",
+  "binaries": {
+    "baseline": {
+      "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-053218\\Reversebolt.exe",
+      "sha256": "3e7341c1c79edbe0b5860fe31ff3587eb31f9e5fd0f83b7df0accafa680fef03"
+    },
+    "candidate": {
+      "path": "C:\\DEV\\Reversebolt\\target\\release\\Reversebolt.exe",
+      "sha256": "018d963f80213692866c6161fc556398d75fa090d7e693f240d3deb4076d34ea"
+    }
+  },
+  "source_images_audited": 100,
+  "paired_replays": [
+    {
+      "case": "2048-1-attempt-01",
+      "reader": "baseline",
+      "images": 16,
+      "outcomes": {
+        "best": {
+          "abstention": 1,
+          "unscorable": 8,
+          "correct": 7
+        },
+        "score": {
+          "abstention": 2,
+          "unscorable": 8,
+          "correct": 5,
+          "wrong": 1
+        }
+      },
+      "elapsed_seconds": 30.35899999999674,
+      "median_recognition_ms": 1849.5,
+      "warnings": {
+        "PP-OCRv6 text recognition: Text line exceeds 1024-pixel recognition budget": 16
+      },
+      "frames_with_neural_words": 0,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\2048-1-attempt-01\\baseline.json",
+      "output_sha256": "2764e89afc1dd0a7f324033854cd00251efe678229aba9e86220ad1120d84086",
+      "score_sha256": "28f05e97a6e55f4289425271b8c0431142305b82031fbe38c2cb0a0cfba7e97f"
+    },
+    {
+      "case": "2048-1-attempt-01",
+      "reader": "candidate",
+      "images": 16,
+      "outcomes": {
+        "best": {
+          "correct": 8,
+          "unscorable": 8
+        },
+        "score": {
+          "correct": 6,
+          "unscorable": 8,
+          "conflicting": 2
+        }
+      },
+      "elapsed_seconds": 38.60899999999674,
+      "median_recognition_ms": 2508.5,
+      "warnings": {
+        "PP-OCRv6 could not read 1 text regions within its crop/width limits. Other regions were processed.": 16
+      },
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\2048-1-attempt-01\\candidate.json",
+      "output_sha256": "f9c0ba1c9e030aab21faea94207fad00948ca6f5702268654525f206f083d47b",
+      "score_sha256": "43ac05fb14af27e0927288ed4263c12ef1114682f5e394e3151e230c498f3b52"
+    },
+    {
+      "case": "tetris-1-attempt-01",
+      "reader": "baseline",
+      "images": 16,
+      "outcomes": {
+        "rows": {
+          "correct": 16
+        },
+        "score": {
+          "correct": 15,
+          "unscorable": 1
+        }
+      },
+      "elapsed_seconds": 26.34299999999348,
+      "median_recognition_ms": 1677.5,
+      "warnings": {},
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\tetris-1-attempt-01\\baseline.json",
+      "output_sha256": "e970dcfc3b5902ce9fcd3801f8c2db8d7caf6fc205468f0179ca85efa4fc7ee3",
+      "score_sha256": "8fc423413b891ce01d3582e44acfbcf7205602dc5f693977f23a83952d7acd19"
+    },
+    {
+      "case": "tetris-1-attempt-01",
+      "reader": "candidate",
+      "images": 16,
+      "outcomes": {
+        "rows": {
+          "correct": 16
+        },
+        "score": {
+          "correct": 15,
+          "unscorable": 1
+        }
+      },
+      "elapsed_seconds": 26.078000000008615,
+      "median_recognition_ms": 1656.0,
+      "warnings": {},
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\tetris-1-attempt-01\\candidate.json",
+      "output_sha256": "13172a7ac9c7cc80d1a01634ef1adeda4b646a83d0b79912a73bd52651952fe6",
+      "score_sha256": "8fc423413b891ce01d3582e44acfbcf7205602dc5f693977f23a83952d7acd19"
+    },
+    {
+      "case": "2048-2-attempt-01",
+      "reader": "baseline",
+      "images": 16,
+      "outcomes": {
+        "best": {
+          "unscorable": 8,
+          "correct": 5,
+          "conflicting": 1,
+          "abstention": 2
+        },
+        "score": {
+          "unscorable": 8,
+          "abstention": 3,
+          "correct": 4,
+          "conflicting": 1
+        }
+      },
+      "elapsed_seconds": 30.764999999999418,
+      "median_recognition_ms": 1856.5,
+      "warnings": {
+        "PP-OCRv6 text recognition: Text line exceeds 1024-pixel recognition budget": 15
+      },
+      "frames_with_neural_words": 1,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\2048-2-attempt-01\\baseline.json",
+      "output_sha256": "e5af388f7ba8441801f6078181e276796b262737905ff9f1baed05bd38658f66",
+      "score_sha256": "ae7aeacacb31b2da099001d8108661f6e4d68ba0184d41547d7824b612a113ed"
+    },
+    {
+      "case": "2048-2-attempt-01",
+      "reader": "candidate",
+      "images": 16,
+      "outcomes": {
+        "best": {
+          "unscorable": 8,
+          "correct": 7,
+          "abstention": 1
+        },
+        "score": {
+          "unscorable": 8,
+          "correct": 7,
+          "abstention": 1
+        }
+      },
+      "elapsed_seconds": 35.15600000000268,
+      "median_recognition_ms": 2240.0,
+      "warnings": {
+        "PP-OCRv6 could not read 1 text regions within its crop/width limits. Other regions were processed.": 15
+      },
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\2048-2-attempt-01\\candidate.json",
+      "output_sha256": "5f1011fcffe815e84886c6e529ad18bd66b2a74ffaff1608e493e0116d846ca7",
+      "score_sha256": "91ba3a6f924d9a195e46120e5a67757881c22509eb2c4ab0cca269fa10950bf9"
+    },
+    {
+      "case": "tetris-2-attempt-01",
+      "reader": "baseline",
+      "images": 16,
+      "outcomes": {
+        "rows": {
+          "correct": 16
+        },
+        "score": {
+          "correct": 15,
+          "unscorable": 1
+        }
+      },
+      "elapsed_seconds": 25.406000000002678,
+      "median_recognition_ms": 1580.5,
+      "warnings": {},
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\tetris-2-attempt-01\\baseline.json",
+      "output_sha256": "aa608a79173722de94a06bcaf6f85ffb134969108fc8fa272ef3cbcedaeb8693",
+      "score_sha256": "751f15de9bde916981c58b3f2e14d8af05e1ca685b52eff40ca66084548a19e5"
+    },
+    {
+      "case": "tetris-2-attempt-01",
+      "reader": "candidate",
+      "images": 16,
+      "outcomes": {
+        "rows": {
+          "correct": 16
+        },
+        "score": {
+          "correct": 15,
+          "unscorable": 1
+        }
+      },
+      "elapsed_seconds": 24.797000000005937,
+      "median_recognition_ms": 1559.0,
+      "warnings": {},
+      "frames_with_neural_words": 16,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\tetris-2-attempt-01\\candidate.json",
+      "output_sha256": "64f140c299cccffbe4d1517174b2cacaf31679528eb5809aa2aa4944b6185e08",
+      "score_sha256": "751f15de9bde916981c58b3f2e14d8af05e1ca685b52eff40ca66084548a19e5"
+    },
+    {
+      "case": "blue-native-fresh",
+      "reader": "baseline",
+      "images": 12,
+      "outcomes": {
+        "correct": 12,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 19.577999999994063,
+      "median_recognition_ms": 1658.0,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\blue-native-fresh\\baseline.json",
+      "output_sha256": "6bc7855c3f15a3062a614be83c9568beea0f444aa323f2f9167e64f98598aff0",
+      "score_sha256": "33bad50acada180babfd872a04eed343edebfe4aa2d70451288b621c5baefbe3"
+    },
+    {
+      "case": "blue-native-fresh",
+      "reader": "candidate",
+      "images": 12,
+      "outcomes": {
+        "correct": 12,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 18.813000000009197,
+      "median_recognition_ms": 1588.5,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\blue-native-fresh\\candidate.json",
+      "output_sha256": "12da27431432a2a7225ca524e7048bc2cdf1c0ff8a69412466c6cc29fabb6397",
+      "score_sha256": "14e7beb49e3e3fb6ade1f1605d2010f4fa6769dab57ddac1fe1eadafdd479e1b"
+    },
+    {
+      "case": "hl2-development",
+      "reader": "baseline",
+      "images": 12,
+      "outcomes": {
+        "correct": 36,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 18.406999999991967,
+      "median_recognition_ms": 1555.0,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\hl2-development\\baseline.json",
+      "output_sha256": "67b2cd056c4cd7d6b109d173ad55a40c7f03a65a282a17511c6c40eeaf2a859b",
+      "score_sha256": "1ac6ef593c9332fd94c365e2687cca1eb19a0faf417afbe403cbd90dae7fc9a9"
+    },
+    {
+      "case": "hl2-development",
+      "reader": "candidate",
+      "images": 12,
+      "outcomes": {
+        "correct": 36,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 19.172000000005937,
+      "median_recognition_ms": 1633.0,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\hl2-development\\candidate.json",
+      "output_sha256": "411060a3e284f31946764c6b2791ab34b1634dd7eab1f1777be139cf8d2dee3e",
+      "score_sha256": "21ffd3ee19d1f82321af95d5efd928615d0cf37a7dcb60af1f129fb87c76606f"
+    },
+    {
+      "case": "ordinary-original",
+      "reader": "baseline",
+      "images": 12,
+      "outcomes": {
+        "correct": 12,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 18.85899999999674,
+      "median_recognition_ms": 1605.0,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\ordinary-original\\baseline.json",
+      "output_sha256": "66f6d9b320dc065dd29d55d84b8e29655e550cb1e8568904575f87d3afe92eeb",
+      "score_sha256": "976e03262702cb4cb0ac2c9e0d5f4c403b337f3189650614fb3b4054d7c579f9"
+    },
+    {
+      "case": "ordinary-original",
+      "reader": "candidate",
+      "images": 12,
+      "outcomes": {
+        "correct": 12,
+        "wrong": 0,
+        "uncertain": 0,
+        "missing": 0
+      },
+      "elapsed_seconds": 19.10899999999674,
+      "median_recognition_ms": 1608.5,
+      "warnings": {},
+      "frames_with_neural_words": 12,
+      "output": "C:\\DEV\\Reversebolt\\test-results\\observation-resilience-v1\\ordinary-original\\candidate.json",
+      "output_sha256": "51a478ee4f6648ef9ca06a4ec45f3f0670982327644cdd37976f5f3063faf7fc",
+      "score_sha256": "d946354457fc182f117b532038fc49543d9ec3d776f305c078e126b9e04daca0"
+    }
+  ],
+  "native": {
+    "engine_pid": 86544,
+    "fixture_pid": 65284,
+    "session": 2,
+    "captures": 4,
+    "phase": "Completed",
+    "warning_count": 2,
+    "current_numeric_value": 72,
+    "binary_sha256": "018d963f80213692866c6161fc556398d75fa090d7e693f240d3deb4076d34ea",
+    "receipts": {
+      "bfc145a1-40c5-4fdf-8698-344df18c51ad.json": "eba069727f199e1b6ac5d329dee467dd28eb26605943e3fbb3f4f3abb920a300",
+      "ddf6e8f7-688c-4fc0-9d20-17985a463556.json": "ca67b275151a89db9100fd8826502164bcc97b7491901adf627bfb3691d34ba6"
+    }
+  },
+  "desktop": {
+    "version": "0.1.0-20261021-060956",
+    "pid": 60564,
+    "previous_pid": 74776,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-060956\\Reversebolt.exe",
+    "sha256": "018d963f80213692866c6161fc556398d75fa090d7e693f240d3deb4076d34ea",
+    "history_count": 8,
+    "history_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "packaged_binary_and_model_hashes_verified": true
+  },
+  "workspace_tests": 132,
+  "raw_files": {
+    "test-results\\observation-resilience-v1\\manifest.json": "8e503dfde56b0e548c3b0265086d9924f7169244d9f131fe9ba05eb148fdee25",
+    "test-results\\observation-resilience-v1\\results.json": "a1d0b94b1d215a56615d5110d59b372a825b9748ea36c104c114e41d75564020",
+    "test-results\\observation-resilience-native-v1\\state.json": "044521dfe4580bab0a4a385db202c490c772fcfe6816ba0777deb5705bb01220",
+    "test-results\\observation-resilience-native-v1\\trace.json": "2a17b38d38d8165dc6792a9fefc5287923757db4bd74f90414c5fcba805a73d4",
+    "test-results\\observation-resilience-native-v1\\uia.json": "22ea6a1bbcbafb24799a2fff19283499ea0fb2dce00b2d5c6d12c73f77422865",
+    "crates\\reversebolt-app\\tests\\fixtures\\overlong-observation.json": "2973ffd2bf6eef012da083e5e25d88765e7a65503f1c63865f6fe23134c9e012",
+    "test-results\\observation-resilience-tests.log": "ad0382d59fcd19f9c9219c643d6a6028a8f170a64b90f561fba645a809b6e6db",
+    "test-results\\observation-resilience-clippy.log": "c4c68617ba4112620eb040f4553c37b7602dace2f4a2d1cef710eb03f50ec0f5",
+    "test-results\\observation-resilience-build.log": "e70a06cafbc5ddd64174584cde599aadb879bea980431da2e472d520ad2714ce",
+    "test-results\\smoke-4246633c\\report.json": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+  },
+  "progress_percent": 25,
+  "limits": [
+    "Exposed saved-image selected-field regression, not full-scene precision or new-game acceptance.",
+    "Wide regions still missing; partial neural results can introduce explicit conflicts.",
+    "Native missing-model fixture tests continuation, not semantic accuracy.",
+    "No new controlling memory, gameplay effect or editable game control verified."
+  ]
+}

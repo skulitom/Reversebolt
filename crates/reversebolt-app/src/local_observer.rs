@@ -220,13 +220,8 @@ pub struct Completed {
 }
 impl Completed {
     pub fn publish(self, session: &mut LiveSession, cancel: &AtomicBool) -> Result<Value> {
-        if let Some(error) = self.pass.error {
-            return Err(format!(
-                "Local observation stopped: {error} Evidence: {}.",
-                self.id
-            ));
-        }
         let cancelled = self.pass.cancelled || cancel.load(Ordering::SeqCst);
+        let warning = if cancelled { None } else { self.pass.error };
         let count = if cancelled {
             0
         } else {
@@ -240,11 +235,17 @@ impl Completed {
                     "Local observation belongs to a replaced investigation or memory batch.".into(),
                 );
             }
-            session.submit_observations(self.inputs, "local-model")?
+            if warning.is_some() {
+                // The immutable failure receipt has already been saved. A model
+                // failure is missing optional evidence, never a partial finding.
+                0
+            } else {
+                session.submit_observations(self.inputs, "local-model")?
+            }
         };
         Ok(
             json!({"evidence_id":self.id,"recorded":count,"cancelled":cancelled,"provisional":true,
-            "observed_frame":self.prepared.sequence.frames.last().map(|f|&f.id)}),
+            "observed_frame":self.prepared.sequence.frames.last().map(|f|&f.id),"warning":warning}),
         )
     }
 }
@@ -590,5 +591,163 @@ mod tests {
             ))
             .unwrap();
         assert!(empty.cancelled && empty.proposal.is_none());
+    }
+
+    #[test]
+    fn rejected_model_reply_is_archived_and_capture_pipeline_continues() {
+        use crate::{observation_pipeline::Pipeline, service::OperationOwner};
+        use reversebolt_core::engine::{Engine, View};
+        use std::sync::RwLock;
+        let (session, directory, _) = session();
+        let source_ids = session
+            .view
+            .frames
+            .iter()
+            .map(|f| f.id.clone())
+            .collect::<Vec<_>>();
+        let path = directory.join("session.json");
+        let mut engine = Engine::load(path.clone()).unwrap();
+        let owner = OperationOwner {
+            job: 11,
+            cancel: Arc::new(AtomicBool::new(false)),
+        };
+        let worker = Worker::start_with(
+            Prepared::from_session(&session).unwrap(),
+            "fixture".into(),
+            owner.job,
+            owner.cancel.clone(),
+            directory.clone(),
+            |_, frames, _, pass| {
+                // Exact response from the retained independent Tetris failure.
+                let raw = include_str!("../tests/fixtures/overlong-observation.json");
+                let interpretation: reversebolt_observer::Interpretation =
+                    serde_json::from_str(raw).unwrap();
+                assert_eq!(interpretation.summary.len(), 306);
+                let error =
+                    reversebolt_observer::validate(&interpretation, frames.len()).unwrap_err();
+                successful_pass(frames, pass);
+                let receipt = pass.proposal.as_mut().unwrap();
+                receipt.response = json!({"message":{"content":raw}});
+                receipt.interpretation = None;
+                receipt.rejection = Some(error.clone());
+                Err(format!("Local model returned an invalid proposal: {error}"))
+            },
+        )
+        .unwrap();
+        // Polling is left to the actual pipeline, including its durable checkpoint.
+        let evidence_id = worker.status.evidence_id.clone();
+        engine.view.analysis = Some(worker.status.clone());
+        engine.live = Some(session);
+        let published = Arc::new(RwLock::new(View::default()));
+        let mut pipeline = Pipeline::test_active(worker);
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while pipeline.busy() {
+            pipeline.poll(&mut engine, &published);
+            assert!(Instant::now() < deadline);
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        pipeline.check(&owner).unwrap();
+        let outcome = pipeline.drain(&mut engine, &owner, &published).unwrap();
+        assert_eq!(outcome["recorded"], 0);
+        assert!(
+            outcome["warning"]
+                .as_str()
+                .unwrap()
+                .contains("Invalid observation size")
+        );
+        assert!(!owner.cancel.load(Ordering::SeqCst));
+        assert!(engine.view.error.is_none());
+        let live = engine.live.as_mut().unwrap();
+        let notice = &live.view.local_observation_warnings[0];
+        assert_eq!(notice.evidence_id, evidence_id);
+        assert_eq!(notice.frame_ids, source_ids);
+        assert_eq!(notice.job, owner.job);
+        for _ in 2..16 {
+            live.capture().unwrap();
+        }
+        assert_eq!(live.view.sample_count, 16);
+        assert!(live.view.visual_tracks.is_empty());
+        let saved: Value = serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+        assert_eq!(
+            saved["live"]["local_observation_warnings"][0]["evidence_id"],
+            evidence_id
+        );
+        assert_eq!(
+            published
+                .read()
+                .unwrap()
+                .live
+                .as_ref()
+                .unwrap()
+                .local_observation_warnings
+                .len(),
+            1
+        );
+        let receipt: Value = serde_json::from_slice(
+            &std::fs::read(
+                directory
+                    .join("model-observations")
+                    .join(format!("{evidence_id}.json")),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(receipt["proposed_observations"], json!([]));
+        assert_eq!(
+            receipt["pass"]["proposal"]["response"]["message"]["content"],
+            include_str!("../tests/fixtures/overlong-observation.json")
+        );
+        let restored = Engine::load(path).unwrap();
+        assert!(restored.view.live.is_none());
+        assert!(
+            restored
+                .view
+                .history
+                .iter()
+                .any(|e| e.text.contains(&evidence_id))
+        );
+    }
+
+    #[test]
+    fn failed_evidence_or_checkpoint_persistence_still_stops_the_pipeline() {
+        use crate::{observation_pipeline::Pipeline, service::OperationOwner};
+        use reversebolt_core::engine::{Engine, View};
+        use std::sync::RwLock;
+        for blocked in ["archive", "checkpoint"] {
+            let (session, directory, _) = session();
+            let mut engine = Engine::load(directory.join("session.json")).unwrap();
+            if blocked == "archive" {
+                std::fs::write(directory.join("model-observations"), b"blocked").unwrap();
+            } else {
+                std::fs::create_dir(directory.join("session.json.tmp")).unwrap();
+            }
+            let owner = OperationOwner {
+                job: 12,
+                cancel: Arc::new(AtomicBool::new(false)),
+            };
+            let worker = Worker::start_with(
+                Prepared::from_session(&session).unwrap(),
+                "fixture".into(),
+                owner.job,
+                owner.cancel.clone(),
+                directory,
+                |_, _, _, _| Err("model unavailable".into()),
+            )
+            .unwrap();
+            engine.view.analysis = Some(worker.status.clone());
+            engine.live = Some(session);
+            let published = Arc::new(RwLock::new(View::default()));
+            let mut pipeline = Pipeline::test_active(worker);
+            let deadline = Instant::now() + Duration::from_secs(5);
+            while pipeline.busy() {
+                pipeline.poll(&mut engine, &published);
+                assert!(Instant::now() < deadline);
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            assert!(pipeline.check(&owner).is_err());
+            assert!(owner.cancel.load(Ordering::SeqCst));
+            assert!(engine.view.error.is_some());
+            assert!(engine.live.as_ref().unwrap().view.visual_tracks.is_empty());
+        }
     }
 }
