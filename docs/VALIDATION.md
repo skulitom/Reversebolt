@@ -1,5 +1,17 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Seeded patch tracking experiment — 2026-10-21
+
+All 91 workspace tests, strict Clippy and formatting pass. The frozen automated
+replay covers 48 one-second windows, four endpoint comparators and two matching
+thresholds. Gated tracking retains only 1/15 nonstationary endpoint opportunities
+from initially correct seeds; its lower false-positive count comes with severe
+recall loss. Ungated tracking is worse than holding boxes still. Independent
+receipt-only scoring reproduces every endpoint count, and CLI checks reject
+wrong-image seeds and overwriting receipts. See [method, results and
+limits](research/SEEDED_TRACKING.md). This remains research-only. No model call,
+game input or screenshot inspection was used; the current desktop stays running.
+
 ## Shared local visual observer — 2026-10-21
 
 All 85 workspace tests, strict Clippy and formatting pass. The native/MCP test

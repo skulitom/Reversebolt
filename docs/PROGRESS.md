@@ -410,3 +410,19 @@ enabled and prior history preserved. Next: persistent, uncertainty-aware visual
 measurements that can be compared with internal trajectories, followed by
 independent validation of meaning and effects. See
 [integration evidence and remaining limits](research/LOCAL_OBSERVER_INTEGRATION.md).
+
+## 2026-10-21 — seeded tracking replay: remains 21%
+
+An original Rust image-patch tracker and a source-bound offline runner now have
+automated evidence over all 48 adjacent annotated one-second windows. Fixed
+appearance, ambiguity and reverse-search gates retain only 1/15 moving endpoint
+opportunities from initially correct seeds. Ungated search is worse than holding
+boxes still. This does not justify publishing trajectories or increasing any
+capability credit. The denominator and all category credits remain unchanged.
+
+All 91 workspace tests, strict Clippy and formatting pass. Existing appearance
+cards and desktop preview `0.1.0-20261021-011044` remain available. The new code
+is research-only; no new capture, game control or model inference was needed.
+Next: independent acquisition and observation freshness, then a tracking method
+that passes moving/animated-object retention before internal-state comparison.
+See [the failed approach and evidence](research/SEEDED_TRACKING.md).

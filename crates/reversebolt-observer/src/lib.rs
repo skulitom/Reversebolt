@@ -10,6 +10,7 @@ use std::{
 };
 
 pub mod review;
+pub mod tracking;
 
 const ENDPOINT: &str = "http://127.0.0.1:11434";
 pub const MAX_FRAMES: usize = 4;
