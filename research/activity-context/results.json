@@ -1,0 +1,98 @@
+{
+  "audit_passed": true,
+  "artifact_root": "test-results\\activity-context-v1",
+  "frozen_sha256": "2e7f72a1c3f1df29756002f5687e371232f2d1a73a99005b74e0fdb24fc4fbda",
+  "parent_revision": "35307ac1e6fe81f658e35faf220670b7e00b48d1",
+  "native_checks": 8,
+  "workspace_tests": 271,
+  "mcp_tools": 52,
+  "frames": 15,
+  "evaluator_holds": 4,
+  "manual_measurement_images": 0,
+  "setup_screenshots": 4,
+  "activity_accepted": true,
+  "observation": {
+    "consistent_visible_change": true,
+    "description": "In both pairs, the central staircase shifts slightly downward and to the left in screen space, while the ceiling light panels shift slightly upward and to the right. The perspective of the room walls and floor opening adjusts correspondingly, suggesting a subtle camera repositioning or view adjustment.",
+    "uncertainty": "The changes are subtle and could be due to minor camera drift, rendering artifacts, or unmeasured input. Without additional context or control data, it is unclear if this is an intentional change or a side effect of other factors."
+  },
+  "activity_error": null,
+  "selected_key": 68,
+  "model": "qwen3.8:latest",
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "server_version": "0.40.7",
+  "stage_elapsed_ms": {
+    "activity": 23871,
+    "metadata": [
+      52693,
+      79424
+    ]
+  },
+  "accepted_hypotheses": 12,
+  "rejected_hypotheses": 0,
+  "hypothesis_names": [
+    "minimum Y",
+    "maximum Y",
+    "sensitivity Y",
+    "mouse sensitivity Y",
+    "joystick sensitivity Y",
+    "invert mouse Y",
+    "invert joystick Y",
+    "clamp rotation",
+    "can rotate Y",
+    "reset rotation Y",
+    "rotation Y",
+    "mouse sensitivity multiplier"
+  ],
+  "prepared_field": "sensitivityY",
+  "prepared_test": "744e641b-89ad-4145-8bdf-ad8ce9cf7bdb",
+  "helpers": 2,
+  "helper_receipts": [
+    {
+      "path": "data\\runtime\\32528-01dd61a45af948b1\\7e48978b-9a23-4cbb-b349-2f4d5ebcd32b\\stdout.jsonl",
+      "sha256": "8fe0ee8b0a2a50e72b18524afbf29b9cc71ad8d92a3500d274e60873a710d9cd",
+      "report_sha256": "a5f63aaa7edcedf36b87c15ebbcd390a11eef350c336e4d8084d793602251bb0"
+    },
+    {
+      "path": "data\\runtime\\32528-01dd61a45af948b1\\8deb527f-e7bf-486f-8699-e07f17e5e0dd\\stdout.jsonl",
+      "sha256": "a57de617cb21bd3a5b2a46c909548614c6a396e9630ebd0ee33685d8fc8f8ab9",
+      "report_sha256": "d81100dd635d20a621d33302df3d57e90f6e1c921a83d7a3b7b4ff5c38b731f1"
+    }
+  ],
+  "reported_pauses": 111,
+  "maximum_stop_to_resume_us": 5187,
+  "helper_heap_operations_while_paused": 0,
+  "writes": 0,
+  "children": [
+    {
+      "pid": 20564,
+      "exit_code": 1
+    },
+    {
+      "pid": 37036,
+      "exit_code": 1
+    },
+    {
+      "pid": 28180,
+      "exit_code": 1
+    }
+  ],
+  "storage_changes": {
+    "Player-prev.log": "changed",
+    "Player.log": "changed",
+    "Saves\\SaveSlot3.data": "changed",
+    "Saves\\Screenshot3.jpg": "changed"
+  },
+  "user_saves_1_2_preserved": true,
+  "preview": "0.1.0-20261021-224455",
+  "desktop_pid": 33980,
+  "history_preserved": 44,
+  "limitations": [
+    "Exploratory previously inspected game and save; no independent or held-out generalization.",
+    "Known evaluator keys and duration, not learned input semantics or an autonomous action policy.",
+    "Model descriptions and metadata matches are provisional; no physical, semantic or causal field verification.",
+    "Preparing and stopping a comparison verifies provenance only; no comparison images or gameplay edits.",
+    "Pauses and helper heap counts are helper-reported, without an independent game pause oracle.",
+    "Audit authored after the frozen run; product, evaluator and selection thresholds unchanged."
+  ]
+}

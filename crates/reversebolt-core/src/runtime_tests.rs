@@ -284,6 +284,13 @@ impl Test {
         }
         if let Some(origin) = &self.origin {
             let selected = origin.selected()?;
+            if origin
+                .play_context
+                .as_ref()
+                .is_some_and(|c| c.source.investigation_id != self.investigation)
+            {
+                return Err("The activity context belongs to a different investigation.".into());
+            }
             if selected.path_id != self.candidate.id
                 || self.hypothesis != origin.hypothesis.proposal.question
             {

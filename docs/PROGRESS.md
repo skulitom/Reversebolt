@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Activity-informed metadata review (2026-10-21): **34% unchanged**. Two separated
+play response episodes can now supply an image interpretation before the model
+sees metadata. An accepted description informs both type selection and field
+questions. Exact image/input hashes, source clocks, uncertainty and model receipts
+are retained; a prepared test preserves that context through stop and restart.
+Uncertain or failed interpretation falls back to metadata-only discovery.
+
+The exploratory Manifold Garden run passed eight integration checks over fifteen
+automatic captures and four evaluator inputs, with no manual measurement-image
+review or gameplay writes. The model produced twelve questions about vertical
+camera settings, and the first eligible `sensitivityY` test retained its evidence
+after restart. This proves the handoff, not that the proposed camera setting
+explains the observed movement. Semantic selection remains unverified. Two
+helpers unloaded, 111 pauses were reported, and user saves 1/2 were preserved.
+
+The 271-test workspace suite, strict Clippy, formatting, release build, 52-tool
+smoke and artifact audit pass. Preview `0.1.0-20261021-224455` is running with all
+44 history entries and existing settings/edit records preserved. Weighted credits
+remain foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent collaboration 6/10 and generalization 0/10.
+Next: distinguish camera/view change from a controlling gameplay property,
+evaluate competing explanations, and verify effects before promoting controls.
+The full goal remains active. [Protocol, implementation and evidence](../research/activity-context/README.md).
+
 Passive play evidence (2026-10-21): **34% unchanged**. Supported-runtime automatic
 attach now records fifteen image/input moments before discovery. Play capture
 skips memory reads and OCR; agents can read hash-bound response intervals and

@@ -7,6 +7,8 @@ pub const LIMITATION: &str = "Unverified hypotheses from internal labels and sam
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Review {
+    #[serde(default)]
+    pub play_context: Option<crate::play_context::Context>,
     pub evidence_id: String,
     pub report_sha256: String,
     pub model: String,
@@ -154,12 +156,17 @@ pub struct Reference {
 /// Immutable provenance retained with a comparison, including competing paths.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TestOrigin {
+    #[serde(default)]
+    pub play_context: Option<crate::play_context::Context>,
     pub reference: Reference,
     pub report_sha256: String,
     pub hypothesis: Hypothesis,
 }
 impl TestOrigin {
     pub fn selected(&self) -> Result<&Row> {
+        if let Some(context) = &self.play_context {
+            context.validate()?;
+        }
         let h = &self.hypothesis;
         if !uuid::Uuid::parse_str(&self.reference.review_id)
             .is_ok_and(|id| id.to_string() == self.reference.review_id)
@@ -240,6 +247,7 @@ pub fn resolve(
         return Err("The hypothesis no longer matches the exact discovery evidence.".into());
     }
     let origin = TestOrigin {
+        play_context: review.play_context.clone(),
         reference: reference.clone(),
         report_sha256: inventory.report_sha256.clone(),
         hypothesis: checked,

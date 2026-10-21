@@ -122,6 +122,7 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
         },
     )?;
     let review = Review {
+        play_context: None,
         evidence_id: p.review_id.clone(),
         report_sha256: inventory.report_sha256.clone(),
         model: format!("agent:{}", c.source),
@@ -159,10 +160,14 @@ pub(crate) fn publish(
     if cancelled {
         review.status = "cancelled".into();
         review.batch = None;
+        review.play_context = None;
     } else if let Some(batch) = &review.batch
         && batch.report_sha256 != review.report_sha256
     {
         return Err("Hypothesis report binding changed.".into());
+    }
+    if let Some(context) = &review.play_context {
+        context.validate()?;
     }
     view.naming = Some(review);
     Ok(())
@@ -224,6 +229,7 @@ fn review_inner(
         "source":source.path,"job":owner.job,"model":model,"scope":{"pid":report["pid"],"created":report["created"],"session":report["session"]},"status":"pending"}),
     )?;
     let mut state = Review {
+        play_context: None,
         evidence_id: id,
         report_sha256: source.document_sha256,
         model: model.into(),
@@ -241,6 +247,7 @@ fn review_inner(
     let inference = (|| -> Result<Value> {
         let inventory = reversebolt_core::runtime_inventory::build(&report)?;
         save_new(&directory.join("inventory.json"), &json!(inventory))?;
+        let activity = prepare_activity(engine.live.as_ref().unwrap(), &directory)?;
         if owner.cancel.load(Ordering::SeqCst) {
             return Ok(json!({"cancelled":true}));
         }
@@ -248,8 +255,17 @@ fn review_inner(
             .map_err(|e| e.to_string())?
             .block_on(async {
                 let observer = reversebolt_observer::Observer::connect(model).await?;
-                Ok::<_, String>(observer.runtime_hypotheses(&inventory, &owner.cancel).await)
+                Ok::<_, String>(
+                    observer
+                        .runtime_hypotheses_with_activity(
+                            &inventory,
+                            activity.as_ref(),
+                            &owner.cancel,
+                        )
+                        .await,
+                )
             })?;
+        state.play_context = receipt.activity.as_ref().and_then(|a| a.context());
         state.batch = receipt.batch.clone();
         state.error = receipt.error.clone();
         Ok(json!(receipt))
@@ -277,6 +293,7 @@ fn review_inner(
     .into();
     if state.error.is_some() {
         state.batch = None;
+        state.play_context = None;
     }
     let count = state.batch.as_ref().map_or(0, |b| b.accepted.len());
     let evidence_id = state.evidence_id.clone();
@@ -286,6 +303,73 @@ fn review_inner(
     Ok(
         json!({"evidence_id":evidence_id,"hypotheses":if cancelled{0}else{count},"cancelled":cancelled}),
     )
+}
+
+fn prepare_activity(
+    session: &reversebolt_core::live::LiveSession,
+    directory: &Path,
+) -> Result<Option<reversebolt_observer::runtime_activity::Input>> {
+    use reversebolt_core::{play_context, play_evidence};
+    let ids: Vec<_> = session.view.frames.iter().map(|f| f.id.clone()).collect();
+    let args = json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":ids});
+    let prepared = (|| -> Result<_> {
+        let evidence = crate::play_evidence::read(session, &args)?;
+        let parsed: play_evidence::Evidence =
+            serde_json::from_value(evidence["evidence"].clone()).map_err(|e| e.to_string())?;
+        let source = play_context::select(
+            &session.view.frames,
+            &parsed,
+            &session.view.investigation_id,
+            session.view.coverage.batch,
+        )?;
+        Ok((evidence, source))
+    })();
+    let (evidence, source) = match prepared {
+        Ok(value) => value,
+        Err(error) => {
+            save_new(
+                &directory.join("play-source.json"),
+                &json!({"unavailable":error,"request":args}),
+            )?;
+            return Ok(None);
+        }
+    };
+    save_new(
+        &directory.join("play-source.json"),
+        &json!({"request":args,"frames":session.view.frames,"evidence":evidence,"selected":source}),
+    )?;
+    let Some(source) = source else {
+        return Ok(None);
+    };
+    let mut frames = vec![];
+    let mut size = 0;
+    for (index, reference) in source.frames().into_iter().enumerate() {
+        let (_, bytes) = session.read_frame(&source.investigation_id, &reference.id)?;
+        size += bytes.len();
+        if size > 16 * 1024 * 1024 {
+            return Err("Activity images exceed the archive budget.".into());
+        }
+        let frame = reversebolt_observer::Frame::from_png(
+            bytes.clone(),
+            reference
+                .interval
+                .begin_us
+                .checked_mul(1000)
+                .ok_or("Capture clock overflow")?,
+        )?;
+        let mut file = std::fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(directory.join(format!("play-{index}.png")))
+            .map_err(|e| e.to_string())?;
+        file.write_all(&bytes)
+            .and_then(|()| file.sync_all())
+            .map_err(|e| e.to_string())?;
+        frames.push(frame);
+    }
+    let input = reversebolt_observer::runtime_activity::Input { source, frames };
+    input.validate()?;
+    Ok(Some(input))
 }
 
 #[cfg(test)]
@@ -304,6 +388,7 @@ mod tests {
     }
     fn review() -> Review {
         Review {
+            play_context: None,
             evidence_id: "review".into(),
             report_sha256: "a".repeat(64),
             model: "local".into(),

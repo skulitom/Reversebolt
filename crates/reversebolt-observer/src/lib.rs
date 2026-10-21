@@ -11,6 +11,7 @@ use std::{
 
 pub mod point_tracks;
 pub mod review;
+pub mod runtime_activity;
 pub mod runtime_naming;
 pub mod tracking;
 

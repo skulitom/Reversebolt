@@ -474,6 +474,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     };
     test.hypothesis = proposal.question.clone();
     test.origin = Some(h::TestOrigin {
+        play_context: None,
         reference: h::Reference {
             review_id: uuid(),
             hypothesis_path_id: row.path_id.clone(),
@@ -488,6 +489,59 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     });
     test.validate_plan().unwrap();
     let directory = std::env::temp_dir().join(format!("reversebolt-origin-{}", uuid()));
+    let frame = |n: usize| reversebolt_core::play_context::Frame {
+        id: format!("f{n}"),
+        sha256: "a".repeat(64),
+        number: n,
+        width: 100,
+        height: 100,
+        interval: CaptureInterval {
+            clock_id: test.investigation.clone(),
+            begin_us: n as u64 * 1_000_000,
+            end_us: n as u64 * 1_000_000 + 1000,
+        },
+    };
+    test.origin.as_mut().unwrap().play_context = Some(reversebolt_core::play_context::Context {
+        source: reversebolt_core::play_context::Source {
+            investigation_id: test.investigation.clone(),
+            batch: 1,
+            frame_metadata_sha256: "b".repeat(64),
+            key: 68,
+            quiet_difference: 0.,
+            pairs: [1, 4].map(|n| reversebolt_core::play_context::Pair {
+                episode: n,
+                before: frame(n),
+                after: frame(n + 1),
+                input_sha256: "c".repeat(64),
+                difference: 10.,
+            }),
+        },
+        observation: reversebolt_core::play_context::Observation {
+            consistent_visible_change: true,
+            description: "The visible pattern shifts.".into(),
+            uncertainty: "No physical quantity or field relationship is known.".into(),
+        },
+    });
+    test.validate_plan().unwrap();
+    let mut legacy = serde_json::to_value(&test.origin).unwrap();
+    legacy.as_object_mut().unwrap().remove("play_context");
+    let legacy: h::TestOrigin = serde_json::from_value(legacy).unwrap();
+    assert!(legacy.play_context.is_none());
+    legacy.selected().unwrap();
+    let mut wrong_scope = test.clone();
+    wrong_scope.investigation = uuid();
+    assert!(wrong_scope.validate_plan().is_err());
+    let mut uncertain = test.clone();
+    uncertain
+        .origin
+        .as_mut()
+        .unwrap()
+        .play_context
+        .as_mut()
+        .unwrap()
+        .observation
+        .consistent_visible_change = false;
+    assert!(uncertain.validate_plan().is_err());
     let mut store = Store::open(directory.clone()).unwrap();
     store.record(test.clone()).unwrap();
     drop(store);

@@ -22,6 +22,8 @@ pub struct Stage {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
+    #[serde(default)]
+    pub activity: Option<crate::runtime_activity::Receipt>,
     pub schema: u32,
     pub report_sha256: String,
     pub model: String,
@@ -57,7 +59,17 @@ impl Observer {
         })
     }
     pub async fn runtime_hypotheses(&self, inventory: &Inventory, cancel: &AtomicBool) -> Receipt {
+        self.runtime_hypotheses_with_activity(inventory, None, cancel)
+            .await
+    }
+    pub async fn runtime_hypotheses_with_activity(
+        &self,
+        inventory: &Inventory,
+        activity: Option<&crate::runtime_activity::Input>,
+        cancel: &AtomicBool,
+    ) -> Receipt {
         let mut receipt = Receipt {
+            activity: None,
             schema: 1,
             report_sha256: inventory.report_sha256.clone(),
             model: self.model.clone(),
@@ -70,6 +82,11 @@ impl Observer {
             cancelled: false,
             limitation: h::LIMITATION.into(),
         };
+        if !cancel.load(Ordering::SeqCst)
+            && let Some(activity) = activity
+        {
+            receipt.activity = Some(self.runtime_activity(activity).await);
+        }
         let result = self.naming_pass(inventory, cancel, &mut receipt).await;
         receipt.cancelled = cancel.load(Ordering::SeqCst);
         if let Err(error) = result {
@@ -94,9 +111,14 @@ impl Observer {
         let schema = json!({"type":"object","additionalProperties":false,"required":["types"],"properties":{
             "types":{"type":"array","maxItems":8,"uniqueItems":true,"items":{"type":"integer","minimum":0}}
         }});
+        let activity_context=receipt.activity.as_ref().and_then(|a|a.context()).map_or(String::new(),|c|
+            format!("\nCurrent observed activity (unverified image interpretation, not a field relationship): {}. Uncertainty: {}. Prefer types and fields that could plausibly explain this observed consequence; omit unrelated settings. Do not infer a button meaning or physical units. Return no hypotheses if no grounded match is plausible.",c.observation.description,c.observation.uncertainty));
         let stage = self
             .naming_stage(
-                format!("{SELECT_PROMPT}\nObserved types: {}", json!(types)),
+                format!(
+                    "{SELECT_PROMPT}{activity_context}\nObserved types: {}",
+                    json!(types)
+                ),
                 schema,
                 600,
             )
@@ -130,7 +152,10 @@ impl Observer {
             .collect();
         let stage = self
             .naming_stage(
-                format!("{PROPOSE_PROMPT}\nObserved paths: {}", json!(rows)),
+                format!(
+                    "{PROPOSE_PROMPT}{activity_context}\nObserved paths: {}",
+                    json!(rows)
+                ),
                 h::proposal_schema(),
                 4096,
             )
