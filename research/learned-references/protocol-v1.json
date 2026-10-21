@@ -1,0 +1,50 @@
+{
+  "frozen_utc": "2026-10-21T09:07:13.379979+00:00",
+  "base_commit": "6770fad5bcadf741dbc3e5c28b145bd40d6cdf51",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-100712",
+  "binaries": {
+    "Reversebolt.exe": "83f79503acaff9e23465142b8efb912c3f589fc93a0c785b00b38cb572c9f462",
+    "reversebolt-mcp.exe": "49fde505c4c0e7f8219e415adc5cf9a691e8f5ef82e88ab82011e0d037cecee2"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "959824e0f886a67a4d76e06c391dd93933460c56b9c32ee2d6c452f52cd859cc",
+    "fixture.ps1": "53f34f0b01086db65eaeeaa5d186369181013599a08641feee3ef99f674106c2",
+    "run.py": "28f989c9c3dc3bc10a1ef31f605ca566d68fada33ab1091db2778e11fcbe5003"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/ui_live.rs": "842c8803e16b94ecdec5246c9f9f67ee818775e1396a066b0fc1a35021985bc9",
+    "crates/reversebolt-core/src/changes.rs": "17092196b1253086f09415f6680a2ff655ebdb99cc15a42571cff2a5ff9c897c",
+    "crates/reversebolt-core/src/lib.rs": "c98afd0d013f0c1abce62069c9babe8f08dbada2bdefc123d726d462514ca609",
+    "crates/reversebolt-core/src/live.rs": "933dcd105718270a9541debfaf18a1f8f89b8f95d0c129c52ca815e426fe6f8a",
+    "crates/reversebolt-core/src/prediction.rs": "1d2eb3101dfb64ede3f7b23d9511936f4f82ede6cf71aca7e7cb184fd2da815a",
+    "crates/reversebolt-core/src/probes.rs": "11ccebe12e348fd1356a7b2797510e666b82e4d18df44ccddb84b5e2993f6d73",
+    "crates/reversebolt-core/src/references.rs": "87f38cf90e4bd381ab0c6ba729a51577382263e0a4b9ff2e81d7146e3a570fc7",
+    "crates/reversebolt-core/tests/changes.rs": "881e1bf8478527914b3fb2b736aee6264d7f6f9f1c062568d40a5784b6e371d7",
+    "crates/reversebolt-core/tests/references.rs": "3559de3495b39d2d6f40537769789eb41d037ce5b8ed39ee93ceba6b6b1418c6",
+    "crates/reversebolt-mcp/src/main.rs": "c1ecf98f0c44aa516def8f53c5553def4780334be2c0c3703838d8b8fd341737"
+  },
+  "values": [
+    40,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "fresh_values": [
+    54,
+    54,
+    50,
+    50
+  ]
+}

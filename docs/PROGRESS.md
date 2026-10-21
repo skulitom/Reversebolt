@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest learned references (2026-10-21): **29%**. Frozen numeric findings now learn
+bounded one-hop references from captured bytes. Recheck can propose a moved
+location while preserving old rivals, then require fresh value and pointer
+evidence. A native case inferred the randomized offset, found a moved allocation,
+prepared the correct new location and blocked the stale write after another
+move. The other case retained a missing final reading and stopped before its
+planned move/edit; no native positive edit through a learned reference is claimed.
+All 167 workspace tests, strict Clippy and packaged checks pass. Desktop preview
+`0.1.0-20261021-100712` is running with history/settings preserved.
+Intent/editing moves from 0/10 to **1/10** for initial learned location reuse and
+same-process revalidation. Other credits remain foundation 4/10, native access
+6/10, observation 5/15, discovery 6/20, validation 2/15, agent collaboration 5/10,
+generalization 0/10. High-level intent, multi-hop/restart recovery and gameplay
+authority remain unfinished. The full goal stays active.
+[Evidence, failure and limits](../research/learned-references/README.md).
+
 Latest same-process rechecks (2026-10-21): **28% unchanged**. “Recheck findings”
 revisits all frozen hypotheses with four fresh moments after a trial is restored,
 without rescanning broad memory or borrowing old success/contrast. The shared

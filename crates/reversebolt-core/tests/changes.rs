@@ -63,6 +63,7 @@ impl Fixture {
         .into_iter()
         .enumerate()
         .map(|(index, (kind, slope, intercept))| Model {
+            reference: None,
             index,
             address: 4096,
             mapping: Candidate {

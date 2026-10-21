@@ -26,14 +26,15 @@ never creates a private simulator or duplicate session.
 ## Rechecking known findings
 
 `reversebolt_recheck_findings` starts a fresh batch at the current frozen
-hypotheses' addresses. Pass `investigation_id` and `coverage.batch` from status.
+hypotheses' addresses and any new locations suggested by learned references.
+Pass `investigation_id` and `coverage.batch` from status.
 Restore any applied trial first; unresolved writes also prevent rechecking.
 The default queues four full captures with no fitting or local-model calls.
 `auto_observe=false` leaves capture scheduling to the caller. Read the returned
 automatic-observation receipt and job status; an uncertain delivery is not a
 reason to allocate another batch. Stale batch requests fail.
 
-All mappings and rivals are retained, including earlier contradictions. Old
+All numeric mappings and original rivals are retained, including earlier contradictions. Old
 results stay in the archive named by each new check's `rechecked_from` field;
 they are not counted as fresh evidence. Every new check needs at least four
 timed agreements, a hold and a distinct change. Missing/constant readings do
@@ -41,10 +42,30 @@ not confirm the finding. External scalar series retain their identity but need
 fresh image-bound submissions; old frame IDs cannot be reused. The new batch
 shares the investigation's existing read, image, archive and 24-batch limits.
 
-This is same-process re-observation only. Known mapping loss refuses the whole
-transition, geometry changes invalidate the new observations, and old prepared
-edits cannot be applied in the new batch. There is no restart recovery, locator
-learning, allocation-lifetime guarantee, causal promotion or automatic write.
+During the original freeze, the engine searches complete fitting snapshots for
+aligned little-endian 64-bit words that consistently pointed within 4096 bytes
+before each candidate. It retains up to four stable one-hop references per
+interpretation, ordered by offset and then root address. This bounded search
+does not establish that these words are pointers or identify an object. The
+`references.limited` flag reports discarded stable routes; the search is never
+exhaustive. No game layout or fixed offset is supplied.
+
+On recheck, these references can suggest new locations using the same learned
+numeric mapping. Resolutions and errors are retained under `rechecked_from`.
+Original locations are kept even when unavailable. Without any learned route,
+mapping loss still refuses the transition. More than 200 resulting candidates
+also refuses it instead of dropping rivals. A supported new location can be
+tested through `prepare_probe` when unavailable old rivals prevent ordinary
+consensus. Its root is read before the value prefix and after the value suffix;
+the pointer witnesses must agree and enclose both value reads and the image.
+References are checked again before application/restoration. A moved reference
+returns an error without writing; the previous operation record is retained.
+
+This is same-process relocation hypothesis generation. Geometry changes
+invalidate observations, and old prepared edits cannot be applied in a new
+batch. There is no multi-hop/x86 pointer support, restart recovery,
+allocation-lifetime guarantee, causal promotion or automatic write. Equal
+endpoints do not exclude ABA changes or delayed display copies.
 The desktop uses the same operation through **Recheck findings**.
 
 ## Memory process selection

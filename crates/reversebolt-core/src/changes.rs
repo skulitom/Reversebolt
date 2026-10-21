@@ -26,6 +26,8 @@ pub fn now_ms() -> u128 {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Model {
+    #[serde(default)]
+    pub reference: Option<crate::references::Reference>,
     pub index: usize,
     pub address: u64,
     pub mapping: Candidate,
@@ -166,6 +168,11 @@ pub struct Change {
 }
 
 fn agrees_region(target: &dyn NativeTarget, model: &Model) -> Result<()> {
+    if let Some(reference) = &model.reference
+        && reference.resolve(target)? != model.address
+    {
+        return Err("The learned reference moved. Recheck findings before another trial.".into());
+    }
     let region = target
         .query(model.address)?
         .ok_or("The memory allocation disappeared.")?;

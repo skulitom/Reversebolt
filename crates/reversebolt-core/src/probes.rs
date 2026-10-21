@@ -185,6 +185,8 @@ mod tests {
             ]
             .into_iter()
             .map(|(offset, kind)| FrozenCandidate {
+                references: Default::default(),
+                via: None,
                 address: format!("0x{:X}", 65536 + offset),
                 chunk_address: 65536,
                 offset_in_chunk: offset,

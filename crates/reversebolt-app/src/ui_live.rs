@@ -654,7 +654,7 @@ impl LivePane {
             if ui.add_enabled(!busy && live.connected && live.sample_count > 0 && live.coverage.batch < 24 && !unsettled,
                 egui::Button::new("Recheck findings"))
                 .on_hover_text(if unsettled { "Restore the applied trial before starting fresh checks." }
-                    else { "Check known locations again with four fresh moments. Let values stay still and change." }).clicked() {
+                    else { "Recheck known values, including possible new locations found through learned references. Let values stay still and change." }).clicked() {
                 handle.submit("recheck_findings",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch}));
             }
         }
@@ -701,6 +701,10 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    if external==CardSource::Ocr && let Some(check)=live.prediction_checks.iter().find(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id) {
+                        let moved=check.candidates.iter().filter(|c|c.via.is_some()).count();
+                        if moved>0 { ui.label(format!("Rechecking {moved} possible new location{}. Earlier locations remain in the evidence.",if moved==1 {""}else{"s"})); }
+                    }
                     if external==CardSource::Ocr && let Some(check)=live.prediction_checks.iter().find(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id)
                         && let Some(selection)=&check.automatic_selection {
                         egui::CollapsingHeader::new("Why this value was checked").show(ui,|ui| {

@@ -2,7 +2,7 @@
 
 Known-location rechecks use the same batch archive transition as broad memory
 search. Before publishing the transition, the engine validates the original
-process, batch, window epoch and every candidate's memory mapping; it rejects
+process, batch and window epoch; it rejects
 unrestored or unresolved trials. New checks retain all frozen interpretations,
 link to the previous check/archive, and begin with empty samples. Candidate
 reads are narrowed to their full numeric widths and shared by address; each
@@ -11,8 +11,22 @@ never enter the new assessment. Original fitting frames remain provenance.
 The existing capture and archive budgets bound repeated rechecks; old raw
 snapshots are released. Failed evidence persistence leaves the current batch
 in memory. This is not a cross-file crash transaction or allocation/restart
-recovery. The controller normally queues four OCR captures without model calls;
+identity guarantee. The controller normally queues four OCR captures without model calls;
 additional observations remain possible within the ordinary 20-capture limit.
+
+The reference learner scans only complete fitting snapshots for stable aligned
+64-bit pointers with an inferred offset up to 4096 bytes. Four routes per
+interpretation are retained; no game names, source layouts or pointer chains
+are given. A recheck resolves these roots with mapping/read/mapping checks and
+may add fresh hypotheses at new addresses. Old locations remain, including
+unavailable rivals. The shared 200-candidate budget still applies. A suggested
+destination that cannot be queried is a recorded unresolved route, not proof
+that other routes are invalid. Root reads are charged conservatively against
+the existing read budget. Root prefix reads precede all value prefixes; root
+suffix reads follow value suffixes. A relocated candidate needs the full timing
+bracket and a stable destination in addition to its ordinary fresh comparison.
+Trial models carry their reference into the target preflight checks, so a later
+move blocks application or restoration. These sequential guards are not atomic.
 
 ```mermaid
 flowchart LR

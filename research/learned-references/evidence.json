@@ -1,0 +1,387 @@
+{
+  "protocol_sha256": "3315bd214b464780b3c8e89e4fae05c3aaabdb370ccac33d9e42e7e3d5e8e7dc",
+  "audit": "Post-run integrity and outcome classification; the frozen failure was not rerun.",
+  "cases": [
+    {
+      "report": {
+        "slot": 0,
+        "errors": [
+          "AssertionError()"
+        ],
+        "protocol_sha256": "3315bd214b464780b3c8e89e4fae05c3aaabdb370ccac33d9e42e7e3d5e8e7dc",
+        "fixture_pid": 67476,
+        "initial_oracle": {
+          "field": 2883454044792,
+          "root": 2883448144488,
+          "offset": 2680,
+          "generation": 0,
+          "value": 40
+        },
+        "engine_pid": 81756,
+        "mcp_pid": 76536
+      },
+      "initial_samples": [
+        40.0,
+        56.0,
+        31.0,
+        85.0,
+        64.0,
+        27.0,
+        75.0,
+        92.0,
+        44.0,
+        67.0,
+        38.0,
+        50.0,
+        54.0,
+        54.0,
+        50.0,
+        null
+      ],
+      "initial_candidates": 1,
+      "initial_routes": 1,
+      "strict_passed": false,
+      "classification": "Failed at missing final initial OCR reading; relocation and edits not exercised.",
+      "post_run_image_metrics": [
+        {
+          "frame": 15,
+          "sha256": "1917d728f35c38afb315c861681908e679b8a890cfacba7ec0c5020df2d33c64",
+          "mean": [
+            28.103219696969695,
+            29.953719696969696,
+            34.09459090909091
+          ],
+          "variance": [
+            856.2790350880969,
+            845.5943051032484,
+            806.3520828629477
+          ],
+          "text": "Quantity 50",
+          "words": 4,
+          "recognition_ms": 2169
+        },
+        {
+          "frame": 16,
+          "sha256": "3d05a65d07eb88bef3650ee95bf4a77f210cb376f54adb09113f8231e2b47b99",
+          "mean": [
+            24.000863636363636,
+            26.000530303030303,
+            29.999863636363635
+          ],
+          "variance": [
+            0.057923496556440086,
+            0.05771183999085968,
+            0.06025755716250701
+          ],
+          "text": "",
+          "words": 0,
+          "recognition_ms": 2083
+        }
+      ],
+      "raw_sha256": {
+        "attached.json": "5819b3f1bcda87d234fe84cd5091a38370ab2509944d55c3a0e54fa6e172f3bd",
+        "commands.json": "ceb800052a9b5a27aa6a6c96bc729faeac4189e090d50390ce2ac67483e7623a",
+        "discovery-completed.json": "09e778f1ba860f7be0bbb5a4d772280f086164493d9c2b5f2b903c2276d58495",
+        "discovery-states.json": "3be865be476fc418d62babb1d62bec9d37b8aa188dd4803db3cd5260b575fed7",
+        "oracle.json": "7c88d261ddda6d1c2ee497ee08149d797b0a01a05d939d84e9100211193ab879",
+        "report.json": "61e90ecd3cfa6f1e51eff1559e1620afdba4b006c93f174afc9f190295bcffea"
+      }
+    },
+    {
+      "report": {
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "3315bd214b464780b3c8e89e4fae05c3aaabdb370ccac33d9e42e7e3d5e8e7dc",
+        "fixture_pid": 48720,
+        "initial_oracle": {
+          "field": 2793315634000,
+          "root": 2793315567640,
+          "offset": 2896,
+          "generation": 0,
+          "value": 40
+        },
+        "engine_pid": 79260,
+        "mcp_pid": 86836,
+        "before_move_oracle": {
+          "field": 2793315634000,
+          "root": 2793315567640,
+          "offset": 2896,
+          "generation": 0,
+          "value": 50
+        },
+        "moved_oracle": {
+          "field": 2792900463440,
+          "root": 2793315567640,
+          "offset": 2896,
+          "generation": 1,
+          "value": 50
+        },
+        "chosen_candidate": {
+          "index": 1,
+          "address": "0x28A45D70B50",
+          "via": {
+            "learned_captures": 12,
+            "learned_pointer": 2793315631104,
+            "offset": 2896,
+            "root": {
+              "address": 2793315567640,
+              "length": 8,
+              "region": {
+                "allocation_base": 2793315565568,
+                "base": 2793315565568,
+                "image": false,
+                "kind": 131072,
+                "length": 4096,
+                "protection": 4
+              }
+            }
+          },
+          "mapping": {
+            "exact": true,
+            "intercept": 0.0,
+            "kind": "F32",
+            "offset": 2896,
+            "slope": 1.0,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          }
+        },
+        "final_oracle": {
+          "field": 2793315634000,
+          "root": 2793315567640,
+          "offset": 2896,
+          "generation": 2,
+          "value": 50
+        },
+        "retained_old_value": 50.0,
+        "outcome": "second move refused old prepared write; old and current values unchanged"
+      },
+      "initial_samples": [
+        40.0,
+        56.0,
+        31.0,
+        85.0,
+        64.0,
+        27.0,
+        75.0,
+        92.0,
+        44.0,
+        67.0,
+        38.0,
+        50.0,
+        54.0,
+        54.0,
+        50.0,
+        50.0
+      ],
+      "initial_candidates": 1,
+      "initial_routes": 1,
+      "strict_passed": true,
+      "classification": "Learned relocation, fresh validation and preparation passed; second move blocked the stale write.",
+      "fresh_candidate_count": 2,
+      "selected": {
+        "index": 1,
+        "address": "0x28A45D70B50",
+        "via": {
+          "learned_captures": 12,
+          "learned_pointer": 2793315631104,
+          "offset": 2896,
+          "root": {
+            "address": 2793315567640,
+            "length": 8,
+            "region": {
+              "allocation_base": 2793315565568,
+              "base": 2793315565568,
+              "image": false,
+              "kind": 131072,
+              "length": 4096,
+              "protection": 4
+            }
+          }
+        },
+        "mapping": {
+          "exact": true,
+          "intercept": 0.0,
+          "kind": "F32",
+          "offset": 2896,
+          "slope": 1.0,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        }
+      },
+      "witnesses": [
+        {
+          "frame": 1,
+          "observed": 54.0,
+          "pointer_bytes": [
+            0,
+            0,
+            215,
+            69,
+            138,
+            2,
+            0,
+            0
+          ],
+          "reference_before": {
+            "begin_us": 56479818,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 56479836
+          },
+          "value_before": {
+            "begin_us": 56479837,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 56479847
+          },
+          "image": {
+            "begin_us": 56479853,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 56693030
+          },
+          "value_after": {
+            "begin_us": 56693103,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 56693120
+          },
+          "reference_after": {
+            "begin_us": 56693124,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 56693131
+          }
+        },
+        {
+          "frame": 2,
+          "observed": 54.0,
+          "pointer_bytes": [
+            0,
+            0,
+            215,
+            69,
+            138,
+            2,
+            0,
+            0
+          ],
+          "reference_before": {
+            "begin_us": 59927894,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 59927910
+          },
+          "value_before": {
+            "begin_us": 59927910,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 59927917
+          },
+          "image": {
+            "begin_us": 59927918,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 60132749
+          },
+          "value_after": {
+            "begin_us": 60132805,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 60132823
+          },
+          "reference_after": {
+            "begin_us": 60132824,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 60132832
+          }
+        },
+        {
+          "frame": 3,
+          "observed": 50.0,
+          "pointer_bytes": [
+            0,
+            0,
+            215,
+            69,
+            138,
+            2,
+            0,
+            0
+          ],
+          "reference_before": {
+            "begin_us": 63303144,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 63303162
+          },
+          "value_before": {
+            "begin_us": 63303163,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 63303173
+          },
+          "image": {
+            "begin_us": 63303174,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 63526185
+          },
+          "value_after": {
+            "begin_us": 63526241,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 63526256
+          },
+          "reference_after": {
+            "begin_us": 63526257,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 63526263
+          }
+        },
+        {
+          "frame": 4,
+          "observed": 50.0,
+          "pointer_bytes": [
+            0,
+            0,
+            215,
+            69,
+            138,
+            2,
+            0,
+            0
+          ],
+          "reference_before": {
+            "begin_us": 66769537,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 66769555
+          },
+          "value_before": {
+            "begin_us": 66769556,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 66769564
+          },
+          "image": {
+            "begin_us": 66769565,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 66980780
+          },
+          "value_after": {
+            "begin_us": 66980855,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 66980874
+          },
+          "reference_after": {
+            "begin_us": 66980875,
+            "clock_id": "93953a61-cef9-4c2b-9680-ed25802f505c",
+            "end_us": 66980882
+          }
+        }
+      ],
+      "refusal": "The learned reference moved. Recheck findings before another trial.",
+      "raw_sha256": {
+        "attached.json": "1c6730d4a5ddaa0d6951ea51aa9cb2bb71afd3085a306c6324e9a9f1676ad480",
+        "commands.json": "ff89cce31d40421f27bd43999d53a628820c0bbfc97b5039d88b3b240f60ba73",
+        "discovery-completed.json": "b4df914adc55fd5a5168320faa9ed2232a81132a65f389fc52ad47deb39f4509",
+        "discovery-states.json": "3d8956ca66ede178b1fef1986fa1274e8c7a7fb485f3b6b644759f3f7c61b2fc",
+        "final-status.json": "92cf401472c31b32fcd295867e3799e45785771e1c47754448909358a9c19bc2",
+        "oracle.json": "07b17b1998a5f36bb7c3e608596f1df0e42b6607dc41971fe35062f54c0bb3ec",
+        "prepared.json": "26984fcb8c8685ba8a2c599ba55196d9860d373f3cd736a0b0401cd7f9b8072f",
+        "recheck-completed.json": "6ceeee44f42c70f07049cae273b8534bf3158bd4e0da99272b58c477959de78d",
+        "recheck-start.json": "c70c6526624e92250d71b3f516e00b35da862372d659ca73b173be8596adea54",
+        "recheck-states.json": "b0c306de1b988fab43c82edafcaf392392a61fc5cd80afa37cfa563acceebd23",
+        "refused.json": "425957ce0df9341a36b85b8b46beb603140913582488d152ac263538727e4fad",
+        "report.json": "c5148bea8c3afa2d77d66c7237a0b30c74b452cad401a8e08313e3c5c6ea10e2"
+      }
+    }
+  ]
+}

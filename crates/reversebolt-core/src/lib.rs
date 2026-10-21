@@ -10,6 +10,7 @@ pub mod investigation;
 pub mod live;
 pub mod prediction;
 pub mod probes;
+pub mod references;
 pub mod rule_checks;
 pub mod temporal;
 pub mod visual;

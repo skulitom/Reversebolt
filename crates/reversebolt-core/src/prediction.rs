@@ -63,6 +63,10 @@ pub struct Witness {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Sample {
+    #[serde(default)]
+    pub reference_before: Option<Witness>,
+    #[serde(default)]
+    pub reference_after: Option<Witness>,
     pub frame: usize,
     pub image: Option<FrameRef>,
     /// A bounded read of this candidate before requesting the image. Historical
@@ -77,6 +81,52 @@ pub struct Sample {
 }
 
 impl Sample {
+    pub fn supports_reference(
+        &self,
+        reference: &crate::references::Reference,
+        address: u64,
+    ) -> bool {
+        let (Some(before), Some(after), Some(image)) =
+            (&self.reference_before, &self.reference_after, &self.image)
+        else {
+            return false;
+        };
+        let (Some(a), Some(b), Some(first), Some(last), Some(capture)) = (
+            &before.bytes,
+            &after.bytes,
+            &before.read.capture_interval,
+            &after.read.capture_interval,
+            &image.capture_interval,
+        ) else {
+            return false;
+        };
+        let (Some(value_first), Some(value_last)) = (
+            self.before_image
+                .as_ref()
+                .and_then(|w| w.read.capture_interval.as_ref()),
+            self.read.as_ref().and_then(|r| r.capture_interval.as_ref()),
+        ) else {
+            return false;
+        };
+        a == b
+            && reference.destination(a) == Some(address)
+            && before.read.address == format!("0x{:X}", reference.root.address)
+            && after.read.address == before.read.address
+            && before.read.requested == 8
+            && before.read.retained == 8
+            && after.read.retained >= 8
+            && before.read.disposition == "retained_generation_unverified"
+            && after.read.disposition == "retained_generation_unverified"
+            && first.clock_id == capture.clock_id
+            && last.clock_id == capture.clock_id
+            && first.begin_us <= first.end_us
+            && first.end_us <= value_first.begin_us
+            && value_last.end_us <= last.begin_us
+            && first.end_us <= capture.begin_us
+            && capture.begin_us <= capture.end_us
+            && capture.end_us <= last.begin_us
+            && last.begin_us <= last.end_us
+    }
     /// Equal endpoints bracket the image request, not every intervening state.
     /// They cannot exclude an ABA change or a delayed/compositor display copy.
     pub fn supports_comparison(&self) -> bool {
@@ -114,6 +164,12 @@ impl Sample {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrozenCandidate {
+    #[serde(default)]
+    pub references: crate::references::Learned,
+    /// A reference used to propose this address, checked again during capture
+    /// and before an explicit write. Never a verified object identity.
+    #[serde(default)]
+    pub via: Option<crate::references::Reference>,
     pub address: String,
     pub chunk_address: u64,
     pub offset_in_chunk: usize,
@@ -147,6 +203,8 @@ pub struct PredictionCheck {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RecheckOrigin {
+    #[serde(default)]
+    pub resolutions: Vec<crate::references::Resolution>,
     pub check: String,
     pub batch: usize,
     pub archive: String,
@@ -179,24 +237,30 @@ impl FrozenCandidate {
         if check.invalidated.is_some() || self.invalidated.is_some() {
             return Assessment::Invalidated;
         }
+        let comparable = |s: &Sample| {
+            s.supports_comparison()
+                && self.via.as_ref().is_none_or(|r| {
+                    s.supports_reference(r, self.chunk_address + self.offset_in_chunk as u64)
+                })
+        };
         if self
             .samples
             .iter()
-            .any(|s| s.supports_comparison() && s.outcome == Outcome::Contradicts)
+            .any(|s| comparable(s) && s.outcome == Outcome::Contradicts)
         {
             return Assessment::Contradicted;
         }
         let usable = self
             .samples
             .iter()
-            .filter(|s| s.supports_comparison() && s.outcome == Outcome::Agrees)
+            .filter(|s| comparable(s) && s.outcome == Outcome::Agrees)
             .count();
         let mut hold = false;
         let mut change = false;
         for pair in self.samples.windows(2) {
             if pair
                 .iter()
-                .all(|s| s.supports_comparison() && s.outcome == Outcome::Agrees)
+                .all(|s| comparable(s) && s.outcome == Outcome::Agrees)
                 && pair[1].frame == pair[0].frame + 1
                 && let (Some(a), Some(b)) = (pair[0].observed, pair[1].observed)
             {
@@ -228,6 +292,15 @@ impl PredictionCheck {
                 sample.outcome = match (sample.predicted, sample.observed) {
                     (None, _) => Outcome::Missing,
                     _ if !sample.supports_comparison() => Outcome::TimingUncertain,
+                    _ if candidate.via.as_ref().is_some_and(|r| {
+                        !sample.supports_reference(
+                            r,
+                            candidate.chunk_address + candidate.offset_in_chunk as u64,
+                        )
+                    }) =>
+                    {
+                        Outcome::TimingUncertain
+                    }
                     (Some(predicted), Some(observed)) => {
                         if (predicted - observed).abs() <= self.tolerance {
                             Outcome::Agrees
@@ -297,6 +370,8 @@ mod tests {
             basis: vec![],
             invalidated: None,
             candidates: vec![FrozenCandidate {
+                references: Default::default(),
+                via: None,
                 address: "0x10".into(),
                 chunk_address: 0,
                 offset_in_chunk: 16,
@@ -314,6 +389,8 @@ mod tests {
                     .iter()
                     .enumerate()
                     .map(|(i, p)| Sample {
+                        reference_before: None,
+                        reference_after: None,
                         frame: 13 + i,
                         image: Some(FrameRef {
                             input_context: None,

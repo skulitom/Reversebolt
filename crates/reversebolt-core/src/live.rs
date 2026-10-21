@@ -440,6 +440,7 @@ impl LiveSession {
             }
             let before = self.target.read(address, c.mapping.kind.width())?;
             models.push(crate::changes::Model {
+                reference: c.via.clone(),
                 index,
                 address,
                 mapping: c.mapping.clone(),
@@ -890,9 +891,26 @@ impl LiveSession {
                         ),
                     );
                 }
+                if let Some(reference) = &candidate.via {
+                    reads.insert(
+                        (reference.root.address, 8),
+                        (reference.root.address, reference.root.clone()),
+                    );
+                }
             }
         }
-        reads.into_values().collect()
+        let roots: BTreeSet<_> = self
+            .view
+            .prediction_checks
+            .iter()
+            .flat_map(|c| &c.candidates)
+            .filter_map(|c| c.via.as_ref().map(|r| r.root.address))
+            .collect();
+        let mut reads: Vec<_> = reads.into_values().collect();
+        // References precede every value's prefix read. The fresh batch orders
+        // its suffix reads inversely, enclosing both the image and value reads.
+        reads.sort_by_key(|(_, c)| (!roots.contains(&c.address), c.address, c.length));
+        reads
     }
 
     fn read_before_image(&mut self, plan: &[(u64, Chunk)], start: Instant) -> PredictionReads {
@@ -1336,6 +1354,7 @@ impl LiveSession {
         }
         let mut checks = self.view.prediction_checks.clone();
         let mut chunks: BTreeMap<u64, Chunk> = BTreeMap::new();
+        let mut total_candidates = 0;
         for check in &mut checks {
             if check.epoch != self.image_epoch {
                 return Err(
@@ -1343,6 +1362,7 @@ impl LiveSession {
                 );
             }
             check.rechecked_from = Some(prediction::RecheckOrigin {
+                resolutions: vec![],
                 check: check.id.clone(),
                 batch,
                 archive: self
@@ -1357,7 +1377,8 @@ impl LiveSession {
             check.after_frame = 0;
             check.last_frame = MAX_SAMPLES;
             check.invalidated = None;
-            for candidate in &mut check.candidates {
+            let originals = std::mem::take(&mut check.candidates);
+            for (original_index, mut candidate) in originals.into_iter().enumerate() {
                 let old = self
                     .plan
                     .iter()
@@ -1372,13 +1393,13 @@ impl LiveSession {
                     length: candidate.mapping.kind.width(),
                     region: old.region.clone(),
                 };
-                if self.invalid_chunks.contains(&old.address)
+                let unavailable = self.invalid_chunks.contains(&old.address)
                     || candidate.invalidated.is_some()
                     || !self
                         .target
                         .query(address)?
-                        .is_some_and(|r| chunk.covered_by(&r))
-                {
+                        .is_some_and(|r| chunk.covered_by(&r));
+                if unavailable && candidate.references.routes.is_empty() {
                     return Err("A known location changed or became unavailable. Start fresh discovery; no hypotheses were silently dropped.".into());
                 }
                 chunks
@@ -1388,6 +1409,99 @@ impl LiveSession {
                 candidate.chunk_address = address;
                 candidate.offset_in_chunk = 0;
                 candidate.samples.clear();
+                if unavailable {
+                    candidate.invalidated = Some(
+                        "The previous location is unavailable; retained as a historical rival."
+                            .into(),
+                    );
+                }
+                if let Some(via) = &candidate.via {
+                    chunks.entry(via.root.address).or_insert(via.root.clone());
+                }
+                // Never silently replace a live copy or erase an unavailable
+                // rival. Resolved references add prospective hypotheses only.
+                check.candidates.push(candidate.clone());
+                for reference in &candidate.references.routes {
+                    if self.view.coverage.attempted_bytes + 8 > coverage::MAX_READ_BYTES {
+                        return Err(
+                            "Not enough of the read budget remains to resolve learned references."
+                                .into(),
+                        );
+                    }
+                    // Conservatively charge the bounded request even when its
+                    // mapping check prevents a native read.
+                    self.view.coverage.attempted_bytes += 8;
+                    let resolved = reference.resolve(&*self.target);
+                    if resolved.is_ok() {
+                        self.view.coverage.read_bytes += 8;
+                    }
+                    check.rechecked_from.as_mut().unwrap().resolutions.push(
+                        crate::references::Resolution {
+                            candidate: original_index,
+                            root: reference.root.address,
+                            offset: reference.offset,
+                            address: resolved.as_ref().ok().copied(),
+                            error: resolved.as_ref().err().cloned(),
+                        },
+                    );
+                    let Ok(destination) = resolved else {
+                        continue;
+                    };
+                    if destination == address {
+                        continue;
+                    }
+                    let length = candidate.mapping.kind.width();
+                    let region = match self.target.query(destination) {
+                        Ok(Some(region)) => region,
+                        result => {
+                            check.rechecked_from.as_mut().unwrap().resolutions.last_mut().unwrap().error = Some(
+                                result.err().unwrap_or_else(||"The reference's destination is not in eligible readable memory.".into()));
+                            continue;
+                        }
+                    };
+                    let moved = Chunk {
+                        address: destination,
+                        length,
+                        region,
+                    };
+                    if !moved.covered_by(&moved.region)
+                        || (destination < reference.root.address.saturating_add(8)
+                            && reference.root.address < destination.saturating_add(length as u64))
+                    {
+                        check.rechecked_from.as_mut().unwrap().resolutions.last_mut().unwrap().error = Some(
+                            "The suggested value crosses a mapping boundary or overlaps its own reference.".into());
+                        continue;
+                    }
+                    let encoded =
+                        serde_json::to_value(&candidate.mapping).map_err(|e| e.to_string())?;
+                    if check.candidates.iter().any(|c| {
+                        c.chunk_address + c.offset_in_chunk as u64 == destination
+                            && serde_json::to_value(&c.mapping).ok().as_ref() == Some(&encoded)
+                    }) {
+                        continue;
+                    }
+                    let mut relocated = candidate.clone();
+                    relocated.address = format!("0x{destination:X}");
+                    relocated.chunk_address = destination;
+                    relocated.via = Some(reference.clone());
+                    relocated.invalidated = None;
+                    chunks
+                        .entry(destination)
+                        .and_modify(|c| c.length = c.length.max(length))
+                        .or_insert(moved);
+                    chunks
+                        .entry(reference.root.address)
+                        .and_modify(|c| c.length = c.length.max(8))
+                        .or_insert(reference.root.clone());
+                    check.candidates.push(relocated);
+                }
+            }
+            total_candidates += check.candidates.len();
+            if total_candidates > prediction::MAX_CANDIDATES {
+                return Err("Moved locations exceed the shared 200-candidate budget. The current findings were preserved; no rivals were silently dropped.".into());
+            }
+            if check.candidates.iter().all(|c| c.invalidated.is_some()) {
+                return Err("None of the known locations or learned references is currently readable. Start fresh discovery.".into());
             }
         }
         let mut tracks = self.view.tracks.clone();
@@ -1402,8 +1516,15 @@ impl LiveSession {
             track.matches.clear();
             track.epoch = self.image_epoch + 1;
         }
+        let roots: BTreeSet<_> = checks
+            .iter()
+            .flat_map(|c| &c.candidates)
+            .filter_map(|c| c.via.as_ref().map(|r| r.root.address))
+            .collect();
+        let mut next: Vec<_> = chunks.into_values().collect();
+        next.sort_by_key(|c| (roots.contains(&c.address), c.address));
         self.replace_memory_batch(
-            chunks.into_values().collect(),
+            next,
             self.view.eligible_bytes,
             Some(Recheck {
                 checks,
@@ -1848,6 +1969,8 @@ impl LiveSession {
                 return Err("Candidate memory is no longer available in this batch.".into());
             }
             candidates.push(FrozenCandidate {
+                references: Default::default(),
+                via: None,
                 address: candidate.address,
                 chunk_address: chunk.address,
                 offset_in_chunk: offset,
@@ -1855,6 +1978,20 @@ impl LiveSession {
                 invalidated: None,
                 samples: vec![],
             });
+        }
+        let locations: Vec<_> = candidates
+            .iter()
+            .map(|c| {
+                (
+                    c.chunk_address + c.offset_in_chunk as u64,
+                    c.mapping.kind.width(),
+                )
+            })
+            .collect();
+        let references =
+            crate::references::learn(&self.complete_chunks(), &self.snapshots, &locations);
+        for (candidate, learned) in candidates.iter_mut().zip(references) {
+            candidate.references = learned;
         }
         let check = PredictionCheck {
             rechecked_from: None,
@@ -1948,7 +2085,41 @@ impl LiveSession {
                                 .find(|r| r.address == format!("0x{:X}", candidate.chunk_address))
                         })
                         .cloned();
+                    let reference_before = candidate.via.as_ref().and_then(|r| {
+                        before_image
+                            .and_then(|reads| reads.get(&(r.root.address, 8)))
+                            .cloned()
+                    });
+                    let reference_after = candidate.via.as_ref().and_then(|r| {
+                        let read = self
+                            .receipts
+                            .last()?
+                            .iter()
+                            .find(|read| read.address == format!("0x{:X}", r.root.address))?
+                            .clone();
+                        let bytes = self
+                            .snapshots
+                            .last()?
+                            .get(&r.root.address)
+                            .and_then(|b| b.get(..8))
+                            .map(|b| b.to_vec());
+                        Some(prediction::Witness { bytes, read })
+                    });
+                    if let Some(reference) = &candidate.via {
+                        let destination =
+                            candidate.chunk_address + candidate.offset_in_chunk as u64;
+                        if [&reference_before, &reference_after].iter().any(|w| {
+                            w.as_ref()
+                                .and_then(|w| w.bytes.as_ref())
+                                .and_then(|b| reference.destination(b))
+                                != Some(destination)
+                        }) {
+                            candidate.invalidated=Some("The learned reference moved or became unavailable. Recheck findings before another trial.".into());
+                        }
+                    }
                     candidate.samples.push(prediction::Sample {
+                        reference_before,
+                        reference_after,
                         frame: number,
                         before_image: before_image
                             .and_then(|reads| {
