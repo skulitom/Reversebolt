@@ -17,6 +17,7 @@ struct State {
     calls: Cell<usize>,
     resize: Cell<bool>,
     dead: Cell<bool>,
+    mapping_changed: Cell<bool>,
     secondary: Cell<Option<f64>>,
     screen_bias: Cell<f32>,
     mirror: Cell<bool>,
@@ -50,7 +51,11 @@ impl NativeTarget for Target {
             base: 65536,
             length: 128,
             allocation_base: 65536,
-            protection: 4,
+            protection: if self.state.mapping_changed.get() {
+                8
+            } else {
+                4
+            },
             kind: 0x20000,
             image: false,
         }])
@@ -131,6 +136,7 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
             calls: Cell::new(0),
             resize: Cell::new(false),
             dead: Cell::new(false),
+            mapping_changed: Cell::new(false),
             secondary: Cell::new(Some(25.)),
             screen_bias: Cell::new(0.),
             mirror: Cell::new(true),
@@ -401,6 +407,261 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
     }
 }
 
+fn recheck_fixture() -> (LiveSession, Store, Rc<State>, std::path::PathBuf) {
+    let root = std::env::temp_dir().join(format!("reversebolt-recheck-{}", uuid::Uuid::new_v4()));
+    let state = Rc::new(State {
+        bytes: RefCell::new(vec![0; 128]),
+        calls: Cell::new(0),
+        resize: Cell::new(false),
+        dead: Cell::new(false),
+        mapping_changed: Cell::new(false),
+        secondary: Cell::new(None),
+        screen_bias: Cell::new(0.),
+        mirror: Cell::new(true),
+        reset_during_screen: Cell::new(false),
+    });
+    let mut session = LiveSession::attach(
+        Box::new(Target {
+            state: state.clone(),
+            memory: None,
+            info: ProcessInfo {
+                pid: 91,
+                created: "recheck-fixture".into(),
+                window: 100,
+                ..Default::default()
+            },
+        }),
+        1,
+        root.join("captures"),
+    )
+    .unwrap();
+    let store = Store::open(root.join("changes")).unwrap();
+    for (i, value) in [
+        40., 45., 51., 38., 59., 44., 57., 50., 61., 43., 55., 48., 52., 52., 50., 50.,
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        state.set(value);
+        session.capture_for_discovery(15 - i).unwrap();
+    }
+    (session, store, state, root)
+}
+
+#[test]
+fn restored_trials_can_recheck_all_rivals_and_prepare_another_edit() {
+    use reversebolt_core::prediction::Assessment;
+    let (mut session, mut store, state, root) = recheck_fixture();
+    let investigation = session.view.investigation_id.clone();
+    let old = session.view.prediction_checks[0].clone();
+    let selected = old
+        .candidates
+        .iter()
+        .position(|c| c.address == "0x10020")
+        .unwrap();
+    let trial = session
+        .prepare_probe(old.track, 53., (&old.id, selected), "test", &mut store)
+        .unwrap();
+    let pending = session
+        .prepare_probe(old.track, 54., (&old.id, selected), "test", &mut store)
+        .unwrap();
+    assert_eq!(trial.phase, Phase::Prepared);
+    session
+        .execute_change(&trial.id, false, &mut store)
+        .unwrap();
+    assert!(
+        session
+            .recheck_findings(&investigation, 1, &store)
+            .unwrap_err()
+            .contains("Restore")
+    );
+    assert_eq!(session.view.coverage.batch, 1);
+    session.execute_change(&trial.id, true, &mut store).unwrap();
+    let coverage = session.view.coverage.clone();
+    session.recheck_findings(&investigation, 1, &store).unwrap();
+    assert!(
+        session.recheck_findings(&investigation, 1, &store).is_err(),
+        "Stale retries cannot open another batch"
+    );
+    assert_eq!(session.view.sample_count, 0);
+    assert!(session.view.tracks.iter().all(|t| t.samples.is_empty()));
+    assert_eq!(
+        session.view.coverage.selected_unique_bytes,
+        coverage.selected_unique_bytes
+    );
+    assert_eq!(
+        session.view.coverage.attempted_bytes,
+        coverage.attempted_bytes
+    );
+    assert!(session.view.planned_bytes <= old.candidates.len() * 8);
+    let current = &session.view.prediction_checks[0];
+    assert_ne!(current.id, old.id);
+    assert_eq!(current.candidates.len(), old.candidates.len());
+    for (before, after) in old.candidates.iter().zip(&current.candidates) {
+        assert_eq!(before.address, after.address);
+        assert_eq!(
+            serde_json::to_value(&before.mapping).unwrap(),
+            serde_json::to_value(&after.mapping).unwrap()
+        );
+        assert_eq!(
+            after.assessment(current),
+            Assessment::NeedsContrastingEvidence
+        );
+        assert!(after.samples.is_empty());
+    }
+    let archive: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(&current.rechecked_from.as_ref().unwrap().archive).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(archive["state"]["prediction_checks"][0]["id"], old.id);
+    assert_eq!(
+        archive["state"]["prediction_checks"][0]["candidates"][0]["samples"]
+            .as_array()
+            .unwrap()
+            .len(),
+        4
+    );
+    assert!(
+        session
+            .prepare_change(old.track, 53., "test", &mut store)
+            .is_err()
+    );
+    let calls = state.calls.get();
+    assert!(
+        session
+            .execute_change(&pending.id, false, &mut store)
+            .is_err()
+    );
+    assert_eq!(state.calls.get(), calls);
+    // A held value alone cannot reuse the old change contrast.
+    for _ in 0..4 {
+        state.set(50.);
+        session.capture().unwrap();
+    }
+    assert!(
+        session.view.prediction_checks[0]
+            .candidates
+            .iter()
+            .all(|c| c.assessment(&session.view.prediction_checks[0])
+                == Assessment::NeedsContrastingEvidence)
+    );
+    for value in [55., 55.] {
+        state.set(value);
+        session.capture().unwrap();
+    }
+    let current = &session.view.prediction_checks[0];
+    let id = current.id.clone();
+    assert!(
+        current
+            .candidates
+            .iter()
+            .all(|c| c.assessment(current) == Assessment::ConsistentInObservedScope)
+    );
+    let next = session
+        .prepare_probe(old.track, 58., (&id, selected), "test", &mut store)
+        .unwrap();
+    assert_eq!(next.phase, Phase::Prepared);
+    assert_eq!(
+        session
+            .execute_change(&next.id, false, &mut store)
+            .unwrap()
+            .phase,
+        Phase::Written
+    );
+    assert_eq!(
+        session
+            .execute_change(&next.id, true, &mut store)
+            .unwrap()
+            .phase,
+        Phase::Restored
+    );
+    // A second recheck points to the immediately preceding archive without
+    // growing or silently refitting the hypothesis set.
+    session.recheck_findings(&investigation, 2, &store).unwrap();
+    assert_eq!(
+        session.view.prediction_checks[0]
+            .rechecked_from
+            .as_ref()
+            .unwrap()
+            .check,
+        id
+    );
+    assert_eq!(
+        session.view.prediction_checks[0].candidates.len(),
+        old.candidates.len()
+    );
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn rechecking_preserves_current_batch_on_mapping_storage_and_budget_failure() {
+    let (mut session, store, state, root) = recheck_fixture();
+    let id = session.view.investigation_id.clone();
+    let original = session.view.prediction_checks[0].id.clone();
+    state.mapping_changed.set(true);
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("known location")
+    );
+    state.mapping_changed.set(false);
+    let next_dir = root.join("captures/batch-002");
+    std::fs::write(&next_dir, b"block directory creation").unwrap();
+    assert!(session.recheck_findings(&id, 1, &store).is_err());
+    std::fs::remove_file(&next_dir).unwrap();
+    std::fs::create_dir_all(next_dir.join("prediction-checks.json")).unwrap();
+    assert!(session.recheck_findings(&id, 1, &store).is_err());
+    session.view.coverage.attempted_bytes = reversebolt_core::coverage::MAX_READ_BYTES;
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("read budget")
+    );
+    session.view.coverage.attempted_bytes = 0;
+    session.view.coverage.archive_bytes = reversebolt_core::coverage::MAX_ARCHIVE_BYTES;
+    assert!(
+        session
+            .recheck_findings(&id, 1, &store)
+            .unwrap_err()
+            .contains("archive budget")
+    );
+    assert_eq!(session.view.prediction_checks[0].id, original);
+    assert_eq!(session.view.coverage.batch, 1);
+    assert_eq!(session.view.sample_count, 16);
+    assert_eq!(state.calls.get(), 0);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn recheck_does_not_accept_old_geometry_or_hide_fresh_contradictions() {
+    use reversebolt_core::prediction::Assessment;
+    for resize in [false, true] {
+        let (mut session, store, state, root) = recheck_fixture();
+        let id = session.view.investigation_id.clone();
+        session.recheck_findings(&id, 1, &store).unwrap();
+        state.resize.set(resize);
+        state.screen_bias.set(10.);
+        for value in [54., 54., 50., 50.] {
+            state.set(value);
+            session.capture().unwrap();
+        }
+        let check = &session.view.prediction_checks[0];
+        assert!(check.candidates.iter().all(|c| c.assessment(check)
+            == if resize {
+                Assessment::Invalidated
+            } else {
+                Assessment::Contradicted
+            }));
+        if resize {
+            assert!(session.recheck_findings(&id, 2, &store).is_err());
+        }
+        assert_eq!(state.calls.get(), 0);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
+
 fn session_contract(separate: bool) {
     let root =
         std::env::temp_dir().join(format!("reversebolt-live-change-{}", uuid::Uuid::new_v4()));
@@ -409,6 +670,7 @@ fn session_contract(separate: bool) {
         calls: Cell::new(0),
         resize: Cell::new(false),
         dead: Cell::new(false),
+        mapping_changed: Cell::new(false),
         secondary: Cell::new(Some(25.)),
         screen_bias: Cell::new(0.),
         mirror: Cell::new(false),

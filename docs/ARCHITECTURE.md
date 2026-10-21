@@ -1,5 +1,19 @@
 # Shared engine, two interfaces
 
+Known-location rechecks use the same batch archive transition as broad memory
+search. Before publishing the transition, the engine validates the original
+process, batch, window epoch and every candidate's memory mapping; it rejects
+unrestored or unresolved trials. New checks retain all frozen interpretations,
+link to the previous check/archive, and begin with empty samples. Candidate
+reads are narrowed to their full numeric widths and shared by address; each
+image is still bracketed by bounded memory reads. Earlier contrast and success
+never enter the new assessment. Original fitting frames remain provenance.
+The existing capture and archive budgets bound repeated rechecks; old raw
+snapshots are released. Failed evidence persistence leaves the current batch
+in memory. This is not a cross-file crash transaction or allocation/restart
+recovery. The controller normally queues four OCR captures without model calls;
+additional observations remain possible within the ordinary 20-capture limit.
+
 ```mermaid
 flowchart LR
     Person[Person] --> Desktop[Native Rust desktop]

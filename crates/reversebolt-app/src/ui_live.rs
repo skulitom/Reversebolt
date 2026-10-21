@@ -276,7 +276,14 @@ impl LivePane {
         if self.edit_scope != edit_scope {
             self.requested.clear();
             self.probe_choice.clear();
-            self.card_order.clear();
+            let carried = live.prediction_checks.iter().any(|c| {
+                c.rechecked_from.as_ref().is_some_and(|origin| {
+                    self.edit_scope == format!("{}:{}", live.investigation_id, origin.batch)
+                })
+            });
+            if !carried {
+                self.card_order.clear();
+            }
             self.show_inspector = false;
             self.edit_scope = edit_scope;
         }
@@ -637,6 +644,19 @@ impl LivePane {
             self.card_order.remove(source);
             self.card_order
                 .insert(destination.min(self.card_order.len()), key);
+        }
+        if !live.prediction_checks.is_empty() {
+            let unsettled = state.changes.iter().any(|c| {
+                c.scope.investigation == live.investigation_id
+                    && (c.phase.unresolved()
+                        || c.phase == reversebolt_core::changes::Phase::Written)
+            });
+            if ui.add_enabled(!busy && live.connected && live.sample_count > 0 && live.coverage.batch < 24 && !unsettled,
+                egui::Button::new("Recheck findings"))
+                .on_hover_text(if unsettled { "Restore the applied trial before starting fresh checks." }
+                    else { "Check known locations again with four fresh moments. Let values stay still and change." }).clicked() {
+                handle.submit("recheck_findings",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch}));
+            }
         }
         if ui
             .add_enabled(

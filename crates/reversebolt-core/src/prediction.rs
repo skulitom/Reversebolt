@@ -124,6 +124,10 @@ pub struct FrozenCandidate {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PredictionCheck {
+    /// Same-process hypotheses carried unchanged into a new prospective batch.
+    /// Earlier outcomes remain in the referenced archive, never fresh samples.
+    #[serde(default)]
+    pub rechecked_from: Option<RecheckOrigin>,
     #[serde(default)]
     pub automatic_selection: Option<crate::investigation::Selection>,
     pub id: String,
@@ -139,6 +143,13 @@ pub struct PredictionCheck {
     pub basis: Vec<FrameRef>,
     pub invalidated: Option<String>,
     pub candidates: Vec<FrozenCandidate>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RecheckOrigin {
+    pub check: String,
+    pub batch: usize,
+    pub archive: String,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -271,6 +282,7 @@ mod tests {
 
     fn check(predictions: &[f64]) -> PredictionCheck {
         PredictionCheck {
+            rechecked_from: None,
             automatic_selection: None,
             id: "check".into(),
             investigation_id: "session".into(),

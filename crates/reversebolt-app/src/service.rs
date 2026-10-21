@@ -144,6 +144,7 @@ impl EngineHandle {
                         | "correlate"
                         | "start_prediction_check"
                         | "advance_memory"
+                        | "recheck_findings"
                         | "detach_process"
                         | "read_capture"
                         | "submit_observation"
@@ -610,7 +611,7 @@ fn native_command(
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }
-        "advance_memory" => {
+        "advance_memory" | "recheck_findings" => {
             let investigation = command.args["investigation_id"]
                 .as_str()
                 .ok_or("Read the current investigation identity first.")?;
@@ -622,7 +623,11 @@ fn native_command(
                 .live
                 .as_mut()
                 .ok_or("Connect an application first.")?;
-            session.advance_memory(investigation, batch)?;
+            if command.action == "recheck_findings" {
+                session.recheck_findings(investigation, batch, &engine.changes)?;
+            } else {
+                session.advance_memory(investigation, batch)?;
+            }
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
         }

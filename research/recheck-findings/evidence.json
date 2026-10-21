@@ -1,0 +1,365 @@
+{
+  "protocol_sha256": "3dfcf6255418dc7eac6f71575fa476effbdbbb5a2a740c488016fcc42dae3444",
+  "audit": "Written after both frozen runs; no reruns or replacement observations.",
+  "cases": [
+    {
+      "report": {
+        "slot": 0,
+        "errors": [],
+        "protocol_sha256": "3dfcf6255418dc7eac6f71575fa476effbdbbb5a2a740c488016fcc42dae3444",
+        "fixture_pid": 10748,
+        "initial_oracle": {
+          "fields": [
+            1989047944568,
+            1989047946592
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            40,
+            72
+          ]
+        },
+        "engine_pid": 49644,
+        "mcp_pid": 86672,
+        "prepared_oracle": {
+          "fields": [
+            1989047944568,
+            1989047946592
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            1989047944568,
+            1989047946592
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            53,
+            43
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            1989047944568,
+            1989047946592
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "fresh_applied_oracle": {
+          "fields": [
+            1989047944568,
+            1989047946592
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            46
+          ]
+        },
+        "outcome": "new edit after fresh contrast",
+        "tracks": [
+          0,
+          1
+        ],
+        "candidates": [
+          1,
+          1
+        ],
+        "fresh_planned_bytes": 8,
+        "fresh_reads": 64
+      },
+      "checks": [
+        {
+          "id": "3fc5cca3-c20b-4b6f-8784-1aad97fac06a",
+          "from": {
+            "archive": "C:\\DEV\\Reversebolt\\test-results\\recheck-findings-v1\\case-0\\engine\\captures\\d875c355-8d45-4925-a97f-5e31c68fb13f\\memory-batch.json",
+            "batch": 1,
+            "check": "c0766619-0f28-4f21-b56a-4614f605e0ef"
+          },
+          "track": 0,
+          "candidates": [
+            {
+              "address": "0x1CF1C7F0578",
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 1400,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "observed": [
+                54.0,
+                54.0,
+                50.0,
+                50.0
+              ],
+              "outcomes": [
+                "agrees",
+                "agrees",
+                "agrees",
+                "agrees"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "50821ed5-f295-4f77-a4d3-3faee704ec81",
+          "from": {
+            "archive": "C:\\DEV\\Reversebolt\\test-results\\recheck-findings-v1\\case-0\\engine\\captures\\d875c355-8d45-4925-a97f-5e31c68fb13f\\memory-batch.json",
+            "batch": 1,
+            "check": "ba278274-c709-4330-bf98-d102a6d58fb3"
+          },
+          "track": 1,
+          "candidates": [
+            {
+              "address": "0x1CF1C7F0D60",
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 3424,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "observed": [
+                64.0,
+                64.0,
+                43.0,
+                43.0
+              ],
+              "outcomes": [
+                "agrees",
+                "agrees",
+                "agrees",
+                "agrees"
+              ]
+            }
+          ]
+        }
+      ],
+      "preparation_ok": true,
+      "strict_run_passed": true,
+      "requested_bytes": 64,
+      "planned_bytes": 8,
+      "post_run_classification": "fresh edit applied, observed and restored",
+      "preparation_error": null,
+      "raw_sha256": {
+        "applied.json": "b5b687d0e970b6abaab0d646ab5f78d784a46127312e9b46f5113b76e6e3ef9e",
+        "attached.json": "1cbb63b4010074675411a7875f652b9a05477d2ee3a60c76470f9be175c5b773",
+        "checked.json": "bcb0159f7d551ebdfcbeaf8f15bd26b7b269ea0686f9cfdc2930f8c1f76a1e40",
+        "commands.json": "78195589245032ba633b2eb737e06f894572fa3585db6f3be37a4744fa48246b",
+        "discovery-status.json": "26a4508532d9ff5032bbac9a10fc12167a70415f373a108709267b6301dc5346",
+        "final-status.json": "560ba92110bb24f43ded03c751b36fe4d49d4bc0619cfc4f2cef1c2ea677c39a",
+        "fresh-applied.json": "9ee68c1c84495b7b2816842d9d226974654986f4e060c2988e17e728b705d134",
+        "fresh-effect.json": "2e840f492c94ed0fb45fd191e422b5b8a7d54cd5aa9bea747ccfbfdf02098360",
+        "fresh-prepared.json": "cc326a31a986574980108f769336304fad53d76c8e833327a03d9554f667d105",
+        "fresh-restored.json": "2130d1a919b2d0e3301f55a84e4173838b70a492aaa5e3038c240cd06b50df38",
+        "fresh-states.json": "76aac9110a5b97da56668caaecc5740c1d8057b22695d3414eab0ea9e28a2324",
+        "oracle.json": "deea07b5a95e76d99919b34a7ed8e60d20ec1db89e6ce8959b9258ce856481fa",
+        "other-expired.json": "d574c05a76620a142d5b58c4b03bf565e4f2c897a564ca9b78bbdda5e3118512",
+        "prepared-0.json": "e3de338527adcc839080ae11a5b86d340003922d420d244b6e10b14b5fd2155c",
+        "prepared-1.json": "f43627b23a7bbfeb36178fd3de34ca68f0087fec33a772ee3fce97e25a18ff68",
+        "recheck-completed.json": "9461b5f681f829b7737ec420020f15929ca6cbc7aa8ac868ff614b3a36035179",
+        "recheck-start.json": "b11da10531b86febd07a5f2f0c29e11518759d10f4230a84576dacc25c933a3e",
+        "report.json": "b553098e392c8cd36ac83f056fd6aa46f6540bbd7b6af8adda266bb226ab7ac4",
+        "restored.json": "fe438584c6724907dc11d0a5fb9b5f28029e2da0be6f63707eee4c1718f5516c",
+        "stale-recheck.json": "eaa3b2aaa96b97ac7c627ac2333e12cef1176fb6ada62aba386af8c6624b720b",
+        "states.json": "23dffe61656797aa0afe1162e291ad5d9f8636b44fcbc7723548e3314b09a3ef",
+        "unrestored-recheck.json": "072449925f68b3c241a3f8171cfb7fb157b0962e4b6084c2229ade26e62d2f16"
+      }
+    },
+    {
+      "report": {
+        "slot": 1,
+        "errors": [
+          "AssertionError()"
+        ],
+        "protocol_sha256": "3dfcf6255418dc7eac6f71575fa476effbdbbb5a2a740c488016fcc42dae3444",
+        "fixture_pid": 62612,
+        "initial_oracle": {
+          "fields": [
+            2429266821648,
+            2429266824272
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            40,
+            72
+          ]
+        },
+        "engine_pid": 77464,
+        "mcp_pid": 68728,
+        "prepared_oracle": {
+          "fields": [
+            2429266821648,
+            2429266824272
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            2429266821648,
+            2429266824272
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            46
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            2429266821648,
+            2429266824272
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        }
+      },
+      "checks": [
+        {
+          "id": "34ce6a34-ed25-4e33-bfbe-24a3825e8a6e",
+          "from": {
+            "archive": "C:\\DEV\\Reversebolt\\test-results\\recheck-findings-v1\\case-1\\engine\\captures\\098cc39f-c208-4355-9eed-65789c889e56\\memory-batch.json",
+            "batch": 1,
+            "check": "8c50360a-f400-48bb-bc3b-71939dd023ed"
+          },
+          "track": 0,
+          "candidates": [
+            {
+              "address": "0x2359B960210",
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 528,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "observed": [
+                50.0,
+                50.0,
+                50.0,
+                50.0
+              ],
+              "outcomes": [
+                "agrees",
+                "agrees",
+                "agrees",
+                "agrees"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "5d03468c-e203-4435-bd7b-57f6aff0f5e7",
+          "from": {
+            "archive": "C:\\DEV\\Reversebolt\\test-results\\recheck-findings-v1\\case-1\\engine\\captures\\098cc39f-c208-4355-9eed-65789c889e56\\memory-batch.json",
+            "batch": 1,
+            "check": "34dd45fb-4de1-4da9-8d77-9706674ff816"
+          },
+          "track": 1,
+          "candidates": [
+            {
+              "address": "0x2359B960C50",
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 3152,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "observed": [
+                43.0,
+                43.0,
+                43.0,
+                43.0
+              ],
+              "outcomes": [
+                "agrees",
+                "agrees",
+                "agrees",
+                "agrees"
+              ]
+            }
+          ]
+        }
+      ],
+      "preparation_ok": false,
+      "strict_run_passed": false,
+      "requested_bytes": 64,
+      "planned_bytes": 8,
+      "post_run_classification": "edit refused; frozen runner failed its error-wording assertion",
+      "preparation_error": "This location has overlapping interpretations that still need fresh evidence.",
+      "raw_sha256": {
+        "applied.json": "091956856ec6fee34f6c6077ba19d6ca5f207a5313442558cee4dea992e7f5b5",
+        "attached.json": "c8746217eda403b8a1230212cdda7549bd036075d16b109d0edb20a7f9699e14",
+        "checked.json": "b95ddbf4cefa1b43474876e2beb347d65f599c395b88f3a500097bd1b5b1980c",
+        "commands.json": "2a6bd2940b08c38d4760c1ef98ca4bcd8f61e09bdffaf18e226da3f643697987",
+        "discovery-status.json": "449739ce850576664946207a3b831979acf3f8e4efe6e76aa81058fedcc31218",
+        "fresh-prepared.json": "53eb6304d7f823cc2930b819db15e0492e05b8cb4ef0d6774abe79551ab9740d",
+        "fresh-states.json": "29133a35faccf8d7babf6a3051259d1eb85f79c5d04bbdbdd9045d18cb981528",
+        "oracle.json": "4fd99993fab9bff8e26d3d3fa9bd4373337015d0eac23d8062455e22c49e5090",
+        "other-expired.json": "ef20d35050e424f0c812e45e01436a0941e40a57b56a2fbef23a88983f405398",
+        "prepared-0.json": "834e0b3ec3889eb9fe0095309f33b6597995c40a1e7742188b962576d0298cb2",
+        "prepared-1.json": "a08a6ce67e1e3f5d6af0bd7b6baa890a48263b5b92d0eb9df5ec8be8903ed4af",
+        "recheck-completed.json": "06b7701a0f9ad0d6759b1e1dd3cdbcb8e04b00a7b271b01983ad66cf1b15299c",
+        "recheck-start.json": "badbb659715078418622ba7bc71a0e643dad945202f7168ced34177d8c8e35ad",
+        "report.json": "eaa5177c5273d2a8d43ec88e04922b8687e5df83277f0236eb748fc685b6d361",
+        "restored.json": "d5db8b0250927597900471c49ec138e578bffd1041123a066a9532df2fa2818b",
+        "stale-recheck.json": "487ea22bee94b6e03e54d9da9d8430dcbeedc461834fa92f4d366e6033863985",
+        "states.json": "e3d161169a4201d6fcbe29f9ff67d9523587e5f260a35f110f3fa44ff871926f",
+        "unrestored-recheck.json": "545cfe443d2ba0b536df18de33962d4f757bcdbba7b73b1e6eeaca02a91ddad6"
+      }
+    }
+  ]
+}

@@ -19,3 +19,4 @@
 /research/game-location-probes/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/intervention-persistence/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/multiple-checks/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/recheck-findings/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

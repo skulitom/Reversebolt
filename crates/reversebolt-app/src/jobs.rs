@@ -514,6 +514,20 @@ impl Controller {
     }
     fn start_automatic_observation(&mut self, source: String) -> Result<Value> {
         let snapshot = self.jobs.snapshot();
+        let state = self.engine.view.read().unwrap();
+        let recheck = state.live.as_ref().is_some_and(|live| {
+            live.sample_count == 0
+                && live
+                    .prediction_checks
+                    .iter()
+                    .any(|c| c.rechecked_from.is_some())
+        });
+        let model = if recheck {
+            None
+        } else {
+            state.observer_model.clone()
+        };
+        drop(state);
         let client = if source == "desktop" {
             "desktop"
         } else {
@@ -522,8 +536,8 @@ impl Controller {
         let command = Command {
             action: "start_observation_job".into(),
             source,
-            args: json!({"count":16,"interval_ms":1000,"compare":true,
-                "local_model":self.engine.view.read().unwrap().observer_model,
+            args: json!({"count":if recheck {4} else {16},"interval_ms":1000,"compare":!recheck,
+                "local_model":model,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
         };
@@ -592,7 +606,9 @@ impl Controller {
                 return Err("auto_observe must be true or false.".into());
             }
             let automatic = match command.action.as_str() {
-                "attach_process" => command.args["auto_observe"].as_bool().unwrap_or(true),
+                "attach_process" | "recheck_findings" => {
+                    command.args["auto_observe"].as_bool().unwrap_or(true)
+                }
                 "advance_memory" => command.args["auto_observe"] == true,
                 _ => false,
             };
@@ -1413,6 +1429,33 @@ mod tests {
         assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Cancelled);
         assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 2);
         assert!(started_rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn rechecks_queue_four_full_captures_without_refitting_or_model_calls() {
+        let mut view = initial_view();
+        view.observer_model = Some("chosen:local".into());
+        view.live.as_mut().unwrap().prediction_checks.push(
+            serde_json::from_value(json!({
+                "id":"new-check", "investigation_id":"fixture-investigation", "batch":2,"epoch":1,
+                "source":"ocr","track":0,"label":"Quantity","after_frame":0,"last_frame":20,
+                "tolerance":0.55,"basis":[],"invalidated":null,"candidates":[],
+                "rechecked_from":{"check":"old-check","batch":1,"archive":"historical.json"}
+            }))
+            .unwrap(),
+        );
+        let engine = EngineHandle::test_worker(view, |_, _| panic!("No work started"));
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("desktop".into()).unwrap();
+        let id = receipt["ack"]["job"].as_u64().unwrap();
+        let steps = &c.jobs.snapshot().jobs[&id].steps;
+        assert_eq!(steps.len(), 4);
+        for step in steps {
+            let plan: CaptureStep = serde_json::from_str(&step.payload).unwrap();
+            assert_eq!(plan.mode, reversebolt_core::live::CaptureMode::Full);
+            assert!(!plan.compare);
+            assert!(plan.local_model.is_none());
+        }
     }
 
     #[test]

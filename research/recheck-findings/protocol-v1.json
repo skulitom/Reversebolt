@@ -1,0 +1,129 @@
+{
+  "frozen_utc": "2026-10-21T08:41:20.047941+00:00",
+  "base_commit": "95a32ae6db8009dbe74a8bafb4e620d89c9397a8",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-094100",
+  "binaries": {
+    "Reversebolt.exe": "52e9911fdcdfacd4707be12d9e364d5f17375befd7a4e91eb345ef93b9cae07a",
+    "reversebolt-mcp.exe": "ac9143b78c394739c15022aa522a9ec91f2f58b506a72db461e4c024b513b51f"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "03d8c418e0daeda3b3bc94c5023e7b595455953b7f62483b1edad6d402ba3c44",
+    "fixture.ps1": "63c2ced4b171c9705d7187b7098446afb2f6f705bf55e4faae0997d6eb53cbae",
+    "run.py": "62a59b2dcd351e00476e9832695340f373e7c221dc06e8d72db52d2e91dfad85"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/jobs.rs": "1501ac6e8c99205f9c787c230ec8987ef03383964baecf216aa14edaf4a059f6",
+    "crates/reversebolt-app/src/service.rs": "4440efc81513061438fb6e1256295b070b52729b308bcc7d461c196f3ab215f7",
+    "crates/reversebolt-app/src/ui_live.rs": "883bbda981aed61adac5b248116d0d9ca7adcd62780441af1e10c1679b58ddf9",
+    "crates/reversebolt-core/src/live.rs": "ad3bb3d12d9fff39707251676816617b6ca703338133aaf18c789026c4ff47ab",
+    "crates/reversebolt-core/src/prediction.rs": "62fa2c226ca637244c50b53df9eb2d1239664cd3fa5155ed276e4328d8413375",
+    "crates/reversebolt-core/src/probes.rs": "df4fc7a9b69ad06c02bda6b51b4e8ceedc1dce9eda2be5a9c7156d4c0bf70af1",
+    "crates/reversebolt-core/tests/live_changes.rs": "ca4d56e93778bcc2210526f935130fdcfb8b18c852b1bb750c8fe4df19f78504",
+    "crates/reversebolt-core/tests/prediction_checks.rs": "3b5d67c444714dff055a4eb1415419a530c1e4cc5c4131fa32dd133c75b85085",
+    "crates/reversebolt-mcp/src/main.rs": "91ee86ea05998cbc085a696ea679c9e0cc3f2e2f85a54a54fc6a9af4e523932c"
+  },
+  "values": [
+    [
+      40,
+      72
+    ],
+    [
+      56,
+      29
+    ],
+    [
+      31,
+      81
+    ],
+    [
+      85,
+      44
+    ],
+    [
+      64,
+      60
+    ],
+    [
+      27,
+      35
+    ],
+    [
+      75,
+      91
+    ],
+    [
+      92,
+      67
+    ],
+    [
+      44,
+      25
+    ],
+    [
+      67,
+      88
+    ],
+    [
+      38,
+      53
+    ],
+    [
+      50,
+      76
+    ],
+    [
+      54,
+      64
+    ],
+    [
+      54,
+      64
+    ],
+    [
+      50,
+      43
+    ],
+    [
+      50,
+      43
+    ]
+  ],
+  "fresh_values": [
+    [
+      [
+        54,
+        64
+      ],
+      [
+        54,
+        64
+      ],
+      [
+        50,
+        43
+      ],
+      [
+        50,
+        43
+      ]
+    ],
+    [
+      [
+        50,
+        43
+      ],
+      [
+        50,
+        43
+      ],
+      [
+        50,
+        43
+      ],
+      [
+        50,
+        43
+      ]
+    ]
+  ]
+}

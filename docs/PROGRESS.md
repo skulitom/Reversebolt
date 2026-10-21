@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest same-process rechecks (2026-10-21): **28% unchanged**. “Recheck findings”
+revisits all frozen hypotheses with four fresh moments after a trial is restored,
+without rescanning broad memory or borrowing old success/contrast. The shared
+desktop/MCP operation keeps provenance and the existing budgets. A native run
+completed edit → restore → recheck → another edit/restore; the constant-value
+case correctly refused preparation but retained a strict runner failure caused
+by its error-wording expectation. Both rechecks requested only 64 memory bytes.
+All 162 workspace tests, strict Clippy and packaged checks pass; 32 MCP tools are
+available. Desktop preview `0.1.0-20261021-094100` is running with history and
+observer settings preserved. This is bounded workflow reuse, not recovery across
+relocations/restarts, verified gameplay authority or independent-game progress.
+All weighted credits remain unchanged and the full goal stays active.
+[Evidence, retained failure and limits](../research/recheck-findings/README.md).
+
 Latest multiple automatic checks (2026-10-21): **28%**. Up to eight findings now
 share the bounded 200-candidate read budget, with separate evidence and card
 actions. Two fixed native cases automatically checked two independent values,

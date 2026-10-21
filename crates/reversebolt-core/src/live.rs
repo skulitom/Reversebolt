@@ -19,6 +19,12 @@ const MAX_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
 
+struct Recheck {
+    checks: Vec<PredictionCheck>,
+    tracks: Vec<NumberTrack>,
+    visual_tracks: Vec<VisualTrack>,
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CaptureMode {
@@ -1279,6 +1285,20 @@ impl LiveSession {
     /// Archive the current batch before dropping its bulk bytes. New samples
     /// never join an old memory trajectory, even if a label or address repeats.
     pub fn advance_memory(&mut self, investigation: &str, batch: usize) -> Result<()> {
+        self.check_batch_transition(investigation, batch)?;
+        let mut selected = self.selected.clone();
+        for chunk in &self.plan {
+            selected.add(chunk.address, chunk.length);
+        }
+        let (next, eligible) =
+            coverage::plan(self.target.regions()?, &selected, self.budget_bytes)?;
+        if next.is_empty() {
+            return Err("All currently inventoried eligible addresses have been selected. This does not prove every value was recognized or every allocation lifetime observed.".into());
+        }
+        self.replace_memory_batch(next, eligible, None)
+    }
+
+    fn check_batch_transition(&mut self, investigation: &str, batch: usize) -> Result<()> {
         if investigation != self.view.investigation_id || batch != self.view.coverage.batch {
             return Err(
                 "The investigation or memory batch changed. Read status before continuing.".into(),
@@ -1293,15 +1313,113 @@ impl LiveSession {
         if batch >= coverage::MAX_BATCHES {
             return Err("The investigation reached its 24-batch limit.".into());
         }
-        let mut selected = self.selected.clone();
-        for chunk in &self.plan {
-            selected.add(chunk.address, chunk.length);
+        Ok(())
+    }
+
+    /// Revisit all frozen hypotheses at their existing addresses. No scan, fit,
+    /// relocation claim, or old outcome is carried into the fresh interval.
+    pub fn recheck_findings(
+        &mut self,
+        investigation: &str,
+        batch: usize,
+        store: &crate::changes::Store,
+    ) -> Result<()> {
+        self.check_batch_transition(investigation, batch)?;
+        if store.records.iter().any(|c| {
+            c.scope.investigation == investigation
+                && (c.phase.unresolved() || c.phase == crate::changes::Phase::Written)
+        }) {
+            return Err("Restore the applied trial before rechecking. An uncertain write must stay in its current investigation.".into());
         }
-        let (next, eligible) =
-            coverage::plan(self.target.regions()?, &selected, self.budget_bytes)?;
-        if next.is_empty() {
-            return Err("All currently inventoried eligible addresses have been selected. This does not prove every value was recognized or every allocation lifetime observed.".into());
+        if self.view.prediction_checks.is_empty() {
+            return Err("There are no frozen findings to recheck yet.".into());
         }
+        let mut checks = self.view.prediction_checks.clone();
+        let mut chunks: BTreeMap<u64, Chunk> = BTreeMap::new();
+        for check in &mut checks {
+            if check.epoch != self.image_epoch {
+                return Err(
+                    "The window geometry changed. Start fresh discovery for this view.".into(),
+                );
+            }
+            check.rechecked_from = Some(prediction::RecheckOrigin {
+                check: check.id.clone(),
+                batch,
+                archive: self
+                    .directory
+                    .join("memory-batch.json")
+                    .to_string_lossy()
+                    .into(),
+            });
+            check.id = uuid::Uuid::new_v4().to_string();
+            check.batch = batch + 1;
+            check.epoch = self.image_epoch + 1;
+            check.after_frame = 0;
+            check.last_frame = MAX_SAMPLES;
+            check.invalidated = None;
+            for candidate in &mut check.candidates {
+                let old = self
+                    .plan
+                    .iter()
+                    .find(|c| c.address == candidate.chunk_address)
+                    .ok_or("A hypothesis lost its original memory region.")?;
+                let address = candidate
+                    .chunk_address
+                    .checked_add(candidate.offset_in_chunk as u64)
+                    .ok_or("Candidate address overflow.")?;
+                let chunk = Chunk {
+                    address,
+                    length: candidate.mapping.kind.width(),
+                    region: old.region.clone(),
+                };
+                if self.invalid_chunks.contains(&old.address)
+                    || candidate.invalidated.is_some()
+                    || !self
+                        .target
+                        .query(address)?
+                        .is_some_and(|r| chunk.covered_by(&r))
+                {
+                    return Err("A known location changed or became unavailable. Start fresh discovery; no hypotheses were silently dropped.".into());
+                }
+                chunks
+                    .entry(address)
+                    .and_modify(|c| c.length = c.length.max(chunk.length))
+                    .or_insert(chunk);
+                candidate.chunk_address = address;
+                candidate.offset_in_chunk = 0;
+                candidate.samples.clear();
+            }
+        }
+        let mut tracks = self.view.tracks.clone();
+        let mut visual_tracks = self.view.visual_tracks.clone();
+        for track in &mut tracks {
+            track.samples.clear();
+            track.readings.clear();
+            track.matches.clear();
+        }
+        for track in &mut visual_tracks {
+            track.observations.clear();
+            track.matches.clear();
+            track.epoch = self.image_epoch + 1;
+        }
+        self.replace_memory_batch(
+            chunks.into_values().collect(),
+            self.view.eligible_bytes,
+            Some(Recheck {
+                checks,
+                tracks,
+                visual_tracks,
+            }),
+        )
+    }
+
+    fn replace_memory_batch(
+        &mut self,
+        next: Vec<Chunk>,
+        eligible: u64,
+        recheck: Option<Recheck>,
+    ) -> Result<()> {
+        let batch = self.view.coverage.batch;
         let planned_bytes: usize = next.iter().map(|c| c.length).sum();
         if self.view.coverage.attempted_bytes + planned_bytes as u64 * 12 > coverage::MAX_READ_BYTES
         {
@@ -1380,6 +1498,9 @@ impl LiveSession {
         // Prepare all fallible work before releasing the previous snapshots.
         let next_directory = self.root_directory.join(format!("batch-{:03}", batch + 1));
         std::fs::create_dir_all(&next_directory).map_err(|e| e.to_string())?;
+        if let Some(recheck) = &recheck {
+            self.persist_prediction_checks_at(&next_directory, &recheck.checks)?;
+        }
         write_evidence(&archive_path, &bytes)?;
         let complete: Vec<_> = self
             .complete_chunks()
@@ -1389,7 +1510,9 @@ impl LiveSession {
         for (a, n) in complete {
             self.complete_ranges.add(a, n);
         }
-        self.selected = selected;
+        for chunk in &self.plan {
+            self.selected.add(chunk.address, chunk.length);
+        }
         let mut all_selected = self.selected.clone();
         for c in &next {
             all_selected.add(c.address, c.length);
@@ -1419,11 +1542,20 @@ impl LiveSession {
         self.view.temporal_tracks.clear();
         self.view.prediction_checks.clear();
         self.image_epoch += 1;
-        self.screen_size = None;
-        self.view.phase = format!(
-            "Searching memory batch {}. Earlier evidence is archived. Collect fresh observations as the application changes.",
-            batch + 1
-        );
+        if let Some(recheck) = recheck {
+            self.view.tracks = recheck.tracks;
+            self.view.visual_tracks = recheck.visual_tracks;
+            self.view.prediction_checks = recheck.checks;
+            // Keep the previous geometry so the very first fresh frame can
+            // invalidate a resized/replaced observation region.
+            self.view.phase = "Rechecking known findings. Let values stay still and change while four fresh moments are collected.".into();
+        } else {
+            self.screen_size = None;
+            self.view.phase = format!(
+                "Searching memory batch {}. Earlier evidence is archived. Collect fresh observations as the application changes.",
+                batch + 1
+            );
+        }
         Ok(())
     }
 
@@ -1725,6 +1857,7 @@ impl LiveSession {
             });
         }
         let check = PredictionCheck {
+            rechecked_from: None,
             automatic_selection,
             id: uuid::Uuid::new_v4().to_string(),
             investigation_id: investigation.into(),
@@ -1751,11 +1884,19 @@ impl LiveSession {
     }
 
     fn persist_prediction_checks(&self, checks: &[PredictionCheck]) -> Result<()> {
+        self.persist_prediction_checks_at(&self.directory, checks)
+    }
+
+    fn persist_prediction_checks_at(
+        &self,
+        directory: &Path,
+        checks: &[PredictionCheck],
+    ) -> Result<()> {
         let bytes = serde_json::to_vec_pretty(&serde_json::json!({"schema_version":2,
             "process":self.view.process,"memory_process":self.view.memory_process, "checks":checks,
             "scope":"Historical frozen predictions. Non-atomic captures, provisional observations and unverified allocation continuity. Never editing authority."}))
             .map_err(|e| e.to_string())?;
-        write_evidence(&self.directory.join("prediction-checks.json"), &bytes)
+        write_evidence(&directory.join("prediction-checks.json"), &bytes)
     }
 
     fn save_prediction_check(&self) -> Result<()> {

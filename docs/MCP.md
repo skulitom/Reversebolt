@@ -23,6 +23,30 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+## Rechecking known findings
+
+`reversebolt_recheck_findings` starts a fresh batch at the current frozen
+hypotheses' addresses. Pass `investigation_id` and `coverage.batch` from status.
+Restore any applied trial first; unresolved writes also prevent rechecking.
+The default queues four full captures with no fitting or local-model calls.
+`auto_observe=false` leaves capture scheduling to the caller. Read the returned
+automatic-observation receipt and job status; an uncertain delivery is not a
+reason to allocate another batch. Stale batch requests fail.
+
+All mappings and rivals are retained, including earlier contradictions. Old
+results stay in the archive named by each new check's `rechecked_from` field;
+they are not counted as fresh evidence. Every new check needs at least four
+timed agreements, a hold and a distinct change. Missing/constant readings do
+not confirm the finding. External scalar series retain their identity but need
+fresh image-bound submissions; old frame IDs cannot be reused. The new batch
+shares the investigation's existing read, image, archive and 24-batch limits.
+
+This is same-process re-observation only. Known mapping loss refuses the whole
+transition, geometry changes invalidate the new observations, and old prepared
+edits cannot be applied in the new batch. There is no restart recovery, locator
+learning, allocation-lifetime guarantee, causal promotion or automatic write.
+The desktop uses the same operation through **Recheck findings**.
+
 ## Memory process selection
 
 `reversebolt_list_memory_processes` refreshes the connected application's accessible
@@ -78,6 +102,7 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_observe_change` | Add a source-hashed post-trial reading without writing process memory |
 | `reversebolt_read_change_evidence` | Read the before-image and one recorded post-edit/restoration image, with hashes and comparisons |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
+| `reversebolt_recheck_findings` | Revisit frozen hypotheses at known addresses with fresh evidence and four automatic captures |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
 | `reversebolt_observe` | Twenty observation/memory samples |
@@ -253,7 +278,7 @@ Older records without a baseline explicitly lack this evidence.
 
 ## Image-grounded agent observations
 
-There are now 31 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 32 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's

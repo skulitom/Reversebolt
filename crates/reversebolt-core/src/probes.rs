@@ -163,6 +163,7 @@ mod tests {
     #[test]
     fn transitive_overlaps_stay_together_but_adjacent_ranges_do_not() {
         let check = PredictionCheck {
+            rechecked_from: None,
             automatic_selection: None,
             id: "test".into(),
             investigation_id: "test".into(),

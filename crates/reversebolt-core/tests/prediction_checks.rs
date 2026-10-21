@@ -405,6 +405,62 @@ fn overlapping_sources_share_reads_but_keep_distinct_check_identity() {
     let loaded: LiveView = serde_json::from_value(status).unwrap();
     assert_eq!(loaded.prediction_checks.len(), 2);
     assert_eq!(loaded.prediction_checks[0].source, Source::External);
+    let old_input = session.view.visual_tracks[0].observations[12]
+        .as_ref()
+        .unwrap()
+        .input
+        .clone();
+    let store = reversebolt_core::changes::Store::open(root.join("changes")).unwrap();
+    session
+        .recheck_findings(&session.view.investigation_id.clone(), 1, &store)
+        .unwrap();
+    assert_eq!(session.view.prediction_checks.len(), 2);
+    assert!(session.view.visual_tracks[0].observations.is_empty());
+    assert!(
+        session
+            .submit_observation(old_input.clone(), "agent")
+            .is_err()
+    );
+    for n in 1..=4 {
+        flags.frame.set(12 + n);
+        session.capture().unwrap();
+        let frame = session.view.frames.last().unwrap();
+        let mut input = old_input.clone();
+        input.frame_id = frame.id.clone();
+        input.image_sha256 = frame.sha256.clone();
+        input.value = Some(VisualValue::Number(value(12 + n) as f64));
+        session.submit_observation(input, "agent").unwrap();
+    }
+    assert_eq!(
+        session.view.latest.as_ref().unwrap().prediction_reads.len(),
+        count
+    );
+    for check in &session.view.prediction_checks {
+        assert!(check.candidates.iter().all(|c| c.samples.len() == 4));
+        assert!(
+            check
+                .candidates
+                .iter()
+                .any(|c| c.assessment(check) == Assessment::ConsistentInObservedScope)
+        );
+        assert!(
+            check
+                .candidates
+                .iter()
+                .any(|c| c.assessment(check) == Assessment::Contradicted)
+        );
+    }
+    let assessments = |check: &reversebolt_core::prediction::PredictionCheck| {
+        check
+            .candidates
+            .iter()
+            .map(|c| c.assessment(check))
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(
+        assessments(&session.view.prediction_checks[0]),
+        assessments(&session.view.prediction_checks[1])
+    );
     assert!(root.starts_with(std::env::temp_dir()));
     std::fs::remove_dir_all(root).unwrap();
 }
