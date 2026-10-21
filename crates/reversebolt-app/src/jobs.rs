@@ -135,6 +135,10 @@ fn pop(inbox: &mut VecDeque<Request>) -> Option<Request> {
 }
 impl Handle {
     pub fn start(path: PathBuf) -> Result<Self> {
+        let runtime_directory = path
+            .parent()
+            .ok_or("Missing session directory")?
+            .join("runtime");
         let journal = FileJournal::open(
             &path
                 .parent()
@@ -159,6 +163,7 @@ impl Handle {
         let errors = handle.job_error.clone();
         std::thread::spawn(move || {
             let mut controller = Controller {
+                runtime_directory,
                 jobs,
                 executor: CaptureExecutor::new(engine.clone()),
                 manual: None,
@@ -246,7 +251,7 @@ impl Scope {
 #[serde(deny_unknown_fields)]
 struct CaptureStep {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    runtime: Option<reversebolt_core::runtime::Task>,
+    runtime: Option<String>,
     scope: Scope,
     delay_ms: u64,
     source: String,
@@ -371,7 +376,7 @@ impl job::Executor for CaptureExecutor {
             }
             .into(),
             args: if let Some(task) = &step.runtime {
-                json!({"scope":step.scope,"task":task})
+                json!({"scope":step.scope,"task_ref":task})
             } else if let Some(cursor) = &step.change {
                 let cursor = reversebolt_core::changes::ObservationCursor {
                     change_id: cursor.change_id.clone(),
@@ -491,6 +496,7 @@ struct ChangeContinuation {
     source: String,
 }
 struct Controller {
+    runtime_directory: PathBuf,
     jobs: job::Jobs<FileJournal>,
     executor: CaptureExecutor,
     engine: EngineHandle,
@@ -937,7 +943,10 @@ impl Controller {
                 steps: vec![job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
-                        runtime: Some(task),
+                        runtime: Some(crate::runtime_bridge::store_task(
+                            &self.runtime_directory,
+                            &task,
+                        )?),
                         scope,
                         delay_ms: 0,
                         source: command.source.clone(),
@@ -1236,6 +1245,7 @@ mod tests {
         .unwrap();
         let published = Arc::new(RwLock::new(jobs.view()));
         let mut c = Controller {
+            runtime_directory: directory.join("runtime"),
             jobs,
             executor: CaptureExecutor::new(engine.clone()),
             engine,
@@ -1749,11 +1759,58 @@ mod tests {
         assert_eq!(plan.steps.len(), 1);
         let step: CaptureStep = serde_json::from_str(&plan.steps[0].payload).unwrap();
         assert!(matches!(
-            step.runtime,
-            Some(reversebolt_core::runtime::Task::Discover)
+            crate::runtime_bridge::load_task(
+                &c.runtime_directory,
+                step.runtime.as_deref().unwrap()
+            )
+            .unwrap(),
+            reversebolt_core::runtime::Task::Discover
         ));
         assert!(step.local_model.is_none());
         assert_eq!(step.delay_ms, 0);
+    }
+
+    #[test]
+    fn four_value_runtime_refresh_fits_real_journal_and_checks_its_document() {
+        use crate::runtime_bridge::{load_task, store_task};
+        let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No worker needed"));
+        let c = controller(engine);
+        let task = reversebolt_core::runtime::Task::Refresh {
+            catalog_id: "c".repeat(64),
+            after_revision: u64::MAX,
+            ids: (0..4).map(|i| format!("{i:064x}")).collect(),
+        };
+        let reference = store_task(&c.runtime_directory, &task).unwrap();
+        assert_eq!(store_task(&c.runtime_directory, &task).unwrap(), reference);
+        assert_eq!(
+            serde_json::to_value(load_task(&c.runtime_directory, &reference).unwrap()).unwrap(),
+            serde_json::to_value(&task).unwrap()
+        );
+        let step = CaptureStep {
+            runtime: Some(reference.clone()),
+            scope: Scope {
+                investigation_id: uuid::Uuid::new_v4().to_string(),
+                batch: 24,
+                created: "0123456789ABCDEF".into(),
+                window: u64::MAX,
+            },
+            delay_ms: 0,
+            source: "desktop".into(),
+            compare: false,
+            remaining: 0,
+            mode: reversebolt_core::live::CaptureMode::Full,
+            local_model: None,
+            background_model: false,
+            change: None,
+        };
+        assert!(serde_json::to_vec(&step).unwrap().len() <= c.jobs.snapshot().limits.payload_bytes);
+        let path = c
+            .runtime_directory
+            .join("tasks")
+            .join(format!("{reference}.json"));
+        std::fs::write(path, b"{\"operation\":\"discover\"}").unwrap();
+        assert!(load_task(&c.runtime_directory, &reference).is_err());
+        assert!(store_task(&c.runtime_directory, &task).is_err());
     }
 
     #[test]

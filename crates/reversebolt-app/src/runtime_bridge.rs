@@ -44,6 +44,45 @@ fn save(path: &Path, value: &Value) -> Result<()> {
     serde_json::to_writer(&file, value).map_err(|e| e.to_string())?;
     file.sync_all().map_err(|e| e.to_string())
 }
+
+/// Keep full immutable requests out of the job journal's 256-byte step budget.
+pub fn store_task(base: &Path, task: &reversebolt_core::runtime::Task) -> Result<String> {
+    use std::io::Write;
+    task.validate()?;
+    let bytes = serde_json::to_vec(task).map_err(|e| e.to_string())?;
+    if bytes.len() > 1024 {
+        return Err("Runtime task exceeds its document limit.".into());
+    }
+    let digest = format!("{:x}", Sha256::digest(&bytes));
+    let dir = base.join("tasks");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let path = dir.join(format!("{digest}.json"));
+    match OpenOptions::new().write(true).create_new(true).open(path) {
+        Ok(mut file) => {
+            file.write_all(&bytes).map_err(|e| e.to_string())?;
+            file.sync_all().map_err(|e| e.to_string())?;
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+            load_task(base, &digest)?;
+        }
+        Err(e) => return Err(e.to_string()),
+    }
+    Ok(digest)
+}
+
+pub fn load_task(base: &Path, digest: &str) -> Result<reversebolt_core::runtime::Task> {
+    if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err("Invalid runtime task reference.".into());
+    }
+    let bytes = read_bounded(&base.join("tasks").join(format!("{digest}.json")), 1024)?;
+    if format!("{:x}", Sha256::digest(&bytes)) != digest {
+        return Err("Stored runtime task changed.".into());
+    }
+    let task: reversebolt_core::runtime::Task =
+        serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
+    task.validate()?;
+    Ok(task)
+}
 struct Tools {
     loader: PathBuf,
     helper: PathBuf,
@@ -219,9 +258,12 @@ pub fn command(
 ) -> Result<Value> {
     use reversebolt_core::runtime::{Card, Task};
     let owner = owner.ok_or("Runtime inspection must belong to a managed job.")?;
-    let task: Task = serde_json::from_value(command.args["task"].clone())
-        .map_err(|_| "Invalid runtime task.")?;
-    task.validate()?;
+    let task = load_task(
+        base,
+        command.args["task_ref"]
+            .as_str()
+            .ok_or("Missing runtime task reference.")?,
+    )?;
     let session = engine
         .live
         .as_mut()
