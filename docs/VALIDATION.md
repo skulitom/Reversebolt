@@ -442,3 +442,25 @@ verified both fresh cards and the Inspect comparison after restoration.
 The published 29-tool smoke is `test-results/smoke-8bcba2a3/report.json`.
 Preview `0.1.0-20261021-031846` is running with eight retained history entries
 and the previous local model. See [the full evidence](research/EFFECT_OBSERVATIONS.md).
+
+## Foreground input context — 2026-10-21
+
+All 114 workspace tests, strict Clippy and formatting pass. New coverage checks
+input scope/chronology, bounded histories, explicit gaps and completion revoking
+the observation owner. The native fixture confirms real delivered key events
+independently of Reversebolt's OS polling. The published test checks automatic
+sampling, focus exclusion, pause/resume, cancellation, completion, common clocks,
+MCP sequence parity, persistence and restart without resumed collection.
+
+Published native evidence: `test-results/input-context-v1/published-01/report.json`.
+The accessibility-only Inspect check is `inspect-uia.json` beside it; no screenshots
+or game control were needed. The published 29-tool practice/MCP smoke is
+`test-results/smoke-a8ac2633/report.json`. Earlier harness failures remain documented.
+The compact record is `research/input-context/evidence/native-v1.json`.
+
+Preview `0.1.0-20261021-040557` is responding on the desktop. A normal close/relaunch
+preserved the prior eight history entries and local model choice; its delivery
+receipt is `test-results/input-context-v1/desktop/desktop-delivery.json`.
+The selected-window sampling capability earns observation credit only. It does
+not establish accepted game input, input meaning, causal relationships or a
+reliable gameplay control. See [the contract](research/INPUT_CONTEXT.md).

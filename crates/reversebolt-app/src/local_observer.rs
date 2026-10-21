@@ -513,6 +513,7 @@ mod tests {
 
     fn proposed() -> (Pass, visual::FrameRef) {
         let frame = visual::FrameRef {
+            input_context: None,
             id: "frame-2".into(),
             number: 2,
             sha256: "image-sha".into(),

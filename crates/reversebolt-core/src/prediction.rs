@@ -201,6 +201,7 @@ mod tests {
                     .map(|(i, p)| Sample {
                         frame: 13 + i,
                         image: Some(FrameRef {
+                            input_context: None,
                             id: format!("frame-{i}"),
                             number: 13 + i,
                             sha256: "fixture".into(),

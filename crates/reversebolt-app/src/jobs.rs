@@ -58,6 +58,7 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
             ui.horizontal_wrapped(|ui| {
                 ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",title,job.next_step,job.steps.len())).color(ACCENT));
+                if job.phase==job::Phase::Running {ui.label(RichText::new("Keys sampled while the selected window is active").size(12.).color(MUTED));}
                 if model_step { ui.label("Reading images locally…"); }
                 if job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
@@ -641,6 +642,7 @@ impl Controller {
                             j.phase,
                             job::Phase::Paused
                                 | job::Phase::Pausing
+                                | job::Phase::Completed
                                 | job::Phase::Cancelling
                                 | job::Phase::Cancelled
                                 | job::Phase::Failed
@@ -1088,6 +1090,37 @@ mod tests {
         assert!(c.job_command(&resume).unwrap()["ack"]["rejection"].is_string());
         c.tick();
         assert_eq!(c.jobs.snapshot().jobs[&id].next_step, 0);
+    }
+
+    #[test]
+    fn completed_observation_revokes_its_passive_input_owner() {
+        let engine =
+            EngineHandle::test_worker(initial_view(), |_, view| json!({"ok":true,"state":view}));
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":1,"interval_ms":250}),
+        );
+        let reply = c.job_command(&command).unwrap();
+        let id = reply["ack"]["job"].as_u64().unwrap();
+        for _ in 0..200 {
+            c.tick();
+            if c.jobs.snapshot().jobs[&id].phase == job::Phase::Completed {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Completed);
+        c.tick();
+        assert!(
+            c.executor
+                .owner
+                .as_ref()
+                .unwrap()
+                .cancel
+                .load(Ordering::SeqCst)
+        );
     }
 
     #[test]

@@ -560,6 +560,19 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
+                    let input_frame=match external {
+                        CardSource::Ocr=>live.frames.last(),
+                        CardSource::Image=>live.visual_tracks.iter().find(|t|t.id==id).and_then(|t|t.observations.iter().rev().flatten().next()).and_then(|o|live.frames.iter().find(|f|f.id==o.input.frame_id)),
+                        CardSource::Temporal=>live.temporal_tracks.iter().find(|t|t.id==id).and_then(|t|t.observations.last()).and_then(|o|o.evidence.frames.last()),
+                    };
+                    if let Some(frame)=input_frame && let Some(context)=&frame.input_context {
+                        egui::CollapsingHeader::new("Capture input context").show(ui,|ui| {
+                            ui.label(context.brief());
+                            ui.label(format!("Capture {} · {}",frame.number,observation_age(frame.started_unix_ms,now)));
+                            ui.label("Sampled key states around this saved capture. This does not show which inputs the game accepted.");
+                            ui.label(format!("{} samples · longest unsampled interval {:.0} ms",context.polls.len(),context.largest_unsampled_us as f64/1000.));
+                        });
+                    }
                     if external==CardSource::Ocr && let Some(change)=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id) {
                         ui.label(&change.reason);
                         if let Some(receipt)=change.restoration.as_ref().or(change.write.as_ref()) && let Some(error)=&receipt.error {ui.colored_label(ERROR,error);}

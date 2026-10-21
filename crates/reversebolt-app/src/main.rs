@@ -2,6 +2,7 @@
 
 mod fixture;
 mod graphics;
+mod input_monitor;
 mod jobs;
 mod local_observer;
 mod native;

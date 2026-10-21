@@ -19,6 +19,8 @@ pub struct CaptureInterval {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FrameRef {
+    #[serde(default)]
+    pub input_context: Option<crate::inputs::Window>,
     pub id: String,
     pub number: usize,
     pub sha256: String,
@@ -277,6 +279,7 @@ mod tests {
     use super::*;
     fn frame() -> FrameRef {
         FrameRef {
+            input_context: None,
             id: "frame".into(),
             number: 1,
             sha256: "hash".into(),

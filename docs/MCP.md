@@ -25,6 +25,18 @@ never creates a private simulator or duplicate session.
 
 ## Available tools
 
+Observation jobs now attach optional `input_context` to recorded frames. The
+same object is available through `status.state.live.frames`, `read_capture` and
+`read_sequence`; no new tool or separate agent session is needed. It records
+bounded polls on the investigation's monotonic clock, with a fresh generation
+after pause/resume. `down` contains sorted Windows virtual-key codes, and only
+`selected_foreground` polls may contain keys. `outside_selected` and `unavailable`
+are not idle observations. Zero key states, polling gaps, missing context,
+omitted polls and retired history do not establish that no input occurred.
+The sampler generates no game input and stops with its owning job. Agents must
+not interpret physical key state as a delivered event, a continuous hold or a
+gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.md).
+
 | Tool | Behavior |
 |---|---|
 | `reversebolt_status` | Session, values, matches, evidence, edit history |

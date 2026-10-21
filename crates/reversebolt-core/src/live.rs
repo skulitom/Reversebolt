@@ -89,6 +89,17 @@ pub struct Screen {
 }
 
 pub trait NativeTarget {
+    fn start_inputs(
+        &self,
+        _clock_id: &str,
+        _origin: Instant,
+        _cancel: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    ) -> Result<()> {
+        Ok(())
+    }
+    fn input_window(&self, _begin_us: u64, _end_us: u64) -> Option<crate::inputs::Window> {
+        None
+    }
     fn info(&self) -> &ProcessInfo;
     fn regions(&self) -> Result<Vec<Region>>;
     fn query(&self, address: u64) -> Result<Option<Region>> {
@@ -223,6 +234,13 @@ pub struct LiveSession {
 }
 
 impl LiveSession {
+    pub fn start_inputs(
+        &self,
+        cancel: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    ) -> Result<()> {
+        self.target
+            .start_inputs(&self.view.investigation_id, self.capture_clock, cancel)
+    }
     pub fn change_scope(&self, track: usize) -> Result<crate::changes::Scope> {
         let check = self
             .view
@@ -780,6 +798,14 @@ impl LiveSession {
         if let Ok(frame) = &mut screen {
             match visual::image_bytes(&screen_path) {
                 Ok(bytes) => self.view.frames.push(FrameRef {
+                    input_context: self.target.input_window(
+                        self.view
+                            .frames
+                            .last()
+                            .and_then(|f| f.capture_interval.as_ref())
+                            .map_or(capture_begin_us, |t| t.end_us),
+                        capture_end_us,
+                    ),
                     id: uuid::Uuid::new_v4().to_string(),
                     number,
                     sha256: visual::digest(&bytes),

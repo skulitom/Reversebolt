@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "scope": "Owned native fixtures only; sampled virtual-key context, no input meaning, delivered-game-input or causal inference claim.",
+  "raw_report": "test-results/input-context-v1/published-01/report.json",
+  "raw_report_sha256": "0d6c7750cd401122baebc6879a7b7a4009f31236bd3031be88064f97f4f6c4ab",
+  "source_sha256": {
+    "crates/reversebolt-core/src/inputs.rs": "78142d594a51b0b12a8326fc03f69a8cb7e7500529529adf3f0b882ffdcae441",
+    "crates/reversebolt-core/src/live.rs": "6f6efa7fa2512714e0e2946b282f930c993ab0a98ec90f55b0042ae454321471",
+    "crates/reversebolt-core/src/visual.rs": "d342c199c05388858f4ba0bdd2cbab3101d6c01ce7ff718d7e732ed20e3db143",
+    "crates/reversebolt-app/src/input_monitor.rs": "72f942353ca05c24effd67ef8b42c7fbe48a9d9f9856ed58bf985b77fa17dd94",
+    "crates/reversebolt-app/src/native.rs": "c229b38ec3a4deb5605f8d79740dd0a6a7c69704b9f3f4f339ef612e35558220",
+    "crates/reversebolt-app/src/service.rs": "d7705432865f761ddc2eb03ad8aca347e6280ae49a3d462ef15df95a44922086",
+    "crates/reversebolt-app/src/jobs.rs": "74af7f1df3601a81bed2138fb235f2b9cb34016047306d5573518b8b8dbb6b69",
+    "crates/reversebolt-app/src/ui_live.rs": "b398cef9896f2b5643ec0bb734275bbf043880758afff640d322aa34340a026f",
+    "crates/reversebolt-mcp/src/main.rs": "70c1281fc021a737dae2ae5e063dbecdb774e077769571631c2568737c0e02df",
+    "scripts/input-fixture.ps1": "3ff6025b807db60f34fb1ebeea9618d377c204654a2a9be2d01a558e4330bab3",
+    "scripts/input-context-smoke.py": "904c61cd69f50055200d4e464318fd35f7f5b6ded90adb3b44f7eca29ad7f2c7"
+  },
+  "binary_sha256": {
+    "Reversebolt.exe": "1c3c8057e28428a110a34729612ff7b143cdd375f9a92d8fa8c85eadad35d759",
+    "reversebolt-mcp.exe": "bc3c2c0735329ef8c79d80b4a377302c725cb30f7dd17a7ad34c3efb76ca81a2"
+  },
+  "checks": {
+    "passed": true,
+    "frames": 10,
+    "input_generations": 2,
+    "selected_keys_observed": [
+      68,
+      71
+    ],
+    "foreign_key_excluded": 69,
+    "cancelled_new_key_excluded": 70,
+    "completed_new_key_excluded": 72,
+    "read_sequence_preserves_context": true,
+    "persistence_preserves_context": true,
+    "restart_revokes_active_target": true,
+    "archived_context_unchanged_after_restart": true
+  },
+  "polls": {
+    "count": 368,
+    "selected_foreground": 97,
+    "outside_selected": 271,
+    "unavailable": 0
+  },
+  "evidence_archive_sha256": "8ef6f64bbdc9099c339710ad12f70d47a5a749856c671168342d61c78758827e",
+  "ui": {
+    "path": "test-results/input-context-v1/published-01/inspect-uia.json",
+    "sha256": "ad47ad87db9f0d609fba452a084dcc85a9937778bfe83d6c30c19296dc514147",
+    "visible_input_context": true,
+    "verified_state": "Unavailable, zero samples after job completion; no false idle or current input claim."
+  },
+  "workspace_tests": {
+    "passed": 114,
+    "log_sha256": "3daf2fe39efde97bdb7b622bc496ce559ea4407c2d2009dab82f8977df362eae",
+    "clippy_log_sha256": "83c870683e09d02b9b4897c275cd80f239d982c2e7d76c7dbcbee3323f5db1d0"
+  },
+  "smoke": {
+    "path": "test-results/smoke-a8ac2633/report.json",
+    "sha256": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+  },
+  "desktop": {
+    "preview": "0.1.0-20261021-040557",
+    "old_pid": 79288,
+    "pid": 88684,
+    "responding": true,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-040557\\Reversebolt.exe",
+    "sha256": "1C3C8057E28428A110A34729612FF7B143CDD375F9A92D8FA8C85EADAD35D759",
+    "history_entries": 8,
+    "observer_model": "qwen3.8:latest",
+    "history_preserved": true,
+    "checked_utc": "2026-10-21T03:09:32.4143746Z"
+  },
+  "desktop_receipt_sha256": "4ce025792aa1c614760b2f88b3ca562a32463fad520739a79d476b7927ef4318",
+  "earlier_attempts": [
+    {
+      "id": "syntax-check",
+      "outcome": "SyntaxError before execution; no fixture launched."
+    },
+    {
+      "path": "test-results/input-context-v1/native-01",
+      "outcome": "Focus request refused by Windows; no input injected."
+    },
+    {
+      "path": "test-results/input-context-v1/native-02",
+      "outcome": "PowerShell ushort alias unsupported; failed before input injection."
+    },
+    {
+      "path": "test-results/input-context-v1/native-03/report.json",
+      "sha256": "670287ff5b6a96e155506ce71bcffb19892c1bf537ff3062e53c4937a21f8210",
+      "outcome": "First full native pass; published run adds UI and restart checks."
+    }
+  ]
+}

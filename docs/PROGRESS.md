@@ -541,3 +541,31 @@ The desktop check confirms the previous preview is responsive with eight
 history entries and the local model setting retained. Next: foreground point
 selection and supported deformation, while retaining fresh detection and simple
 hold baselines and preserving all failed cases.
+
+## 2026-10-21 — foreground input context: 23%
+
+Multimodal observation increases from **4 / 15 to 5 / 15** for integrated,
+timed Windows key-state sampling in the selected foreground window. Other
+credits remain foundation 4, native access 5, discovery 2, validation 2,
+intent 0, agent collaboration 5 and generalization 0. Total: **23 / 100**.
+The fixed denominator and full goal remain unchanged and active.
+
+Automatic jobs collect bounded input polls alongside image/memory observations.
+Pause, stop, failure, completion and disconnect end collection. Resuming starts
+a fresh generation. Humans can inspect a short capture-context summary, while
+MCP reads the same samples, timing bounds, focus states and explicit gaps.
+Key states are not game-delivered events, continuous holds or learned meanings.
+
+Automated native fixtures verify selected-window keys, exclusion of another
+window's keys, pause/resume generations, cancellation and completion. The
+published build passes the same checks, an accessibility-only Inspect test,
+evidence persistence and restart invalidation. All 114 workspace tests,
+strict Clippy, formatting and the published 29-tool smoke pass. No gameplay
+semantics, causal effects or independent-game acceptance gate is claimed.
+
+Desktop preview `0.1.0-20261021-040557` is running with eight retained history
+entries and the existing local vision model selection. No owned Anode test
+windows remain. See [input evidence and limits](research/INPUT_CONTEXT.md).
+Next: controlled action/context contrasts that use this evidence to challenge
+candidate relationships, including the same input producing different or no
+effects; appearance/motion reliability and hidden rules remain unfinished.

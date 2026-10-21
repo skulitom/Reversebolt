@@ -487,6 +487,8 @@ fn native_command(
                 .live
                 .as_mut()
                 .ok_or("Select and connect a program first.")?;
+            let input_warning =
+                owner.and_then(|owner| session.start_inputs(owner.cancel.clone()).err());
             if command.args["compare"] == true {
                 session.capture_for_report()?;
             } else {
@@ -494,6 +496,12 @@ fn native_command(
             }
             let message = session.view.phase.clone();
             engine.event(&command.source, message);
+            if let Some(warning) = input_warning {
+                engine.event(
+                    &command.source,
+                    format!("Input context unavailable: {warning}"),
+                );
+            }
             if let Some(model) = model {
                 let owner = owner.unwrap();
                 crate::observation_pipeline::checkpoint(engine, published)?;

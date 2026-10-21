@@ -47,6 +47,7 @@ pub fn trial_write_smoke(output: &Path) -> Result<()> {
         return Err(std::io::Error::last_os_error().to_string());
     }
     let process = Process {
+        inputs: std::cell::RefCell::new(None),
         handle: ProcessHandle(raw),
         info,
         observer: std::cell::RefCell::new(None),
@@ -106,7 +107,7 @@ impl Drop for ProcessHandle {
     }
 }
 
-fn created(handle: HANDLE) -> Result<u64> {
+pub(crate) fn created(handle: HANDLE) -> Result<u64> {
     let mut times = [FILETIME::default(); 4];
     if unsafe {
         GetProcessTimes(
@@ -190,6 +191,7 @@ pub fn processes() -> Result<Vec<ProcessInfo>> {
 }
 
 pub struct Process {
+    inputs: std::cell::RefCell<Option<crate::input_monitor::Monitor>>,
     handle: ProcessHandle,
     info: ProcessInfo,
     observer: std::cell::RefCell<Option<crate::ocr::Observer>>,
@@ -221,6 +223,7 @@ impl Process {
             return Err("The process restarted while connecting.".into());
         }
         Ok(Self {
+            inputs: std::cell::RefCell::new(None),
             handle,
             info,
             observer: std::cell::RefCell::new(None),
@@ -230,6 +233,24 @@ impl Process {
 }
 
 impl NativeTarget for Process {
+    fn start_inputs(
+        &self,
+        clock_id: &str,
+        origin: std::time::Instant,
+        cancel: std::sync::Arc<AtomicBool>,
+    ) -> Result<()> {
+        let mut inputs = self.inputs.borrow_mut();
+        if inputs.as_ref().is_none_or(|m| !m.owned_by(&cancel)) {
+            *inputs = None;
+            *inputs = Some(crate::input_monitor::Monitor::start(
+                &self.info, clock_id, origin, cancel,
+            )?);
+        }
+        Ok(())
+    }
+    fn input_window(&self, begin_us: u64, end_us: u64) -> Option<reversebolt_core::inputs::Window> {
+        self.inputs.borrow().as_ref()?.window(begin_us, end_us)
+    }
     fn info(&self) -> &ProcessInfo {
         &self.info
     }

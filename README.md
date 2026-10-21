@@ -42,6 +42,12 @@ samples up to 16 MiB per moment, not the whole process. Capture support varies
 by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
 application running. The connection invalidates when the original process exits.
 
+Observation jobs also sample pressed keys and mouse buttons while the selected
+window is active. **Inspect → Capture input context** shows a short summary;
+agents receive the same timed samples with recorded frames. Pausing, stopping,
+completion and disconnect stop sampling. These samples do not tell us which
+inputs the game accepted or what they mean. See [input scope and evidence](docs/research/INPUT_CONTEXT.md).
+
 Open **Local vision**, enter the name of a vision model already installed in
 local Ollama, and choose **Use model**. Future connections and **Keep looking**
 review image pairs after moments 2 and 16. The first review runs while capture
