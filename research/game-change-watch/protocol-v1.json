@@ -1,0 +1,107 @@
+{
+  "frozen_utc": "2026-10-21T11:47:06.575076+00:00",
+  "product_commit": "21f36e6077736eaec6ed4d0785fe46bf5f493605",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703",
+  "binaries": {
+    "Reversebolt.exe": "2bdd4f38631d445cb2b8c5c73e3b4b16bf00fff5c24ab139abd522b1219a50cf",
+    "reversebolt-mcp.exe": "ac40a39d4797cbb7bf476c07b73280771f543d888d4b793820cd3bac42463aea"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 900,
+  "cpu_probe_ms": 3000,
+  "order": [
+    [
+      "2048",
+      1
+    ],
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 100
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        37,
+        37,
+        37,
+        40,
+        40,
+        40,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        40,
+        40,
+        40,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 100
+    }
+  },
+  "input_bursts": {
+    "initial": 1,
+    "after_frames_1_through_11": 4,
+    "after_frame_14": 12,
+    "otherwise": 0,
+    "selection_after_frames_1_through_3": 4
+  },
+  "oracle_selectors": {
+    "2048": {
+      "score": ".score-container",
+      "best": ".best-container"
+    },
+    "tetris": {
+      "score": "#score",
+      "rows": "#rows"
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "method_sha256": {
+    "PROTOCOL.md": "4da11263a29b2e64242e9c4fff8462806a82d275b4a06674eb59e221ac519aca",
+    "run.mjs": "5f104b8e9486176b556d4770140f067ca359cf53bd9a2692bbd95f8a844587f1",
+    "oracle.mjs": "23a0df327b581a18892b871b871e053a908dafcb3ed6311f6cbc665024eec111",
+    "oracle-test.mjs": "78eb7ec9be2656b2714764f224d968862a8f62b89c9966f0c2a2ab485904ee59",
+    "input.py": "fb555c2e10e4c45e35c6c329296b6a7572276de93162a2034598b9d6c34c363f",
+    "score.py": "3c6e9b3899492465f7cbb8af29633952828d9099956094c8b04530872c1aada3",
+    "score-test.py": "705d1dea7452ac85c81ba6162d52edb8183bedecda69a818e3399ff4119156e5"
+  },
+  "product_evidence": "../change-watch-v3/protocol-v1.json",
+  "product_evidence_sha256": "cd79b226963437c88c6ad74730eb823f40cd1fe6109e1d24c3ee4929512a8389",
+  "discovery": "start_change_search once; four selection moments; automatic fresh sixteen-moment handoff",
+  "trial": "one candidate +10; three effect-watch moments with two fixed four-input bursts; one guarded restoration; if restored, two moments with one four-input burst",
+  "trial_input": {
+    "effect_count": 3,
+    "restoration_count": 2,
+    "interval_ms": 2000,
+    "pulses_after_each_nonfinal_moment": 4
+  },
+  "runtimes": {
+    "node": "C:\\Program Files\\nodejs\\node.exe",
+    "python": "C:\\Users\\artem\\anaconda3\\python.exe",
+    "playwright": "C:\\Users\\artem\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\node_modules\\playwright"
+  }
+}

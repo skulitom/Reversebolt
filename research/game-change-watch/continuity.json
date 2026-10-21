@@ -1,0 +1,207 @@
+{
+  "kind": "post-run descriptive analysis; no refit, causal claim or product reclassification",
+  "limitation": "Equal endpoints do not exclude ABA, display delay, natural changes or observer artifacts. No paired counterfactual was run.",
+  "cases": [
+    {
+      "game": "2048",
+      "change_id": "83a14803-e2d5-497d-b962-e442cf46d018",
+      "observations": [
+        {
+          "index": 0,
+          "product_outcome": "did_not_follow",
+          "value": 1232,
+          "models": [
+            {
+              "model": 0,
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "status": "current_mapping_differs",
+              "raw_endpoints": [
+                2484,
+                2484
+              ],
+              "predicted_endpoints": [
+                1242.0,
+                1242.0
+              ],
+              "ordered_capture_bracket": true,
+              "original_expected_bytes": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "endpoint_bytes_equal": true,
+              "observed": 1232,
+              "difference": -10.0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "product_outcome": "did_not_follow",
+          "value": 1232,
+          "models": [
+            {
+              "model": 0,
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "status": "current_mapping_differs",
+              "raw_endpoints": [
+                2484,
+                2484
+              ],
+              "predicted_endpoints": [
+                1242.0,
+                1242.0
+              ],
+              "ordered_capture_bracket": true,
+              "original_expected_bytes": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "endpoint_bytes_equal": true,
+              "observed": 1232,
+              "difference": -10.0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "product_outcome": "memory_changed",
+          "value": 1254,
+          "models": [
+            {
+              "model": 0,
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "status": "exact_current_mapping_agreement",
+              "raw_endpoints": [
+                2508,
+                2508
+              ],
+              "predicted_endpoints": [
+                1254.0,
+                1254.0
+              ],
+              "ordered_capture_bracket": true,
+              "original_expected_bytes": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "endpoint_bytes_equal": true,
+              "observed": 1254,
+              "difference": 0.0
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "product_outcome": "memory_changed",
+          "value": 1318,
+          "models": [
+            {
+              "model": 0,
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "status": "exact_current_mapping_agreement",
+              "raw_endpoints": [
+                2636,
+                2636
+              ],
+              "predicted_endpoints": [
+                1318.0,
+                1318.0
+              ],
+              "ordered_capture_bracket": true,
+              "original_expected_bytes": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "endpoint_bytes_equal": true,
+              "observed": 1318,
+              "difference": 0.0
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "product_outcome": "memory_changed",
+          "value": 1318,
+          "models": [
+            {
+              "model": 0,
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "status": "exact_current_mapping_agreement",
+              "raw_endpoints": [
+                2636,
+                2636
+              ],
+              "predicted_endpoints": [
+                1318.0,
+                1318.0
+              ],
+              "ordered_capture_bracket": true,
+              "original_expected_bytes": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "endpoint_bytes_equal": true,
+              "observed": 1318,
+              "difference": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "game": "tetris",
+      "change_id": null,
+      "observations": []
+    }
+  ]
+}

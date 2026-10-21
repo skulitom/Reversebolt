@@ -1,5 +1,22 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Independent-game watch evaluation — 2026-10-21
+
+Unchanged preview 122703 completed two fixed automated cases. 2048 recorded
+an immediate nonresponse followed by evolving memory/display values during
+moves; its single guarded restoration refused without writing. Tetris lacked
+repeated contrast in its four selection moments and abstained without a trial.
+Both outcomes are retained, not classified as verified gameplay controls.
+
+The scorer and headless oracle checks passed. The post-run audit verifies 62
+source PNG hashes, 202 delivered native pulses and frozen source/method/binary
+hashes. A null-selection handling error in the audit was repaired without
+changing the methods or recorded cases. All 22 owned processes exited; Anode
+was released. Product code is unchanged, so its existing 189-test/Clippy/36-tool
+baseline was not rerun. The main desktop remains on the verified binary with
+29 history entries and the selected model. Full evidence is in
+[game-change-watch](../research/game-change-watch/README.md).
+
 ## Paced trial observations — 2026-10-21
 
 All 189 workspace tests, strict Clippy, formatting, release build and the

@@ -4,6 +4,18 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest independent-game watch evaluation (2026-10-21): **31% unchanged**.
+2048 completed discovery and a trial watch across ordinary moves. Its learned
+mapping continued matching newer values, while changed bytes correctly blocked
+restoration. Tetris abstained on selection readings 60, 70, 70, 80; no edit ran.
+The fixed cases retain 56 discovery captures, six trial images and 202 verified
+native pulses. All 22 owned processes exited. No production binary changed.
+The next discovery work prioritizes runtime structure and memory behaviour so
+screen numbers do not gate hidden-value discovery. Runtime adapters remain
+unimplemented; the full scope and weighted credits are unchanged.
+See [evaluation](../research/game-change-watch/README.md) and
+[architecture direction](DISCOVERY_DIRECTION.md).
+
 Latest paced trial observation (2026-10-21): **31% unchanged**. Trial cards and
 agents can now watch an effect/restoration across several moments while gameplay
 continues. Exact trial cursors, existing human controls and durable job receipts

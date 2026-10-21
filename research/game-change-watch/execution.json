@@ -1,0 +1,47 @@
+{
+  "protocol_sha256": "f449407375af3f69936ac1bd0b67df940ad1cf276747f33dfab8c5baa3059ab1",
+  "jobs": [
+    {
+      "game": "2048",
+      "job_id": "j_b065d6b1d7ba4dbbac3b9d2729a583c8",
+      "worker_pid": 81548,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 163281,
+      "cursor": "3660"
+    },
+    {
+      "game": "tetris",
+      "job_id": "j_d204c144ff614b97a12f74e5617de961",
+      "worker_pid": 13600,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 69600,
+      "cursor": "1973"
+    }
+  ],
+  "cleanup_receipts": [
+    "../../test-results/game-change-watch-v1/cleanup-2048.json",
+    "../../test-results/game-change-watch-v1/cleanup-tetris.json"
+  ],
+  "owned_processes_exited": 22,
+  "anode_lease_released": true,
+  "viewer_visible_before_and_left_unchanged": true,
+  "manual_image_views": 0,
+  "validation": {
+    "scorer_synthetic_outcomes": "passed, including watch-interval exclusions",
+    "owned_headless_oracle": "passed",
+    "method_source_binary_hashes": "passed",
+    "post_run_integrity_audit": "passed after handling valid null windows for abstention",
+    "product_code": "unchanged; prior 189-test / Clippy / 36-tool smoke baseline"
+  },
+  "desktop": {
+    "pid": 67560,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703\\Reversebolt.exe",
+    "sha256": "2bdd4f38631d445cb2b8c5c73e3b4b16bf00fff5c24ab139abd522b1219a50cf",
+    "history_count": 29,
+    "observer_model": "qwen3.8:latest",
+    "changed_this_turn": false
+  }
+}

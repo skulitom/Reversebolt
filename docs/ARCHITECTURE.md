@@ -1,5 +1,10 @@
 # Shared engine, two interfaces
 
+The next discovery work prioritizes runtime structure and memory behaviour
+alongside visual evidence, so hidden values need not begin as screen numbers.
+This is an implementation direction, not an existing runtime adapter capability.
+See [discovery direction and evidence](DISCOVERY_DIRECTION.md).
+
 Value-guided search is a selection pass, separate from correspondence fitting.
 It scans up to 512 MiB of previously unselected memory for literal encodings of
 an OCR observation, retaining at most 4096 64-byte neighborhoods by stable

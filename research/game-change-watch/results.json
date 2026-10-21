@@ -1,0 +1,755 @@
+{
+  "kind": "fixed two-case investigation, not acceptance",
+  "cases": [
+    {
+      "game": "2048",
+      "captures": 36,
+      "errors": [],
+      "search": {
+        "boundary_matches": 0,
+        "bounds": [
+          722.0,
+          201.0,
+          50.0,
+          25.0
+        ],
+        "complete_bytes": 20176896,
+        "elapsed_ms": 170,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\game-change-watch-v1\\2048-1\\engine\\captures\\3b15e96a-60e6-4cf2-b086-39ec7e6ab702\\change-search-01.json",
+        "label": "Number at 751, 202",
+        "matched_windows": 4,
+        "observations": [
+          368.0,
+          404.0,
+          516.0,
+          520.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 22319104,
+        "reason": null,
+        "retained_windows": 4,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 7,
+        "status": "selected"
+      },
+      "prediction_checks": [
+        {
+          "id": "522996b7-24ec-4dfc-8338-183d60889685",
+          "source": "ocr",
+          "track": 4,
+          "after_frame": 12,
+          "basis_ids": [
+            "124c38cf-92da-4f26-8544-b6c72603ca73",
+            "9bf8a766-7d8f-4f1e-828b-4b78c92aca45",
+            "e89c02f7-561b-4fba-819a-b205f5abaf04",
+            "0cc66c67-d06d-40b4-a38f-3644c543ce83",
+            "160147be-60b8-4f74-8c79-19c3d65c5dc8",
+            "9855fd71-4e30-49fe-b442-4db9dfca4bda",
+            "070b4f08-305c-4927-a959-2d1eb9ce674f",
+            "d3fc3495-7923-4c1b-ac9c-9de4b937df99",
+            "5a62c8bd-74b7-4c5e-b526-d4fc84dd427f",
+            "0ad47a15-829b-4d9a-96cb-5e1126dd801a",
+            "2f897a5a-40b5-49f4-ae49-9447904ebe54",
+            "9dab9909-232e-4c46-abfa-020c458011d5"
+          ],
+          "candidates": [
+            {
+              "address": "0x2CC0118B674",
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "samples": [
+                {
+                  "frame": 13,
+                  "frame_id": "b0578a56-35cf-43cb-bfde-84118235eb96",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 14,
+                  "frame_id": "6b860dff-8ed3-4ec8-a16a-8fc711b75699",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 15,
+                  "frame_id": "5d2866d5-7bd1-41f9-b172-f02957a6c0a5",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                },
+                {
+                  "frame": 16,
+                  "frame_id": "f39a6c90-5b5e-49e2-8e7a-9eb35c28bee8",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                }
+              ]
+            },
+            {
+              "address": "0x2CC0118D39C",
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 28,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "samples": [
+                {
+                  "frame": 13,
+                  "frame_id": "b0578a56-35cf-43cb-bfde-84118235eb96",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 14,
+                  "frame_id": "6b860dff-8ed3-4ec8-a16a-8fc711b75699",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 15,
+                  "frame_id": "5d2866d5-7bd1-41f9-b172-f02957a6c0a5",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                },
+                {
+                  "frame": 16,
+                  "frame_id": "f39a6c90-5b5e-49e2-8e7a-9eb35c28bee8",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "6690a679-e035-4bee-884e-99fa96ecb47a",
+          "source": "ocr",
+          "track": 5,
+          "after_frame": 12,
+          "basis_ids": [
+            "124c38cf-92da-4f26-8544-b6c72603ca73",
+            "9bf8a766-7d8f-4f1e-828b-4b78c92aca45",
+            "e89c02f7-561b-4fba-819a-b205f5abaf04",
+            "0cc66c67-d06d-40b4-a38f-3644c543ce83",
+            "160147be-60b8-4f74-8c79-19c3d65c5dc8",
+            "9855fd71-4e30-49fe-b442-4db9dfca4bda",
+            "070b4f08-305c-4927-a959-2d1eb9ce674f",
+            "d3fc3495-7923-4c1b-ac9c-9de4b937df99",
+            "5a62c8bd-74b7-4c5e-b526-d4fc84dd427f",
+            "0ad47a15-829b-4d9a-96cb-5e1126dd801a",
+            "2f897a5a-40b5-49f4-ae49-9447904ebe54",
+            "9dab9909-232e-4c46-abfa-020c458011d5"
+          ],
+          "candidates": [
+            {
+              "address": "0x2CC0118B674",
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 52,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "samples": [
+                {
+                  "frame": 13,
+                  "frame_id": "b0578a56-35cf-43cb-bfde-84118235eb96",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 14,
+                  "frame_id": "6b860dff-8ed3-4ec8-a16a-8fc711b75699",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 15,
+                  "frame_id": "5d2866d5-7bd1-41f9-b172-f02957a6c0a5",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                },
+                {
+                  "frame": 16,
+                  "frame_id": "f39a6c90-5b5e-49e2-8e7a-9eb35c28bee8",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                }
+              ]
+            },
+            {
+              "address": "0x2CC0118D39C",
+              "mapping": {
+                "exact": false,
+                "intercept": 0,
+                "kind": "I32",
+                "offset": 28,
+                "slope": 0.5,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "samples": [
+                {
+                  "frame": 13,
+                  "frame_id": "b0578a56-35cf-43cb-bfde-84118235eb96",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 14,
+                  "frame_id": "6b860dff-8ed3-4ec8-a16a-8fc711b75699",
+                  "outcome": "agrees",
+                  "observed": 1080,
+                  "predicted": 1080
+                },
+                {
+                  "frame": 15,
+                  "frame_id": "5d2866d5-7bd1-41f9-b172-f02957a6c0a5",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                },
+                {
+                  "frame": 16,
+                  "frame_id": "f39a6c90-5b5e-49e2-8e7a-9eb35c28bee8",
+                  "outcome": "agrees",
+                  "observed": 1232,
+                  "predicted": 1232
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "counters": {
+        "score": {
+          "abstention": 1,
+          "correct": 34,
+          "conflicting": 1
+        },
+        "best": {
+          "abstention": 1,
+          "correct": 35
+        }
+      },
+      "trial_selection": {
+        "rule": "Lowest OCR check track ID, lowest candidate index with exactly four agreements",
+        "track": 4,
+        "prediction_id": "522996b7-24ec-4dfc-8338-183d60889685",
+        "candidate": 0,
+        "observed": 1232,
+        "requested": 1242
+      },
+      "trial_phase": "written",
+      "trial_outcome": "written; restoration written",
+      "trial_display": [
+        {
+          "phase": "before_edit",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583378959,
+            1792583381513
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            570.1875,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "before_edit",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583378959,
+            1792583381513
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            684.78125,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "immediate_edit",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583381513,
+            1792583384054
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            570.1875,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "immediate_edit",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583381513,
+            1792583384054
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            684.78125,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "immediate_restoration",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583397825,
+            1792583400400
+          ],
+          "status": "unscorable",
+          "reason": "Missing or delayed oracle coverage"
+        },
+        {
+          "phase": "immediate_restoration",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583397825,
+            1792583400400
+          ],
+          "status": "unscorable",
+          "reason": "Missing or delayed oracle coverage"
+        },
+        {
+          "phase": "effect_1",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583386170,
+            1792583388591
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            570.1875,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "effect_1",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583386170,
+            1792583388591
+          ],
+          "status": "stable_display",
+          "value": 1232,
+          "bounds": [
+            684.78125,
+            88,
+            109.71875,
+            55
+          ]
+        },
+        {
+          "phase": "effect_2",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583390649,
+            1792583393220
+          ],
+          "status": "stable_display",
+          "value": 1254,
+          "bounds": [
+            568.3125,
+            88,
+            110.65625,
+            55
+          ]
+        },
+        {
+          "phase": "effect_2",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583390649,
+            1792583393220
+          ],
+          "status": "stable_display",
+          "value": 1254,
+          "bounds": [
+            683.84375,
+            88,
+            110.65625,
+            55
+          ]
+        },
+        {
+          "phase": "effect_3",
+          "counter": "score",
+          "rpc_interval_ms": [
+            1792583395293,
+            1792583397794
+          ],
+          "status": "stable_display",
+          "value": 1318,
+          "bounds": [
+            568.3125,
+            88,
+            110.65625,
+            55
+          ]
+        },
+        {
+          "phase": "effect_3",
+          "counter": "best",
+          "rpc_interval_ms": [
+            1792583395293,
+            1792583397794
+          ],
+          "status": "stable_display",
+          "value": 1318,
+          "bounds": [
+            683.84375,
+            88,
+            110.65625,
+            55
+          ]
+        }
+      ],
+      "trial_observations": [
+        {
+          "stage": "after_edit",
+          "value": 1232,
+          "expected": 1242,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "9ea00b8e80557d4c97365bcd07f977c6a7908941efc4cacae06a9603d85e74b5",
+          "intervention_outcome": "did_not_follow",
+          "index": 0,
+          "memory": [
+            {
+              "address": 3075214980724,
+              "expected": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "before": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "after": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "errors": [
+                null,
+                null
+              ]
+            }
+          ],
+          "input_polls": 0,
+          "sampled_keys": []
+        },
+        {
+          "stage": "after_edit",
+          "value": 1232,
+          "expected": 1242,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "9ea00b8e80557d4c97365bcd07f977c6a7908941efc4cacae06a9603d85e74b5",
+          "intervention_outcome": "did_not_follow",
+          "index": 1,
+          "memory": [
+            {
+              "address": 3075214980724,
+              "expected": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "before": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "after": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "errors": [
+                null,
+                null
+              ]
+            }
+          ],
+          "input_polls": 18,
+          "sampled_keys": []
+        },
+        {
+          "stage": "after_edit",
+          "value": 1254,
+          "expected": 1242,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "6b3c467be8ed4b80e37b5001566f7f6972d3122ce959a4d3772294146424fbf2",
+          "intervention_outcome": "memory_changed",
+          "index": 2,
+          "memory": [
+            {
+              "address": 3075214980724,
+              "expected": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "before": [
+                204,
+                9,
+                0,
+                0
+              ],
+              "after": [
+                204,
+                9,
+                0,
+                0
+              ],
+              "errors": [
+                null,
+                null
+              ]
+            }
+          ],
+          "input_polls": 17,
+          "sampled_keys": []
+        },
+        {
+          "stage": "after_edit",
+          "value": 1318,
+          "expected": 1242,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "156aaa37bc4ec290696403616717380a71d441286a7c08d281488ea1d00a9106",
+          "intervention_outcome": "memory_changed",
+          "index": 3,
+          "memory": [
+            {
+              "address": 3075214980724,
+              "expected": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "before": [
+                76,
+                10,
+                0,
+                0
+              ],
+              "after": [
+                76,
+                10,
+                0,
+                0
+              ],
+              "errors": [
+                null,
+                null
+              ]
+            }
+          ],
+          "input_polls": 17,
+          "sampled_keys": []
+        },
+        {
+          "stage": "after_edit",
+          "value": 1318,
+          "expected": 1242,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "156aaa37bc4ec290696403616717380a71d441286a7c08d281488ea1d00a9106",
+          "intervention_outcome": "memory_changed",
+          "index": 4,
+          "memory": [
+            {
+              "address": 3075214980724,
+              "expected": [
+                180,
+                9,
+                0,
+                0
+              ],
+              "before": [
+                76,
+                10,
+                0,
+                0
+              ],
+              "after": [
+                76,
+                10,
+                0,
+                0
+              ],
+              "errors": [
+                null,
+                null
+              ]
+            }
+          ],
+          "input_polls": 133,
+          "sampled_keys": []
+        }
+      ],
+      "write": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          180
+        ],
+        "transferred": 1
+      },
+      "restoration": {
+        "attempted": false,
+        "error": "The value's bytes changed since this edit. Nothing was overwritten.",
+        "observed_after": null,
+        "transferred": 0
+      },
+      "watch_jobs": {
+        "effect": {
+          "phase": "Completed",
+          "steps": 3,
+          "from_observation": 1
+        }
+      },
+      "input": {
+        "pulses": 133,
+        "trusted_downs": 133,
+        "trusted_ups": 133
+      },
+      "watch_bursts": [
+        {
+          "phase": "effect",
+          "after_observation": 1,
+          "generation": 28,
+          "pulses": 4,
+          "started_ms": 1792583388705,
+          "finished_ms": 1792583389112
+        },
+        {
+          "phase": "effect",
+          "after_observation": 2,
+          "generation": 29,
+          "pulses": 4,
+          "started_ms": 1792583393337,
+          "finished_ms": 1792583393738
+        }
+      ],
+      "png_hashes_verified": 42
+    },
+    {
+      "game": "tetris",
+      "captures": 20,
+      "errors": [],
+      "search": {
+        "boundary_matches": 0,
+        "bounds": [
+          427.0,
+          285.0,
+          54.0,
+          20.0
+        ],
+        "complete_bytes": 0,
+        "elapsed_ms": 0,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\game-change-watch-v1\\tetris-1\\engine\\captures\\4e008ad0-4a6e-4b61-b566-c0c0ae780cea\\change-search-01.json",
+        "label": "Number at 427, 288",
+        "matched_windows": 0,
+        "observations": [
+          60.0,
+          70.0,
+          70.0,
+          80.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 28876800,
+        "reason": "The number needs repeated changes during these four moments. No areas were selected.",
+        "retained_windows": 0,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 2,
+        "status": "no_selection"
+      },
+      "prediction_checks": [],
+      "counters": {
+        "score": {
+          "correct": 19,
+          "unscorable": 1
+        },
+        "rows": {
+          "correct": 20
+        }
+      },
+      "trial_selection": null,
+      "trial_phase": null,
+      "trial_outcome": "not attempted",
+      "trial_display": [],
+      "trial_observations": null,
+      "write": null,
+      "restoration": null,
+      "watch_jobs": null,
+      "input": {
+        "pulses": 69,
+        "trusted_downs": 69,
+        "trusted_ups": 69
+      },
+      "watch_bursts": [],
+      "png_hashes_verified": 20
+    }
+  ]
+}
