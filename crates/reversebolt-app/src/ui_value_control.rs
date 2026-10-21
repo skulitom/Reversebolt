@@ -70,11 +70,18 @@ pub fn draw(
         let canonical = value["raw"].as_u64().is_some_and(|v| v <= 1);
         let label = if checked { "On" } else { "Off" };
         let changed = ui
-            .add_enabled(
-                enabled && canonical,
-                egui::Checkbox::new(&mut checked, RichText::new(label).size(28.).color(ACCENT)),
-            )
-            .changed();
+            .scope(|ui| {
+                ui.spacing_mut().icon_width = 26.;
+                ui.spacing_mut().icon_width_inner = 18.;
+                ui.visuals_mut().widgets.inactive.bg_fill = egui::Color32::from_rgb(61, 66, 75);
+                ui.visuals_mut().widgets.inactive.fg_stroke = egui::Stroke::new(2., ACCENT);
+                ui.add_enabled(
+                    enabled && canonical,
+                    egui::Checkbox::new(&mut checked, RichText::new(label).size(28.).color(ACCENT)),
+                )
+                .changed()
+            })
+            .inner;
         return changed.then(|| checked.to_string());
     }
     if !(4..=13).contains(&kind) {
@@ -181,7 +188,13 @@ pub fn draw(
     ui.scope(|ui| {
         ui.spacing_mut().slider_width = ui.available_width();
         ui.spacing_mut().interact_size.y = 34.;
-        let mut slider = egui::Slider::new(&mut editor.offset, range).show_value(false);
+        ui.spacing_mut().slider_rail_height = 6.;
+        ui.visuals_mut().widgets.inactive.bg_fill = egui::Color32::from_rgb(85,92,104);
+        ui.visuals_mut().widgets.inactive.fg_stroke = egui::Stroke::new(2.,ACCENT);
+        ui.visuals_mut().widgets.hovered.bg_fill = ACCENT;
+        ui.visuals_mut().widgets.active.bg_fill = ACCENT;
+        ui.visuals_mut().selection.bg_fill = ACCENT;
+        let mut slider = egui::Slider::new(&mut editor.offset, range).show_value(false).trailing_fill(true);
         if (4..=11).contains(&kind) { slider=slider.step_by(1.); }
         let slider = ui.add_enabled(enabled, slider).on_hover_text("Drag to change the value. Release to apply. Small adjustments are currently limited to 20.");
         #[cfg(test)] { editor.slider_rect = Some(slider.rect); }
