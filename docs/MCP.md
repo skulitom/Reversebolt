@@ -498,6 +498,13 @@ they are not the frozen prospective memory checks below. New input generations,
 geometry and memory batches require fresh patterns. No state grants edit authority.
 See [input/value contrasts](research/ACTION_PATTERNS.md).
 
+Initial numeric comparison requires repeated contrast in both temporal halves:
+the second-highest minus second-lowest observed value must exceed 2.2, and the
+inliers explained by a mapping must independently meet that requirement in
+each half. The existing 0.55 tolerance and 80% inlier minimum still apply.
+An isolated event, or contrast supplied only by rejected outliers, yields no
+match. This is a minimum evidence rule, not a confidence or authority score.
+
 After comparison, call `reversebolt_start_prediction_check` with the current
 `investigation_id`, `batch`, `after_frame` equal to `sample_count`, `source`
 (`ocr` or `external`) and the series' `track` ID. At least four capture slots

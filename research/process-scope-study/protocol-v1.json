@@ -1,0 +1,76 @@
+{
+  "frozen_at_utc": "2026-10-21T05:56:22.704389+00:00",
+  "product_commit": "350b9b4",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-064710",
+  "binaries": {
+    "Reversebolt.exe": "5a916eca3ebd41f70ce77747edcbd5039cc3b7681b46b510e276b3d8ce442411",
+    "reversebolt-mcp.exe": "1f3c8b350772afb88aabfef4a10dc020a594b4e606b86c99427b5f0c6b4824c9"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 300,
+  "order": [
+    [
+      "2048",
+      1
+    ],
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        37,
+        38,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        39,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "pre_capture_method_sha256": {
+    "PROTOCOL.md": "12c1503258f52a87a1994854dbfe310040685a011af79885c21beae98f3dd55b",
+    "run.mjs": "124082a58fca5433dac57a5f4c784589b69f6a9eead7e307f3afd74e2a3230e1",
+    "score.py": "2802955cfe6ff5d89a30d3404f26039b9d1f285930fac099b034f1e5ea2393ce",
+    "../independent-games/input.py": "917191154e5958d20c9bfc13975251eeb9fdb8318f782d11119e10999e0df275"
+  },
+  "cpu_probe_ms": 3000
+}

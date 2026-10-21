@@ -65,6 +65,47 @@ impl Candidate {
     }
 }
 
+/// Two low and two high observations must support the contrast. One isolated
+/// outlier, or variation excluded as an outlier, cannot validate a mapping.
+struct Contrast {
+    low: [f64; 2],
+    high: [f64; 2],
+}
+
+impl Contrast {
+    fn new() -> Self {
+        Self {
+            low: [f64::INFINITY; 2],
+            high: [f64::NEG_INFINITY; 2],
+        }
+    }
+    fn include(&mut self, value: f64) {
+        if value <= self.low[0] {
+            self.low[1] = self.low[0];
+            self.low[0] = value;
+        } else if value < self.low[1] {
+            self.low[1] = value;
+        }
+        if value >= self.high[0] {
+            self.high[1] = self.high[0];
+            self.high[0] = value;
+        } else if value > self.high[1] {
+            self.high[1] = value;
+        }
+    }
+    fn supports(&self, tolerance: f64) -> bool {
+        self.high[1] - self.low[1] > tolerance * 4.0
+    }
+}
+
+fn has_contrast(values: impl Iterator<Item = f64>, tolerance: f64) -> bool {
+    let mut contrast = Contrast::new();
+    for value in values {
+        contrast.include(value);
+    }
+    contrast.supports(tolerance)
+}
+
 /// Robustly fits y = a*x+b using pair hypotheses. The last half of the samples
 /// are held out: they never participate in fitting or candidate ordering.
 fn fit(pairs: &[(f64, f64)], tolerance: f64) -> Option<(f64, f64, usize)> {
@@ -83,16 +124,20 @@ fn fit(pairs: &[(f64, f64)], tolerance: f64) -> Option<(f64, f64, usize)> {
             let intercept = pairs[first].1 - slope * pairs[first].0;
             let mut inliers = 0;
             let mut error = 0.0;
+            let mut contrast = Contrast::new();
             for &(x, y) in pairs {
                 let residual = (slope * x + intercept - y).abs();
                 if residual <= tolerance {
                     inliers += 1;
                     error += residual;
+                    contrast.include(y);
                 }
             }
-            if best.is_none_or(|(_, _, count, residual)| {
-                inliers > count || (inliers == count && error < residual)
-            }) {
+            if contrast.supports(tolerance)
+                && best.is_none_or(|(_, _, count, residual)| {
+                    inliers > count || (inliers == count && error < residual)
+                })
+            {
                 best = Some((slope, intercept, inliers, error));
             }
         }
@@ -114,6 +159,11 @@ pub fn discover(snapshots: &[Vec<u8>], observations: &[Option<f64>]) -> Vec<Cand
     let maximum = observed.iter().copied().fold(f64::NEG_INFINITY, f64::max);
     let tolerance = 0.55;
     if maximum - minimum < tolerance * 4.0 {
+        return Vec::new();
+    }
+    if !has_contrast(observations[..split].iter().flatten().copied(), tolerance)
+        || !has_contrast(observations[split..].iter().flatten().copied(), tolerance)
+    {
         return Vec::new();
     }
     let length = snapshots.iter().map(Vec::len).min().unwrap_or(0);
@@ -149,6 +199,7 @@ pub fn discover(snapshots: &[Vec<u8>], observations: &[Option<f64>]) -> Vec<Cand
             }
             let mut validation_inliers = 0;
             let mut validation_count = 0;
+            let mut validation_contrast = Contrast::new();
             let mut exact_matches = pairs
                 .iter()
                 .filter(|(x, y)| (x - y).abs() <= tolerance)
@@ -157,13 +208,18 @@ pub fn discover(snapshots: &[Vec<u8>], observations: &[Option<f64>]) -> Vec<Cand
                 if let Some(y) = observation {
                     validation_count += 1;
                     if let Some(x) = kind.read(&snapshot[offset..]) {
-                        validation_inliers +=
-                            usize::from((slope * x + intercept - y).abs() <= tolerance);
+                        if (slope * x + intercept - y).abs() <= tolerance {
+                            validation_inliers += 1;
+                            validation_contrast.include(*y);
+                        }
                         exact_matches += usize::from((x - y).abs() <= tolerance);
                     }
                 }
             }
-            if validation_count < 5 || validation_inliers * 5 < validation_count * 4 {
+            if validation_count < 5
+                || validation_inliers * 5 < validation_count * 4
+                || !validation_contrast.supports(tolerance)
+            {
                 continue;
             }
             candidates.push(Candidate {
@@ -183,6 +239,65 @@ pub fn discover(snapshots: &[Vec<u8>], observations: &[Option<f64>]) -> Vec<Cand
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn integer_matches(memory: &[i32], observed: &[i32]) -> Vec<Candidate> {
+        let snapshots = memory
+            .iter()
+            .map(|v| v.to_le_bytes().to_vec())
+            .collect::<Vec<_>>();
+        let observations = observed.iter().map(|v| Some(*v as f64)).collect::<Vec<_>>();
+        discover(&snapshots, &observations)
+    }
+
+    #[test]
+    fn isolated_fps_outlier_cannot_certify_a_mapping() {
+        // Saved development-game trajectory: formerly admitted 200 hypotheses
+        // despite having no contrast at all in the held-out half.
+        let values = [66, 66, 66, 66, 63, 66, 66, 66, 66, 66, 66, 66];
+        assert!(integer_matches(&values, &values).is_empty());
+    }
+
+    #[test]
+    fn both_halves_need_repeated_contrast() {
+        for flat_half in [[50; 6], [40, 50, 50, 50, 50, 50]] {
+            for halves in [
+                [flat_half, [0, 10, 20, 30, 40, 50]],
+                [[0, 10, 20, 30, 40, 50], flat_half],
+            ] {
+                let values = halves.concat();
+                assert!(integer_matches(&values, &values).is_empty());
+            }
+        }
+    }
+
+    #[test]
+    fn rejected_observations_cannot_supply_the_required_contrast() {
+        // Eight of ten points fit, but seven of those eight have the same value.
+        // The two rejected low observations must not certify either half.
+        let memory = [60, 60, 60, 60, 60, 60, 60, 30, 100, 100];
+        let observed = [60, 60, 60, 60, 60, 60, 60, 30, 0, 10];
+        let varied = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90];
+        assert!(
+            integer_matches(&[memory, varied].concat(), &[observed, varied].concat()).is_empty()
+        );
+        assert!(
+            integer_matches(&[varied, memory].concat(), &[varied, observed].concat()).is_empty()
+        );
+    }
+
+    #[test]
+    fn repeated_levels_and_changing_scores_remain_eligible() {
+        for values in [
+            [10, 10, 20, 20, 10, 20, 10, 20, 20, 10, 10, 20],
+            [0, 10, 20, 30, 30, 40, 40, 60, 70, 80, 100, 100],
+        ] {
+            let candidates = integer_matches(&values, &values);
+            assert_eq!(candidates.len(), 1);
+            assert_eq!(candidates[0].train_inliers, 6);
+            assert_eq!(candidates[0].validation_inliers, 6);
+            assert!(candidates[0].exact);
+        }
+    }
 
     #[test]
     fn fits_inverted_scale_with_outlier_and_holds_out_later_frames() {

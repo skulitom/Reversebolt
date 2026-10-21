@@ -90,6 +90,10 @@ or scope failures still stop the job. See
 For a series with matches, **Challenge these matches** freezes its predictions
 and checks them against fresh observations. Agreement is limited evidence;
 contradictions rule out that mapping. Neither outcome verifies a gameplay control.
+Initial matching requires repeated value differences in both halves of the
+observations, including the readings each mapping explains. A single unusual
+reading cannot certify a match; rare changes may need more observation. See
+[automated game checks and remaining limits](research/process-scope-study/README.md).
 
 When a screen number has sufficient fresh evidence, its card offers **Try value**.
 Drag or type a nearby value, then **Review edit**. Preparation does not write.

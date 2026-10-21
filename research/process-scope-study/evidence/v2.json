@@ -1,0 +1,2043 @@
+[
+  {
+    "captures": 16,
+    "counters": {
+      "best": {
+        "distinct_oracle_values": [
+          0,
+          4,
+          8,
+          16,
+          20,
+          28,
+          36,
+          60,
+          64,
+          68,
+          72,
+          80,
+          96,
+          112,
+          116,
+          120,
+          160,
+          164,
+          172,
+          180,
+          196,
+          204,
+          228,
+          232,
+          236,
+          244,
+          276,
+          280,
+          284,
+          288,
+          300,
+          304,
+          332,
+          340,
+          356,
+          428,
+          460,
+          472,
+          488,
+          500,
+          504,
+          516,
+          540,
+          544,
+          576,
+          584,
+          660,
+          668,
+          688,
+          692,
+          700,
+          708,
+          712,
+          716,
+          720,
+          732,
+          748,
+          752,
+          776,
+          784,
+          816,
+          820,
+          828,
+          836,
+          840,
+          860,
+          864,
+          872,
+          1000,
+          1004,
+          1012,
+          1032,
+          1068,
+          1140,
+          1144,
+          1148,
+          1160,
+          1180,
+          1220,
+          1224,
+          1228,
+          1232,
+          1240,
+          1252,
+          1260,
+          1264,
+          1280,
+          1300,
+          1304,
+          1308,
+          1316,
+          1324,
+          1328,
+          1352,
+          1388,
+          1392,
+          1456,
+          1460,
+          1464,
+          1476,
+          1480,
+          1488,
+          1500,
+          1508,
+          1524,
+          1544,
+          1580,
+          1584,
+          1588,
+          1592,
+          1600
+        ],
+        "outcomes": {
+          "correct": 6,
+          "unscorable": 10
+        }
+      },
+      "score": {
+        "distinct_oracle_values": [
+          0,
+          4,
+          8,
+          16,
+          20,
+          28,
+          36,
+          60,
+          64,
+          68,
+          72,
+          80,
+          96,
+          112,
+          116,
+          120,
+          160,
+          164,
+          172,
+          180,
+          196,
+          204,
+          228,
+          232,
+          236,
+          244,
+          276,
+          280,
+          284,
+          288,
+          300,
+          304,
+          332,
+          340,
+          356,
+          428,
+          460,
+          472,
+          488,
+          500,
+          504,
+          516,
+          540,
+          544,
+          576,
+          584,
+          660,
+          668,
+          688,
+          692,
+          700,
+          708,
+          712,
+          716,
+          720,
+          732,
+          748,
+          752,
+          776,
+          784,
+          816,
+          820,
+          828,
+          836,
+          840,
+          860,
+          864,
+          872,
+          1000,
+          1004,
+          1012,
+          1032,
+          1068,
+          1140,
+          1144,
+          1148,
+          1160,
+          1180,
+          1220,
+          1224,
+          1228,
+          1232,
+          1240,
+          1252,
+          1260,
+          1264,
+          1280,
+          1300,
+          1304,
+          1308,
+          1316,
+          1324,
+          1328,
+          1352,
+          1388,
+          1392,
+          1456,
+          1460,
+          1464,
+          1476,
+          1480,
+          1488,
+          1500,
+          1508,
+          1524,
+          1544,
+          1580,
+          1584,
+          1588,
+          1592,
+          1600
+        ],
+        "outcomes": {
+          "conflicting": 1,
+          "correct": 5,
+          "unscorable": 10
+        }
+      }
+    },
+    "directory": "test-results\\process-scope-study-v2\\2048-1-attempt-01",
+    "eligible_bytes": 39612416,
+    "files": {
+      "commands.json": "2955e0ad8d04b90c42f82484fd3f30080e00098a96e4e62e8e46f1abff94c49e",
+      "delivered-keys.json": "bc88284c8c04bda93e5e2c1fd63c3d4a8edb0326a42a9f798656fd60094b6d08",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\evidence.json": "d63a991cb4737980279f32232f663158bc7f4cacbff0bf45420227a9a90e80d4",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-001.json": "9bb466a00adec76974b31533b00d3165f7a9a3e8647b34698cdf8945029b9067",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-001.png": "2797c808ab5187575d5c1f62bbaffd94a23c7ffd8dbf5a565b68b95f4441729a",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-002.json": "ed167d0f306b3ced215162baacd3e0047f1bc4579c8ee3cf404a4a83490196c4",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-002.png": "c8ffe0155d4197f65091a36812f42c0f30cee8edc2cd015e5ed430c50a412c02",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-003.json": "09f756285b1bed0d3413ee511e6f2bed031a7293677e31af53384f14f461e81e",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-003.png": "82d8ca518a71d3a5912c6a84611b319392596150ca00bf45b3911c3a3a6c4b25",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-004.json": "bea489d481b4c3153b048b340e1dcb99218e8402ccaa9c5c9f334f2ad2b823f7",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-004.png": "711ed46c2ac578c3a221b08c376f6d4cc2646ee73ef294995b09da2709a83c37",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-005.json": "d19a5eccb50e7bfdfccf64d6831befa156f5d41e6ffb83b506db531aa0999c5e",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-005.png": "908d5fe5f0c10037b0797c949fef755049621813efcd0bfdf156c776e9ec5990",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-006.json": "606fc9097063ee546b75915071ec3ca0b23826eaa03ebc61c491a26c41f4ec2a",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-006.png": "48c18be6c034a96076f7c0150efa3a0e1f9d31698f85db1bb090851c187ac42d",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-007.json": "65b7646658d2e730b06e7566c56c009f3ee27d677c952b163223aed7a50de023",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-007.png": "ad7fd2e0b943d493d0a7b32554407f4fe78fb9d30e2eb1c0a211e6647da93c39",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-008.json": "c070afc26b1c408a8c660f0b19f9d89a75821ce4777c984aa346190be47d1e1a",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-008.png": "d25abdd29d436984016e58a24555b48c8f26b1d0db2d974ae78af5591f2f603a",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-009.json": "5450e71ddd9ca377d693090fe07e11a7c3bca21f4076337ab529917330e07473",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-009.png": "43848bb226fac72bd7ff485e72d4c5eed00844a922064d70c4ba6702c8990fd5",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-010.json": "8087db215d77c24c00be18ecc1271bb2ae75961a0e1369e2544096e2c6af1bf6",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-010.png": "41b676496309c08c0ac3ecf946c073f808a614f32f3a0061813e7ef78bfe3f57",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-011.json": "9a19e95e4043596d656dfb915531407f7f5e05687ddc9792a29eb3185b7cc0c8",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-011.png": "6e929a787d883512e1c70a6527ba932a58ddfd21a1e89fe226a0c7daede63d4c",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-012.json": "d3ee23fb68dadde5394067f1d87d55e3d64343309da23670b299c046deb19e65",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-012.png": "64273378ebc680253979d91f86d411ce5afbcb9e33112d8fc6de3b10e7471585",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-013.json": "de225fd83dc014672c7379571f0736081db8cc91052186968fa0d612c6c57be9",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-013.png": "ae2b5086d04239ee23dda49fbba65734cce38b9f2913b6002eaef4bcde526a23",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-014.json": "0508e631b5dcbcd6d7791dd467d1518874fcac9ac009f85670a51cadceefb51f",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-014.png": "53dc6d8a667cf54524073d9c711713034082212bea2c009552fce0d662ace5ac",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-015.json": "9834c9bdabd0d38434b7efff432ba034f0c251ecbb2e30409a3a6cd7692c8b66",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-015.png": "7bcb68381e8def3ecab9ad5716e283b9bb53966c2a5f8105a5e6329860adcb60",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-016.json": "5279a1bfae9b188c135f15bf44eb5ad36669502054fa0abaf99f3b5f2e2b9726",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\frame-016.png": "36e5c8b5957ca7c3958ef1a3b86c595a0a4675a3b699a47ae5a40823d7c6780a",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\memory-batch.json": "edd4f0098bdce16f7d2250baf5ad1a48d5f93b0e1c689979f44f0b4db39465d0",
+      "engine\\captures\\160e7852-b0a5-46b3-b1b2-5ad32f8e82f1\\prediction-check.json": "5008678d18129e2dbd1e19711f4640ba7a40e34302a4cd4d6b5470bcb161b1bd",
+      "final-status.json": "d913f158cc892a8af65da3f40dc43325a1a9351241b01812379c419238c7336a",
+      "input.jsonl": "2ad090c80a75135e8447f803d25b0b7490b5cd523d05972bb86483996f1e1a2c",
+      "oracle.json": "f07ac9af6a1e1055d158bcb1c219f822991d1cb7e1f14d43bd511f122dfca17b",
+      "run.json": "4a26918d656c4d0c5a34822d24b8e7724200563e6e1680504efc131475c0abae",
+      "scope-selection.json": "b205f44199668c5feeb67f7447fa25f7c2339dd7b21697281511f2979fa47bfe",
+      "score.json": "91cf0f3847787dac31341b6ceb6c57a435f50fe3c74048f50ec357855b095089",
+      "training-status.json": "feb73bb2946bcedd4047fc80ab8fdeaf15eaf26c754303af74c93fe38085021f"
+    },
+    "fresh_counter_outcomes": [
+      {
+        "counter": "score",
+        "frame": 13,
+        "interval_ms": [
+          1792563244042,
+          1792563244228
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "counter": "best",
+        "frame": 13,
+        "interval_ms": [
+          1792563244042,
+          1792563244228
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "counter": "score",
+        "frame": 14,
+        "interval_ms": [
+          1792563247740,
+          1792563247942
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "counter": "best",
+        "frame": 14,
+        "interval_ms": [
+          1792563247740,
+          1792563247942
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "counter": "score",
+        "frame": 15,
+        "interval_ms": [
+          1792563251401,
+          1792563251593
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "counter": "best",
+        "frame": 15,
+        "interval_ms": [
+          1792563251401,
+          1792563251593
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "bounds": [
+          566.46875,
+          175,
+          111.578125,
+          55
+        ],
+        "counter": "score",
+        "expected": 1600,
+        "frame": 16,
+        "interval_ms": [
+          1792563255087,
+          1792563255383
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          682.921875,
+          175,
+          111.578125,
+          55
+        ],
+        "counter": "best",
+        "expected": 1600,
+        "frame": 16,
+        "interval_ms": [
+          1792563255087,
+          1792563255383
+        ],
+        "status": "correct"
+      }
+    ],
+    "game": "2048",
+    "input": {
+      "paired_trusted_delivery": true,
+      "pulses": 182
+    },
+    "limitations": [
+      "Exposed development games, one run each; no edit or authority validation.",
+      "Renderer chosen by experimental browser CPU rule, not automatic product inference.",
+      "Oracle instrumentation can allocate copies. No raw training-memory replay is possible.",
+      "Eligibility replay tests observed variation only; candidate inliers are not replayed.",
+      "Timing-excluded OCR values remain unscored, including any wrong values."
+    ],
+    "memory_process": {
+      "created": "01DD61233EAB01DB",
+      "name": "chrome.exe",
+      "pid": 83600,
+      "session": 2,
+      "title": "",
+      "window": 0
+    },
+    "plan": {
+      "allocation_bases": 96,
+      "bytes_by_kind": {
+        "131072": 10309632,
+        "16777216": 4943872,
+        "262144": 1523712
+      },
+      "chunks": 635,
+      "largest_selected_private_region": 159744
+    },
+    "predictions": [
+      {
+        "address": "0x792400E18048",
+        "assessment_replayed": "invalidated",
+        "invalidated": "Memory mapping changed or became unavailable.",
+        "mapping": {
+          "exact": false,
+          "intercept": 2,
+          "kind": "I32",
+          "offset": 72,
+          "slope": 2.2008823366632783e-08,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              208,
+              209,
+              63,
+              16
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 8
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": null,
+            "frame": 15,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          },
+          {
+            "bytes": null,
+            "frame": 16,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          }
+        ]
+      },
+      {
+        "address": "0x792400E18068",
+        "assessment_replayed": "invalidated",
+        "invalidated": "Memory mapping changed or became unavailable.",
+        "mapping": {
+          "exact": false,
+          "intercept": 2,
+          "kind": "I32",
+          "offset": 104,
+          "slope": -4.590394679770513e-09,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              225,
+              149,
+              23,
+              178
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 8
+          },
+          {
+            "bytes": [
+              225,
+              149,
+              23,
+              178
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "agrees",
+            "predicted": 8
+          },
+          {
+            "bytes": null,
+            "frame": 15,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          },
+          {
+            "bytes": null,
+            "frame": 16,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          }
+        ]
+      },
+      {
+        "address": "0x7924010F1D78",
+        "assessment_replayed": "invalidated",
+        "invalidated": "Memory mapping changed or became unavailable.",
+        "mapping": {
+          "exact": false,
+          "intercept": 2,
+          "kind": "I32",
+          "offset": 40312,
+          "slope": 5.289925138672214e-09,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              0,
+              0,
+              112,
+              65
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 7.807592303692148
+          },
+          {
+            "bytes": [
+              16,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2.000000084638802
+          },
+          {
+            "bytes": null,
+            "frame": 15,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          },
+          {
+            "bytes": null,
+            "frame": 16,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          }
+        ]
+      },
+      {
+        "address": "0x7924010F1D7C",
+        "assessment_replayed": "invalidated",
+        "invalidated": "Memory mapping changed or became unavailable.",
+        "mapping": {
+          "exact": false,
+          "intercept": 2,
+          "kind": "I32",
+          "offset": 40316,
+          "slope": 5.2931364365623115e-09,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              0,
+              0,
+              128,
+              63
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 7.639059925418437
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": null,
+            "frame": 15,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          },
+          {
+            "bytes": null,
+            "frame": 16,
+            "observed": 8,
+            "outcome": "missing",
+            "predicted": null
+          }
+        ]
+      },
+      {
+        "address": "0x792400CD1EE8",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 8,
+          "kind": "I32",
+          "offset": 7912,
+          "slope": -5.2184269306676745e-09,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 8
+          },
+          {
+            "bytes": [
+              0,
+              32,
+              136,
+              68
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": [
+              0,
+              32,
+              136,
+              68
+            ],
+            "frame": 15,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 8,
+            "outcome": "agrees",
+            "predicted": 8
+          }
+        ]
+      },
+      {
+        "address": "0x792400CD1EEC",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 8,
+          "kind": "I32",
+          "offset": 7916,
+          "slope": -5.298497272700966e-09,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "contradicts",
+            "predicted": 8
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              127,
+              67
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              127,
+              67
+            ],
+            "frame": 15,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 2
+          },
+          {
+            "bytes": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 8,
+            "outcome": "agrees",
+            "predicted": 8
+          }
+        ]
+      },
+      {
+        "address": "0x1E5D7BAD1C0",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -20.11013994295719,
+          "kind": "I32",
+          "offset": 53696,
+          "slope": 2.980277580967697e-08,
+          "train_inliers": 5,
+          "validation_inliers": 4
+        },
+        "samples": [
+          {
+            "bytes": [
+              56,
+              55,
+              53,
+              44
+            ],
+            "frame": 13,
+            "observed": 2,
+            "outcome": "agrees",
+            "predicted": 1.9941332639763123
+          },
+          {
+            "bytes": [
+              56,
+              55,
+              53,
+              44
+            ],
+            "frame": 14,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 1.9941332639763123
+          },
+          {
+            "bytes": [
+              56,
+              55,
+              53,
+              44
+            ],
+            "frame": 15,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 1.9941332639763123
+          },
+          {
+            "bytes": [
+              56,
+              55,
+              53,
+              44
+            ],
+            "frame": 16,
+            "observed": 8,
+            "outcome": "contradicts",
+            "predicted": 1.9941332639763123
+          }
+        ]
+      }
+    ],
+    "protocol_sha256": "99885b14a6ea84314cdd5f3854cbeea280e606e51ea0d410ce1fce7cb797b5d6",
+    "renderer_cpu_delta": 0.19082700000000002,
+    "retained_training_witnesses": 0,
+    "source_commit": "478b6ec346e3787f589e4af751378d06ded4cbbc",
+    "tracks": [
+      {
+        "hypotheses": 0,
+        "id": 0,
+        "label": "Number at 68, 12",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 1,
+        "label": "Near \u201c127.0.0.1:38910\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 2,
+        "label": "Number at 289, 190",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 3,
+        "label": "Number at 651, 200",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          36,
+          72,
+          172,
+          276,
+          null,
+          504,
+          668,
+          720,
+          823,
+          1032,
+          1220,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 4,
+        "label": "Number at 736, 202",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          36,
+          72,
+          172,
+          276,
+          356,
+          504,
+          668,
+          720,
+          828,
+          1032,
+          1220,
+          1280
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 5,
+        "label": "Near \u201cJoin the numbers and get to the tile!\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 6,
+        "label": "Number at 339, 403",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          8,
+          null,
+          8,
+          2,
+          null,
+          4,
+          2,
+          null,
+          2,
+          8,
+          null,
+          2
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 7,
+        "label": "Number at 460, 404",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2,
+          null,
+          2,
+          null,
+          null,
+          32,
+          null,
+          2,
+          4,
+          2,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 7,
+        "id": 8,
+        "label": "Number at 341, 527",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          8,
+          2,
+          8,
+          2,
+          2,
+          16,
+          2,
+          null,
+          8,
+          2,
+          128,
+          8
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 9,
+        "label": "Number at 702, 405",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          4,
+          2,
+          null,
+          2,
+          4,
+          null,
+          null,
+          2,
+          128,
+          null,
+          2
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 10,
+        "label": "Number at 582, 527",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          null,
+          2,
+          4,
+          8,
+          32,
+          4,
+          64,
+          8,
+          16,
+          4,
+          4,
+          8
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 11,
+        "label": "Number at 704, 527",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          8,
+          null,
+          null,
+          8,
+          null,
+          null,
+          4,
+          4,
+          2,
+          null,
+          8
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 12,
+        "label": "Number at 91, 57",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 13,
+        "label": "Number at 582, 405",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          8,
+          null,
+          null,
+          2,
+          null,
+          null,
+          64,
+          16,
+          2,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 14,
+        "label": "Number at 445, 526",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          32,
+          32,
+          null,
+          8,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 15,
+        "label": "Number at 615, 180",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          32,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 16,
+        "label": "Number at 461, 527",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          8,
+          null,
+          null,
+          null,
+          2,
+          null
+        ]
+      }
+    ],
+    "training_coverage": {
+      "analyzed_current_bytes": 12328960,
+      "archive_bytes": 0,
+      "attempted_bytes": 155787264,
+      "batch": 1,
+      "batches": [],
+      "changed_or_unavailable_bytes": 48177152,
+      "complete_trajectory_bytes": 12328960,
+      "image_budget_bytes": 614720,
+      "image_disk_bytes": 614720,
+      "read_bytes": 155787264,
+      "read_unique_bytes": 14139392,
+      "selected_unique_bytes": 16777216
+    },
+    "window_process": {
+      "created": "01DD61233E8CBC9A",
+      "name": "chrome.exe",
+      "pid": 73272,
+      "session": 2,
+      "title": "2048 \u2013 Google Chrome for Testing",
+      "window": 10617434
+    }
+  },
+  {
+    "captures": 16,
+    "counters": {
+      "rows": {
+        "distinct_oracle_values": [
+          0
+        ],
+        "outcomes": {
+          "correct": 16
+        }
+      },
+      "score": {
+        "distinct_oracle_values": [
+          0,
+          1,
+          5,
+          9,
+          10,
+          12,
+          16,
+          19,
+          20,
+          21,
+          25,
+          29,
+          30,
+          31,
+          35,
+          38,
+          40,
+          42,
+          46,
+          50,
+          51,
+          55,
+          58,
+          60,
+          62,
+          66,
+          70,
+          73,
+          76,
+          80,
+          84,
+          88,
+          90,
+          94,
+          98,
+          100,
+          103,
+          107,
+          110,
+          111,
+          114,
+          118,
+          120,
+          122,
+          126,
+          130
+        ],
+        "outcomes": {
+          "correct": 14,
+          "unscorable": 2
+        }
+      }
+    },
+    "directory": "test-results\\process-scope-study-v2\\tetris-1-attempt-01",
+    "eligible_bytes": 38981632,
+    "files": {
+      "commands.json": "c06aa44846a4f537aa4c7ec5e96bfdfd6c14abdff092d6d64954ffe6c2f0d4a3",
+      "delivered-keys.json": "97350f950131ffa9a5aa024742efde9f0abccd00525caa2e13cb9b90fdc17ac3",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\evidence.json": "48e0d4cfd72c47971f6345d19772a4a878e2a0553106931f00f1b67c921c6415",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-001.json": "9ce3bca32c531b1cd5f83a4807d5bc429b3fd42853e2d14675fc5c5613b0bdfd",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-001.png": "5920e75816a1ef55efe9c9d73e3b8a91ded3dafc83fe69761a2df7f6b4565cf6",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-002.json": "08536dc162706b7572e6894dd6d0305419a2f1773ee05f22b8d9e1896330a1eb",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-002.png": "5099340a94ff537fb6a7e3afc00f57e12c059ea493385e8ea4ef09e913c6343a",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-003.json": "3e4c9ee7e69f231a2acc9d397e9048de6fe75e8e6a59febe32e593333df1beaa",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-003.png": "43f76c9fde704cd2ddae1a24059a5197875a604ac7c7c4dde64e7c9ecb24561a",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-004.json": "444949c8dbf792a24dc2470b7bc24dad48ac2bbcf4a7fab5705997c040e4c953",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-004.png": "70b76c7244463f07078b1e07efcc2b57d40ed7c3e77b2fc5c830517096d1c57e",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-005.json": "0150a7b1fa948a837b3fe7da547e82218c03c9d37be767798e4d37fac1e6323f",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-005.png": "f52c7e1c90039792edac1904fcf9f53f9fde5c5d42db98b12ec8b0182fcebe1b",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-006.json": "7b21b658c53a4a51c96bc159ee6c785b21954d376f7a1768764e816cdfd3f738",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-006.png": "bd0b7ebb7c3f664e6c2fa8720d3ca8661ccb639d27074d45bd7453eda902434a",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-007.json": "63f179c626e4e81cafdb18905ac717343f3c5835f09f51f6bebf88cc720d0c5c",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-007.png": "d7e382a7a62b2fc5f99eb20cf43ea54c584f70b4e4d4394354e5577042cc7063",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-008.json": "80d327faaa97baac2da3feece8089b343749d17b1ff92dac27c129f4c5587ff0",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-008.png": "dfc6ddcdc48bdecaf8c5861eb6032b998feecd50206639df84a958ffafb8f28a",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-009.json": "e403bdcfed42e1c8d7eac146fba98e2e94beee8749cd477011872199fb9c2222",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-009.png": "5f9d1d877e430e2917ad681dd12168aa1fa06f58ce98f803aa84f82cd9694acf",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-010.json": "18447cc8535e4d09512210aafd7de4568e2bcd8cd7a9322ffebf4e28425be75c",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-010.png": "64542281b88d0bced65e172578a4614e59a5e1760c8c8b2e13e6a2803f3d4b64",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-011.json": "88365316464ce96c5e228664795f36422285f09e37681ddedf3dc1c77e678832",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-011.png": "4ac1aa53c764df68f079e53af4cf2210bfcc47494e36e16103ce649d8952d81a",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-012.json": "89211d4414e986e44842b6f4394c83735b84925b6cb6e5d33a8dd8654710f1b8",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-012.png": "7685ef674733220be43d1a901d5050eb94cb25f96824c2fb0fba935e665779aa",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-013.json": "e6c1e912a4772c80150f74cd17bfa3541f00dae44ef5f9b58492cd018c1f2111",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-013.png": "48631540f5e624221d7fb82b36b5ccc9860326867f7fd5b1e9db248183918247",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-014.json": "b9aa712a6d2e95c8ac17272b76b6e87fecae05fc01cfb9c29f3e6fba8572f66c",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-014.png": "1a46657f043d38bbe5e3e5aadad892cf231c2ae1003b2f67b136da5efbb55926",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-015.json": "85370faec9b3cbe7cc27d2a4dc844c0b557c9eb64b520f3344112f19f1bfe85b",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-015.png": "92de954ee464413c4ca71fa302a5d6aee1d7eec7109a0b7d9a6fa9dc00129949",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-016.json": "9dcabb9f1ad31a6a12eda9cc8375bd856d0798fd96541b36f5ddaafb391afbfb",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\frame-016.png": "d3488b56c0627aae72ba7862d769ee4de42c3d01d391fd900154b5fc47cd79d2",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\memory-batch.json": "d926280efa31dad6e54e72e95cfd08800b78b13bf36e0749a3de5c46fa305839",
+      "engine\\captures\\7456ad51-dfce-405b-88d6-e014dad13b0e\\prediction-check.json": "a7c2c6245f07808a09f8cebf5401691695e59e109385082736adfab54507bf7a",
+      "final-status.json": "4e1c3d775e5bebb813d31fc14f147662c644a54b857d207e9cd6067e666aef18",
+      "input.jsonl": "f56f3226bf9c77358440afa0b96e92633a919f5051798ebd7d67eed812e17c10",
+      "oracle.json": "edd4e0272d1461d5c89a949fe0914964b4b26c923424f866b3bcc1afbbb037cc",
+      "run.json": "e477e303d9ef00b98cb5ba2d7b8d6d8a380e5c5a01f7f3257d81480709c129c4",
+      "scope-selection.json": "28e03c2bc14fd355d7318e2377575474db742b6690847ed893d4a1c3b7855426",
+      "score.json": "7d5dce997a4767157a88c17e99fa6cb874ffe89f90767322d1aff3fa782809bb",
+      "training-status.json": "868fafdb2b8b9ab9a2d26b62a36f70fe58f98a13158f5798a3bc01f1f75d3e33"
+    },
+    "fresh_counter_outcomes": [
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 90,
+        "frame": 13,
+        "interval_ms": [
+          1792563342280,
+          1792563342471
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 13,
+        "interval_ms": [
+          1792563342280,
+          1792563342471
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 100,
+        "frame": 14,
+        "interval_ms": [
+          1792563345122,
+          1792563345307
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 14,
+        "interval_ms": [
+          1792563345122,
+          1792563345307
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 120,
+        "frame": 15,
+        "interval_ms": [
+          1792563347984,
+          1792563348170
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 15,
+        "interval_ms": [
+          1792563347984,
+          1792563348170
+        ],
+        "status": "correct"
+      },
+      {
+        "counter": "score",
+        "frame": 16,
+        "interval_ms": [
+          1792563350828,
+          1792563351019
+        ],
+        "reason": "Value or geometry changed during image interval",
+        "status": "unscorable"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 16,
+        "interval_ms": [
+          1792563350828,
+          1792563351019
+        ],
+        "status": "correct"
+      }
+    ],
+    "game": "tetris",
+    "input": {
+      "paired_trusted_delivery": true,
+      "pulses": 141
+    },
+    "limitations": [
+      "Exposed development games, one run each; no edit or authority validation.",
+      "Renderer chosen by experimental browser CPU rule, not automatic product inference.",
+      "Oracle instrumentation can allocate copies. No raw training-memory replay is possible.",
+      "Eligibility replay tests observed variation only; candidate inliers are not replayed.",
+      "Timing-excluded OCR values remain unscored, including any wrong values."
+    ],
+    "memory_process": {
+      "created": "01DD612380F87148",
+      "name": "chrome.exe",
+      "pid": 85624,
+      "session": 2,
+      "title": "",
+      "window": 0
+    },
+    "plan": {
+      "allocation_bases": 95,
+      "bytes_by_kind": {
+        "131072": 10043392,
+        "16777216": 4943872,
+        "262144": 1789952
+      },
+      "chunks": 624,
+      "largest_selected_private_region": 274432
+    },
+    "predictions": [
+      {
+        "address": "0x1A6C003E3140",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -30,
+          "kind": "I32",
+          "offset": 12608,
+          "slope": 10,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              12,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              13,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "agrees",
+            "predicted": 100
+          },
+          {
+            "bytes": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              16,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 130
+          }
+        ]
+      },
+      {
+        "address": "0x1A6C003E3160",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -30,
+          "kind": "I32",
+          "offset": 12640,
+          "slope": 10,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              12,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              13,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "agrees",
+            "predicted": 100
+          },
+          {
+            "bytes": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              16,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 130
+          }
+        ]
+      },
+      {
+        "address": "0x93913F88D4",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -190.00289916992188,
+          "kind": "I32",
+          "offset": 18644,
+          "slope": 0.000152587890625,
+          "train_inliers": 5,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              19,
+              0,
+              28,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              20,
+              0,
+              19,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "contradicts",
+            "predicted": 0.000152587890625
+          },
+          {
+            "bytes": [
+              20,
+              0,
+              21,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 20.000152587890625
+          },
+          {
+            "bytes": [
+              20,
+              0,
+              21,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 20.000152587890625
+          }
+        ]
+      },
+      {
+        "address": "0x1A6C006505C8",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 17864,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              180,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              200,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "agrees",
+            "predicted": 100
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          }
+        ]
+      },
+      {
+        "address": "0x1A6C00650790",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 18320,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              180,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              200,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "agrees",
+            "predicted": 100
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          }
+        ]
+      },
+      {
+        "address": "0x1A6C006507C0",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 18368,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              180,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              200,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "agrees",
+            "predicted": 100
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          }
+        ]
+      },
+      {
+        "address": "0x1A6C0001BBDC",
+        "assessment_replayed": "contradicted",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -197.5,
+          "kind": "I32",
+          "offset": 31708,
+          "slope": 2.5,
+          "train_inliers": 5,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              115,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 90,
+            "outcome": "agrees",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              115,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 100,
+            "outcome": "contradicts",
+            "predicted": 90
+          },
+          {
+            "bytes": [
+              113,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 85
+          },
+          {
+            "bytes": [
+              113,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 120,
+            "outcome": "contradicts",
+            "predicted": 85
+          }
+        ]
+      }
+    ],
+    "protocol_sha256": "99885b14a6ea84314cdd5f3854cbeea280e606e51ea0d410ce1fce7cb797b5d6",
+    "renderer_cpu_delta": 0.10735499999999999,
+    "retained_training_witnesses": 0,
+    "source_commit": "e5c0c42f7dac0f3514a55eff656c6e22e95d68ed",
+    "tracks": [
+      {
+        "hypotheses": 0,
+        "id": 0,
+        "label": "Near \u201cC 127.0.0.1:39331\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 1,
+        "label": "Number at 1036, 56",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 7,
+        "id": 2,
+        "label": "Number at 427, 288",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          0,
+          10,
+          20,
+          20,
+          30,
+          30,
+          40,
+          50,
+          60,
+          70,
+          70,
+          80
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 3,
+        "label": "Near \u201crows\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 4,
+        "label": "Near \u201cFPS (66-67)\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66
+        ]
+      }
+    ],
+    "training_coverage": {
+      "analyzed_current_bytes": 13803520,
+      "archive_bytes": 0,
+      "attempted_bytes": 171728896,
+      "batch": 1,
+      "batches": [],
+      "changed_or_unavailable_bytes": 32149504,
+      "complete_trajectory_bytes": 13803520,
+      "image_budget_bytes": 1364108,
+      "image_disk_bytes": 1364108,
+      "read_bytes": 171728896,
+      "read_unique_bytes": 14225408,
+      "selected_unique_bytes": 16777216
+    },
+    "window_process": {
+      "created": "01DD612380BD1046",
+      "name": "chrome.exe",
+      "pid": 49652,
+      "session": 2,
+      "title": "Javascript Tetris \u2013 Google Chrome for Testing",
+      "window": 18612828
+    }
+  }
+]

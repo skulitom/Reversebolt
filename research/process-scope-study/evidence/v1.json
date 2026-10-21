@@ -1,0 +1,1519 @@
+[
+  {
+    "captures": 16,
+    "counters": {
+      "best": {
+        "distinct_oracle_values": [
+          0,
+          4,
+          12,
+          16,
+          20,
+          32,
+          52,
+          64,
+          68,
+          80,
+          84,
+          88,
+          104,
+          140,
+          152,
+          160,
+          172,
+          188,
+          196,
+          200,
+          216,
+          268,
+          284,
+          288,
+          356,
+          364,
+          372,
+          376,
+          380,
+          384,
+          388,
+          404,
+          408,
+          412,
+          420,
+          428,
+          448,
+          456,
+          476,
+          492,
+          508,
+          540,
+          548,
+          556,
+          576,
+          608,
+          672,
+          800,
+          808,
+          816,
+          820,
+          828,
+          844,
+          848,
+          852,
+          860,
+          868,
+          892,
+          900,
+          904,
+          916,
+          928,
+          936,
+          1000,
+          1032,
+          1040,
+          1048,
+          1060,
+          1072,
+          1136,
+          1156,
+          1164,
+          1172,
+          1184,
+          1188
+        ],
+        "outcomes": {
+          "correct": 12,
+          "unscorable": 4
+        }
+      },
+      "score": {
+        "distinct_oracle_values": [
+          0,
+          4,
+          12,
+          16,
+          20,
+          32,
+          52,
+          64,
+          68,
+          80,
+          84,
+          88,
+          104,
+          140,
+          152,
+          160,
+          172,
+          188,
+          196,
+          200,
+          216,
+          268,
+          284,
+          288,
+          356,
+          364,
+          372,
+          376,
+          380,
+          384,
+          388,
+          404,
+          408,
+          412,
+          420,
+          428,
+          448,
+          456,
+          476,
+          492,
+          508,
+          540,
+          548,
+          556,
+          576,
+          608,
+          672,
+          800,
+          808,
+          816,
+          820,
+          828,
+          844,
+          848,
+          852,
+          860,
+          868,
+          892,
+          900,
+          904,
+          916,
+          928,
+          936,
+          1000,
+          1032,
+          1040,
+          1048,
+          1060,
+          1072,
+          1136,
+          1156,
+          1164,
+          1172,
+          1184,
+          1188
+        ],
+        "outcomes": {
+          "abstention": 5,
+          "correct": 7,
+          "unscorable": 4
+        }
+      }
+    },
+    "directory": "test-results\\process-scope-study-v1\\2048-1-attempt-01",
+    "eligible_bytes": 37494784,
+    "files": {
+      "commands.json": "5d42dd274769939e31aa6f046115a08172442dc28d7fab450a60e308f3c30513",
+      "delivered-keys.json": "8981dbb9e94f4e50c9080e2df772621f363c65b44638a75a444418abb795d21e",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\evidence.json": "dda031589b46d8c45114ea5ed605ea37b4266e7c681ae330321aa8a61d10ea6d",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-001.json": "70c3b991f87db9de9da2b855993bf39adce6e5d021ea47caf2fea6ed34b567a6",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-001.png": "83a0c1a74c9912f59684008da57135222a852a53832c957a036828dd6c477fcb",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-002.json": "f8282a57eaad42882f7ed23d161a3efcbf807f11158a40ae0cd4925528949407",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-002.png": "d3cba556000f947a183d3f1abe7b02ea4e27e8c9787cda6d65d4e85d45c4a367",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-003.json": "46426f889280d865512589c7cd7e4aa564e2732a430acb46fd27271a31ba0bc5",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-003.png": "c96d10b9190d5cfb2567fbf24e497f369a1a388bc62bd5d72a64c06049462eb5",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-004.json": "60b8c2d9b120eaaec1199f111f5934f6f0a64bf40259ff80fdc86c45f54128f1",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-004.png": "7b2e21be390a5ecbf04f53e4068e28f499823d2eac06000f4b0c8265a4431e22",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-005.json": "75926cb4ba121f721c8b9ffcadb2c60176c67cd22cbba39b25cf3f7c573a93d1",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-005.png": "394407adc3020ed0bc73a61fced5ec8dd694b5ef3569e359c26f28f4177c1acc",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-006.json": "fbc8460326afcf1f184665e336f39da2e5c1dda995f1df15dbc02ed06a5b4c42",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-006.png": "9d6b6ad238b72f46573f4e20d9415775ffbcc5caf6c0d4798be42d29f7df0efa",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-007.json": "edfda57ecf3f63d5ce3d2618a9576958e71a27e1c1f7dccaa709aeff6eed1410",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-007.png": "40e4a713714a9ac2676ef730f7faa40618ff0747d8f21199469a72d1fa8011bf",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-008.json": "95ccd5154a9f8e1ef57735054f8bd1561ec2195fa293009a0b479ef3acfdf064",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-008.png": "dead775af677ceab91c7b4545d5b17e043a061a545de3cf65d3fd7ddc07a72b0",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-009.json": "7d05d7e8fe20fd5c3495993ccd51e00289adbd797b3ac9466acf9f4739d9d4c7",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-009.png": "0823a1fbd8a37e6e7cc514f852079106708cc403e5fa6d04462b655449a2dbe8",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-010.json": "a3aef1ed1a10f32314e5802b17577fd78d2b72bcc1b2516e53a4190ec0057191",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-010.png": "34d51f99fd3c7b6d8cdf6472e09cc85ed1eadc1e6b65f45c3f32c6d17a9cc2a4",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-011.json": "8e9f52da3231621faa7f0a6f1e8a89a9e069b3f9b4358749539da8574477d6c0",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-011.png": "c8de3efaa42465ded3d2b032929f0fa45c040aa247ed48c217a46c17764f3c25",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-012.json": "4417ec066e0bba429b96c1c2df931897294777c7127d16c70f3f8a3ec4eda664",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-012.png": "1419ed803556d9559d23ab4a57c4879ecc5d22597bc2c60b1438bdf1c8a29816",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-013.json": "1a2779480d6257345fc399ba6f7c69249d38f22f2c2cda813e0ad331580db534",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-013.png": "a4816abea39b1a8d82b880788b90c3bf01293ac6b859deef7a550579623dd2ee",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-014.json": "33fa698a78c3c083293edbc0b522d8a4c0dbf09fc6fe0608b6f033b4fe75c7bc",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-014.png": "a4816abea39b1a8d82b880788b90c3bf01293ac6b859deef7a550579623dd2ee",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-015.json": "b7f1090326c3da88f08fb43235464253411cc0317c295ecb1cacce80e485638a",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-015.png": "a4816abea39b1a8d82b880788b90c3bf01293ac6b859deef7a550579623dd2ee",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-016.json": "f0f9e5ba68c1821a764c891ca19fa16f01ea6ee73ce1fa9ee0678a3228f04c10",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\frame-016.png": "a4816abea39b1a8d82b880788b90c3bf01293ac6b859deef7a550579623dd2ee",
+      "engine\\captures\\368b3bc8-99f6-4f7e-b35d-b0615b9076bd\\memory-batch.json": "c279461396fbd1e7c644acfe0a02bd9d05db86ef1a0b4959f9dc1e0081813c9b",
+      "final-status.json": "b0ec021de396cba50a27b5ff54043e67414f9975f8d9c95419429c2ae6db7144",
+      "input.jsonl": "93644e4aceb972ca9048ac927724950a41d54760041e1c98248c21686e28aa6d",
+      "oracle.json": "cf6e923018991b7e1725ee7aed75a52efac651149292f9846cb59a2c7cd965c9",
+      "run.json": "27355026e223ed31e0a77540fbffa8d9c9b999ebb95acc47d97e55cdc87cbe31",
+      "scope-selection.json": "a89be2d350ead8c6629711d963d22d51ad9b97d713d08376289b71fc8d663140",
+      "score.json": "6fc82e4f484743b47df3377ff5a51b5c56499ab361beb10a4dd4a9b9a64455c6",
+      "training-status.json": "4127a0518ab736560415177fcb0d75f6bf6611a2a293ede8762712f0f23ea4c5"
+    },
+    "fresh_counter_outcomes": [
+      {
+        "bounds": [
+          568.3125,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "score",
+        "expected": 1188,
+        "frame": 13,
+        "interval_ms": [
+          1792562266003,
+          1792562266187
+        ],
+        "status": "abstention"
+      },
+      {
+        "bounds": [
+          683.84375,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "best",
+        "expected": 1188,
+        "frame": 13,
+        "interval_ms": [
+          1792562266003,
+          1792562266187
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          568.3125,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "score",
+        "expected": 1188,
+        "frame": 14,
+        "interval_ms": [
+          1792562269708,
+          1792562269900
+        ],
+        "status": "abstention"
+      },
+      {
+        "bounds": [
+          683.84375,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "best",
+        "expected": 1188,
+        "frame": 14,
+        "interval_ms": [
+          1792562269708,
+          1792562269900
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          568.3125,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "score",
+        "expected": 1188,
+        "frame": 15,
+        "interval_ms": [
+          1792562273384,
+          1792562273584
+        ],
+        "status": "abstention"
+      },
+      {
+        "bounds": [
+          683.84375,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "best",
+        "expected": 1188,
+        "frame": 15,
+        "interval_ms": [
+          1792562273384,
+          1792562273584
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          568.3125,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "score",
+        "expected": 1188,
+        "frame": 16,
+        "interval_ms": [
+          1792562276965,
+          1792562277155
+        ],
+        "status": "abstention"
+      },
+      {
+        "bounds": [
+          683.84375,
+          175,
+          110.65625,
+          55
+        ],
+        "counter": "best",
+        "expected": 1188,
+        "frame": 16,
+        "interval_ms": [
+          1792562276965,
+          1792562277155
+        ],
+        "status": "correct"
+      }
+    ],
+    "game": "2048",
+    "input": {
+      "paired_trusted_delivery": true,
+      "pulses": 176
+    },
+    "limitations": [
+      "Exposed development games, one run each; no edit or authority validation.",
+      "Renderer chosen by experimental browser CPU rule, not automatic product inference.",
+      "Oracle instrumentation can allocate copies. No raw training-memory replay is possible.",
+      "Eligibility replay tests observed variation only; candidate inliers are not replayed.",
+      "Timing-excluded OCR values remain unscored, including any wrong values."
+    ],
+    "memory_process": {
+      "created": "01DD6120FA28296F",
+      "name": "chrome.exe",
+      "pid": 1984,
+      "session": 2,
+      "title": "",
+      "window": 0
+    },
+    "plan": {
+      "allocation_bases": 95,
+      "bytes_by_kind": {
+        "131072": 10309632,
+        "16777216": 4943872,
+        "262144": 1523712
+      },
+      "chunks": 630,
+      "largest_selected_private_region": 192512
+    },
+    "predictions": [],
+    "protocol_sha256": "6aeea201e70ceebbc74a733cf13df2b02de2a56d18b7db7afd564333c013a53e",
+    "renderer_cpu_delta": 0.18473000000000003,
+    "retained_training_witnesses": 0,
+    "source_commit": "478b6ec346e3787f589e4af751378d06ded4cbbc",
+    "tracks": [
+      {
+        "hypotheses": 0,
+        "id": 0,
+        "label": "Number at 68, 12",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 1,
+        "label": "Near \u201c127.0.0.1:12794\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 2,
+        "label": "Number at 289, 190",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 3,
+        "label": "Number at 652, 202",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          32,
+          88,
+          null,
+          68,
+          380,
+          428,
+          576,
+          844,
+          -912,
+          1048,
+          1172,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 4,
+        "label": "Number at 736, 202",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          32,
+          88,
+          188,
+          356,
+          380,
+          428,
+          576,
+          844,
+          916,
+          1048,
+          1172,
+          1188
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 5,
+        "label": "Near \u201cJoin the numbers and get to the tile!\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 6,
+        "label": "Number at 460, 403",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          8,
+          null,
+          4,
+          null,
+          4,
+          8,
+          32,
+          2,
+          2,
+          4,
+          4,
+          16
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 7,
+        "label": "Number at 704, 405",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2,
+          null,
+          4,
+          null,
+          2,
+          8,
+          2,
+          2,
+          4,
+          128,
+          null,
+          2
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 8,
+        "label": "Number at 341, 406",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          8,
+          null,
+          16,
+          null,
+          2,
+          2,
+          4,
+          4,
+          null,
+          32,
+          16,
+          2
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 9,
+        "label": "Number at 582, 406",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          2,
+          null,
+          2,
+          null,
+          2,
+          4,
+          16,
+          2,
+          2,
+          8,
+          null,
+          4
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 10,
+        "label": "Number at 337, 521",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          4,
+          null,
+          8,
+          null,
+          4,
+          null,
+          16,
+          2,
+          null,
+          null,
+          128,
+          8
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 11,
+        "label": "Number at 446, 526",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          32,
+          null,
+          2,
+          4,
+          64,
+          16,
+          4,
+          16,
+          64,
+          4
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 12,
+        "label": "Number at 91, 57",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          2,
+          2,
+          2,
+          2,
+          2,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 13,
+        "label": "Number at 703, 512",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          4,
+          null,
+          16,
+          8,
+          null,
+          16,
+          2,
+          null,
+          4
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 14,
+        "label": "Number at 582, 527",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          null,
+          8,
+          8,
+          16,
+          128,
+          4,
+          2,
+          8,
+          8
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 15,
+        "label": "Number at 528, 526",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          32,
+          null,
+          null
+        ]
+      }
+    ],
+    "training_coverage": {
+      "analyzed_current_bytes": 12279808,
+      "archive_bytes": 0,
+      "attempted_bytes": 155787264,
+      "batch": 1,
+      "batches": [],
+      "changed_or_unavailable_bytes": 48168960,
+      "complete_trajectory_bytes": 12279808,
+      "image_budget_bytes": 628108,
+      "image_disk_bytes": 628108,
+      "read_bytes": 155787264,
+      "read_unique_bytes": 14016512,
+      "selected_unique_bytes": 16777216
+    },
+    "window_process": {
+      "created": "01DD6120F9CE1B17",
+      "name": "chrome.exe",
+      "pid": 81988,
+      "session": 2,
+      "title": "2048 \u2013 Google Chrome for Testing",
+      "window": 7668582
+    }
+  },
+  {
+    "captures": 16,
+    "counters": {
+      "rows": {
+        "distinct_oracle_values": [
+          0
+        ],
+        "outcomes": {
+          "correct": 16
+        }
+      },
+      "score": {
+        "distinct_oracle_values": [
+          0,
+          1,
+          5,
+          9,
+          10,
+          14,
+          18,
+          20,
+          23,
+          27,
+          30,
+          31,
+          35,
+          39,
+          40,
+          41,
+          44,
+          48,
+          50,
+          53,
+          57,
+          60,
+          61,
+          65,
+          69,
+          70,
+          74,
+          78,
+          80,
+          84,
+          88,
+          90,
+          91,
+          95,
+          99,
+          100,
+          102,
+          106,
+          110,
+          114,
+          117,
+          120,
+          124,
+          128,
+          130,
+          140
+        ],
+        "outcomes": {
+          "correct": 14,
+          "unscorable": 2
+        }
+      }
+    },
+    "directory": "test-results\\process-scope-study-v1\\tetris-1-attempt-01",
+    "eligible_bytes": 38789120,
+    "files": {
+      "commands.json": "bee85b627a30d14e87edcc181b473bb52931b9a8ada7954bf9d77b79469d727f",
+      "delivered-keys.json": "c26baeb671d2232a70b3027495671a653f1519a2ea1a5ef02cdf48abc9054966",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\evidence.json": "e9a896c9e714e3555ce6e87171c25063dc1da35e593d4d60a2a90b177f505e48",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-001.json": "83720c2ee3450037ed65bc16953d6fb1eaf87cf451d8cef1c6b6ca0d5af04e6a",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-001.png": "81142e9afb48edda3da340f56497ad268a97d866eaa66f96ced59ed8edf3a9e7",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-002.json": "eed61d59619c9bbf16ed79431e10df7e7e477bef98a04992171460f2cb169c08",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-002.png": "ab046410017f2d6003726c81faf1bbaef87f44e98aa0b5cc5cd60079f066915d",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-003.json": "c5339148a7a11d6260af94c42ef30587e19a1a5b338e1ffa36f8207e813e1641",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-003.png": "7b6007329666da257944a917694c06d47818a0cae5200ed8f07b0102e2d8a3f7",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-004.json": "56aecd891cb8c866b0350457ba2b421f7d93b204de6aa5ec3670398356d92857",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-004.png": "f43a4036842791dfbcdb52493d7c332ab44a94eff915d1613f05c4bfcc48e10c",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-005.json": "645cdd465f62a001037e6962efe2539447db09a8517f82333dca14b5f56ce6ce",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-005.png": "2bc4b46cb247994ca125caed02a7ea80d97dbdc7c4c3b38be4b7d806d52069ff",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-006.json": "09d42788e07ef0c0745b06788968c78e232827bd4677d8cd9392a2fc891978bc",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-006.png": "50710b45aad3f1e92e48457c9d6bd03e68a581ececc4090a41e62cf44731cb9f",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-007.json": "d5fe60bc3df5d798352729e00d575db0a6cbc5985a69028b9647ef7761fcd708",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-007.png": "7db71ddaac3f7384a50a1c52c07a3a4503f4ab830671a166aa85e847b33bdece",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-008.json": "063ce42c86494e05e2f4aaeb634624f4dcab311de068cbede0a39d65413f246d",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-008.png": "a10320552a81f4c1160a95d1f52d81f1f7e334f63a873974067bff670d570a6e",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-009.json": "609de9bb362f203d2dce6a6aa349facace52a2c1e12ba865b84cb1edb3144013",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-009.png": "99e779839382b9d6166c460e1a8cc941a602d097be4ccad9d276b57e132666d9",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-010.json": "0d11175643d9c579d22a3f74a649528acffed8f0a508fa043f0b28a289f0467b",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-010.png": "d000f54a39bef4158139758edc308cecb68e1aad6c99e70db6addb5284b776a4",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-011.json": "7c526eef81ed2e2d2bae604d864a9a643d97c373b2b8c95913617f4fb55a7488",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-011.png": "d6ff75ccbe80e6033516223b14ed53be48f30821bcbffd7039103a6255331954",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-012.json": "c439a3f302e515930228c6d8f06ee2b7bc823377ac584d5ba6321623f15d4826",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-012.png": "263b9682fd46275aba887df68b09a915db2e5ca012b720dfb0c9fdab2a29c3e4",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-013.json": "089ea1a00e09d80d5a5fc05f94084b4471c3bbc61931c33513254e3b3efd9a40",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-013.png": "b62142874ddd364778ae0df222f33b08d27a3f3111e2c47120d3de21b7903d49",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-014.json": "7b9c54c75a45e66a6575e6bddf78f6bef17c9f2cd26c827c110ada3ba80511b7",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-014.png": "adbb470f78a7b5008b62bf94347d53075526e3bf29d5b40804057fc4f8ed98d2",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-015.json": "d31bee086822c232c8dec119509402b2da0e18e071e6737e2ef08219ca9ebc63",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-015.png": "8f3acefdbc87e71458816ba4a1b84ff406e83f5aa992c49f0c69c7bf463f4bcd",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-016.json": "a886c5ec76a8f54d6d796693c51669a29006a3be7cf58d617d7af86703dbf18f",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\frame-016.png": "f435da8f2b7308acfaeb0f2d2ade118ea23a211ba81fc31c8d7c85ae145ad432",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\memory-batch.json": "3a1724265efe2ef07e041eee8b10db1fd6a8f9551acd200969e594f2b40d7be3",
+      "engine\\captures\\a1937b44-3a24-4792-baf6-282e49c535a3\\prediction-check.json": "bdc8829d7c722a408f9ed6fc2096ffd6df453d4dffe285f02883f0960da9baa0",
+      "final-status.json": "46d44b40cd8e39770b94b619311f535a3aee766ec054e95dbac2c000a8a31820",
+      "input.jsonl": "77f7fbf279f98ff426e81dfb8c3c83d8a58c4e70989dfed8e8129de51867ca84",
+      "oracle.json": "d9c56ba7d2347cbab13e834695841b10f9577ffa1d27ecf640b228965b0b5e8e",
+      "run.json": "4a66ee55d60318f5e90b12f3b5b5ea5935206dc3fe731e4278f88f7902b55bb3",
+      "scope-selection.json": "f5eb9b7b2cf54e5589f4699a76368122c9193d442f02f5f9a9b3a408d032aa03",
+      "score.json": "434cad324737210661c1f4f5dd22adaf6bd047a6e4d2f7fc602f79e30ed8ce97",
+      "training-status.json": "3867ab48364deafff88a4ad6c443a012cfce56ab2b147f98204e9cf75f7ae95e"
+    },
+    "fresh_counter_outcomes": [
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 120,
+        "frame": 13,
+        "interval_ms": [
+          1792562379151,
+          1792562379431
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 13,
+        "interval_ms": [
+          1792562379151,
+          1792562379431
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 130,
+        "frame": 14,
+        "interval_ms": [
+          1792562382163,
+          1792562382355
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 14,
+        "interval_ms": [
+          1792562382163,
+          1792562382355
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 140,
+        "frame": 15,
+        "interval_ms": [
+          1792562384976,
+          1792562385309
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 15,
+        "interval_ms": [
+          1792562384976,
+          1792562385309
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          426.421875,
+          285.3125,
+          55.625,
+          22
+        ],
+        "counter": "score",
+        "expected": 140,
+        "frame": 16,
+        "interval_ms": [
+          1792562388054,
+          1792562388265
+        ],
+        "status": "correct"
+      },
+      {
+        "bounds": [
+          445.328125,
+          319.625,
+          11.125,
+          22
+        ],
+        "counter": "rows",
+        "expected": 0,
+        "frame": 16,
+        "interval_ms": [
+          1792562388054,
+          1792562388265
+        ],
+        "status": "correct"
+      }
+    ],
+    "game": "tetris",
+    "input": {
+      "paired_trusted_delivery": true,
+      "pulses": 144
+    },
+    "limitations": [
+      "Exposed development games, one run each; no edit or authority validation.",
+      "Renderer chosen by experimental browser CPU rule, not automatic product inference.",
+      "Oracle instrumentation can allocate copies. No raw training-memory replay is possible.",
+      "Eligibility replay tests observed variation only; candidate inliers are not replayed.",
+      "Timing-excluded OCR values remain unscored, including any wrong values."
+    ],
+    "memory_process": {
+      "created": "01DD6121429D863C",
+      "name": "chrome.exe",
+      "pid": 86080,
+      "session": 2,
+      "title": "",
+      "window": 0
+    },
+    "plan": {
+      "allocation_bases": 95,
+      "bytes_by_kind": {
+        "131072": 10043392,
+        "16777216": 4943872,
+        "262144": 1789952
+      },
+      "chunks": 616,
+      "largest_selected_private_region": 274432
+    },
+    "predictions": [
+      {
+        "address": "0x294C003E3140",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -30,
+          "kind": "I32",
+          "offset": 12608,
+          "slope": 10,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              16,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              17,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              17,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      },
+      {
+        "address": "0x294C003E3160",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -30,
+          "kind": "I32",
+          "offset": 12640,
+          "slope": 10,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              15,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              16,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              17,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              17,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      },
+      {
+        "address": "0x294C006505C8",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 17864,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              4,
+              1,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      },
+      {
+        "address": "0x294C00650790",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 18320,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              4,
+              1,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      },
+      {
+        "address": "0x294C006507C0",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": 0,
+          "kind": "I32",
+          "offset": 18368,
+          "slope": 0.5,
+          "train_inliers": 6,
+          "validation_inliers": 6
+        },
+        "samples": [
+          {
+            "bytes": [
+              240,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              4,
+              1,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              24,
+              1,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      },
+      {
+        "address": "0x294C0001C7F0",
+        "assessment_replayed": "consistent_in_observed_scope",
+        "invalidated": null,
+        "mapping": {
+          "exact": false,
+          "intercept": -35,
+          "kind": "I32",
+          "offset": 34800,
+          "slope": 2.5,
+          "train_inliers": 6,
+          "validation_inliers": 5
+        },
+        "samples": [
+          {
+            "bytes": [
+              62,
+              0,
+              0,
+              0
+            ],
+            "frame": 13,
+            "observed": 120,
+            "outcome": "agrees",
+            "predicted": 120
+          },
+          {
+            "bytes": [
+              66,
+              0,
+              0,
+              0
+            ],
+            "frame": 14,
+            "observed": 130,
+            "outcome": "agrees",
+            "predicted": 130
+          },
+          {
+            "bytes": [
+              70,
+              0,
+              0,
+              0
+            ],
+            "frame": 15,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          },
+          {
+            "bytes": [
+              70,
+              0,
+              0,
+              0
+            ],
+            "frame": 16,
+            "observed": 140,
+            "outcome": "agrees",
+            "predicted": 140
+          }
+        ]
+      }
+    ],
+    "protocol_sha256": "6aeea201e70ceebbc74a733cf13df2b02de2a56d18b7db7afd564333c013a53e",
+    "renderer_cpu_delta": 0.095787,
+    "retained_training_witnesses": 0,
+    "source_commit": "e5c0c42f7dac0f3514a55eff656c6e22e95d68ed",
+    "tracks": [
+      {
+        "hypotheses": 0,
+        "id": 0,
+        "label": "Near \u201cC 127.0.0.1:62166\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 1,
+        "label": "Number at 1036, 56",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null
+        ]
+      },
+      {
+        "hypotheses": 6,
+        "id": 2,
+        "label": "Number at 427, 288",
+        "repeated_contrast_in_both_halves": true,
+        "samples": [
+          0,
+          10,
+          20,
+          30,
+          30,
+          40,
+          40,
+          60,
+          70,
+          80,
+          100,
+          100
+        ]
+      },
+      {
+        "hypotheses": 0,
+        "id": 3,
+        "label": "Near \u201crows\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "hypotheses": 200,
+        "id": 4,
+        "label": "Near \u201cFPS (65-67)\u201d",
+        "repeated_contrast_in_both_halves": false,
+        "samples": [
+          66,
+          66,
+          66,
+          66,
+          63,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66,
+          66
+        ]
+      }
+    ],
+    "training_coverage": {
+      "analyzed_current_bytes": 13733888,
+      "archive_bytes": 0,
+      "attempted_bytes": 170864640,
+      "batch": 1,
+      "batches": [],
+      "changed_or_unavailable_bytes": 33013760,
+      "complete_trajectory_bytes": 13733888,
+      "image_budget_bytes": 1345236,
+      "image_disk_bytes": 1345236,
+      "read_bytes": 170864640,
+      "read_unique_bytes": 14225408,
+      "selected_unique_bytes": 16777216
+    },
+    "window_process": {
+      "created": "01DD61214280A51E",
+      "name": "chrome.exe",
+      "pid": 88240,
+      "session": 2,
+      "title": "Javascript Tetris \u2013 Google Chrome for Testing",
+      "window": 9765924
+    }
+  }
+]

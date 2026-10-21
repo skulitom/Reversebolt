@@ -4,6 +4,14 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest repeated-evidence check (2026-10-21): **26% unchanged**. Four automated
+original-game sessions exposed an isolated-reading false-match pattern. The
+generic matcher now requires repeated contrast in both halves and their inliers;
+140 tests and packaged MCP/practice checks pass. Fresh 2048 hypotheses were all
+contradicted; three Tetris hypotheses agreed with four later OCR readings, but
+the last image was independently unscorable. No gameplay control was verified.
+[Method, failures and evidence](../research/process-scope-study/README.md).
+
 Latest process-scope support (2026-10-21): **26%**. Window observation and
 memory-source identity are now separate, with shared desktop/MCP child selection,
 fresh investigations on switching, and guarded writes bound to the actual
