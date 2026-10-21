@@ -1,8 +1,8 @@
 # Discovery direction — 2026-10-21
 
-Status: runtime feasibility demonstrated in a separate research probe; no runtime
-adapter is integrated into the product and general causal controls do not yet
-exist. The full goal and 31% weighted estimate
+Status: bounded IL2CPP discovery and refresh are integrated into the desktop and
+MCP, with automatic discovery on supported attachment. General causal controls
+do not yet exist. The full goal and 31% weighted estimate
 remain unchanged. The user's requirement is named, understandable, interactive
 cards for humans and agents, including values and rules that never appear as HUD
 numbers. Generalization excludes per-game profiles, offsets, signatures and
@@ -12,9 +12,10 @@ source-derived game layouts.
 
 Reversebolt already combines native memory, images, temporal observations,
 input context, frozen hypotheses and guarded trials. Nevertheless, its useful
-live numeric path starts with readable screen numbers and seeks correlated byte
-sequences. Runtime type/object inspection does not currently supply candidates.
-This biases the product toward visible counters and copies of presentation data.
+live numeric path originally started with readable screen numbers and sought
+correlated byte sequences. That remains the fallback for unsupported runtimes;
+supported attachment now supplies runtime-derived candidates without images.
+The old path biases discovery toward visible counters and presentation copies.
 More OCR accuracy alone cannot reveal an invisible damage multiplier or prove
 that editing a correlated field changes gameplay.
 
@@ -71,8 +72,8 @@ between fresh snapshots. One unchanged Blue Prince request read 4,267 supported
 root slots and reached 7,747 non-root node occurrences, including 26 deeper
 main-game scalar reads. It also read text and supported arrays without images.
 These occurrences can repeat between batches; they are not distinct controls.
-Coverage remains bounded and partial, and the component is not yet connected to
-the app/MCP dispatchers. See [traversal results and limits](../research/runtime-traversal/README.md).
+Coverage remains bounded and partial. At that evaluation the component was not
+connected to app/MCP dispatchers. See [traversal results and limits](../research/runtime-traversal/README.md).
 
 The shared core now derives typed scalar paths, and the runtime reader can
 resolve them afresh with type/layout and process checks. Owned tests cover
@@ -81,9 +82,16 @@ Prince, but the fixed selection picked unchanged framework fields. This exposes
 candidate usefulness as the next bottleneck; those paths establish no gameplay
 authority. See [path evidence](../research/runtime-paths/README.md).
 
-Next prioritize useful application-state candidates, expose discovery/refresh
-through the shared investigation dispatcher and simple cards, and validate useful
-effects. Neither snapshot addresses, stable path IDs nor field names establish
+Discovery/refresh now reach the shared dispatcher and simple cards. A frozen
+product evaluation published 64 Blue Prince cards without images and refreshed
+four non-core declarations, but those selections still described flags and
+bookkeeping; the main-game image cards were localization state. Structural
+diversity alone does not identify useful gameplay state. See
+[product workflow evidence](../research/runtime-product/README.md).
+
+Next expose a bounded searchable candidate catalogue, select by object context,
+relationships and behaviour, and validate useful effects. Neither snapshot
+addresses, stable path IDs nor field names establish
 persistent identity or edit authority.
 Static values may be defaults from uninitialized classes. Keep automatic reads
 separate from mechanisms that execute code in the target, and expose unsupported

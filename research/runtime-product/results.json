@@ -1,0 +1,257 @@
+{
+  "versions": {
+    "1": {
+      "revision": "cb1e0120e375b354967d95135db7a73a8792ef3d",
+      "frozen_sha256": "271b1eff05ef8d7f729357cfae0d86025e5bd6360bf6621e966397f06b889946",
+      "binaries": {
+        "reversebolt-mcp.exe": "b7547529a3426d0d16ea6bb59b31ca66bd9939da8ef593f04f8edceed20ab5f9",
+        "reversebolt-runtime-loader.exe": "a7515b13810c2ec6ed7a1aad3a517784d3a2d37d784a4c508965e143f5a1b54e",
+        "Reversebolt.exe": "2cd5b8b82b969bd0e4109c45f95bf8646d34b9c84482b81311fce4bf167e4b70",
+        "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+        "reversebolt_runtime.dll": "995fde187bc2a625528b7bb0b1479f8cda50712f07777df545fb26b7e83ba74c"
+      },
+      "source_files": 128
+    },
+    "2": {
+      "revision": "82d0eae7a91908acf64e0dd230407ea526dcb6ed",
+      "frozen_sha256": "de4b81076807c775624970a8301efee91767e86350dede27f865cf1ecb57f167",
+      "binaries": {
+        "reversebolt-mcp.exe": "b7547529a3426d0d16ea6bb59b31ca66bd9939da8ef593f04f8edceed20ab5f9",
+        "reversebolt-runtime-loader.exe": "a7515b13810c2ec6ed7a1aad3a517784d3a2d37d784a4c508965e143f5a1b54e",
+        "Reversebolt.exe": "0ac6782de48ac3d3eb961cff140b38d0417551cf43734ee17ea479a7dd384201",
+        "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+        "reversebolt_runtime.dll": "995fde187bc2a625528b7bb0b1479f8cda50712f07777df545fb26b7e83ba74c"
+      },
+      "source_files": 129
+    }
+  },
+  "runs": {
+    "v1-fixture": {
+      "passed": false,
+      "failure": "invalid plan size on first four-value refresh",
+      "discovery_cards": 48,
+      "helper_unloaded": true,
+      "execution": {
+        "app_exit": 1,
+        "host_exit": 0,
+        "mcp_exit": 1
+      }
+    },
+    "v2-fixture": {
+      "passed": true,
+      "app_pid": 82672,
+      "target_pid": 80320,
+      "owned_fixture": true,
+      "cards": 48,
+      "images": {
+        "OwnedPathFixture": 48
+      },
+      "selected": [
+        {
+          "id": "f5cc385a3d6131494704f6eb7073d9861b97212fa521aed9c5bc9a119fdc69ea",
+          "name": "Identity",
+          "image": "OwnedPathFixture",
+          "steps": 1
+        },
+        {
+          "id": "16e70a1a6e6686b8e60badcb1ecf04e444b4c6e27750a02331e3b8e0f95ca248",
+          "name": "Counter",
+          "image": "OwnedPathFixture",
+          "steps": 1
+        },
+        {
+          "id": "e574e43fb1952cb68c38acecbc5aeedb0389155bd259f7de18e5926a2ba581c5",
+          "name": "HiddenScale",
+          "image": "OwnedPathFixture",
+          "steps": 1
+        },
+        {
+          "id": "75c856a873445ae0c03f90162a3119c869ccf6b7011b1713e8b7aed332df3e76",
+          "name": "Reserve",
+          "image": "OwnedPathFixture",
+          "steps": 1
+        }
+      ],
+      "refresh_ms": 453,
+      "operations": 4,
+      "pauses": 8,
+      "evidence": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\fixture\\data\\runtime\\80320-01dd616cbe7f1d6e\\464269c7-20ed-4ad3-be24-e92027a8731f",
+          "receipt_sha256": "7ed026cf5be6ef79718803a11b5715e5fe8902d8b474d76be2d1cf76fbd57d7a",
+          "report_sha256": "b10804e5945b08f3d848db2113b9f0ed8df543f288f834d17641e9fde083f1be"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\fixture\\data\\runtime\\80320-01dd616cbe7f1d6e\\b013a687-140a-418f-ab8a-506af56d5bb5",
+          "receipt_sha256": "3bfc74abfce25ded276dba9230da3aa8d79f644c471cec84b1b50df58e3e36a6",
+          "report_sha256": "51681587679ef3ec6ce7a52d050d1db312465d4bb6ad28be86712216d41c14a4"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\fixture\\data\\runtime\\80320-01dd616cbe7f1d6e\\ba645b36-5433-4f4a-b66d-052595479d12",
+          "receipt_sha256": "0139a0f5a379748d1a48017f24728d3e5432278cae3131a420a66caca920eea0",
+          "report_sha256": "439b974fed6b9aa47c75676c056e849e19d75c69b7d2d2ac25fa40a3dff24540"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\fixture\\data\\runtime\\80320-01dd616cbe7f1d6e\\ba85c552-b4ab-4887-a162-f97174268a6d",
+          "receipt_sha256": "727419bc10c2626b7f642dbb0eb6f39cd04b4113cd047e57224c2f28c2bad21b",
+          "report_sha256": "b145b8d119af7be99dd301b3aef7ac2efddc440fe91ca80cdd5c8cc58e0dd57e"
+        }
+      ],
+      "screenshots": 0,
+      "gameplay_input": 0,
+      "gameplay_writes": 0,
+      "verified_controls": 0,
+      "execution": {
+        "app_exit": 1,
+        "host_exit": 0,
+        "mcp_exit": 1
+      }
+    },
+    "v2-game": {
+      "passed": true,
+      "app_pid": 64668,
+      "target_pid": 61364,
+      "owned_fixture": false,
+      "cards": 64,
+      "images": {
+        "Assembly-CSharp-firstpass.dll": 3,
+        "Assembly-CSharp.dll": 3,
+        "DOTween.dll": 3,
+        "FurySdkProjectUtils.dll": 3,
+        "FuryStudios.FurySDK.Internal.dll": 3,
+        "FuryStudios.FurySDK.dll": 3,
+        "PlayMaker.dll": 3,
+        "Rewired_Core.dll": 3,
+        "Rewired_Windows.dll": 3,
+        "System.Core.dll": 3,
+        "System.dll": 3,
+        "Unity.Addressables.dll": 3,
+        "Unity.InputSystem.ForUI.dll": 3,
+        "Unity.InputSystem.dll": 3,
+        "Unity.MemoryProfiler.dll": 2,
+        "Unity.ResourceManager.dll": 3,
+        "Unity.TextMeshPro.dll": 3,
+        "UnityEngine.CoreModule.dll": 3,
+        "UnityEngine.IMGUIModule.dll": 3,
+        "UnityEngine.InputForUIModule.dll": 1,
+        "UnityEngine.PhysicsModule.dll": 1,
+        "UnityEngine.TextCoreFontEngineModule.dll": 2,
+        "UnityEngine.UI.dll": 2,
+        "com.rlabrecque.steamworks.net.dll": 2
+      },
+      "selected": [
+        {
+          "id": "7dbc95cc1e0684aff58457a5627cc49709d050a933ed90efdf985cf0b1ac85ea",
+          "name": "ignoreRecompile",
+          "image": "Assembly-CSharp-firstpass.dll",
+          "steps": 1
+        },
+        {
+          "id": "5657a0fd494e75e7acd5f8dac4bbcd6d787cfeb31bd193d7a5d6953c0d115292",
+          "name": "IsEnabled",
+          "image": "Assembly-CSharp.dll",
+          "steps": 1
+        },
+        {
+          "id": "6f59f51806294e7ac29e040358c476654aec30001aceebe5c874609513a2f008",
+          "name": "inspectorUpdater",
+          "image": "DOTween.dll",
+          "steps": 1
+        },
+        {
+          "id": "3f1ec29b3e2c792902cbb6f2d06b5f51b9b562e7928949675db93ac625839477",
+          "name": "isGameIntent",
+          "image": "FurySdkProjectUtils.dll",
+          "steps": 5
+        }
+      ],
+      "refresh_ms": 2688,
+      "operations": 2,
+      "pauses": 163,
+      "evidence": [
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\game\\data\\runtime\\61364-01dd616cde246d0e\\e70268bd-84f5-4cdf-9ea0-f365c842d4af",
+          "receipt_sha256": "29468af2be95f389eab99fb80f0f228b592031e61a4c1417f64499c6133c252a",
+          "report_sha256": "5fc7addb840d87f96433798e73bfcb13085c73b85e3ac6672c04e9023c20e2bc"
+        },
+        {
+          "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-product-v2\\game\\data\\runtime\\61364-01dd616cde246d0e\\f09732af-3fae-4578-bec0-ef2335d52246",
+          "receipt_sha256": "7f9148831d9a1a4c027010cf76eebaf273a93024d15d45494036f3cea196ab69",
+          "report_sha256": "eb2c7a9e9450e1af501726793cafad2c38dd07ee5b742c68fa0c8168ec03b39f"
+        }
+      ],
+      "screenshots": 0,
+      "gameplay_input": 0,
+      "gameplay_writes": 0,
+      "verified_controls": 0,
+      "execution": {
+        "app_exit": 1,
+        "host_exit": null,
+        "mcp_exit": 1
+      }
+    }
+  },
+  "game_after": {
+    "pid": 61364,
+    "created": "01dd616cde246d0e",
+    "session": 2,
+    "responding": true,
+    "window": 17892074,
+    "helper_absent": true,
+    "close_sent": true,
+    "exited": true
+  },
+  "desktop": {
+    "version": "0.1.0-20261021-160254",
+    "pid": 89776,
+    "session": 1,
+    "window": 165677950,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-160254\\Reversebolt.exe",
+    "history_before": 29,
+    "history_after": 29,
+    "observer_model": "qwen3.8:latest",
+    "frozen_binaries_match": true,
+    "ok": true,
+    "old_pid": 67560
+  },
+  "smoke": {
+    "sha256": "acc2163d2bb48bbf90e804c2ad800d0b5bac075abfd529f9cbb711f998369ba0",
+    "result": {
+      "practice": [
+        {
+          "seed": 8675309,
+          "matches": [
+            4,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 1001,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 20261020,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        }
+      ],
+      "mcp_tools": 37,
+      "shared_session": "passed",
+      "auth_and_origin": "passed",
+      "stale_restore": "rejected",
+      "restart": "history retained; controls invalidated"
+    }
+  },
+  "scope": "Product discovery/refresh integration; no verified gameplay effects or cross-game generalization."
+}

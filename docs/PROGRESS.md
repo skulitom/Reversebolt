@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest integrated internal-value cards (2026-10-21): **31% unchanged**. Selecting
+a supported runtime now starts discovery through the shared managed-job engine;
+humans see provisional cards and agents can discover/refresh through MCP. Exact
+catalogue cursors, immutable request documents and unresolved-helper fences govern
+refresh/replay. The first native run exposed a journal-size failure; its artifacts
+remain retained. The repaired workflow passed the owned fixture's refresh,
+replay, stale-cursor, null-root and recovery cases, with eight balanced pauses.
+The unchanged product then automatically published 64 Blue Prince cards and
+refreshed four non-core paths through MCP with zero screenshots or gameplay input.
+Those selections still describe flags/bookkeeping rather than useful gameplay
+controls; no causal or generalization credit is earned. All 200 pre-repair
+workspace tests and all 41 post-repair app tests, strict Clippy, release build and
+the frozen 37-tool smoke passed. Preview `0.1.0-20261021-160254` is running on the
+desktop with all 29 history entries and the local model setting preserved.
+All weighted credits remain foundation 4/10, native 6/10, observation 5/15,
+discovery 8/20, validation 2/15, intent/editing 1/10, agent 5/10 and generalization
+0/10. Next: bounded candidate search and contextual/behavioural selection toward
+a useful hidden control with a verified effect. The full goal remains active.
+[Implementation, evidence and limits](../research/runtime-product/README.md).
+
 Latest refreshable runtime paths (2026-10-21): **31% unchanged**. The shared core
 can derive scalar paths without addresses, and the reader resolves them afresh
 with exact process, type, layout, field and array checks. The repaired native
