@@ -1,0 +1,86 @@
+{
+  "protocol_sha256": "6fd9d466ba27f604589977d53a40f6efc5c26cced9fea45a5503d482f2e36f52",
+  "jobs": [
+    {
+      "game": "2048",
+      "job_id": "j_8b1bba9540a64fbe965a1e1161c77e95",
+      "worker_pid": 43476,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 161641,
+      "cursor": "3393"
+    },
+    {
+      "game": "tetris",
+      "job_id": "j_f681524d62f74800b35ffab736ae56f0",
+      "worker_pid": 82172,
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 132128,
+      "cursor": "3468"
+    }
+  ],
+  "cleanup": [
+    {
+      "case": "2048-1",
+      "owned_pids": [
+        61872,
+        86960,
+        22080,
+        66016,
+        23928,
+        83396,
+        50588,
+        80668,
+        79656,
+        73324,
+        43476
+      ],
+      "remaining": []
+    },
+    {
+      "case": "tetris-1",
+      "owned_pids": [
+        77924,
+        15760,
+        85376,
+        74576,
+        84404,
+        87004,
+        71516,
+        70124,
+        82820,
+        82404,
+        82172
+      ],
+      "remaining": []
+    }
+  ],
+  "desktop": {
+    "checked_utc": "2026-10-21T11:04:24.3730350Z",
+    "pid": 62456,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-114033\\Reversebolt.exe",
+    "sha256": "220C6AB8FE2DEEC3ED7776ED8695D6BC434120B2D117EFF2D45BBA7B9820BE82",
+    "status_ok": true,
+    "history_count": 29,
+    "observer_model": "qwen3.8:latest",
+    "live_connected": null
+  },
+  "anode_lease_released": true,
+  "viewer_visible_before_and_left_unchanged": true,
+  "manual_screenshot_views": 0,
+  "memory_trials": 2,
+  "applied_patch_bytes": [
+    1,
+    1
+  ],
+  "successful_byte_restorations": 2,
+  "preflight": {
+    "syntax": "passed Node syntax check",
+    "oracle": "passed owned headless DOM text/box and changed-text checks",
+    "scorer": "passed six image outcomes, changing child markup, stable trial display, missing/delayed coverage, scrolling and changed-value exclusions"
+  },
+  "production_changes": false,
+  "product_validation_baseline": "184 workspace tests, strict Clippy, formatting, release build and 35-tool packaged smoke from change-search; not rerun for research-only files"
+}

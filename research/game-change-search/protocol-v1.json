@@ -1,0 +1,96 @@
+{
+  "frozen_utc": "2026-10-21T10:58:41.632825+00:00",
+  "product_commit": "67cdd3a0308d454a6bbd231dd945b090c6ced171",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-114033",
+  "binaries": {
+    "Reversebolt.exe": "220c6ab8fe2deec3ed7776ed8695d6bc434120b2d117eff2d45bba7b9820be82",
+    "reversebolt-mcp.exe": "1424dca2508007ad7bc2e354d2e57811790557ab2aecd63d317d0524df0ca717"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 900,
+  "cpu_probe_ms": 3000,
+  "order": [
+    [
+      "2048",
+      1
+    ],
+    [
+      "tetris",
+      1
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 100
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        37,
+        37,
+        37,
+        40,
+        40,
+        40,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        40,
+        40,
+        40,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 100
+    }
+  },
+  "input_bursts": {
+    "initial": 1,
+    "after_frames_1_through_11": 4,
+    "after_frame_14": 12,
+    "otherwise": 0,
+    "selection_after_frames_1_through_3": 4
+  },
+  "oracle_selectors": {
+    "2048": {
+      "score": ".score-container",
+      "best": ".best-container"
+    },
+    "tetris": {
+      "score": "#score",
+      "rows": "#rows"
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "method_sha256": {
+    "PROTOCOL.md": "3fdd328f91050c05816d7625089a55e0ce857ad937dbe2c026f7b3a2e49431e2",
+    "run.mjs": "11fdc1837886ad72aff791c8c3695154ab313e85438772ba3f7aaf53a4d445bb",
+    "oracle.mjs": "23a0df327b581a18892b871b871e053a908dafcb3ed6311f6cbc665024eec111",
+    "oracle-test.mjs": "78eb7ec9be2656b2714764f224d968862a8f62b89c9966f0c2a2ab485904ee59",
+    "input.py": "fb555c2e10e4c45e35c6c329296b6a7572276de93162a2034598b9d6c34c363f",
+    "score.py": "96b2a28dd2a3cd99e68cc204fec7953d722497b6abb2760fdaf7fbb7ee156088",
+    "score-test.py": "3594a1ff1cd513cd1197747ce5bcfbb2fc6f984c0c228cfc2435cb7a5f424bb3"
+  },
+  "product_evidence": "../change-search/protocol-v1.json",
+  "product_evidence_sha256": "ca945b83882c8bd87332373301dafa168c17758255ff69217910c04a0d6cd191",
+  "discovery": "start_change_search once; four selection moments; automatic fresh sixteen-moment handoff",
+  "trial": "one conditional prepare/apply/observe/restore after exactly four fresh agreements, plus 10 from current OCR"
+}

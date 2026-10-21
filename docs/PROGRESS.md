@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest independent-game Follow changes evaluation (2026-10-21): **31% unchanged**.
+Original 2048 and Javascript Tetris each completed 36 automatic discovery
+captures, fresh checking, one small trial edit and successful byte restoration.
+Two 2048 candidates and 38 of 51 Tetris candidates agreed on all four future
+moments; thirteen Tetris candidates contradicted. Neither trial displayed the
+requested value. Tetris's independent trial baseline was unscorable; the idle
+trial design also does not establish whether a field affects later game events.
+No gameplay authority or generalization acceptance is claimed. Automated scoring
+and the artifact audit passed, with 82 image hashes and 250 native input pulses
+verified. Production code and the running desktop preview are unchanged.
+All weighted credits remain foundation 4/10, native 6/10, observation 5/15,
+discovery 8/20, validation 2/15, intent/editing 1/10, agent 5/10 and generalization
+0/10. Next: investigate candidate effects across relevant state updates while
+preserving competing explanations. The full goal stays active.
+[Frozen method, trial results and limits](../research/game-change-search/README.md).
+
 Latest search by changing observations (2026-10-21): **31%**. “Follow changes”
 uses four broad observations to nominate areas through scale/offset relationships,
 then automatically gathers sixteen wholly new fitting/checking moments. The

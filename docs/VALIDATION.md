@@ -1,5 +1,28 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Independent-game Follow changes evaluation — 2026-10-21
+
+The unchanged `0.1.0-20261021-114033` build completed initial → four-moment broad
+selection → sixteen fresh observations on original 2048 and Javascript Tetris.
+Both cases had no runner errors. Each performed one declared one-byte trial and
+successful guarded byte restoration; neither showed the requested counter value.
+Two 2048 candidates and 38 of 51 Tetris candidates passed four future checks,
+demonstrating that passive agreement alone still leaves substantial ambiguity.
+
+Frozen automatic scoring retains 2048's conflicting/missing score readings and
+one unscorable Tetris score capture. The independent Tetris trial baseline was
+excluded for delayed oracle coverage. Trials used idle input and therefore do
+not establish effects after a relevant game update. No controlling field or
+independent-game acceptance is claimed. The post-launch audit verifies fresh
+evidence separation, 72 discovery and 10 trial PNG hashes, all 250 trusted input
+pulses, bounded selection and write/restore readbacks. Oracle/scorer preflights
+passed. All 22 owned processes exited and Anode was released.
+
+No production code changed; the prior 184-test/strict-Clippy/35-tool smoke remains
+the build baseline. A fresh desktop status/hash check confirms the same preview,
+29 history entries and model setting preserved. Progress remains 31%.
+[Method, results and limits](../research/game-change-search/README.md).
+
 ## Search by changing observations — 2026-10-21
 
 All 184 workspace tests, strict Clippy, formatting, release build and the 35-tool

@@ -26,3 +26,4 @@
 /research/game-value-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/change-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/change-search/product.patch -whitespace
+/research/game-change-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

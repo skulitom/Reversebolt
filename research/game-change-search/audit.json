@@ -1,0 +1,4136 @@
+{
+  "kind": "post-launch integrity audit, not acceptance",
+  "protocol_sha256": "6fd9d466ba27f604589977d53a40f6efc5c26cced9fea45a5503d482f2e36f52",
+  "cases": [
+    {
+      "game": "2048",
+      "errors": [],
+      "captures": 36,
+      "search_outcome": "completed four-moment selection and fresh sixteen-moment batch",
+      "trial_outcome": "written; restoration restored",
+      "commands": {
+        "list_processes": 1,
+        "set_observer_model": 1,
+        "attach_process": 2,
+        "list_memory_processes": 1,
+        "job_control": 66,
+        "start_change_search": 1,
+        "prepare_probe": 1,
+        "apply_change": 1,
+        "observe_change": 2,
+        "restore_change": 1,
+        "advance_memory": 1
+      },
+      "owned_processes": {
+        "engine": 61872,
+        "mcp": 86960,
+        "input": 22080
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 66016,
+          "cpuTime": 3.014163
+        },
+        {
+          "type": "renderer",
+          "id": 23928,
+          "cpuTime": 0.154204
+        },
+        {
+          "type": "renderer",
+          "id": 83396,
+          "cpuTime": 3.076032
+        },
+        {
+          "type": "renderer",
+          "id": 50588,
+          "cpuTime": 0.30134
+        },
+        {
+          "type": "GPU",
+          "id": 80668,
+          "cpuTime": 2.540611
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 79656,
+          "cpuTime": 0.188368
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 73324,
+          "cpuTime": 0.045973
+        }
+      ],
+      "stages": {
+        "initial": {
+          "count": 16,
+          "ids": [
+            "c1a37414-32bf-41c3-92cf-eb423499739c",
+            "e87df89e-bb5f-4822-8a08-1a16a65997da",
+            "61be98e9-5736-41fb-8a46-103cbb89f7e1",
+            "40d06ccc-8532-4668-b71b-04f0abe34c7a",
+            "9fea61f5-bdb6-4324-8d0f-73601cd53446",
+            "fa8f1095-445a-421d-8c38-64b604ea3667",
+            "b014da11-fa53-421d-9d83-73ad49fd5a35",
+            "de5c97f1-bd84-4600-bf2b-b1b2fabead80",
+            "3eb88640-754d-4b73-957f-1d1bff070899",
+            "bec496e4-1159-42dd-b592-0d2000420fba",
+            "197f344c-a627-43c7-98de-a18ee3b06a70",
+            "a725fc24-2414-4e39-82f8-a48d25ea08e9",
+            "db5f80cd-c84f-405a-a9e5-31d6e3d16264",
+            "c0ae8e7c-3989-4a37-a25d-d12cd3acb7d8",
+            "94ba5a17-2953-4da2-ba07-e37fa566edeb",
+            "a342e102-e6c4-406d-98c3-06c912095bd7"
+          ],
+          "checks": [],
+          "numeric_readings": {
+            "0": {
+              "label": "Number at 68, 12",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "1": {
+              "label": "Near \u201c127.0.0.1:58155\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "2": {
+              "label": "Number at 289, 190",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "3": {
+              "label": "Number at 680, 203",
+              "samples": [
+                0,
+                null,
+                null,
+                null,
+                3,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "4": {
+              "label": "Number at 750, 203",
+              "samples": [
+                0,
+                16,
+                20,
+                36,
+                68,
+                148,
+                152,
+                184,
+                204,
+                260,
+                340,
+                372,
+                372,
+                372,
+                464,
+                464
+              ]
+            },
+            "5": {
+              "label": "Near \u201cJoin the numbers and get to the tile!\u201d",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "6": {
+              "label": "Number at 339, 404",
+              "samples": [
+                2,
+                null,
+                2,
+                2,
+                null,
+                null,
+                2,
+                null,
+                2,
+                2,
+                null,
+                null,
+                null,
+                null,
+                4,
+                4
+              ]
+            },
+            "7": {
+              "label": "Number at 91, 57",
+              "samples": [
+                null,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                null,
+                null
+              ]
+            },
+            "8": {
+              "label": "Number at 651, 202",
+              "samples": [
+                null,
+                16,
+                20,
+                36,
+                68,
+                8,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "9": {
+              "label": "Number at 582, 527",
+              "samples": [
+                null,
+                2,
+                null,
+                null,
+                2,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                2,
+                2
+              ]
+            },
+            "10": {
+              "label": "Number at 341, 527",
+              "samples": [
+                null,
+                null,
+                2,
+                4,
+                4,
+                4,
+                32,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                4,
+                4
+              ]
+            },
+            "11": {
+              "label": "Number at 703, 527",
+              "samples": [
+                null,
+                null,
+                2,
+                null,
+                null,
+                null,
+                null,
+                null,
+                2,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "12": {
+              "label": "Number at 461, 527",
+              "samples": [
+                null,
+                null,
+                null,
+                4,
+                null,
+                null,
+                null,
+                null,
+                8,
+                2,
+                4,
+                8,
+                8,
+                8,
+                64,
+                64
+              ]
+            },
+            "13": {
+              "label": "Number at 622, 201",
+              "samples": [
+                null,
+                null,
+                null,
+                null,
+                null,
+                148,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "14": {
+              "label": "Number at 582, 405",
+              "samples": [
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                2,
+                2,
+                null,
+                null,
+                null,
+                2,
+                2,
+                2,
+                null,
+                null
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 13381632,
+            "archive_bytes": 0,
+            "attempted_bytes": 226664448,
+            "batch": 1,
+            "changed_or_unavailable_bytes": 44408832,
+            "complete_trajectory_bytes": 13381632,
+            "image_budget_bytes": 728407,
+            "image_disk_bytes": 728407,
+            "read_bytes": 226664448,
+            "read_unique_bytes": 14139392,
+            "selected_unique_bytes": 16777216
+          }
+        },
+        "selection": {
+          "count": 4,
+          "ids": [
+            "c1283b51-4497-4b61-8252-f0c3e210c993",
+            "ca90ae17-8471-4029-8fd1-440e700407ab",
+            "0b66f182-5b08-4d51-8ffd-7074e242b7b0",
+            "06d4540d-684f-48f5-b67e-e05b128c190e"
+          ],
+          "checks": [],
+          "numeric_readings": {
+            "0": {
+              "label": "Number at 68, 12",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "1": {
+              "label": "Near \u201c127.0.0.1:58155\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "2": {
+              "label": "Number at 289, 190",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "3": {
+              "label": "Number at 620, 201",
+              "samples": [
+                464,
+                504,
+                512,
+                552
+              ]
+            },
+            "4": {
+              "label": "Number at 720, 201",
+              "samples": [
+                464,
+                504,
+                512,
+                552
+              ]
+            },
+            "5": {
+              "label": "Near \u201cJoin the numbers and get to the tile!\u201d",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "6": {
+              "label": "Number at 341, 405",
+              "samples": [
+                4,
+                2,
+                4,
+                4
+              ]
+            },
+            "7": {
+              "label": "Number at 445, 526",
+              "samples": [
+                64,
+                2,
+                8,
+                8
+              ]
+            },
+            "8": {
+              "label": "Number at 582, 526",
+              "samples": [
+                2,
+                8,
+                4,
+                null
+              ]
+            },
+            "9": {
+              "label": "Number at 340, 527",
+              "samples": [
+                4,
+                64,
+                4,
+                16
+              ]
+            },
+            "10": {
+              "label": "Number at 703, 526",
+              "samples": [
+                null,
+                null,
+                2,
+                null
+              ]
+            },
+            "11": {
+              "label": "Number at 91, 57",
+              "samples": [
+                null,
+                null,
+                null,
+                2
+              ]
+            },
+            "12": {
+              "label": "Number at 582, 405",
+              "samples": [
+                null,
+                null,
+                null,
+                2
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 431258,
+            "attempted_bytes": 327036928,
+            "batch": 2,
+            "changed_or_unavailable_bytes": 51154944,
+            "complete_trajectory_bytes": 13381632,
+            "image_budget_bytes": 917268,
+            "image_disk_bytes": 917268,
+            "read_bytes": 327036928,
+            "read_unique_bytes": 40656896,
+            "selected_unique_bytes": 43556864
+          }
+        },
+        "focused": {
+          "count": 16,
+          "ids": [
+            "4e394ded-ce2a-418e-9f91-4edba8381fc4",
+            "cd7d3ddd-352a-49ab-a85e-5541d1582ed8",
+            "30eb2006-7eb5-44fe-b1a9-f73737178fff",
+            "fd7ccd70-77aa-491a-a583-39f597c8580a",
+            "96a9c171-14c3-4c53-b101-06d1dc19cc8f",
+            "1824c09b-8e90-4e84-86d7-46e61641c270",
+            "46dd26e7-c6a5-4345-9fca-750898d1ec37",
+            "98ea777f-493e-477a-8649-e31109234f38",
+            "3a2108ca-3d3c-4638-b05e-3092427e23a9",
+            "443e7fe6-c57e-46ad-98e2-bf1fa27faf6c",
+            "529be6d6-11d4-4a4f-9789-5ede78caa607",
+            "9abc5f19-b359-4b83-abd8-64e902acc1e8",
+            "dbd80fe0-c3ca-4ba0-bf44-b578a0076a57",
+            "3719b563-bc0f-483a-8fcb-08b9816bcd84",
+            "4f4b5f84-22f1-4596-bcb7-02dddeb09959",
+            "26216bce-1943-46d1-83ec-f4d0e6de72e7"
+          ],
+          "checks": [
+            {
+              "id": "794c892c-828d-4513-92df-22f598ab756a",
+              "source": "ocr",
+              "track": 5,
+              "after_frame": 12,
+              "basis_ids": [
+                "4e394ded-ce2a-418e-9f91-4edba8381fc4",
+                "cd7d3ddd-352a-49ab-a85e-5541d1582ed8",
+                "30eb2006-7eb5-44fe-b1a9-f73737178fff",
+                "fd7ccd70-77aa-491a-a583-39f597c8580a",
+                "96a9c171-14c3-4c53-b101-06d1dc19cc8f",
+                "1824c09b-8e90-4e84-86d7-46e61641c270",
+                "46dd26e7-c6a5-4345-9fca-750898d1ec37",
+                "98ea777f-493e-477a-8649-e31109234f38",
+                "3a2108ca-3d3c-4638-b05e-3092427e23a9",
+                "443e7fe6-c57e-46ad-98e2-bf1fa27faf6c",
+                "529be6d6-11d4-4a4f-9789-5ede78caa607",
+                "9abc5f19-b359-4b83-abd8-64e902acc1e8"
+              ],
+              "candidates": [
+                {
+                  "address": "0x1C9011D08C8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 8,
+                    "slope": 0.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "dbd80fe0-c3ca-4ba0-bf44-b578a0076a57",
+                      "outcome": "agrees",
+                      "observed": 1136,
+                      "predicted": 1136
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "3719b563-bc0f-483a-8fcb-08b9816bcd84",
+                      "outcome": "agrees",
+                      "observed": 1136,
+                      "predicted": 1136
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "4f4b5f84-22f1-4596-bcb7-02dddeb09959",
+                      "outcome": "agrees",
+                      "observed": 1264,
+                      "predicted": 1264
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "26216bce-1943-46d1-83ec-f4d0e6de72e7",
+                      "outcome": "agrees",
+                      "observed": 1264,
+                      "predicted": 1264
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1C9011D25F0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": 0.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "dbd80fe0-c3ca-4ba0-bf44-b578a0076a57",
+                      "outcome": "agrees",
+                      "observed": 1136,
+                      "predicted": 1136
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "3719b563-bc0f-483a-8fcb-08b9816bcd84",
+                      "outcome": "agrees",
+                      "observed": 1136,
+                      "predicted": 1136
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "4f4b5f84-22f1-4596-bcb7-02dddeb09959",
+                      "outcome": "agrees",
+                      "observed": 1264,
+                      "predicted": 1264
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "26216bce-1943-46d1-83ec-f4d0e6de72e7",
+                      "outcome": "agrees",
+                      "observed": 1264,
+                      "predicted": 1264
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "numeric_readings": {
+            "0": {
+              "label": "Number at 68, 12",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "1": {
+              "label": "Near \u201c127.0.0.1:58155\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "2": {
+              "label": "Number at 91, 57",
+              "samples": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "3": {
+              "label": "Number at 289, 190",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "4": {
+              "label": "Number at 623, 201",
+              "samples": [
+                552,
+                556,
+                576,
+                604,
+                840,
+                880,
+                904,
+                956,
+                1012,
+                1032,
+                1088,
+                null,
+                null,
+                null,
+                1264,
+                1264
+              ]
+            },
+            "5": {
+              "label": "Number at 722, 201",
+              "samples": [
+                552,
+                556,
+                576,
+                604,
+                840,
+                880,
+                904,
+                956,
+                1012,
+                1032,
+                1088,
+                1136,
+                1136,
+                1136,
+                1264,
+                1264
+              ]
+            },
+            "6": {
+              "label": "Near \u201cJoin the numbers and get to the tile!\u201d",
+              "samples": [
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048,
+                2048
+              ]
+            },
+            "7": {
+              "label": "Number at 341, 405",
+              "samples": [
+                4,
+                4,
+                8,
+                4,
+                4,
+                2,
+                2,
+                2,
+                2,
+                4,
+                4,
+                2,
+                2,
+                2,
+                2,
+                2
+              ]
+            },
+            "8": {
+              "label": "Number at 582, 405",
+              "samples": [
+                2,
+                2,
+                2,
+                16,
+                null,
+                4,
+                2,
+                2,
+                2,
+                null,
+                null,
+                2,
+                2,
+                2,
+                2,
+                2
+              ]
+            },
+            "9": {
+              "label": "Number at 327, 526",
+              "samples": [
+                16,
+                2,
+                4,
+                8,
+                4,
+                16,
+                16,
+                16,
+                16,
+                4,
+                32,
+                32,
+                32,
+                32,
+                2,
+                2
+              ]
+            },
+            "10": {
+              "label": "Number at 461, 527",
+              "samples": [
+                8,
+                32,
+                32,
+                4,
+                16,
+                2,
+                2,
+                4,
+                2,
+                8,
+                16,
+                4,
+                4,
+                4,
+                8,
+                8
+              ]
+            },
+            "11": {
+              "label": "Number at 461, 405",
+              "samples": [
+                null,
+                8,
+                4,
+                2,
+                2,
+                8,
+                8,
+                8,
+                null,
+                null,
+                null,
+                4,
+                4,
+                4,
+                128,
+                128
+              ]
+            },
+            "12": {
+              "label": "Number at 582, 527",
+              "samples": [
+                null,
+                2,
+                64,
+                64,
+                4,
+                8,
+                16,
+                2,
+                16,
+                16,
+                2,
+                32,
+                32,
+                32,
+                2,
+                2
+              ]
+            },
+            "13": {
+              "label": "Number at 692, 526",
+              "samples": [
+                null,
+                null,
+                16,
+                2,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                8,
+                8
+              ]
+            },
+            "14": {
+              "label": "Number at 704, 405",
+              "samples": [
+                null,
+                null,
+                null,
+                null,
+                2,
+                null,
+                4,
+                4,
+                null,
+                null,
+                2,
+                null,
+                null,
+                null,
+                2,
+                2
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 716222,
+            "attempted_bytes": 327039008,
+            "batch": 3,
+            "changed_or_unavailable_bytes": 51154944,
+            "complete_trajectory_bytes": 13381760,
+            "image_budget_bytes": 1775880,
+            "image_disk_bytes": 1775880,
+            "read_bytes": 327039008,
+            "read_unique_bytes": 40656896,
+            "selected_unique_bytes": 43556864
+          }
+        }
+      },
+      "png_hashes_verified": 36,
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          720.0,
+          201.0,
+          52.0,
+          25.0
+        ],
+        "complete_bytes": 24489984,
+        "elapsed_ms": 228,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\game-change-search-v1\\2048-1\\engine\\captures\\42f7ecee-ef0b-4063-8392-fa019e652d5c\\change-search-01.json",
+        "label": "Number at 750, 203",
+        "matched_windows": 2,
+        "observations": [
+          464.0,
+          504.0,
+          512.0,
+          552.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 26779648,
+        "reason": null,
+        "retained_windows": 2,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 4,
+        "status": "selected"
+      },
+      "selected_bytes_per_capture": 128,
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 16,
+          "binding": {
+            "generation": 2,
+            "session": "de2556e2-e24b-4205-98aa-9349fa1c22ea",
+            "target": "6e55de79-ca97-4155-b2b3-84e49407c3f7/1/01DD614B2D296179/18809160"
+          }
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4,
+          "binding": {
+            "generation": 3,
+            "session": "de2556e2-e24b-4205-98aa-9349fa1c22ea",
+            "target": "6e55de79-ca97-4155-b2b3-84e49407c3f7/2/01DD614B2D296179/18809160"
+          }
+        },
+        "3": {
+          "phase": "Running",
+          "steps": 16,
+          "binding": {
+            "generation": 4,
+            "session": "de2556e2-e24b-4205-98aa-9349fa1c22ea",
+            "target": "6e55de79-ca97-4155-b2b3-84e49407c3f7/3/01DD614B2D296179/18809160"
+          }
+        }
+      },
+      "trial_selection": {
+        "rule": "Lowest OCR check track ID, lowest candidate index with exactly four agreements",
+        "track": 5,
+        "prediction_id": "794c892c-828d-4513-92df-22f598ab756a",
+        "candidate": 0,
+        "observed": 1264,
+        "requested": 1274
+      },
+      "trial_patch_bytes": 1,
+      "prepared": {
+        "ok": true,
+        "error": null,
+        "phase": "prepared",
+        "id": "72777a05-2e5e-4d57-9eaf-7d9f4894eec1",
+        "reason": "Overlapping interpretations agree on this location test. Other locations remain competing explanations. Review the predicted outcomes before explicitly trying it."
+      },
+      "applied": {
+        "ok": true,
+        "error": null,
+        "phase": "written",
+        "id": "72777a05-2e5e-4d57-9eaf-7d9f4894eec1",
+        "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified."
+      },
+      "checked": {
+        "ok": true,
+        "error": null,
+        "phase": "written",
+        "id": "72777a05-2e5e-4d57-9eaf-7d9f4894eec1",
+        "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified."
+      },
+      "restored": {
+        "ok": true,
+        "error": null,
+        "phase": "restored",
+        "id": "72777a05-2e5e-4d57-9eaf-7d9f4894eec1",
+        "reason": "Original bytes were observed again. This does not undo downstream gameplay effects."
+      },
+      "checked-restore": {
+        "ok": true,
+        "error": null,
+        "phase": "restored",
+        "id": "72777a05-2e5e-4d57-9eaf-7d9f4894eec1",
+        "reason": "Original bytes were observed again. This does not undo downstream gameplay effects."
+      },
+      "trial_png_hashes_verified": 5,
+      "trial_observations": [
+        {
+          "stage": "before_edit",
+          "value": 1264,
+          "expected": 1264,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "10bc5a8d3655181fea2834d88ef62965d82a5c9d75afbb5ed65865f838f42616"
+        },
+        {
+          "stage": "after_edit",
+          "value": 1264,
+          "expected": 1274,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "10bc5a8d3655181fea2834d88ef62965d82a5c9d75afbb5ed65865f838f42616"
+        },
+        {
+          "stage": "after_edit",
+          "value": 1264,
+          "expected": 1274,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "10bc5a8d3655181fea2834d88ef62965d82a5c9d75afbb5ed65865f838f42616"
+        },
+        {
+          "stage": "after_restoration",
+          "value": 1264,
+          "expected": 1264,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "10bc5a8d3655181fea2834d88ef62965d82a5c9d75afbb5ed65865f838f42616"
+        },
+        {
+          "stage": "after_restoration",
+          "value": 1264,
+          "expected": 1264,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "10bc5a8d3655181fea2834d88ef62965d82a5c9d75afbb5ed65865f838f42616"
+        }
+      ],
+      "write_receipt": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          244
+        ],
+        "transferred": 1
+      },
+      "restoration_receipt": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          224
+        ],
+        "transferred": 1
+      },
+      "input": {
+        "pulses": 125,
+        "trusted_downs": 125,
+        "trusted_ups": 125
+      },
+      "raw_json_sha256": {
+        "applied.json": "9b536fd7c2e4faf0bfc008e96f3d6371f6a5f9c06a663185b3fb1aaf791084dd",
+        "archived.json": "4def8498d05fa3f6002ad274ca08ff5a7ffcd5bf86001dcb2d77a90d5da673e2",
+        "attached.json": "b4d87ce688de6a060af70d5a36a56ba3ddda733c37164cc16c6e1a6e4cf1700a",
+        "checked-restore.json": "41d8974d21ec006af161a00807f087fa77f1e8b18a6fe9ab1db7615488842a00",
+        "checked.json": "4dc673ceb935a8b83e9b0019a49990ba20c6cf117ca0608c9b6134a8dc7b1422",
+        "commands.json": "6ec8d1b6055a5742fea13da49bd97f90af6c1c083ef77eb5d1d092335d1d11de",
+        "delivered-keys.json": "bb147efca9faad89e229dd034b13a8a5d65b90a5816523ba2732654778361920",
+        "final-status.json": "5fa5e17dc3403fe9adb79f1c544832ae70136e63e8e3815eea52e1752021903e",
+        "focused-completed.json": "4b314a39f1ca957592113aa105657b15515f12b288ec050be10d9d9f9f90cecb",
+        "fresh-start.json": "04cf507d4b0ca5d84fcd42f1e5e949fb5d76a0433fc49affff75030051b3b09a",
+        "initial-completed.json": "6e55e4198a6812177893e6164b51edac6796a78c51dabf5a9276c29e162a87bf",
+        "input-config.json": "d3752253b49f4ca0e1ff8bda454813c55b55e4cd1d9aafc386d64268ed4875c5",
+        "input-control.json": "134bf454d3e8def7affdb510e2b3d83d413404144bb255f19dd2a2a9a43d4afc",
+        "oracle.json": "990efe5d3657e2901f07b5f164a0277bcdcda8e081528c42afea456edd9e11d8",
+        "prepared.json": "0581e2bb95bfcb287fd3916f4f811de893ad81d0e4f99d662a355658abae361c",
+        "restored.json": "7a7d1d0b4747d4846f4f44126ef10147e5e7d434a88c921a26169bfb7bdbee3d",
+        "run.json": "6bccad356fbe17859e907f8d80cc849e72d0c6d8b77f49686920e796b27775a0",
+        "scope-selection.json": "ec5313683734fca7a96d24530b779cc194db7fdaefb8ef5cc1fd86f0f46b5673",
+        "search-summary.json": "57055dded88bcd9ec39862b1fac72f194a2dee5b2bf86f6427ac691445a61dbc",
+        "selection-completed.json": "b947fa9744f8fde6856119c689e020b8339867447bb83aad264e846288cb51d1",
+        "selection.json": "34a77a2021279e3daaf657449cc7379382bc78671ec94109c5bbad36149ab3bd",
+        "started.json": "e9b04d92af3e7bb8b5c1659f6347bdff455552b9091355b36d465572fada221c",
+        "states.json": "d622f5b76964004c75bd5032c2c76cddd2b46f4120a3aa3c1bd29dc83817fa30",
+        "track-selection.json": "20a545720fcada501f429be13ea9f9b06ffc0cfcaeb9004bf5bcc01934013e65",
+        "trial-selection.json": "ffb1c62547665b11937729295fa15324ec19377522082fc49e0bf9d5b9324060",
+        "trial-stages.json": "803e17d49afb9cc355c0d6a4df31a35283e36a1eb46554c15315b3382b4e64db"
+      }
+    },
+    {
+      "game": "tetris",
+      "errors": [],
+      "captures": 36,
+      "search_outcome": "completed four-moment selection and fresh sixteen-moment batch",
+      "trial_outcome": "written; restoration restored",
+      "commands": {
+        "list_processes": 1,
+        "set_observer_model": 1,
+        "attach_process": 2,
+        "list_memory_processes": 1,
+        "job_control": 66,
+        "start_change_search": 1,
+        "prepare_probe": 1,
+        "apply_change": 1,
+        "observe_change": 2,
+        "restore_change": 1,
+        "advance_memory": 1
+      },
+      "owned_processes": {
+        "engine": 77924,
+        "mcp": 15760,
+        "input": 85376
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 74576,
+          "cpuTime": 2.653979
+        },
+        {
+          "type": "renderer",
+          "id": 84404,
+          "cpuTime": 0.034226
+        },
+        {
+          "type": "renderer",
+          "id": 87004,
+          "cpuTime": 3.405877
+        },
+        {
+          "type": "renderer",
+          "id": 71516,
+          "cpuTime": 0.259225
+        },
+        {
+          "type": "GPU",
+          "id": 70124,
+          "cpuTime": 3.080272
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 82820,
+          "cpuTime": 0.174058
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 82404,
+          "cpuTime": 0.027828
+        }
+      ],
+      "stages": {
+        "initial": {
+          "count": 16,
+          "ids": [
+            "431b0f06-af46-4efe-91e3-3435fe37dcfa",
+            "a417fd8a-9484-4854-a63f-c73e44094683",
+            "373dcaa3-84e7-4978-895e-a2558dd935f7",
+            "bb17056f-ac7b-4343-ada2-35d352923f90",
+            "a47d7bd8-71f0-44d8-90f5-7eb45eac70f6",
+            "13697959-a2ab-49d2-b2b8-e907e3a077db",
+            "6646a87c-125d-4b2b-95b2-85eb847af28e",
+            "59689728-82d6-4d9e-a555-bcfa27f8b9fe",
+            "bb1edba9-4d56-4006-aeb6-21b4715b6390",
+            "1a44e0c1-56fd-4d7c-adc2-e84b314873da",
+            "0a2349a6-cd21-4d13-9b59-ab63325a49b6",
+            "0b33c2d6-b396-4114-980a-f42909bb8394",
+            "282b754f-690e-4c3d-a567-5e2210fb913d",
+            "ee44ae91-893e-46f9-a4bd-0d5b589c992b",
+            "b5993b87-f9ac-4cef-8ed3-420073be134c",
+            "54238560-8dbe-4c2c-a7b4-f479f48cb0d4"
+          ],
+          "checks": [
+            {
+              "id": "d1c6924c-5aa8-4c26-bfae-c58df403c0c7",
+              "source": "ocr",
+              "track": 2,
+              "after_frame": 12,
+              "basis_ids": [
+                "431b0f06-af46-4efe-91e3-3435fe37dcfa",
+                "a417fd8a-9484-4854-a63f-c73e44094683",
+                "373dcaa3-84e7-4978-895e-a2558dd935f7",
+                "bb17056f-ac7b-4343-ada2-35d352923f90",
+                "a47d7bd8-71f0-44d8-90f5-7eb45eac70f6",
+                "13697959-a2ab-49d2-b2b8-e907e3a077db",
+                "6646a87c-125d-4b2b-95b2-85eb847af28e",
+                "59689728-82d6-4d9e-a555-bcfa27f8b9fe",
+                "bb1edba9-4d56-4006-aeb6-21b4715b6390",
+                "1a44e0c1-56fd-4d7c-adc2-e84b314873da",
+                "0a2349a6-cd21-4d13-9b59-ab63325a49b6",
+                "0b33c2d6-b396-4114-980a-f42909bb8394"
+              ],
+              "candidates": [
+                {
+                  "address": "0x7FFF63F5C5B0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -26,
+                    "kind": "I32",
+                    "offset": 5552,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "282b754f-690e-4c3d-a567-5e2210fb913d",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 50
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "ee44ae91-893e-46f9-a4bd-0d5b589c992b",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 50
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "b5993b87-f9ac-4cef-8ed3-420073be134c",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 60
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "54238560-8dbe-4c2c-a7b4-f479f48cb0d4",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 60
+                    }
+                  ]
+                },
+                {
+                  "address": "0x2E8C007A89C8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -1389.7487800793142,
+                    "kind": "I32",
+                    "offset": 2504,
+                    "slope": 1.2419813800909516e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "282b754f-690e-4c3d-a567-5e2210fb913d",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "ee44ae91-893e-46f9-a4bd-0d5b589c992b",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "b5993b87-f9ac-4cef-8ed3-420073be134c",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "54238560-8dbe-4c2c-a7b4-f479f48cb0d4",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.934450706721464
+                    }
+                  ]
+                },
+                {
+                  "address": "0x2E8C007A89D0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -1390.9907614594051,
+                    "kind": "I32",
+                    "offset": 2512,
+                    "slope": 1.2419813800909516e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "282b754f-690e-4c3d-a567-5e2210fb913d",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "ee44ae91-893e-46f9-a4bd-0d5b589c992b",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "b5993b87-f9ac-4cef-8ed3-420073be134c",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.96155384538861
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "54238560-8dbe-4c2c-a7b4-f479f48cb0d4",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.93445070672169
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "numeric_readings": {
+            "0": {
+              "label": "Near \u201cC 127.0.o.1\u2022\u00c54458\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "1": {
+              "label": "Number at 1036, 56",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                null,
+                null
+              ]
+            },
+            "2": {
+              "label": "Number at 427, 288",
+              "samples": [
+                0,
+                0,
+                10,
+                10,
+                10,
+                20,
+                20,
+                30,
+                30,
+                40,
+                40,
+                50,
+                50,
+                50,
+                60,
+                60
+              ]
+            },
+            "3": {
+              "label": "Near \u201crows\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "4": {
+              "label": "Near \u201cFPS (65-67)\u201d",
+              "samples": [
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66
+              ]
+            },
+            "5": {
+              "label": "Number at 569, 411",
+              "samples": [
+                null,
+                null,
+                null,
+                null,
+                5,
+                5,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 0,
+            "attempted_bytes": 225062960,
+            "batch": 1,
+            "changed_or_unavailable_bytes": 45924352,
+            "complete_trajectory_bytes": 13332480,
+            "image_budget_bytes": 1847578,
+            "image_disk_bytes": 1847578,
+            "read_bytes": 225062960,
+            "read_unique_bytes": 14225408,
+            "selected_unique_bytes": 16777216
+          }
+        },
+        "selection": {
+          "count": 4,
+          "ids": [
+            "4666dd04-008f-4bd1-8d3c-74ba3aa60de1",
+            "e18ba308-4269-4699-9d69-1e411b1e4aa3",
+            "dade3931-19ac-4ebd-909d-94c9b5a57fe7",
+            "0a794048-bd49-4987-b2c3-2deffbd5efab"
+          ],
+          "checks": [],
+          "numeric_readings": {
+            "0": {
+              "label": "Near \u201cC 127.0.o.1\u2022\u00c54458\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "1": {
+              "label": "Number at 427, 288",
+              "samples": [
+                70,
+                70,
+                80,
+                90
+              ]
+            },
+            "2": {
+              "label": "Near \u201crows\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "3": {
+              "label": "Near \u201cFPS (65-67)\u201d",
+              "samples": [
+                66,
+                66,
+                66,
+                66
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 436838,
+            "attempted_bytes": 317411376,
+            "batch": 2,
+            "changed_or_unavailable_bytes": 57188352,
+            "complete_trajectory_bytes": 13332480,
+            "image_budget_bytes": 2277099,
+            "image_disk_bytes": 2277099,
+            "read_bytes": 317411376,
+            "read_unique_bytes": 40128512,
+            "selected_unique_bytes": 42680320
+          }
+        },
+        "focused": {
+          "count": 16,
+          "ids": [
+            "93bd80f4-e0fd-4036-9dcb-c9f612819d08",
+            "a69686d0-a8a1-4462-a339-17d00c192c86",
+            "5575f90e-4e23-4d8c-b44a-96c3d86c10c2",
+            "92aaab88-738f-4843-a749-81657465f0a3",
+            "afa0dfaa-2152-4ca3-9c78-b9cb28205ee6",
+            "31da7da3-008e-4597-b4cf-a4245e5f4164",
+            "3fd4cd0b-f353-453e-9a6a-a30cb34baeab",
+            "ca478170-15fa-41e6-ad54-f2f40715bb04",
+            "cba7f9ef-f277-472b-a2d6-be9c727b6ebb",
+            "7fba960e-3bf4-4d00-bdcf-682fec94232b",
+            "b5a55e17-2496-499d-ad1f-96c071b256da",
+            "06968b43-afcd-4002-b410-43f19a2f13e7",
+            "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+            "d18881df-9811-4b7a-825d-761ab007fb6d",
+            "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+            "22162408-8d02-4399-9ac3-5c098eab7feb"
+          ],
+          "checks": [
+            {
+              "id": "cf977f08-aae4-49e2-85cb-e497b40acf8d",
+              "source": "ocr",
+              "track": 1,
+              "after_frame": 12,
+              "basis_ids": [
+                "93bd80f4-e0fd-4036-9dcb-c9f612819d08",
+                "a69686d0-a8a1-4462-a339-17d00c192c86",
+                "5575f90e-4e23-4d8c-b44a-96c3d86c10c2",
+                "92aaab88-738f-4843-a749-81657465f0a3",
+                "afa0dfaa-2152-4ca3-9c78-b9cb28205ee6",
+                "31da7da3-008e-4597-b4cf-a4245e5f4164",
+                "3fd4cd0b-f353-453e-9a6a-a30cb34baeab",
+                "ca478170-15fa-41e6-ad54-f2f40715bb04",
+                "cba7f9ef-f277-472b-a2d6-be9c727b6ebb",
+                "7fba960e-3bf4-4d00-bdcf-682fec94232b",
+                "b5a55e17-2496-499d-ad1f-96c071b256da",
+                "06968b43-afcd-4002-b410-43f19a2f13e7"
+              ],
+              "candidates": [
+                {
+                  "address": "0x1C4C7860640",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -2,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EA48",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 8,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EA58",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 24,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EA68",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 40,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EA80",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EA98",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 24,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EAA0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EAB0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50102EAE8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 40,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CB44",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 1275,
+                    "kind": "I32",
+                    "offset": 4,
+                    "slope": -0.09615384615384616,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CCC0",
+                  "mapping": {
+                    "exact": true,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CCE8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 1,
+                    "kind": "I32",
+                    "offset": 40,
+                    "slope": 0.0625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CDAC",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 4,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CDCC",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 5,
+                    "kind": "I32",
+                    "offset": 12,
+                    "slope": 0.0625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CDFC",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 6,
+                    "kind": "I32",
+                    "offset": 60,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CE2C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 7,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 0.0625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103CE38",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 6,
+                    "kind": "I32",
+                    "offset": 56,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103E704",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 10,
+                    "kind": "I32",
+                    "offset": 4,
+                    "slope": 5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103E72C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 15,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 0.3125,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103FEF0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 20,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": 2.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103FF20",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 22.5,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": 0.15625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103FF2C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 20,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 2.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50103FF78",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 22.5,
+                    "kind": "I32",
+                    "offset": 56,
+                    "slope": 0.15625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010ABCC0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 250,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": -5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010B2ABC",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 70,
+                    "kind": "I32",
+                    "offset": 60,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010B2AD8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 70,
+                    "kind": "I32",
+                    "offset": 24,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7CE8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 50,
+                    "kind": "I32",
+                    "offset": 40,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7D6C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7D74",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 52,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7DC8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 8,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7DD0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 16,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010C7DE4",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 50,
+                    "kind": "I32",
+                    "offset": 36,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010CF174",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 52,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010CF1AC",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 70,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010CF1C8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 8,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010CF200",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 70,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": 0.625,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D5010CF20C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 60,
+                    "kind": "I32",
+                    "offset": 12,
+                    "slope": 10,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112F8D0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 502,
+                    "kind": "I32",
+                    "offset": 16,
+                    "slope": -0.06666666666666667,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 182
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112F900",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 506,
+                    "kind": "I32",
+                    "offset": 0,
+                    "slope": -0.058823529411764705,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112F920",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2520,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": -0.19230769230769232,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112F970",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 5070,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": -0.023809523809523808,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112F9F0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 407,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": -0.05263157894736842,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FA70",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 1275,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": -0.05102040816326531,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FA90",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 4070,
+                    "kind": "I32",
+                    "offset": 16,
+                    "slope": -1.4285714285714286,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FAA0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 4070,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": -0.43478260869565216,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FAB0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 4070,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": -0.43478260869565216,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FB60",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 5070,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": -0.9090909090909092,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FB70",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 508,
+                    "kind": "I32",
+                    "offset": 48,
+                    "slope": -0.09090909090909093,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FEF8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 56,
+                    "slope": 0.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x1D50112FF0C",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 12,
+                    "slope": 0.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "agrees",
+                      "observed": 190,
+                      "predicted": 190
+                    }
+                  ]
+                },
+                {
+                  "address": "0x647402180DA0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -26,
+                    "kind": "I32",
+                    "offset": 32,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "a8afa47c-8b12-44a4-aae2-4a99e90ae643",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "d18881df-9811-4b7a-825d-761ab007fb6d",
+                      "outcome": "agrees",
+                      "observed": 180,
+                      "predicted": 180
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "a324ec2c-c2c8-4828-9926-14e9b7938b2e",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "22162408-8d02-4399-9ac3-5c098eab7feb",
+                      "outcome": "contradicts",
+                      "observed": 190,
+                      "predicted": 181
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "numeric_readings": {
+            "0": {
+              "label": "Near \u201cC 127.0.o.1\u2022\u00c54458\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "1": {
+              "label": "Number at 427, 288",
+              "samples": [
+                90,
+                100,
+                100,
+                110,
+                110,
+                120,
+                130,
+                140,
+                140,
+                150,
+                160,
+                180,
+                180,
+                180,
+                190,
+                190
+              ]
+            },
+            "2": {
+              "label": "Near \u201crows\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "3": {
+              "label": "Near \u201cFPS (65-67)\u201d",
+              "samples": [
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                65,
+                66,
+                66,
+                66,
+                66,
+                66
+              ]
+            }
+          },
+          "coverage": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 749078,
+            "attempted_bytes": 317496416,
+            "batch": 3,
+            "changed_or_unavailable_bytes": 57189120,
+            "complete_trajectory_bytes": 13337728,
+            "image_budget_bytes": 3821130,
+            "image_disk_bytes": 3821130,
+            "read_bytes": 317496416,
+            "read_unique_bytes": 40128512,
+            "selected_unique_bytes": 42680320
+          }
+        }
+      },
+      "png_hashes_verified": 36,
+      "selection": {
+        "boundary_matches": 0,
+        "bounds": [
+          427.0,
+          285.0,
+          54.0,
+          20.0
+        ],
+        "complete_bytes": 19816448,
+        "elapsed_ms": 144,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\game-change-search-v1\\tetris-1\\engine\\captures\\3eb4cc09-a43b-4d3b-9fab-d1b7cd2dcacc\\change-search-01.json",
+        "label": "Number at 427, 288",
+        "matched_windows": 83,
+        "observations": [
+          70.0,
+          70.0,
+          80.0,
+          90.0
+        ],
+        "omitted_windows": 0,
+        "planned_bytes": 25903104,
+        "reason": null,
+        "retained_windows": 83,
+        "selection_batch": 2,
+        "source_batch": 1,
+        "source_track": 2,
+        "status": "selected"
+      },
+      "selected_bytes_per_capture": 5312,
+      "jobs": {
+        "1": {
+          "phase": "Completed",
+          "steps": 16,
+          "binding": {
+            "generation": 2,
+            "session": "178c2142-0890-410a-a1a8-b96c4c73fe2f",
+            "target": "f734a5ba-93af-422a-9085-c4252e8697e1/1/01DD614B9DF4E3A2/1312004"
+          }
+        },
+        "2": {
+          "phase": "Completed",
+          "steps": 4,
+          "binding": {
+            "generation": 3,
+            "session": "178c2142-0890-410a-a1a8-b96c4c73fe2f",
+            "target": "f734a5ba-93af-422a-9085-c4252e8697e1/2/01DD614B9DF4E3A2/1312004"
+          }
+        },
+        "3": {
+          "phase": "Running",
+          "steps": 16,
+          "binding": {
+            "generation": 4,
+            "session": "178c2142-0890-410a-a1a8-b96c4c73fe2f",
+            "target": "f734a5ba-93af-422a-9085-c4252e8697e1/3/01DD614B9DF4E3A2/1312004"
+          }
+        }
+      },
+      "trial_selection": {
+        "rule": "Lowest OCR check track ID, lowest candidate index with exactly four agreements",
+        "track": 1,
+        "prediction_id": "cf977f08-aae4-49e2-85cb-e497b40acf8d",
+        "candidate": 1,
+        "observed": 190,
+        "requested": 200
+      },
+      "trial_patch_bytes": 1,
+      "prepared": {
+        "ok": true,
+        "error": null,
+        "phase": "prepared",
+        "id": "cd8aa411-6150-4e3e-b1c7-5e6355b8db95",
+        "reason": "Overlapping interpretations agree on this location test. Other locations remain competing explanations. Review the predicted outcomes before explicitly trying it."
+      },
+      "applied": {
+        "ok": true,
+        "error": null,
+        "phase": "written",
+        "id": "cd8aa411-6150-4e3e-b1c7-5e6355b8db95",
+        "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified."
+      },
+      "checked": {
+        "ok": true,
+        "error": null,
+        "phase": "written",
+        "id": "cd8aa411-6150-4e3e-b1c7-5e6355b8db95",
+        "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified."
+      },
+      "restored": {
+        "ok": true,
+        "error": null,
+        "phase": "restored",
+        "id": "cd8aa411-6150-4e3e-b1c7-5e6355b8db95",
+        "reason": "Original bytes were observed again. This does not undo downstream gameplay effects."
+      },
+      "checked-restore": {
+        "ok": true,
+        "error": null,
+        "phase": "restored",
+        "id": "cd8aa411-6150-4e3e-b1c7-5e6355b8db95",
+        "reason": "Original bytes were observed again. This does not undo downstream gameplay effects."
+      },
+      "trial_png_hashes_verified": 5,
+      "trial_observations": [
+        {
+          "stage": "before_edit",
+          "value": 190,
+          "expected": 190,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "acd0baaacd2c3ef53956ab8614a30d2cf8f3f91153a05ef18c7cdc8a60490dcb"
+        },
+        {
+          "stage": "after_edit",
+          "value": 190,
+          "expected": 200,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "acd0baaacd2c3ef53956ab8614a30d2cf8f3f91153a05ef18c7cdc8a60490dcb"
+        },
+        {
+          "stage": "after_edit",
+          "value": 190,
+          "expected": 200,
+          "agrees": false,
+          "error": null,
+          "image_sha256": "acd0baaacd2c3ef53956ab8614a30d2cf8f3f91153a05ef18c7cdc8a60490dcb"
+        },
+        {
+          "stage": "after_restoration",
+          "value": 190,
+          "expected": 190,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "acd0baaacd2c3ef53956ab8614a30d2cf8f3f91153a05ef18c7cdc8a60490dcb"
+        },
+        {
+          "stage": "after_restoration",
+          "value": 190,
+          "expected": 190,
+          "agrees": true,
+          "error": null,
+          "image_sha256": "acd0baaacd2c3ef53956ab8614a30d2cf8f3f91153a05ef18c7cdc8a60490dcb"
+        }
+      ],
+      "write_receipt": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          64
+        ],
+        "transferred": 1
+      },
+      "restoration_receipt": {
+        "attempted": true,
+        "error": null,
+        "observed_after": [
+          48
+        ],
+        "transferred": 1
+      },
+      "input": {
+        "pulses": 125,
+        "trusted_downs": 125,
+        "trusted_ups": 125
+      },
+      "raw_json_sha256": {
+        "applied.json": "3d17b9b8ce521f518f71b670dd2e4d9f355174724c330d6ad5865aedb6a7f404",
+        "archived.json": "f19e1c3bd728218bb31147a0c5dbc4bde347131f8443eb3f65bdb0b0a6a82f44",
+        "attached.json": "4a03a85ad76cf6ab2106f2be8a086974b3bdc7fdc97ee46428b6e08f819e8783",
+        "checked-restore.json": "ef8cc131e2f67e5285c7ac5137e9faf4e2db47f713ee4175235d8ebc072ad4d0",
+        "checked.json": "c383dbc48dc80f9b5a3da7b4ad82387aa088d87355ea51232825add5f5166977",
+        "commands.json": "27505c5731a7d26367528410ae2343b3bd41b06df287efb8250a62334aa8e657",
+        "delivered-keys.json": "63932a8fe94b09c2a028b5f797ca33dda31173614feb09dc45ccc4a655b42da8",
+        "final-status.json": "03ef33284c85d9796916790f3a0e15aa5d9c6864bb192cd169fe83bc05d47c19",
+        "focused-completed.json": "d43409e9c9653107c06e28919d6e2263f9a2834014f0a37de68ea76beab6c210",
+        "fresh-start.json": "b3282920603563342a1e909f9831eb2a6e93647cd6c072137a2cd86825cff549",
+        "initial-completed.json": "994597ff3fa3330cbee53871334c1ed0e2a6d62f66658f471331a2d7ce5bfaed",
+        "input-config.json": "27230347c2262c0309a5543777473e1dfa722d321be5a546d8f4231cd06d2d93",
+        "input-control.json": "134bf454d3e8def7affdb510e2b3d83d413404144bb255f19dd2a2a9a43d4afc",
+        "oracle.json": "0a4a6bae0a7d58099d9f7aea8653e8dc09266be0a04eeb7a550e96d748e2eefa",
+        "prepared.json": "8a69b3b8ecccff70f57c44396dc731cf70cdc50cabfdb2acdf5eb7ebd1ce05f6",
+        "restored.json": "622a457220fbcc799def0a235a61853c7c47f1e11dfef57b16cfc2fb86c6c9dd",
+        "run.json": "fe00010dc4e026579dfc227a05b6e4e2aafebbfd2ef8e3dde7703947d41ac883",
+        "scope-selection.json": "4ca00500a49e35da8aa3c0eaf4fe8e543a04660aa45a2ddc4224ddffef5cfa71",
+        "search-summary.json": "a73ddf4232e5f616180afc1adbcb746e6034e719a5f5eb713288e57d4631beb7",
+        "selection-completed.json": "98f788ea76fbaadb8d5c62d13831fbdbc0701c67b3d13d23c922ec7b136521af",
+        "selection.json": "e72bec85735edb6dbf7fba6b4d864d1831e53a61c8daedd9295845e96e7dbc26",
+        "started.json": "a33e46f1371a3d6dd0ceef0c210fabf0bbd0a725af7b9d26cae0b728ff911c51",
+        "states.json": "e06c3362627532e3d159fb99a998f64acee41999e533afcc71c61ca3f229e03f",
+        "track-selection.json": "9acf240caf65828508e88b812dca9712c6d5ee7efa8575718e6a37f7d80fcb4d",
+        "trial-selection.json": "410be9a3ed1c65255c561b3d523dfd92a6467d78736b9fa9fdb8c8a3b7dfb017",
+        "trial-stages.json": "d7a74fe227fab88ff63499e0ea747f4930d12fd8902637304aa5e8ff87a0b15e"
+      }
+    }
+  ]
+}
