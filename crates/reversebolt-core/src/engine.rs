@@ -99,6 +99,8 @@ pub struct View {
     pub analysis: Option<AnalysisStatus>,
     #[serde(default)]
     pub changes: Vec<crate::changes::Change>,
+    #[serde(default)]
+    pub runtime_trials: Vec<crate::runtime_trials::Trial>,
 }
 
 impl Default for View {
@@ -119,6 +121,7 @@ impl Default for View {
             observer_model: None,
             analysis: None,
             changes: vec![],
+            runtime_trials: vec![],
         }
     }
 }
@@ -130,6 +133,7 @@ pub struct Engine {
     path: PathBuf,
     pub live: Option<crate::live::LiveSession>,
     pub changes: crate::changes::Store,
+    pub runtime_trials: crate::runtime_trials::Store,
 }
 
 impl Engine {
@@ -159,6 +163,12 @@ impl Engine {
                 .join("changes"),
         )?;
         view.changes = changes.records.clone();
+        let runtime_trials = crate::runtime_trials::Store::open(
+            path.parent()
+                .unwrap_or(std::path::Path::new("."))
+                .join("runtime-trials"),
+        )?;
+        view.runtime_trials = runtime_trials.records.clone();
         Ok(Self {
             view,
             target: None,
@@ -166,6 +176,7 @@ impl Engine {
             path,
             live: None,
             changes,
+            runtime_trials,
         })
     }
 

@@ -17,7 +17,7 @@ use std::{
 };
 
 const CREATE_NO_WINDOW: u32 = 0x08000000;
-fn runtime_scope(info: &ProcessInfo) -> Scope {
+pub(crate) fn runtime_scope(info: &ProcessInfo) -> Scope {
     Scope {
         pid: info.pid,
         created: info.created.to_ascii_lowercase(),
@@ -228,13 +228,22 @@ fn pending(base: &Path, scope: &Scope) -> bool {
     !completed(&dir.join(id.to_string()), scope, hash)
 }
 
+#[cfg(test)]
 fn preflight(output: &Path, paths: &[Locator]) -> Result<()> {
+    preflight_request(output, paths, None)
+}
+fn preflight_request(
+    output: &Path,
+    paths: &[Locator],
+    patch: Option<&reversebolt_core::runtime_patch::Patch>,
+) -> Result<()> {
     // Match the loader's actual payload limits before creating an unsettled fence.
     let request = json!({"output":output.to_string_lossy(),"root_start":0,
-        "expected_root_catalog_sha256":null,"paths":paths})
+        "expected_root_catalog_sha256":null,"paths":paths,"patch":patch})
     .to_string();
     if request.encode_utf16().count() >= 32768
         || serde_json::to_vec(paths).map_err(|e| e.to_string())?.len() > 65536
+        || serde_json::to_vec(&patch).map_err(|e| e.to_string())?.len() > 65536
     {
         return Err(
             "These value paths exceed the reader's request limit. Refresh fewer values.".into(),
@@ -438,6 +447,22 @@ pub fn run(
     base: &Path,
     cancel: &AtomicBool,
 ) -> Result<Outcome> {
+    run_request(info, paths, None, base, cancel)
+}
+pub fn run_patch(
+    info: &ProcessInfo,
+    patch: &reversebolt_core::runtime_patch::Patch,
+    base: &Path,
+) -> Result<Outcome> {
+    run_request(info, &[], Some(patch), base, &AtomicBool::new(false))
+}
+fn run_request(
+    info: &ProcessInfo,
+    paths: &[Locator],
+    patch: Option<&reversebolt_core::runtime_patch::Patch>,
+    base: &Path,
+    cancel: &AtomicBool,
+) -> Result<Outcome> {
     let tools = Tools::load()?;
     let scope = runtime_scope(info);
     if scope.created.len() != 16 || !scope.created.bytes().all(|b| b.is_ascii_hexdigit()) {
@@ -445,6 +470,9 @@ pub fn run(
     }
     for path in paths {
         path.validate(&scope)?;
+    }
+    if let Some(patch) = patch {
+        patch.validate(&scope, reversebolt_core::changes::now_ms())?;
     }
     let process_dir = process_directory(base, &scope);
     std::fs::create_dir_all(&process_dir).map_err(|e| e.to_string())?;
@@ -463,7 +491,7 @@ pub fn run(
     }
     let dir = new_directory(&process_dir)?;
     let output = dir.join("report.json");
-    preflight(&output, paths)?;
+    preflight_request(&output, paths, patch)?;
     if cancel.load(Ordering::SeqCst) {
         return Ok(Outcome {
             report: None,
@@ -481,7 +509,11 @@ pub fn run(
         tools.hash.clone(),
         output.to_string_lossy().into_owned(),
     ];
-    if !paths.is_empty() {
+    if let Some(patch) = patch {
+        let file = dir.join("patch.json");
+        save(&file, &json!(patch))?;
+        args.extend(["--patch-file".into(), file.to_string_lossy().into_owned()]);
+    } else if !paths.is_empty() {
         let pathfile = dir.join("paths.json");
         save(&pathfile, &json!(paths))?;
         args.extend([

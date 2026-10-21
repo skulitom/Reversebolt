@@ -438,6 +438,15 @@ impl Store {
             .cloned()
             .ok_or("Unknown change identity.".into())
     }
+    pub fn holds_process(&self, process: &ProcessInfo) -> bool {
+        self.failed
+            || self.records.iter().any(|c| {
+                c.phase.unresolved()
+                    && c.scope.process.pid == process.pid
+                    && c.scope.process.created == process.created
+                    && c.scope.process.session == process.session
+            })
+    }
     pub fn execute(
         &mut self,
         id: &str,

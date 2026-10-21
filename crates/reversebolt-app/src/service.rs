@@ -160,6 +160,9 @@ impl EngineHandle {
                         | "restore_change"
                         | "observe_change"
                         | "inspect_runtime"
+                        | "prepare_runtime_change"
+                        | "apply_runtime_change"
+                        | "restore_runtime_change"
                         | "search_runtime_values"
                         | "show_runtime_values"
                 ) {
@@ -177,6 +180,7 @@ impl EngineHandle {
                 };
                 engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
                 engine.view.changes = engine.changes.records.clone();
+                engine.view.runtime_trials = engine.runtime_trials.records.clone();
                 let (data, mut error) = match result {
                     Ok(data) => (
                         if matches!(
@@ -194,6 +198,9 @@ impl EngineHandle {
                                 | "restore_change"
                                 | "observe_change"
                                 | "inspect_runtime"
+                                | "prepare_runtime_change"
+                                | "apply_runtime_change"
+                                | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
                         ) {
@@ -267,6 +274,14 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "prepare_runtime_change" | "apply_runtime_change" | "restore_runtime_change" => {
+            return crate::runtime_trial_bridge::command(
+                engine,
+                command,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+                published,
+            );
+        }
         "search_runtime_values" | "show_runtime_values" => {
             let session = engine
                 .live
@@ -348,6 +363,16 @@ fn native_command(
             return Ok(json!(change));
         }
         "apply_change" | "restore_change" | "observe_change" => {
+            if command.action != "observe_change"
+                && engine.live.as_ref().is_some_and(|s| {
+                    let info = s.view.memory_process.as_ref().unwrap_or(&s.view.process);
+                    engine
+                        .runtime_trials
+                        .holds(&crate::runtime_bridge::runtime_scope(info))
+                })
+            {
+                return Err("An internal-value edit has an uncertain outcome. Further edits to this process are held.".into());
+            }
             if command.action != "observe_change"
                 && engine
                     .live

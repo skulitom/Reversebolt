@@ -23,6 +23,42 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+## Explicit internal-value trials
+
+The internal-value cards and MCP share a durable edit history in
+`state.runtime_trials`. `reversebolt_prepare_runtime_change` takes the current
+runtime catalogue ID/revision, a displayed candidate ID, and an exact numeric
+string as `value`. It freshly reads that path, advances the revision and saves
+a review without writing gameplay fields. The requested finite change must be
+nonzero and no greater than 20. Integer strings preserve 64-bit precision.
+
+`reversebolt_apply_runtime_change` takes that review's `data.id` as `change_id`.
+It explicitly attempts one guarded write with the original investigation,
+catalogue and revision. The review expires after 60 seconds, an intervening
+observation/selection, or restart. The runtime helper resolves the path afresh
+and checks type, reference chain, field address and expected bytes in the same
+managed pause as the write and read-back. Address reuse remains possible.
+
+`reversebolt_restore_runtime_change` explicitly attempts the inverse of a
+confirmed write, retaining the original reference guards. A newer observation
+revision does not invalidate restoration, but a new investigation or catalogue
+does. Conflicting values/references refuse restoration; they are never overwritten
+forcibly. A refused restoration leaves the original trial recorded as written.
+
+An effect intent is saved before helper dispatch. Each side has at most one
+attempt; repeating its ID returns the retained result, including refusal or an
+unknown outcome, without another helper call. Inspect `phase`, `write.outcome`
+and `restoration.outcome` even when the command itself succeeds. Interrupted or
+unconfirmed writes hold further runtime and screen-number edits to that process.
+Storage failure also holds new writes. Restart preserves evidence, expires
+unapplied reviews and never replays an interrupted attempt. Human takeover and
+the existing exclusive worker apply to these commands.
+
+Confirmed or restored bytes do not verify gameplay effects, permanent actor
+identity or recovery of downstream consequences. These trials use no screenshots;
+runtime refresh/watch remains available to gather separate later readings. A
+write receipt is retained separately from the refresh-only value history.
+
 ## Searching more widely for an observed number
 
 `reversebolt_start_change_search` backs **Follow changes**. Pass the current

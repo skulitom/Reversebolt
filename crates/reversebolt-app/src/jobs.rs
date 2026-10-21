@@ -1630,6 +1630,92 @@ mod tests {
     }
 
     #[test]
+    fn runtime_trials_obey_human_hold_and_active_observation_ownership() {
+        for action in [
+            "prepare_runtime_change",
+            "apply_runtime_change",
+            "restore_runtime_change",
+        ] {
+            for held in [false, true] {
+                let engine = EngineHandle::test_worker(initial_view(), |_, _| {
+                    panic!("Runtime trial escaped ownership gate")
+                });
+                let mut c = controller(engine);
+                let start = request(
+                    &c,
+                    "start_observation_job",
+                    json!({"count":2,"interval_ms":1000}),
+                );
+                c.job_command(&start).unwrap();
+                if held {
+                    c.job_command(&Command {
+                        action: "job_control".into(),
+                        args: json!({"operation":"take_control"}),
+                        source: "desktop".into(),
+                    })
+                    .unwrap();
+                }
+                let command = request(&c, action, json!({"change_id":"test"}));
+                let (tx, rx) = mpsc::channel();
+                c.command((command, Some(tx)));
+                let response = rx.recv_timeout(Duration::from_secs(2)).unwrap();
+                assert_eq!(response["ok"], false);
+                assert!(response["error"].as_str().unwrap().contains(if held {
+                    "desktop has control"
+                } else {
+                    "observation job owns"
+                }));
+                assert!(c.manual.is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn runtime_trial_cannot_overlap_a_manual_engine_operation() {
+        let (release, held) = mpsc::channel();
+        let (sent, received) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            sent.send(command.action.clone()).unwrap();
+            held.recv().unwrap();
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        let first = request(&c, "apply_runtime_change", json!({"change_id":"one"}));
+        c.command((first, None));
+        assert_eq!(
+            received.recv_timeout(Duration::from_secs(2)).unwrap(),
+            "apply_runtime_change"
+        );
+        for action in [
+            "prepare_runtime_change",
+            "apply_runtime_change",
+            "restore_runtime_change",
+        ] {
+            let (tx, rx) = mpsc::channel();
+            let next = request(&c, action, json!({"change_id":"two"}));
+            c.command((next, Some(tx)));
+            let response = rx.recv_timeout(Duration::from_secs(2)).unwrap();
+            assert_eq!(response["ok"], false);
+            assert!(
+                response["error"]
+                    .as_str()
+                    .unwrap()
+                    .contains("still in progress")
+            );
+        }
+        assert!(received.try_recv().is_err());
+        release.send(()).unwrap();
+        for _ in 0..200 {
+            c.finish_manual();
+            if c.manual.is_none() {
+                break;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(c.manual.is_none());
+    }
+
+    #[test]
     fn completed_observation_revokes_its_passive_input_owner() {
         let engine =
             EngineHandle::test_worker(initial_view(), |_, view| json!({"ok":true,"state":view}));

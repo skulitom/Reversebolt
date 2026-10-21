@@ -122,6 +122,7 @@ pub(crate) fn observation_age(observed: u128, now: u128) -> String {
 pub struct LivePane {
     runtime_catalog: String,
     runtime_query: String,
+    runtime_requested: std::collections::BTreeMap<String, String>,
     picker: bool,
     query: String,
     selected: Option<ProcessInfo>,
@@ -359,6 +360,7 @@ impl LivePane {
         );
         if self.runtime_catalog != card_catalog {
             self.runtime_catalog = card_catalog;
+            self.runtime_requested.clear();
             self.detail = None;
             self.card_order
                 .retain(|(source, _)| *source != CardSource::Runtime);
@@ -707,6 +709,8 @@ impl LivePane {
                                         let missing=card.readings.iter().filter(|r|r.status!="read").count();
                                         ui.label(RichText::new(format!("{} checks · {} differences{}",card.readings.len(),card.observed_differences(),if missing>0 {format!(" · {missing} unavailable")} else {String::new()})).size(12.).color(MUTED));
                                     }
+                                    let draft = self.runtime_requested.entry(card.candidate.id.clone()).or_insert_with(|| crate::ui_runtime_trial::initial_draft(card));
+                                    crate::ui_runtime_trial::controls(ui, handle, state, card, draft, !busy && live.connected);
                                 }
                                 if *external==CardSource::Ocr {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
@@ -984,6 +988,7 @@ impl LivePane {
                             ui.label("Found directly in the application's internal state. A name alone does not establish what it controls.");
                             ui.label(format!("Latest check: {}",card.status.replace('_'," ")));
                             ui.label("Refresh follows the current object at this path. Collections can change occupants.");
+                            crate::ui_runtime_trial::history(ui, handle, state, card, !busy && live.connected);
                             if !card.readings.is_empty() {
                                 ui.label("Recent checks. Gaps and changed occupants prevent claims of continuous behaviour; these do not prove an edit's effect.");
                                 for reading in &card.readings {

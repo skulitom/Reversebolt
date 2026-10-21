@@ -10,11 +10,13 @@ mod native;
 mod observation_pipeline;
 mod ocr;
 mod runtime_bridge;
+mod runtime_trial_bridge;
 mod service;
 mod target;
 mod theme;
 mod ui;
 mod ui_live;
+mod ui_runtime_trial;
 
 use fs2::FileExt;
 
