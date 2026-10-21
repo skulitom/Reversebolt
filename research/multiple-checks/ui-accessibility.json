@@ -1,0 +1,444 @@
+{
+  "scope": "Read-only, post-hoc accessibility observation during native case 0; no UI input or screenshot inspection.",
+  "observed_at": "2026-10-21T08:21:18.6337129Z",
+  "window": {
+    "pid": 85032,
+    "process": "Reversebolt",
+    "title": "Reversebolt",
+    "className": "Window Class",
+    "bounds": {
+      "x": 45,
+      "y": 25,
+      "width": 1136,
+      "height": 659
+    },
+    "foreground": false,
+    "enabled": true,
+    "minimized": false,
+    "maximized": false
+  },
+  "warnings": [
+    "A control changed or did not expose readable accessibility information.",
+    "A control changed or did not expose readable accessibility information."
+  ],
+  "elements": [
+    {
+      "role": "Text",
+      "name": "Reversebolt",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 82,
+        "width": 133,
+        "height": 29
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Make it your game",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 118,
+        "width": 106,
+        "height": 15
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Connect to application",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 164,
+        "width": 200,
+        "height": 36
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Application",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 219,
+        "width": 99,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Practice",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 258,
+        "width": 75,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Activity",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 338,
+        "width": 73,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Agent connection",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 377,
+        "width": 142,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Local vision",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 416,
+        "width": 100,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Research preview · v0.1.0",
+      "enabled": true,
+      "bounds": {
+        "x": 71,
+        "y": 644,
+        "width": 134,
+        "height": 14
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Controls",
+      "enabled": true,
+      "bounds": {
+        "x": 311,
+        "y": 78,
+        "width": 90,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Reversebolt location probe fixture",
+      "enabled": true,
+      "bounds": {
+        "x": 410,
+        "y": 78,
+        "width": 229,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Change app",
+      "enabled": true,
+      "bounds": {
+        "x": 647,
+        "y": 78,
+        "width": 103,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Disconnect",
+      "enabled": true,
+      "bounds": {
+        "x": 758,
+        "y": 78,
+        "width": 98,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Your controls, as they are discovered.",
+      "enabled": true,
+      "bounds": {
+        "x": 311,
+        "y": 117,
+        "width": 247,
+        "height": 17
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Quantity",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 180,
+        "width": 74,
+        "height": 22
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Arrange Quantity",
+      "enabled": true,
+      "bounds": {
+        "x": 669,
+        "y": 175,
+        "width": 39,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "On-screen value; its effect is still unknown.",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 214,
+        "width": 380,
+        "height": 15
+      }
+    },
+    {
+      "role": "Text",
+      "name": "53",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 248,
+        "width": 36,
+        "height": 37
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Learning",
+      "enabled": true,
+      "bounds": {
+        "x": 373,
+        "y": 259,
+        "width": 46,
+        "height": 14
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Seen 2s ago",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 292,
+        "width": 380,
+        "height": 14
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Inspect",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 313,
+        "width": 380,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Trial applied",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 352,
+        "width": 380,
+        "height": 17
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Visible value followed the test",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 376,
+        "width": 380,
+        "height": 14
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Restore bytes",
+      "enabled": true,
+      "bounds": {
+        "x": 329,
+        "y": 397,
+        "width": 116,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Check effect",
+      "enabled": true,
+      "bounds": {
+        "x": 453,
+        "y": 397,
+        "width": 108,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Reserve",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 180,
+        "width": 67,
+        "height": 22
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Arrange Reserve",
+      "enabled": true,
+      "bounds": {
+        "x": 1093,
+        "y": 175,
+        "width": 39,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "On-screen value; its effect is still unknown.",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 214,
+        "width": 380,
+        "height": 15
+      }
+    },
+    {
+      "role": "Text",
+      "name": "43",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 248,
+        "width": 36,
+        "height": 37
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Learning",
+      "enabled": true,
+      "bounds": {
+        "x": 797,
+        "y": 259,
+        "width": 46,
+        "height": 14
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Seen 2s ago",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 292,
+        "width": 380,
+        "height": 14
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Inspect",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 313,
+        "width": 380,
+        "height": 32
+      }
+    },
+    {
+      "role": "Text",
+      "name": "Trial not applied · prepare again",
+      "enabled": true,
+      "bounds": {
+        "x": 753,
+        "y": 352,
+        "width": 380,
+        "height": 14
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Keep looking",
+      "enabled": false,
+      "bounds": {
+        "x": 311,
+        "y": 466,
+        "width": 110,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Inspect application",
+      "enabled": true,
+      "bounds": {
+        "x": 311,
+        "y": 517,
+        "width": 149,
+        "height": 32
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Minimize",
+      "enabled": true,
+      "bounds": {
+        "x": 1034,
+        "y": 26,
+        "width": 47,
+        "height": 30
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Maximize",
+      "enabled": true,
+      "bounds": {
+        "x": 1081,
+        "y": 26,
+        "width": 46,
+        "height": 30
+      }
+    },
+    {
+      "role": "Button",
+      "name": "Close",
+      "enabled": true,
+      "bounds": {
+        "x": 1127,
+        "y": 26,
+        "width": 47,
+        "height": 30
+      }
+    }
+  ]
+}

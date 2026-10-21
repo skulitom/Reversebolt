@@ -1,0 +1,1380 @@
+{
+  "audit": "post-run; not preregistered",
+  "protocol_sha256": "86a3bbd01cc30e6536400b4b6b93263bbee615a2fc57d96f62cde8fe37721407",
+  "binaries": {
+    "Reversebolt.exe": "853653bfa0a9c515c45c817b46461131464f1a57f702324477e70d21ee567a9b",
+    "reversebolt-mcp.exe": "5268a12dcea276467e94f2ba30026380c2073a1c7dacfd8fa5757cc98b35455e"
+  },
+  "cases": [
+    {
+      "case": 0,
+      "report": {
+        "slot": 0,
+        "errors": [],
+        "protocol_sha256": "86a3bbd01cc30e6536400b4b6b93263bbee615a2fc57d96f62cde8fe37721407",
+        "fixture_pid": 81448,
+        "initial_oracle": {
+          "fields": [
+            1869995901504,
+            1869995903840
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            40,
+            72
+          ]
+        },
+        "engine_pid": 85032,
+        "mcp_pid": 16680,
+        "prepared_oracle": {
+          "fields": [
+            1869995901504,
+            1869995903840
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            1869995901504,
+            1869995903840
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            53,
+            43
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            1869995901504,
+            1869995903840
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "outcome": "two automatic checks; selected field edited/restored; other plan expired",
+        "tracks": [
+          0,
+          1
+        ],
+        "candidates": [
+          1,
+          1
+        ]
+      },
+      "checks": [
+        {
+          "id": "452f0fe5-0b93-4be8-b1ac-14416b3a6ac4",
+          "track": 0,
+          "label": "Near \u201cQuantity\u201d",
+          "automatic_selection": {
+            "planned_tracks": [
+              0,
+              1
+            ],
+            "ranked": [
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 0
+              },
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 1
+              }
+            ],
+            "rationale": "Ranked by fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. Up to eight series share a 200-candidate budget; a series that does not fit is deferred whole, never stripped of rivals. This prioritizes investigation cost, not gameplay importance. Planned tracks may be fewer than ranked tracks; status lists the checks actually started. Predictions freeze before scheduled fresh observations. No edits are automatic.",
+            "scheduled_fresh_captures": 4
+          },
+          "candidates": [
+            {
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 576,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "address": "0x1B364710240",
+              "samples": [
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      88,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710240",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 36230024,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 36230039
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    88,
+                    66
+                  ],
+                  "frame": 13,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 36230047,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 36449351
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "2c8284e3-3551-4300-83d2-5c5b4ce78a79",
+                    "number": 13,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570857875,
+                    "width": 600
+                  },
+                  "observed": 54.0,
+                  "outcome": "agrees",
+                  "predicted": 54.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 241,
+                    "capture_interval": {
+                      "begin_us": 36471161,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 36471168
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 241,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      88,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710240",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 39240743,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 39240763
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    88,
+                    66
+                  ],
+                  "frame": 14,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 39240771,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 39484052
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "9781c18d-9141-47a3-8ffe-1b1d6a33d77d",
+                    "number": 14,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570860886,
+                    "width": 600
+                  },
+                  "observed": 54.0,
+                  "outcome": "agrees",
+                  "predicted": 54.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 264,
+                    "capture_interval": {
+                      "begin_us": 39505034,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 39505043
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 264,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710240",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 42273500,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 42273525
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "frame": 15,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 42273535,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 42493192
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "548bc947-2919-4935-9c76-aef6bb82e50f",
+                    "number": 15,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570863918,
+                    "width": 600
+                  },
+                  "observed": 50.0,
+                  "outcome": "agrees",
+                  "predicted": 50.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 239,
+                    "capture_interval": {
+                      "begin_us": 42513328,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 42513335
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 239,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710240",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 45251325,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 45251343
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "frame": 16,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 45251354,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 45463013
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "bb7c0e9b-3798-4d06-966b-f469fd6e0a84",
+                    "number": 16,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570866896,
+                    "width": 600
+                  },
+                  "observed": 50.0,
+                  "outcome": "agrees",
+                  "predicted": 50.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 233,
+                    "capture_interval": {
+                      "begin_us": 45485200,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 45485207
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 233,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "7704914f-e3d6-41ab-969c-fdf94bb2dcc5",
+          "track": 1,
+          "label": "Near \u201cReserve\u201d",
+          "automatic_selection": {
+            "planned_tracks": [
+              0,
+              1
+            ],
+            "ranked": [
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 0
+              },
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 1
+              }
+            ],
+            "rationale": "Ranked by fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. Up to eight series share a 200-candidate budget; a series that does not fit is deferred whole, never stripped of rivals. This prioritizes investigation cost, not gameplay importance. Planned tracks may be fewer than ranked tracks; status lists the checks actually started. Predictions freeze before scheduled fresh observations. No edits are automatic.",
+            "scheduled_fresh_captures": 4
+          },
+          "candidates": [
+            {
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 2912,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "address": "0x1B364710B60",
+              "samples": [
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      128,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710B60",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 36230039,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 36230046
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    128,
+                    66
+                  ],
+                  "frame": 13,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 36230047,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 36449351
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "2c8284e3-3551-4300-83d2-5c5b4ce78a79",
+                    "number": 13,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570857875,
+                    "width": 600
+                  },
+                  "observed": 64.0,
+                  "outcome": "agrees",
+                  "predicted": 64.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 241,
+                    "capture_interval": {
+                      "begin_us": 36471161,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 36471168
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 241,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      128,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710B60",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 39240764,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 39240770
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    128,
+                    66
+                  ],
+                  "frame": 14,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 39240771,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 39484052
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "9781c18d-9141-47a3-8ffe-1b1d6a33d77d",
+                    "number": 14,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570860886,
+                    "width": 600
+                  },
+                  "observed": 64.0,
+                  "outcome": "agrees",
+                  "predicted": 64.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 264,
+                    "capture_interval": {
+                      "begin_us": 39505034,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 39505043
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 264,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      44,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710B60",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 42273527,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 42273534
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    44,
+                    66
+                  ],
+                  "frame": 15,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 42273535,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 42493192
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "548bc947-2919-4935-9c76-aef6bb82e50f",
+                    "number": 15,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570863918,
+                    "width": 600
+                  },
+                  "observed": 43.0,
+                  "outcome": "agrees",
+                  "predicted": 43.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 239,
+                    "capture_interval": {
+                      "begin_us": 42513328,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 42513335
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 239,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      44,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x1B364710B60",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 45251344,
+                        "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                        "end_us": 45251353
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    44,
+                    66
+                  ],
+                  "frame": 16,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 45251354,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 45463013
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "bb7c0e9b-3798-4d06-966b-f469fd6e0a84",
+                    "number": 16,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570866896,
+                    "width": 600
+                  },
+                  "observed": 43.0,
+                  "outcome": "agrees",
+                  "predicted": 43.0,
+                  "read": {
+                    "address": "0x1B364710000",
+                    "begin_ms": 233,
+                    "capture_interval": {
+                      "begin_us": 45485200,
+                      "clock_id": "76a35c7c-c779-4c7a-b111-8b7de0edd396",
+                      "end_us": 45485207
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 233,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "trial": {
+        "selected_check": "452f0fe5-0b93-4be8-b1ac-14416b3a6ac4",
+        "selected_track": 0,
+        "write": {
+          "attempted": true,
+          "error": null,
+          "observed_after": [
+            84
+          ],
+          "transferred": 1
+        },
+        "intervention_outcome": "matched",
+        "other_plan": {
+          "phase": "expired",
+          "reason": "The evidence behind this trial was interrupted. Start a fresh investigation before preparing another edit.",
+          "write": null
+        },
+        "restoration": {
+          "attempted": true,
+          "error": null,
+          "observed_after": [
+            72
+          ],
+          "transferred": 1
+        }
+      },
+      "files": {
+        "applied.json": "fbf3de63450e9b727b903cbe8c2efb4ef49e4c9104c469d8b4fa3661098a5e51",
+        "attached.json": "94666394b9b0d08cec5e55b51ed979b978b0030f924c37cb0da6921545cb2453",
+        "checked.json": "eb7d78ee90a37fcc2ef01414443f577b57b0fa34f3e708bf6c486cd1fa042b3e",
+        "commands.json": "918581470f53a30c85e8791e2388f5ce48755229781c5da0822fbc51c6914ff9",
+        "discovery-status.json": "dd845d0733a6b6c134dc7f2e494102ac6ac0e7b709d4956bb9c8624827ca0d37",
+        "final-status.json": "7e5ee9526967334c67587625aff063a2b1111b84882375cd5350472de96c4bf6",
+        "oracle.json": "9f37f8fc6680764104fe7fdacfa27754a46a2c28a11e4d04acc938eae8943579",
+        "other-expired.json": "de2a3f74175ee71e09b961d10ddef1233dab4451baf90187e912130c53366a55",
+        "prepared-0.json": "5f5100eb65156986f9fe52e77a18dd3f59d4da28e667fa9b79146310d291e7f2",
+        "prepared-1.json": "61332fba6966db29cb18e322ebbff1c467d0dcfc8ac12c197aaddbb3b9a2437c",
+        "report.json": "b6e09730c7fe4f73b0c58c10d63e9e5d7739bd5b5b3572ad37f910473d08ee86",
+        "restored.json": "afd293e424dfc23f81248452f563309713e48b4ac5acf620307b80358b17b818",
+        "states.json": "ecd823e01067ef9f1af80d38f7256e34a9122cb26762ccb841f9f57e87c7af73"
+      }
+    },
+    {
+      "case": 1,
+      "report": {
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "86a3bbd01cc30e6536400b4b6b93263bbee615a2fc57d96f62cde8fe37721407",
+        "fixture_pid": 68424,
+        "initial_oracle": {
+          "fields": [
+            1779459425360,
+            1779459426456
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            40,
+            72
+          ]
+        },
+        "engine_pid": 73296,
+        "mcp_pid": 78448,
+        "prepared_oracle": {
+          "fields": [
+            1779459425360,
+            1779459426456
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            1779459425360,
+            1779459426456
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            46
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            1779459425360,
+            1779459426456
+          ],
+          "display_fields": [
+            0,
+            1
+          ],
+          "values": [
+            50,
+            43
+          ]
+        },
+        "outcome": "two automatic checks; selected field edited/restored; other plan expired",
+        "tracks": [
+          0,
+          1
+        ],
+        "candidates": [
+          1,
+          1
+        ]
+      },
+      "checks": [
+        {
+          "id": "d8b6c559-fba3-4238-9efe-d006fb6d580c",
+          "track": 0,
+          "label": "Near \u201cQuantity\u201d",
+          "automatic_selection": {
+            "planned_tracks": [
+              0,
+              1
+            ],
+            "ranked": [
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 0
+              },
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 1
+              }
+            ],
+            "rationale": "Ranked by fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. Up to eight series share a 200-candidate budget; a series that does not fit is deferred whole, never stripped of rivals. This prioritizes investigation cost, not gameplay importance. Planned tracks may be fewer than ranked tracks; status lists the checks actually started. Predictions freeze before scheduled fresh observations. No edits are automatic.",
+            "scheduled_fresh_captures": 4
+          },
+          "candidates": [
+            {
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 1104,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "address": "0x19E500C0450",
+              "samples": [
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      88,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0450",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 35453979,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 35453994
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    88,
+                    66
+                  ],
+                  "frame": 13,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 35454004,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 35664376
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "011521f3-8bec-4b69-be23-60e13470ac69",
+                    "number": 13,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570953702,
+                    "width": 600
+                  },
+                  "observed": 54.0,
+                  "outcome": "agrees",
+                  "predicted": 54.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 231,
+                    "capture_interval": {
+                      "begin_us": 35685027,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 35685034
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 231,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      88,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0450",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 38404358,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 38404379
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    88,
+                    66
+                  ],
+                  "frame": 14,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 38404388,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 38620570
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "5e411379-2060-40b9-b9eb-2bba95149ee9",
+                    "number": 14,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570956653,
+                    "width": 600
+                  },
+                  "observed": 54.0,
+                  "outcome": "agrees",
+                  "predicted": 54.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 234,
+                    "capture_interval": {
+                      "begin_us": 38639339,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 38639347
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 234,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0450",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 41352597,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 41352613
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "frame": 15,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 41352621,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 41573570
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "b694c376-a76b-4f15-b524-666c779afc36",
+                    "number": 15,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570959601,
+                    "width": 600
+                  },
+                  "observed": 50.0,
+                  "outcome": "agrees",
+                  "predicted": 50.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 242,
+                    "capture_interval": {
+                      "begin_us": 41595357,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 41595364
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 242,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0450",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 44307584,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 44307600
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "frame": 16,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 44307608,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 44527857
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "54594263-cac4-42d2-b740-1ed766513f20",
+                    "number": 16,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570962556,
+                    "width": 600
+                  },
+                  "observed": 50.0,
+                  "outcome": "agrees",
+                  "predicted": 50.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 241,
+                    "capture_interval": {
+                      "begin_us": 44548907,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 44548917
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 241,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "4202931f-6a9a-4ca0-af7e-03d3c0f993ae",
+          "track": 1,
+          "label": "Near \u201cReserve\u201d",
+          "automatic_selection": {
+            "planned_tracks": [
+              0,
+              1
+            ],
+            "ranked": [
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 0
+              },
+              {
+                "interpretations": 1,
+                "locations": 1,
+                "readable_moments": 12,
+                "track": 1
+              }
+            ],
+            "rationale": "Ranked by fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. Up to eight series share a 200-candidate budget; a series that does not fit is deferred whole, never stripped of rivals. This prioritizes investigation cost, not gameplay importance. Planned tracks may be fewer than ranked tracks; status lists the checks actually started. Predictions freeze before scheduled fresh observations. No edits are automatic.",
+            "scheduled_fresh_captures": 4
+          },
+          "candidates": [
+            {
+              "mapping": {
+                "exact": true,
+                "intercept": 0.0,
+                "kind": "F32",
+                "offset": 2200,
+                "slope": 1.0,
+                "train_inliers": 6,
+                "validation_inliers": 6
+              },
+              "address": "0x19E500C0898",
+              "samples": [
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      128,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0898",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 35453996,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 35454003
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    128,
+                    66
+                  ],
+                  "frame": 13,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 35454004,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 35664376
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "011521f3-8bec-4b69-be23-60e13470ac69",
+                    "number": 13,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570953702,
+                    "width": 600
+                  },
+                  "observed": 64.0,
+                  "outcome": "agrees",
+                  "predicted": 64.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 231,
+                    "capture_interval": {
+                      "begin_us": 35685027,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 35685034
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 231,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      128,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0898",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 38404380,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 38404387
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    128,
+                    66
+                  ],
+                  "frame": 14,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 38404388,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 38620570
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "5e411379-2060-40b9-b9eb-2bba95149ee9",
+                    "number": 14,
+                    "sha256": "e720ac6bd60e89f8fb8be55d57ec2194baa5b4539ac49b6d89590b104174dbde",
+                    "started_unix_ms": 1792570956653,
+                    "width": 600
+                  },
+                  "observed": 64.0,
+                  "outcome": "agrees",
+                  "predicted": 64.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 234,
+                    "capture_interval": {
+                      "begin_us": 38639339,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 38639347
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 234,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      44,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0898",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 41352614,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 41352620
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    44,
+                    66
+                  ],
+                  "frame": 15,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 41352621,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 41573570
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "b694c376-a76b-4f15-b524-666c779afc36",
+                    "number": 15,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570959601,
+                    "width": 600
+                  },
+                  "observed": 43.0,
+                  "outcome": "agrees",
+                  "predicted": 43.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 242,
+                    "capture_interval": {
+                      "begin_us": 41595357,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 41595364
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 242,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                },
+                {
+                  "before_image": {
+                    "bytes": [
+                      0,
+                      0,
+                      44,
+                      66
+                    ],
+                    "read": {
+                      "address": "0x19E500C0898",
+                      "begin_ms": 0,
+                      "capture_interval": {
+                        "begin_us": 44307601,
+                        "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                        "end_us": 44307608
+                      },
+                      "disposition": "retained_generation_unverified",
+                      "end_ms": 0,
+                      "requested": 4,
+                      "retained": 4
+                    }
+                  },
+                  "bytes": [
+                    0,
+                    0,
+                    44,
+                    66
+                  ],
+                  "frame": 16,
+                  "image": {
+                    "capture_interval": {
+                      "begin_us": 44307608,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 44527857
+                    },
+                    "epoch": 0,
+                    "height": 300,
+                    "id": "54594263-cac4-42d2-b740-1ed766513f20",
+                    "number": 16,
+                    "sha256": "63d5a2b594cc241caafbbf8c8966bf75b6444ed4fb7947a6f075fd0b5ec5f034",
+                    "started_unix_ms": 1792570962556,
+                    "width": 600
+                  },
+                  "observed": 43.0,
+                  "outcome": "agrees",
+                  "predicted": 43.0,
+                  "read": {
+                    "address": "0x19E500C0000",
+                    "begin_ms": 241,
+                    "capture_interval": {
+                      "begin_us": 44548907,
+                      "clock_id": "3b38e4c1-1951-4c11-8d05-cdae5d421ef4",
+                      "end_us": 44548917
+                    },
+                    "disposition": "retained_generation_unverified",
+                    "end_ms": 241,
+                    "requested": 4096,
+                    "retained": 4096
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "trial": {
+        "selected_check": "4202931f-6a9a-4ca0-af7e-03d3c0f993ae",
+        "selected_track": 1,
+        "write": {
+          "attempted": true,
+          "error": null,
+          "observed_after": [
+            56
+          ],
+          "transferred": 1
+        },
+        "intervention_outcome": "matched",
+        "other_plan": {
+          "phase": "expired",
+          "reason": "The evidence behind this trial was interrupted. Start a fresh investigation before preparing another edit.",
+          "write": null
+        },
+        "restoration": {
+          "attempted": true,
+          "error": null,
+          "observed_after": [
+            44
+          ],
+          "transferred": 1
+        }
+      },
+      "files": {
+        "applied.json": "dddbf1392ef32a65bd1553f3ded8e3390433de10f19e7fba8b3842fdf95bc5cb",
+        "attached.json": "68495610f9315c992e14748f17e51b692d56034625307bde29a8d28311f6dbde",
+        "checked.json": "48403eeffb3689bc02816cbb51486a67e4c2f82ce3d9a42f6fe5e0e6b6614472",
+        "commands.json": "5f7f28ac5c22aa45ef98b0aee7ed63ad0f348ac0432b60514e71c7750ec8bd18",
+        "discovery-status.json": "03d5a3bf78daca51dbf1e99a896019af79f0d1a71db2cd2c1d7fc32b3cdd79db",
+        "final-status.json": "4a8c40ea9d801b2701005ec24d6bb76adcfe556d3b2b2d81cfd853fe3448225a",
+        "oracle.json": "3da032a40b97b4b11ac7bdc4b6b4ea08ecb284603773848dfa96e8a012bf4aac",
+        "other-expired.json": "3f20492b7d4f51457b56c17c2b12522fe832c719f805f75fac9ea50640b8ca53",
+        "prepared-0.json": "5012e9f9a207ba0be465a85bbd3395fb39ebbae00ee7b6a73375505b3213c3b9",
+        "prepared-1.json": "7db2b63669b66cffd67d4b7b4df6cde7ef6be96042a91705cfe9821e824ab6ba",
+        "report.json": "b5f1eb87fdfd26cac89d94ebd8ec406b09eeca0d25561c07944dac10269cfd20",
+        "restored.json": "5a7bc653609b66aeb53ee49b30db6b1d7499500b1f9342f6b9b5cc73cb243d09",
+        "states.json": "7e9f656efb28878988cedfbd7f6c576a5f037987b4c67e06ec2414db48b8e089"
+      }
+    }
+  ]
+}

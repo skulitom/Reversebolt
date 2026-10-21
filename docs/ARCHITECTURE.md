@@ -303,3 +303,12 @@ claiming automatic visual effect detection. See
 These boundaries should replace practice assumptions rather than disguise them
 as general capabilities. Reuse Squalr findings, but retain independent MIT code
 unless a deliberate licensing decision is made.
+
+Numeric prospective checks are now a bounded collection in `LiveView`, keyed by
+source and track identity. Eight series share 200 candidates and deduplicated
+capture-prefix reads, with one persisted snapshot of the collection. Automatic
+selection freezes fitting results before future captures; failed extra saves do
+not replace existing checks. Trial scopes bind the relevant check ID, while any
+attempted write invalidates passive evidence across the collection and expires
+other unapplied plans. Legacy single-check JSON is read as a historical list.
+See [multiple-check verification](../research/multiple-checks/README.md).

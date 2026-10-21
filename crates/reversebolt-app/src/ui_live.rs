@@ -527,7 +527,7 @@ impl LivePane {
                                                     })
                                             {
                                                 "Earlier"
-                                            } else if *external == CardSource::Ocr && live.prediction_check.as_ref().is_some_and(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==*id && c.invalidated.is_none() && c.automatic_selection.is_some() && c.candidates.iter().any(|m|m.samples.len()<reversebolt_core::prediction::MIN_FRESH)) {
+                                            } else if *external == CardSource::Ocr && live.prediction_checks.iter().any(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==*id && c.invalidated.is_none() && c.automatic_selection.is_some() && c.candidates.iter().any(|m|m.samples.len()<reversebolt_core::prediction::MIN_FRESH)) {
                                                 "Checking"
                                             } else if *readable {
                                                 "Learning"
@@ -556,7 +556,7 @@ impl LivePane {
                                 if *external==CardSource::Ocr {
                                     let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
                                     let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
-                                    let eligible=live.prediction_check.as_ref().is_some_and(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && reversebolt_core::probes::choices(check).is_ok_and(|groups|groups.iter().any(|g|g.eligible)));
+                                    let eligible=live.prediction_checks.iter().any(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && reversebolt_core::probes::choices(check).is_ok_and(|groups|groups.iter().any(|g|g.eligible)));
                                     if let Some(observed)=observed.filter(|_|eligible) {
                                         let requested=self.requested.entry(*id).or_insert_with(|| {
                                             change.filter(|c| c.phase==reversebolt_core::changes::Phase::Prepared).map_or(observed, |c| c.desired)
@@ -681,7 +681,7 @@ impl LivePane {
                     ui.heading(title);
                     ui.label(RichText::new(value).size(32.0).color(ACCENT));
                     ui.label("This finding is still being investigated. A trial edit, when available, tests one requested value; it does not verify a gameplay control.");
-                    if external==CardSource::Ocr && let Some(check)=live.prediction_check.as_ref().filter(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id)
+                    if external==CardSource::Ocr && let Some(check)=live.prediction_checks.iter().find(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id)
                         && let Some(selection)=&check.automatic_selection {
                         egui::CollapsingHeader::new("Why this value was checked").show(ui,|ui| {
                             ui.label(&selection.rationale);
@@ -691,7 +691,7 @@ impl LivePane {
                     }
                     if external==CardSource::Ocr
                         && let Some(observed)=value.parse::<f64>().ok().filter(|v|v.is_finite())
-                        && let Some(check)=live.prediction_check.as_ref().filter(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id && c.invalidated.is_none())
+                        && let Some(check)=live.prediction_checks.iter().find(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==id && c.invalidated.is_none())
                         && let Ok(choices)=reversebolt_core::probes::choices(check)
                         && choices.len()>1 && choices.iter().any(|c|c.eligible) {
                         let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id);
@@ -949,7 +949,7 @@ impl LivePane {
                     }
                     if ui
                         .add_enabled(
-                            !busy && live.connected && live.sample_count >= 12 && live.prediction_check.is_none(),
+                            !busy && live.connected && live.sample_count >= 12 && live.prediction_checks.is_empty(),
                             egui::Button::new("Compare changes"),
                         )
                         .clicked()
@@ -1024,7 +1024,7 @@ impl LivePane {
                 }
             });
         }
-        if let Some(check) = &live.prediction_check {
+        for check in &live.prediction_checks {
             ui.add_space(12.0);
             ui.label(
                 RichText::new(format!("Challenge: {}", check.label))
@@ -1041,7 +1041,7 @@ impl LivePane {
             if let Some(reason) = &check.invalidated {
                 ui.colored_label(WARNING, reason);
             }
-            egui::CollapsingHeader::new("Prediction evidence").show(ui, |ui| {
+            egui::CollapsingHeader::new("Prediction evidence").id_salt(&check.id).show(ui, |ui| {
                 ui.label("Agreement is limited to these provisional observations. It cannot distinguish a controlling value from a display copy.");
                 for candidate in &check.candidates {
                     egui::CollapsingHeader::new(format!("{} · {:?} · {}", candidate.address,
@@ -1296,7 +1296,18 @@ fn prediction_button(
     track: usize,
     has_matches: bool,
 ) {
-    if !has_matches || live.prediction_check.is_some() {
+    if !has_matches
+        || live.prediction_checks.len() >= reversebolt_core::prediction::MAX_CHECKS
+        || live.prediction_checks.iter().any(|c| {
+            c.invalidated.is_some()
+                || c.after_frame != live.sample_count
+                || (c.track == track
+                    && match c.source {
+                        reversebolt_core::prediction::Source::Ocr => source == "ocr",
+                        reversebolt_core::prediction::Source::External => source == "external",
+                    })
+        })
+    {
         return;
     }
     let remaining = (512 * 1024 * 1024 / live.planned_bytes.max(1))

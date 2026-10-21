@@ -552,7 +552,7 @@ mod tests {
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
-            prediction_check: None,
+            prediction_checks: vec![],
             coverage: crate::coverage::Coverage {
                 batch: 1,
                 ..Default::default()

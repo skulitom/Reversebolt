@@ -4,6 +4,19 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest multiple automatic checks (2026-10-21): **28%**. Up to eight findings now
+share the bounded 200-candidate read budget, with separate evidence and card
+actions. Two fixed native cases automatically checked two independent values,
+edited/restored the selected field, and expired the other prepared plan after
+its evidence was interrupted. All 158 tests and packaged checks pass; the
+desktop preview `0.1.0-20261021-091951` is running with history preserved.
+General discovery moves from 5/20 to **6/20** for simultaneous investigation and
+verified routing. Other credits remain foundation 4/10, native access 6/10,
+observation 5/15, validation 2/15, intent 0/10, agent collaboration 5/10 and
+generalization 0/10. This is controlled workflow evidence, not real-game
+generalization. The full goal stays active.
+[Evidence and limits](../research/multiple-checks/README.md).
+
 Latest intervention persistence (2026-10-21): **27% unchanged**. Result captures
 now record the complete tested values immediately before and after the image,
 distinguishing replaced edits from stable edits with no visible response. Missing

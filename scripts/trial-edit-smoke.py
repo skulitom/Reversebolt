@@ -58,7 +58,7 @@ try:
         print("captured",i+1,flush=True)
     live=state["live"]
     report["captures"]=states
-    report["prediction"]=live["prediction_check"]
+    report["prediction"]=live["prediction_checks"][0]
     prepared=call("prepare_change",{"investigation_id":live["investigation_id"],"batch":live["coverage"]["batch"],"track":track["id"],"value":53.},required=False)
     report["prepared"]=prepared
     if "--prepare-only" in sys.argv:

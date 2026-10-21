@@ -929,7 +929,7 @@ mod tests {
                 rule_error: None,
                 action_patterns: vec![],
                 temporal_tracks: vec![],
-                prediction_check: None,
+                prediction_checks: vec![],
                 coverage: reversebolt_core::coverage::Coverage {
                     batch: 1,
                     ..Default::default()

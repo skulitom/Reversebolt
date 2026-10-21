@@ -1,0 +1,102 @@
+{
+  "frozen_utc": "2026-10-21T08:20:19.686769+00:00",
+  "base_commit": "e603bdaf5d1179d201d326bbe41a0010dceb5fc1",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-091951",
+  "binaries": {
+    "Reversebolt.exe": "853653bfa0a9c515c45c817b46461131464f1a57f702324477e70d21ee567a9b",
+    "reversebolt-mcp.exe": "5268a12dcea276467e94f2ba30026380c2073a1c7dacfd8fa5757cc98b35455e"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "84b8d8e1fe4e117c881cd29b0ed8768a498f57147da89116f24b0f0e47c242e9",
+    "fixture.ps1": "63c2ced4b171c9705d7187b7098446afb2f6f705bf55e4faae0997d6eb53cbae",
+    "run.py": "960faf58c4c0585610a7f17f28bf67f7350226f313b09e49a3a436ee62209f23"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-app/src/jobs.rs": "ee212949d731d6296b2b354d89931e85e417ff84a8cce6d616f835aa2228cf80",
+    "crates/reversebolt-app/src/ui_live.rs": "a3b46c0f1efa0386136a2ec4b3b09d27bbf7ef48e60b8f7749aa595e418cbc46",
+    "crates/reversebolt-core/src/investigation.rs": "b422aa602dd6737dcf2fcaa6a0c5fc40bce12fc9c09055ecb283fa121c009d66",
+    "crates/reversebolt-core/src/live.rs": "a4bb5460ec41ce333926ae4d8b9d9ed5322affb6f7155c15d4e6169d854254e4",
+    "crates/reversebolt-core/src/prediction.rs": "c97538eedbdd1a45d52fcc60678f432a3dd7c03d8b6da6f65b8771d9100ebcaf",
+    "crates/reversebolt-core/src/rule_checks.rs": "b49890212cda07cf567c545ad0158648dbb9c357b78a630f20e0f18434d3a3bb",
+    "crates/reversebolt-core/tests/live_changes.rs": "c21f5d84c2db03eb019e55675fd537a0f29363ef2f9a74bab3cf2c875461eba7",
+    "crates/reversebolt-core/tests/prediction_checks.rs": "aa17b0029366b99f4a13efc83859fa246115d1324f48616ce1e93544cbd97445",
+    "crates/reversebolt-mcp/src/main.rs": "2abaeb740f397a984e1cf97b638e055b58bb0ca60756ee293cecf01ee668594e"
+  },
+  "values": [
+    [
+      40,
+      72
+    ],
+    [
+      56,
+      29
+    ],
+    [
+      31,
+      81
+    ],
+    [
+      85,
+      44
+    ],
+    [
+      64,
+      60
+    ],
+    [
+      27,
+      35
+    ],
+    [
+      75,
+      91
+    ],
+    [
+      92,
+      67
+    ],
+    [
+      44,
+      25
+    ],
+    [
+      67,
+      88
+    ],
+    [
+      38,
+      53
+    ],
+    [
+      50,
+      76
+    ],
+    [
+      54,
+      64
+    ],
+    [
+      54,
+      64
+    ],
+    [
+      50,
+      43
+    ],
+    [
+      50,
+      43
+    ]
+  ],
+  "cases": [
+    {
+      "slot": 0,
+      "selected_card": "upper"
+    },
+    {
+      "slot": 1,
+      "selected_card": "lower"
+    }
+  ],
+  "selection": "Both automatically checked tracks, sorted by screen vertical position; fixed candidate zero; no replacement or rerun."
+}

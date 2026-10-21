@@ -94,7 +94,7 @@ try:
     finished=wait_until(lambda s:current_job(s,job_id)["phase"] == "Completed")
     live=finished["state"]["live"]
     assert any(t["samples"] == values for t in live["tracks"]), live["tracks"]
-    assert live["phase"].startswith("Compared ") or live.get("prediction_check"), live["phase"]
+    assert live["phase"].startswith("Compared ") or live.get("prediction_checks"), live["phase"]
     assert live["coverage"]["analyzed_current_bytes"] > 0
     assert len(live["frames"]) == 16
     assert all(c["outcome"]["success"] for c in current_job(finished,job_id)["checkpoints"])

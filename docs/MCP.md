@@ -110,20 +110,23 @@ each capture with enough evidence; this never refits an active prediction check.
 The desktop uses the same controller and displays progress and pause/stop controls.
 
 With at least four future captures scheduled in that same job and available in
-the batch budget, comparison automatically selects one currently readable OCR
-series with matches and starts a prospective check. Ranking prefers fewer
+the batch budget, comparison automatically selects up to eight currently readable
+OCR series with matches and starts separate prospective checks. Ranking prefers fewer
 transitively overlapping location groups, then more readable moments, fewer
 interpretations and finally track ID. This estimates investigation effort, not
 gameplay relevance or confidence in a control. Labels never affect the choice.
 Selection and ranked evidence are persisted in
-`state.live.prediction_check.automatic_selection` before later captures occur.
+each `state.live.prediction_checks[].automatic_selection` before later captures occur.
+`planned_tracks` records the selection plan; the actual checks list records which
+starts succeeded. All checks share 200 candidate interpretations in total. A
+series that does not fit is deferred whole; its competing explanations are never
+discarded merely to fit the budget. Identical address/width reads are shared.
 Those captures challenge immutable mappings; they do not refit them. No trial
 preparation or write is automatic. Pause/stop still bounds the job; a scheduled
 capture is not a promise it will happen or provide useful contrast.
 
-Only one numeric series can currently have a check in a batch. Other findings
-remain on their cards, but are not automatically checked in parallel. An existing
-explicit check is preserved. For an agent-selected series, use manual attachment
+Each card uses the check matching its source and track ID. Existing explicit
+checks are preserved. For agent-selected series, use manual attachment
 and a job with `compare:false`, then `correlate` and `start_prediction_check`.
 Old job plans without a remaining-capture count do not start automatic checks.
 
@@ -576,7 +579,8 @@ must remain. All existing mappings for that series are fixed before new captures
 Fresh observations join their original image identity; late agent submissions
 can fill missing readings, but cannot change the stored predictions or bytes.
 
-Inspect `live.prediction_check`: it contains the original mappings, image hashes,
+Inspect `live.prediction_checks` by source and track, not list position. Each
+check contains the original mappings, image hashes,
 fresh byte witnesses, read receipts, predictions, observations and outcomes.
 Each fresh sample includes `before_image`, a small candidate-byte read and its
 receipt before requesting the image. The ordinary post-image memory scan is
@@ -602,9 +606,19 @@ distinct change permit only **consistent in observed scope**. This is a
 descriptive check, not statistical confidence, semantic meaning, causal authority,
 or permission to edit. Missing observations do not count as agreement.
 
-One check is allowed per batch. Correlation cannot refit its fresh interval.
+Up to eight checks share a 200-candidate budget per batch. Freeze additional
+series at the same capture count before gathering fresh evidence. A retry cannot
+replace a check for the same source/track; a new series cannot bypass an
+invalidated check. Correlation cannot refit any frozen interval. An attempted
+trial write invalidates every passive check, since effects may cross values.
+Previously prepared, unapplied plans backed by those checks expire before another
+write can enter the backend. Completed apply calls remain idempotent and guarded
+restoration remains available; invalidation does not authorize forcing an undo.
 Mapping changes, geometry changes, target exit and evidence persistence failures
 invalidate the relevant scope. New batches archive the prior view and require
-fresh discovery. `prediction-check.json` is historical evidence after restart.
+fresh discovery. `prediction-checks.json` (schema version 2, `checks` list) is
+historical evidence after restart. Current status publishes only the plural
+`prediction_checks` field; saved legacy views with a single `prediction_check`
+object or null still load without granting a new process capability.
 The initial fitting interval's full bytes are transient; the check retains its
 coefficients and fresh byte witnesses, not a complete replay of initial fitting.

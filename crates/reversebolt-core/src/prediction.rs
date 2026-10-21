@@ -4,6 +4,27 @@ use serde::{Deserialize, Serialize};
 
 pub const TOLERANCE: f64 = 0.55;
 pub const MIN_FRESH: usize = 4;
+pub const MAX_CHECKS: usize = 8;
+pub const MAX_CANDIDATES: usize = 200;
+
+/// Historical sessions stored one optional check. New sessions publish a list.
+pub fn deserialize_checks<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> std::result::Result<Vec<PredictionCheck>, D::Error> {
+    // Deserialize through JSON rather than Serde's untagged content buffer:
+    // check witnesses include u128 timestamps, which that buffer cannot restore.
+    match serde_json::Value::deserialize(deserializer)? {
+        serde_json::Value::Null => Ok(vec![]),
+        serde_json::Value::Array(checks) => checks
+            .into_iter()
+            .map(serde_json::from_value)
+            .collect::<std::result::Result<_, _>>()
+            .map_err(serde::de::Error::custom),
+        check => serde_json::from_value(check)
+            .map(|check| vec![check])
+            .map_err(serde::de::Error::custom),
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

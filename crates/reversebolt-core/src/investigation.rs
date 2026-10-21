@@ -1,4 +1,4 @@
-//! Bounded choice of a numeric finding for a prospective, read-only check.
+//! Bounded choice of numeric findings for prospective, read-only checks.
 //! Ranking measures investigation cost, not gameplay importance or authority.
 use crate::live::NumberTrack;
 use serde::{Deserialize, Serialize};
@@ -16,6 +16,8 @@ pub struct RankedTrack {
 pub struct Selection {
     pub scheduled_fresh_captures: usize,
     pub ranked: Vec<RankedTrack>,
+    #[serde(default)]
+    pub planned_tracks: Vec<usize>,
     pub rationale: String,
 }
 
@@ -78,10 +80,23 @@ pub fn select(tracks: &[NumberTrack], remaining: usize) -> Option<Selection> {
             r.track,
         )
     });
-    (!ranked.is_empty()).then(|| Selection {
+    let mut remaining_candidates = crate::prediction::MAX_CANDIDATES;
+    let planned_tracks = ranked
+        .iter()
+        .filter_map(|r| {
+            if r.interpretations > remaining_candidates {
+                return None;
+            }
+            remaining_candidates -= r.interpretations;
+            Some(r.track)
+        })
+        .take(crate::prediction::MAX_CHECKS)
+        .collect::<Vec<_>>();
+    (!planned_tracks.is_empty()).then(|| Selection {
         scheduled_fresh_captures: remaining,
         ranked,
-        rationale: "Chosen for fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. This prioritizes a bounded investigation, not gameplay importance. Predictions were frozen before the scheduled fresh observations. No edits are automatic.".into(),
+        planned_tracks,
+        rationale: "Ranked by fewer separate candidate locations, then more readable moments and fewer interpretations; ties use the track ID. Up to eight series share a 200-candidate budget; a series that does not fit is deferred whole, never stripped of rivals. This prioritizes investigation cost, not gameplay importance. Planned tracks may be fewer than ranked tracks; status lists the checks actually started. Predictions freeze before scheduled fresh observations. No edits are automatic.".into(),
     })
 }
 
@@ -147,5 +162,24 @@ mod tests {
         );
         assert!(select(&tracks, 3).is_none());
         assert!(select(&[], 4).is_none());
+    }
+
+    #[test]
+    fn whole_series_fit_the_shared_candidate_and_check_limits() {
+        let tracks: Vec<_> = (0..12).map(|id| track(id, &[(16, Kind::I32)])).collect();
+        assert_eq!(
+            select(&tracks, 4).unwrap().planned_tracks,
+            (0..8).collect::<Vec<_>>()
+        );
+        let mut large = track(0, &[(16, Kind::I32)]);
+        large.matches = vec![large.matches[0].clone(); 199];
+        let mut other = track(1, &[(32, Kind::I32), (48, Kind::I32)]);
+        other.matches = vec![other.matches[0].clone(); 2];
+        // Both have one location: the smaller series ranks first and the whole
+        // 199-candidate group is deferred rather than losing competing models.
+        let selection = select(&[large, other], 4).unwrap();
+        assert_eq!(selection.planned_tracks, vec![1]);
+        assert_eq!(selection.ranked.len(), 2);
+        assert_eq!(selection.ranked[1].interpretations, 199);
     }
 }

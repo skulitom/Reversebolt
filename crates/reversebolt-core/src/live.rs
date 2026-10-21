@@ -233,8 +233,12 @@ pub struct LiveView {
     pub rule_error: Option<String>,
     #[serde(default)]
     pub action_patterns: Vec<crate::action_patterns::Evidence>,
-    #[serde(default)]
-    pub prediction_check: Option<PredictionCheck>,
+    #[serde(
+        default,
+        alias = "prediction_check",
+        deserialize_with = "prediction::deserialize_checks"
+    )]
+    pub prediction_checks: Vec<PredictionCheck>,
     #[serde(default)]
     pub coverage: Coverage,
     #[serde(default)]
@@ -297,8 +301,9 @@ impl LiveSession {
     pub fn change_scope(&self, track: usize) -> Result<crate::changes::Scope> {
         let check = self
             .view
-            .prediction_check
-            .as_ref()
+            .prediction_checks
+            .iter()
+            .find(|c| c.source == prediction::Source::Ocr && c.track == track)
             .ok_or("Check this value against fresh observations first.")?;
         let series = self
             .view
@@ -356,7 +361,12 @@ impl LiveSession {
             return Err("The original application is no longer connected.".into());
         }
         let scope = self.change_scope(track)?;
-        let check = self.view.prediction_check.as_ref().unwrap();
+        let check = self
+            .view
+            .prediction_checks
+            .iter()
+            .find(|c| c.source == prediction::Source::Ocr && c.track == track)
+            .unwrap();
         if check.source != prediction::Source::Ocr
             || check.track != track
             || check.invalidated.is_some()
@@ -530,11 +540,25 @@ impl LiveSession {
         self.refresh_connection();
         let change = store.get(id)?;
         let scope = self.change_scope(change.scope.track)?;
+        if !restore
+            && change.phase == crate::changes::Phase::Prepared
+            && self
+                .view
+                .prediction_checks
+                .iter()
+                .find(|c| c.id == scope.prediction)
+                .is_none_or(|c| c.invalidated.is_some())
+        {
+            let mut expired = change;
+            expired.phase = crate::changes::Phase::Expired;
+            expired.reason = "The evidence behind this trial was interrupted. Start a fresh investigation before preparing another edit.".into();
+            return store.record(expired);
+        }
         let result = store.execute(id, &*self.target, &scope, restore)?;
         // Keep the frozen record for provenance, but do not treat observations
         // after our own intervention as independent predictive confirmation.
         if result.write.as_ref().is_some_and(|r| r.attempted) {
-            if let Some(check) = &mut self.view.prediction_check {
+            for check in &mut self.view.prediction_checks {
                 check.invalidated =
                     Some("An explicit trial edit interrupted passive observation.".into());
             }
@@ -739,7 +763,7 @@ impl LiveSession {
     pub fn refresh_connection(&mut self) -> bool {
         if self.view.connected && !self.target.alive() {
             self.view.connected = false;
-            if let Some(check) = &mut self.view.prediction_check {
+            for check in &mut self.view.prediction_checks {
                 check.invalidated = Some("The original process exited.".into());
             }
             let _ = self.save_prediction_check();
@@ -785,7 +809,7 @@ impl LiveSession {
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
-            prediction_check: None,
+            prediction_checks: vec![],
             coverage: Coverage {
                 batch: 1,
                 selected_unique_bytes: planned_bytes as u64,
@@ -831,33 +855,35 @@ impl LiveSession {
     }
 
     fn prediction_read_plan(&self) -> Vec<(u64, Chunk)> {
-        let Some(check) = &self.view.prediction_check else {
-            return vec![];
-        };
         let number = self.view.sample_count + 1;
-        if check.invalidated.is_some() || number <= check.after_frame || number > check.last_frame {
-            return vec![];
-        }
         let mut reads = BTreeMap::new();
-        for candidate in check.candidates.iter().filter(|c| c.invalidated.is_none()) {
-            if let Some(chunk) = self
-                .plan
-                .iter()
-                .find(|c| c.address == candidate.chunk_address)
+        for check in &self.view.prediction_checks {
+            if check.invalidated.is_some()
+                || number <= check.after_frame
+                || number > check.last_frame
             {
-                let address = chunk.address + candidate.offset_in_chunk as u64;
-                let length = candidate.mapping.kind.width();
-                reads.insert(
-                    (address, length),
-                    (
-                        chunk.address,
-                        Chunk {
-                            address,
-                            length,
-                            region: chunk.region.clone(),
-                        },
-                    ),
-                );
+                continue;
+            }
+            for candidate in check.candidates.iter().filter(|c| c.invalidated.is_none()) {
+                if let Some(chunk) = self
+                    .plan
+                    .iter()
+                    .find(|c| c.address == candidate.chunk_address)
+                {
+                    let address = chunk.address + candidate.offset_in_chunk as u64;
+                    let length = candidate.mapping.kind.width();
+                    reads.insert(
+                        (address, length),
+                        (
+                            chunk.address,
+                            Chunk {
+                                address,
+                                length,
+                                region: chunk.region.clone(),
+                            },
+                        ),
+                    );
+                }
             }
         }
         reads.into_values().collect()
@@ -1193,10 +1219,10 @@ impl LiveSession {
     }
 
     /// Compare observations and, with enough scheduled future captures, freeze
-    /// one promising OCR finding before any fresh evidence is available.
+    /// several OCR findings before any fresh evidence is available.
     pub fn capture_for_discovery(&mut self, remaining: usize) -> Result<()> {
         self.capture()?;
-        if self.view.sample_count >= 12 && self.view.prediction_check.is_none() {
+        if self.view.sample_count >= 12 && self.view.prediction_checks.is_empty() {
             if let Err(reason) = self.correlate() {
                 self.view.phase = format!("Observations collected; no comparison yet. {reason}");
                 return Ok(());
@@ -1206,17 +1232,20 @@ impl LiveSession {
                 .saturating_sub(self.view.sample_count)
                 .min(remaining);
             if let Some(selection) = crate::investigation::select(&self.view.tracks, available) {
-                let track = selection.ranked[0].track;
-                if let Err(reason) = self.freeze_prediction_check(
-                    &self.view.investigation_id.clone(),
-                    self.view.coverage.batch,
-                    self.view.sample_count,
-                    prediction::Source::Ocr,
-                    track,
-                    Some(selection),
-                ) {
-                    self.view.phase =
-                        format!("Comparison completed; a fresh check could not start. {reason}");
+                for track in selection.planned_tracks.clone() {
+                    if let Err(reason) = self.freeze_prediction_check(
+                        &self.view.investigation_id.clone(),
+                        self.view.coverage.batch,
+                        self.view.sample_count,
+                        prediction::Source::Ocr,
+                        track,
+                        Some(selection.clone()),
+                    ) {
+                        self.view.phase = format!(
+                            "Comparison completed; a fresh check could not start. {reason}"
+                        );
+                        break;
+                    }
                 }
             }
         }
@@ -1388,7 +1417,7 @@ impl LiveSession {
         self.view.visual_tracks.clear();
         self.view.local_observation_warnings.clear();
         self.view.temporal_tracks.clear();
-        self.view.prediction_check = None;
+        self.view.prediction_checks.clear();
         self.image_epoch += 1;
         self.screen_size = None;
         self.view.phase = format!(
@@ -1621,8 +1650,24 @@ impl LiveSession {
                 "The investigation, batch or capture count changed. Read status again.".into(),
             );
         }
-        if self.view.prediction_check.is_some() {
-            return Err("This batch already has frozen predictions. Keep collecting evidence or move to another memory batch.".into());
+        if self
+            .view
+            .prediction_checks
+            .iter()
+            .any(|c| c.source == source && c.track == track_id)
+        {
+            return Err("This series already has frozen predictions. Keep collecting evidence or move to another memory batch.".into());
+        }
+        if self.view.prediction_checks.len() >= prediction::MAX_CHECKS {
+            return Err("This batch reached its eight-series check limit.".into());
+        }
+        if self
+            .view
+            .prediction_checks
+            .iter()
+            .any(|c| c.invalidated.is_some() || c.after_frame != after_frame)
+        {
+            return Err("Freeze additional series before collecting fresh captures. Changed or interrupted checks need a new memory batch.".into());
         }
         let last_frame = MAX_SAMPLES.min(RETAINED_MEMORY_BUDGET / self.view.planned_bytes.max(1));
         if after_frame < 12 || last_frame.saturating_sub(after_frame) < prediction::MIN_FRESH {
@@ -1643,8 +1688,17 @@ impl LiveSession {
                 .map(|t| (t.label.clone(), t.matches.clone())),
         }
         .ok_or("That observation series is not active.")?;
-        if matches.is_empty() || matches.len() > 200 {
+        if matches.is_empty() || matches.len() > prediction::MAX_CANDIDATES {
             return Err("Compare changes to obtain candidates for this series first.".into());
+        }
+        let used: usize = self
+            .view
+            .prediction_checks
+            .iter()
+            .map(|c| c.candidates.len())
+            .sum();
+        if used + matches.len() > prediction::MAX_CANDIDATES {
+            return Err("These interpretations exceed the batch's shared 200-candidate check budget. No candidates were dropped; start another memory batch.".into());
         }
         let mut candidates = vec![];
         for candidate in matches {
@@ -1688,110 +1742,117 @@ impl LiveSession {
         };
         // Prepare the frozen evidence before publishing it. A failed save cannot
         // silently start a new prospective interval on a later retry.
-        self.persist_prediction_check(&check)?;
-        self.view.prediction_check = Some(check);
+        let mut checks = self.view.prediction_checks.clone();
+        checks.push(check);
+        self.persist_prediction_checks(&checks)?;
+        self.view.prediction_checks = checks;
         self.view.phase = "Predictions frozen. Capture at least four more moments: include a value staying still and a distinct change. Continue normal gameplay; no memory edits are made.".into();
         Ok(())
     }
 
-    fn persist_prediction_check(&self, check: &PredictionCheck) -> Result<()> {
-        let bytes = serde_json::to_vec_pretty(&serde_json::json!({"schema_version":1,
-            "process":self.view.process,"memory_process":self.view.memory_process, "check":check,
+    fn persist_prediction_checks(&self, checks: &[PredictionCheck]) -> Result<()> {
+        let bytes = serde_json::to_vec_pretty(&serde_json::json!({"schema_version":2,
+            "process":self.view.process,"memory_process":self.view.memory_process, "checks":checks,
             "scope":"Historical frozen predictions. Non-atomic captures, provisional observations and unverified allocation continuity. Never editing authority."}))
             .map_err(|e| e.to_string())?;
-        write_evidence(&self.directory.join("prediction-check.json"), &bytes)
+        write_evidence(&self.directory.join("prediction-checks.json"), &bytes)
     }
 
     fn save_prediction_check(&self) -> Result<()> {
-        if let Some(check) = &self.view.prediction_check {
-            self.persist_prediction_check(check)?;
+        if !self.view.prediction_checks.is_empty() {
+            self.persist_prediction_checks(&self.view.prediction_checks)?;
         }
         Ok(())
     }
 
     fn update_prediction_check(&mut self, captured: bool, before_image: Option<&PredictionReads>) {
-        let Some(check) = &mut self.view.prediction_check else {
+        if self.view.prediction_checks.is_empty() {
             return;
-        };
-        if check.epoch != self.image_epoch {
-            check.invalidated = Some(
-                "Image geometry changed; observation identity is no longer comparable.".into(),
-            );
         }
-        let number = self.view.sample_count;
-        if captured && number > check.after_frame && number <= check.last_frame {
-            for candidate in &mut check.candidates {
-                if self.invalid_chunks.contains(&candidate.chunk_address) {
-                    candidate.invalidated =
-                        Some("Memory mapping changed or became unavailable.".into());
-                }
-                let bytes = self
-                    .snapshots
-                    .last()
-                    .and_then(|s| s.get(&candidate.chunk_address))
-                    .and_then(|b| {
-                        b.get(
-                            candidate.offset_in_chunk
-                                ..candidate.offset_in_chunk + candidate.mapping.kind.width(),
-                        )
-                    })
-                    .map(|b| b.to_vec());
-                let predicted = bytes
-                    .as_ref()
-                    .and_then(|b| candidate.mapping.kind.read(b))
-                    .map(|x| candidate.mapping.slope * x + candidate.mapping.intercept)
-                    .filter(|p| p.is_finite());
-                let read = self
-                    .receipts
-                    .last()
-                    .and_then(|reads| {
-                        reads
-                            .iter()
-                            .find(|r| r.address == format!("0x{:X}", candidate.chunk_address))
-                    })
-                    .cloned();
-                candidate.samples.push(prediction::Sample {
-                    frame: number,
-                    before_image: before_image
-                        .and_then(|reads| {
-                            reads.get(&(
-                                candidate.chunk_address + candidate.offset_in_chunk as u64,
-                                candidate.mapping.kind.width(),
-                            ))
-                        })
-                        .cloned(),
-                    image: self
-                        .view
-                        .frames
-                        .iter()
-                        .find(|f| f.number == number)
-                        .cloned(),
-                    bytes,
-                    read,
-                    predicted,
-                    observed: None,
-                    outcome: prediction::Outcome::Pending,
-                });
+        for check in &mut self.view.prediction_checks {
+            if check.epoch != self.image_epoch {
+                check.invalidated = Some(
+                    "Image geometry changed; observation identity is no longer comparable.".into(),
+                );
             }
+            let number = self.view.sample_count;
+            if captured && number > check.after_frame && number <= check.last_frame {
+                for candidate in &mut check.candidates {
+                    if self.invalid_chunks.contains(&candidate.chunk_address) {
+                        candidate.invalidated =
+                            Some("Memory mapping changed or became unavailable.".into());
+                    }
+                    let bytes = self
+                        .snapshots
+                        .last()
+                        .and_then(|s| s.get(&candidate.chunk_address))
+                        .and_then(|b| {
+                            b.get(
+                                candidate.offset_in_chunk
+                                    ..candidate.offset_in_chunk + candidate.mapping.kind.width(),
+                            )
+                        })
+                        .map(|b| b.to_vec());
+                    let predicted = bytes
+                        .as_ref()
+                        .and_then(|b| candidate.mapping.kind.read(b))
+                        .map(|x| candidate.mapping.slope * x + candidate.mapping.intercept)
+                        .filter(|p| p.is_finite());
+                    let read = self
+                        .receipts
+                        .last()
+                        .and_then(|reads| {
+                            reads
+                                .iter()
+                                .find(|r| r.address == format!("0x{:X}", candidate.chunk_address))
+                        })
+                        .cloned();
+                    candidate.samples.push(prediction::Sample {
+                        frame: number,
+                        before_image: before_image
+                            .and_then(|reads| {
+                                reads.get(&(
+                                    candidate.chunk_address + candidate.offset_in_chunk as u64,
+                                    candidate.mapping.kind.width(),
+                                ))
+                            })
+                            .cloned(),
+                        image: self
+                            .view
+                            .frames
+                            .iter()
+                            .find(|f| f.number == number)
+                            .cloned(),
+                        bytes,
+                        read,
+                        predicted,
+                        observed: None,
+                        outcome: prediction::Outcome::Pending,
+                    });
+                }
+            }
+            let values = match check.source {
+                prediction::Source::Ocr => self
+                    .view
+                    .tracks
+                    .iter()
+                    .find(|t| t.active && t.id == check.track)
+                    .map(|t| t.samples.clone()),
+                prediction::Source::External => self
+                    .view
+                    .visual_tracks
+                    .iter()
+                    .find(|t| t.active && t.id == check.track)
+                    .map(VisualTrack::numeric_samples),
+            };
+            check.observe(&values.unwrap_or_default());
         }
-        let values = match check.source {
-            prediction::Source::Ocr => self
-                .view
-                .tracks
-                .iter()
-                .find(|t| t.active && t.id == check.track)
-                .map(|t| t.samples.clone()),
-            prediction::Source::External => self
-                .view
-                .visual_tracks
-                .iter()
-                .find(|t| t.active && t.id == check.track)
-                .map(VisualTrack::numeric_samples),
-        };
-        check.observe(&values.unwrap_or_default());
-        self.view.phase = check.summary();
+        self.view.phase = format!(
+            "Checking {} series against fresh observations.",
+            self.view.prediction_checks.len()
+        );
         if let Err(error) = self.save_prediction_check() {
-            if let Some(check) = &mut self.view.prediction_check {
+            for check in &mut self.view.prediction_checks {
                 check.invalidated =
                     Some(format!("Prediction evidence could not be saved: {error}"));
             }
@@ -1801,7 +1862,7 @@ impl LiveSession {
     }
 
     pub fn correlate(&mut self) -> Result<()> {
-        if self.view.prediction_check.is_some() {
+        if !self.view.prediction_checks.is_empty() {
             return Err("Predictions are frozen in this batch. New captures challenge them without refitting. Search more memory for a new discovery batch.".into());
         }
         if self.refresh_connection() || !self.view.connected {

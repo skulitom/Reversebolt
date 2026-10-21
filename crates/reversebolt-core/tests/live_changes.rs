@@ -171,7 +171,7 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
             state.set(value);
             session.capture().unwrap();
         }
-        let check = session.view.prediction_check.as_ref().unwrap();
+        let check = session.view.prediction_checks.first().unwrap();
         let id = check.id.clone();
         let selected = check
             .candidates
@@ -202,26 +202,43 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
         // An unresolved overlapping interpretation blocks the probe; a rival at
         // another location stays in the evidence without voting on this patch.
         let group = reversebolt_core::probes::select(
-            session.view.prediction_check.as_ref().unwrap(),
+            session.view.prediction_checks.first().unwrap(),
             selected,
         )
         .unwrap();
         let alias = *group.iter().find(|i| **i != selected).unwrap();
         let samples = std::mem::take(
-            &mut session.view.prediction_check.as_mut().unwrap().candidates[alias].samples,
+            &mut session
+                .view
+                .prediction_checks
+                .first_mut()
+                .unwrap()
+                .candidates[alias]
+                .samples,
         );
         assert!(
             session
                 .prepare_probe(track, 53., (&id, selected), "test", &mut store)
                 .is_err()
         );
-        session.view.prediction_check.as_mut().unwrap().candidates[alias].samples = samples;
+        session
+            .view
+            .prediction_checks
+            .first_mut()
+            .unwrap()
+            .candidates[alias]
+            .samples = samples;
         let rival = choices
             .iter()
             .find(|c| !c.indices.contains(&selected))
             .unwrap()
             .indices[0];
-        session.view.prediction_check.as_mut().unwrap().candidates[rival]
+        session
+            .view
+            .prediction_checks
+            .first_mut()
+            .unwrap()
+            .candidates[rival]
             .samples
             .clear();
         let prepared = session
@@ -234,8 +251,8 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
             probe.alternatives.len(),
             session
                 .view
-                .prediction_check
-                .as_ref()
+                .prediction_checks
+                .first()
                 .unwrap()
                 .candidates
                 .len()
@@ -250,10 +267,20 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
                     < 0.55
             );
         }
+        let other_plan = session
+            .prepare_probe(track, 56., (&id, selected), "test", &mut store)
+            .unwrap();
+        assert_eq!(other_plan.phase, Phase::Prepared);
         let applied = session
             .execute_change(&prepared.id, false, &mut store)
             .unwrap();
         assert_eq!(applied.phase, Phase::Written);
+        let expired = session
+            .execute_change(&other_plan.id, false, &mut store)
+            .unwrap();
+        assert_eq!(expired.phase, Phase::Expired);
+        assert!(expired.reason.contains("interrupted"));
+        assert_eq!(state.calls.get(), 1);
         let observed = session.observe_change(&prepared.id, &mut store).unwrap();
         assert_eq!(observed.observations[0].agrees, selected_offset == 32);
         assert_eq!(
@@ -286,8 +313,8 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
         assert!(
             session
                 .view
-                .prediction_check
-                .as_ref()
+                .prediction_checks
+                .first()
                 .unwrap()
                 .invalidated
                 .is_some()
@@ -491,8 +518,8 @@ fn session_contract(separate: bool) {
     assert!(
         session
             .view
-            .prediction_check
-            .as_ref()
+            .prediction_checks
+            .first()
             .unwrap()
             .invalidated
             .is_some()
