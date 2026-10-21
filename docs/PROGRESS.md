@@ -4,6 +4,39 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Direct value controls (2026-10-21): **31% unchanged**. Live cards now put a large
+editable number and prominent slider, or an On/Off checkbox, directly on the
+card. Release applies one drag; text applies on Enter/focus loss; checkbox and
+accessible value actions apply directly. Undo stays on the card. Refresh/watch,
+reading ages and review steps moved into details. Two first-class MCP actions
+share the fresh-read, durable-intent and guarded-write path with the desktop.
+Canonical boolean toggles and exact 64-bit numbers are supported. Unresolved OCR
+mappings remain read-only; their direct-edit path retains mapping consensus.
+
+The 231-test workspace run passed, followed by three final UI regression checks
+(including the added accessibility case), updated OCR tests, strict Clippy,
+formatting and release builds. Native evaluation caught ignored accessible number
+entry; this was fixed and re-tested. The final frozen run passed 15 workflow
+checks, six native UI actions, five restored trials, 16 helper operations and
+35 balanced pauses. All helpers unloaded with zero helper heap operations while
+paused; the maximum fixture pause was 67 microseconds. Six independent host byte
+readings and replay/restart checks passed, as did the frozen 44-tool smoke and
+artifact audit. There was one UI layout image per successful evaluation and no
+game screenshots/input. Preview `0.1.0-20261021-183718` is running on the desktop, with all 29 history
+entries structurally identical and the observer model preserved.
+No gameplay semantics or independent-game credit is added. The full goal remains
+active; Manifold Garden is the next selected game, without Blue Prince as a
+prerequisite. [Method and evidence](../research/direct-controls/README.md).
+
+Durable runtime trial integration (2026-10-21): **31% unchanged**. Cards and MCP
+share reviewed plans, saved effect intents/results, guarded restoration and
+replay/restart behavior. Two frozen native runs each passed 20 workflow checks,
+19 helpers, 44 balanced pauses, six confirmed numeric writes, two helper refusals
+and nine independent byte reads. Native accessibility restoration and 42-tool
+smoke passed. The desktop preview preserved all 29 history entries. Interrupted
+write/disk-failure scenarios were core tests; native restart tested an unapplied
+review. [Details](../research/runtime-trials/README.md).
+
 Runtime numeric patch primitive (2026-10-21): **31% unchanged**. The shared core
 prepares exact typed numeric plans and guarded inverses; the helper resolves and
 checks path/type/address/bytes in the same pause as one write and read-back. The

@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "cases": [
+    "Coefficient-direct",
+    "Coefficient-replay-no-helper",
+    "Coefficient-collision-no-helper",
+    "Coefficient-undo",
+    "Coefficient-undo-replay",
+    "Enabled-direct",
+    "Enabled-replay-no-helper",
+    "Enabled-collision-no-helper",
+    "Enabled-undo",
+    "Enabled-undo-replay",
+    "UI-direct-number",
+    "UI-slider",
+    "UI-checkbox",
+    "UI-undo-three-times",
+    "restart-preserves-results-no-replay"
+  ],
+  "operations": 16,
+  "pauses": 35,
+  "maximum_stop_to_resume_us": 67,
+  "game_screenshots": 0,
+  "gameplay_input": 0,
+  "verified_gameplay_controls": 0,
+  "trials": 5,
+  "target": {
+    "pid": 91144,
+    "session": 2,
+    "created": "01dd618295d08993"
+  },
+  "audit": "passed",
+  "revision": "348d5c3d32039daedfb34989a9293af1fc82f7d1",
+  "binary_sha256": {
+    "reversebolt-mcp.exe": "f18b9488167771096a3f5e1718630713b2846897cdf4187dc835b8601c9444db",
+    "reversebolt-runtime-candidates.exe": "4209d0aeb5ae4f17214bf26a60db54ee51ae317ef82610a20aed76cd79d2f2ac",
+    "reversebolt-runtime-loader.exe": "54bfffd303c5ba6f1241c654a24862b9f13ca2599859c30471fe1f56b2a1c1ba",
+    "Reversebolt.exe": "045ce6fd3e180bdd772c3391428f6c482d2060cf9988fe3b89487eac7d6860f6",
+    "reversebolt_path_fixture.dll": "a6be2fea178cb92cbe8ad1ebda7298cbfea85f1b5f221f95a4e225007248197e",
+    "reversebolt_runtime.dll": "c37c2adfed864889f1312ffab42aeb1ef0bf8afe9975282e91d63884fc35cca6"
+  },
+  "frozen_sha256": "1b793649eaecc1b0443eb1864ab534a8b04fcd81b9582bbc1e9a81e2c09a2245",
+  "source_files": 145,
+  "ui_actions": 6,
+  "independent_byte_reads": 6,
+  "smoke": {
+    "path": "test-results\\smoke-327b247f\\report.json",
+    "sha256": "551e2aa7f186ac7576c27a6b3cefbf8e0a677f50378f9c5a7a938910dfa38798",
+    "result": {
+      "practice": [
+        {
+          "seed": 8675309,
+          "matches": [
+            4,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 1001,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        },
+        {
+          "seed": 20261020,
+          "matches": [
+            3,
+            4
+          ],
+          "unique_controls": 2,
+          "edit_restore": "passed"
+        }
+      ],
+      "mcp_tools": 44,
+      "shared_session": "passed",
+      "auth_and_origin": "passed",
+      "stale_restore": "rejected",
+      "restart": "history retained; controls invalidated"
+    }
+  },
+  "scope": "Owned fixture; UI gestures and byte outcomes only. No real-game semantic or generalization claim.",
+  "desktop": {
+    "version": "0.1.0-20261021-183718",
+    "pid": 75880,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-183718\\Reversebolt.exe",
+    "responding": true,
+    "window": 41685214,
+    "history_before": 29,
+    "history_after": 29,
+    "history_exactly_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "frozen_binaries_match": true,
+    "previous_preview_already_closed": true,
+    "ok": true,
+    "history_comparison": "Structural JSON equality; object property order is not significant"
+  }
+}
