@@ -207,6 +207,67 @@ fn naming_inventory_keeps_similar_fields_separate_and_reaches_past_cards() {
     assert_eq!(inventory.types[0].fields.len(), 80);
     assert_eq!(inventory.types[0].fields[79].name, "walkSpeed");
     assert_eq!(inventory.reachable_paths, 80);
+    // A retained hypothesis can choose a competing field beyond the card limit.
+    use reversebolt_core::runtime_hypotheses as h;
+    let selection = h::select(&inventory, &[0]).unwrap();
+    let proposal = h::Proposal {
+        candidate: 1,
+        name: "Move speed".into(),
+        explanation: "May affect movement; its actual effect is untested.".into(),
+        citations: vec![h::Citation {
+            source: "field_name".into(),
+            index: None,
+            quote: "moveSpeed".into(),
+        }],
+        alternatives: vec![79],
+        question: "Does changing this field alter the observed response?".into(),
+    };
+    let mut review = h::Review {
+        evidence_id: uuid::Uuid::new_v4().to_string(),
+        report_sha256: inventory.report_sha256.clone(),
+        model: "test".into(),
+        status: "complete".into(),
+        error: None,
+        batch: Some(
+            h::validate(
+                &selection,
+                h::Proposals {
+                    hypotheses: vec![proposal],
+                },
+            )
+            .unwrap(),
+        ),
+    };
+    let reference = h::Reference {
+        review_id: review.evidence_id.clone(),
+        hypothesis_path_id: selection.rows[1].path_id.clone(),
+        selected_path_id: selection.rows[79].path_id.clone(),
+    };
+    let origin = h::resolve(&review, &reference, &inventory).unwrap();
+    assert_eq!(origin.selected().unwrap().field_name, "walkSpeed");
+    assert_eq!(origin.hypothesis.candidate.field_name, "moveSpeed");
+    let candidate = runtime::candidate(&r, &reference.selected_path_id).unwrap();
+    assert_eq!(candidate.name, "walkSpeed");
+    assert!(!candidate.edit_authority);
+    assert!(
+        !runtime::candidates(&r, 64)
+            .unwrap()
+            .iter()
+            .any(|c| c.id == candidate.id)
+    );
+    let mut bad = reference.clone();
+    bad.selected_path_id = selection.rows[0].path_id.clone();
+    assert!(h::resolve(&review, &bad, &inventory).is_err());
+    bad = reference.clone();
+    bad.review_id = uuid::Uuid::new_v4().to_string();
+    assert!(h::resolve(&review, &bad, &inventory).is_err());
+    for phase in ["pending", "cancelled", "failed", "unavailable"] {
+        review.status = phase.into();
+        assert!(h::resolve(&review, &reference, &inventory).is_err());
+    }
+    review.status = "complete".into();
+    review.batch.as_mut().unwrap().accepted[0].alternatives[0].field_name = "invented".into();
+    assert!(h::resolve(&review, &reference, &inventory).is_err());
     r["core_image"] = json!("Example.dll");
     let core = build(&r).unwrap();
     assert!(core.types.is_empty());

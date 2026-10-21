@@ -35,24 +35,6 @@ pub struct Receipt {
     pub limitation: String,
 }
 
-fn proposal_schema() -> Value {
-    json!({"type":"object","additionalProperties":false,"required":["hypotheses"],"properties":{
-        "hypotheses":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,
-            "required":["candidate","name","explanation","citations","alternatives","question"],"properties":{
-                "candidate":{"type":"integer","minimum":0,"maximum":255},
-                "name":{"type":"string","minLength":1,"maxLength":60},
-                "explanation":{"type":"string","minLength":1,"maxLength":240},
-                "question":{"type":"string","minLength":1,"maxLength":180},
-                "alternatives":{"type":"array","maxItems":4,"uniqueItems":true,"items":{"type":"integer","minimum":0,"maximum":255}},
-                "citations":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"object","additionalProperties":false,
-                    "required":["source","index","quote"],"properties":{
-                        "source":{"enum":["field_name","type_name","object_text"]},
-                        "index":{"type":["integer","null"],"minimum":0},"quote":{"type":"string","minLength":1,"maxLength":256}
-                    }}}
-            }}}
-    }})
-}
-
 impl Observer {
     async fn naming_stage(&self, prompt: String, schema: Value, output: usize) -> Result<Stage> {
         if prompt.len() > 110_000 {
@@ -149,7 +131,7 @@ impl Observer {
         let stage = self
             .naming_stage(
                 format!("{PROPOSE_PROMPT}\nObserved paths: {}", json!(rows)),
-                proposal_schema(),
+                h::proposal_schema(),
                 4096,
             )
             .await?;

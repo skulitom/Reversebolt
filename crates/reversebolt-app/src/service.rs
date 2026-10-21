@@ -186,6 +186,8 @@ impl EngineHandle {
                             | "restore_runtime_change"
                             | "search_runtime_values"
                             | "show_runtime_values"
+                            | "read_runtime_inventory"
+                            | "submit_runtime_hypotheses"
                             | "prepare_runtime_test"
                             | "observe_runtime_test"
                             | "stop_runtime_test"
@@ -242,6 +244,8 @@ impl EngineHandle {
                                 | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
+                                | "read_runtime_inventory"
+                                | "submit_runtime_hypotheses"
                                 | "prepare_runtime_test"
                                 | "observe_runtime_test"
                                 | "stop_runtime_test"
@@ -374,6 +378,13 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "read_runtime_inventory" | "submit_runtime_hypotheses" => {
+            return crate::runtime_naming_bridge::command(
+                engine,
+                command,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+            );
+        }
         "prepare_runtime_test"
         | "observe_runtime_test"
         | "stop_runtime_test"

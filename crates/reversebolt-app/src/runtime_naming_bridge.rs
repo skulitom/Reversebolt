@@ -27,6 +27,120 @@ fn save_new(path: &Path, value: &Value) -> Result<()> {
         .and_then(|()| f.sync_all())
         .map_err(|e| e.to_string())
 }
+fn read_archive(path: &Path) -> Result<Value> {
+    use std::io::Read;
+    let mut bytes = Vec::new();
+    std::fs::File::open(path)
+        .map_err(|e| e.to_string())?
+        .take(12 * 1024 * 1024 + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|e| e.to_string())?;
+    if bytes.len() > 12 * 1024 * 1024 {
+        return Err("Metadata archive exceeds its budget.".into());
+    }
+    serde_json::from_slice(&bytes).map_err(|e| e.to_string())
+}
+
+/// Agent-supplied proposals use the same inventory and validation as local inference.
+pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) -> Result<Value> {
+    use reversebolt_core::{runtime_hypotheses as h, runtime_inventory as inventory};
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Submission {
+        review_id: String,
+        catalog_id: String,
+        after_revision: u64,
+        after_review: Option<String>,
+        report_sha256: String,
+        selected_types: Vec<usize>,
+        hypotheses: Vec<h::Proposal>,
+    }
+    let submission = if c.action == "submit_runtime_hypotheses" {
+        let p: Submission = serde_json::from_value(c.args.clone()).map_err(|e| e.to_string())?;
+        if !uuid::Uuid::parse_str(&p.review_id).is_ok_and(|id| id.to_string() == p.review_id) {
+            return Err("Supply a new canonical review UUID.".into());
+        }
+        Some(p)
+    } else {
+        None
+    };
+    let request = json!({"actor":c.source,"args":c.args});
+    // A replay returns its archived outcome and never republishes an older review.
+    if let Some(p) = &submission {
+        let dir = base.join("naming").join(&p.review_id);
+        if dir.exists() {
+            let saved = read_archive(&dir.join("agent-request.json"))?;
+            if saved != request {
+                return Err("This review identity belongs to a different submission.".into());
+            }
+            let receipt = read_archive(&dir.join("receipt.json"))?;
+            return Ok(json!({"review":receipt["review"],"replayed":true,"published":false}));
+        }
+    }
+    let view = &mut engine
+        .live
+        .as_mut()
+        .ok_or("Connect an application first.")?
+        .view
+        .runtime;
+    if c.args["catalog_id"] != view.catalog_id || view.catalog_id.is_empty() {
+        return Err("The runtime catalogue changed.".into());
+    }
+    let report = crate::runtime_bridge::catalog_report(view)?;
+    let inventory = inventory::build(&report)?;
+    let Some(p) = submission else {
+        let selection = c
+            .args
+            .get("selected_types")
+            .filter(|v| !v.is_null())
+            .map(|v| serde_json::from_value::<Vec<usize>>(v.clone()).map_err(|e| e.to_string()))
+            .transpose()?
+            .map(|ids| h::select(&inventory, &ids))
+            .transpose()?;
+        let index:Vec<_> = inventory.types.iter().map(|t|json!({"id":t.id,"name":t.key.type_name,
+            "fields":t.fields.iter().map(|f|json!({"id":f.field_id,"name":f.name,"type_code":f.type_code,"paths":f.path_count})).collect::<Vec<_>>()})).collect();
+        return Ok(
+            json!({"catalog_id":view.catalog_id,"revision":view.revision,"report_sha256":inventory.report_sha256,
+            "types":if selection.is_none(){json!(index)}else{Value::Null},"selection":selection,"limitation":h::LIMITATION}),
+        );
+    };
+    if p.catalog_id != view.catalog_id
+        || p.after_revision != view.revision
+        || p.after_review.as_deref() != view.naming.as_ref().map(|n| n.evidence_id.as_str())
+        || p.report_sha256 != inventory.report_sha256
+    {
+        return Err(
+            "The catalogue, readings or hypothesis review changed. Read current status first."
+                .into(),
+        );
+    }
+    let selection = h::select(&inventory, &p.selected_types)?;
+    let batch = h::validate(
+        &selection,
+        h::Proposals {
+            hypotheses: p.hypotheses,
+        },
+    )?;
+    let review = Review {
+        evidence_id: p.review_id.clone(),
+        report_sha256: inventory.report_sha256.clone(),
+        model: format!("agent:{}", c.source),
+        status: "complete".into(),
+        batch: Some(batch),
+        error: None,
+    };
+    let dir = base.join("naming").join(&p.review_id);
+    std::fs::create_dir_all(base.join("naming")).map_err(|e| e.to_string())?;
+    std::fs::create_dir(&dir).map_err(|e| e.to_string())?;
+    save_new(&dir.join("agent-request.json"), &request)?;
+    save_new(&dir.join("inventory.json"), &json!(inventory))?;
+    save_new(
+        &dir.join("receipt.json"),
+        &json!({"schema":1,"selection":selection,"review":review,"limitation":h::LIMITATION}),
+    )?;
+    publish(view, &p.catalog_id, review.clone(), false)?;
+    Ok(json!({"review":review,"replayed":false,"published":true}))
+}
 
 pub(crate) fn publish(
     view: &mut runtime::View,

@@ -4,6 +4,34 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Agent hypotheses connected to response tests (2026-10-21): **34% unchanged**.
+Agents can read the exact retained runtime inventory and submit cited questions
+through the same validator as the local model. A comparison can select a primary
+candidate or alternative directly, including paths beyond the card display limit.
+It retains the original question, references and alternatives through recovery
+and restart. Submission replay returns history without replacing a newer review.
+No proposal renames cards or establishes gameplay meaning.
+
+The first owned-fixture run exposed local-model abstention even with an explicit
+field label; that failure remains retained. The external-agent path then passed
+47 native checks, including unsupported-name rejection, a complete input-response
+comparison, independent byte restoration, alternative preparation and restart.
+Eighteen images were evaluated automatically with no manual review. Eight helpers
+unloaded and 19 pauses balanced. Workspace tests (265), strict Clippy, formatting,
+release build and the 51-tool smoke passed. Beyond-card resolution has synthetic
+80-field coverage; the native selected path was already visible.
+
+Credits remain foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent collaboration 6/10, generalization 0/10.
+This is an explicit agent-driven handoff, not automatic planning or a new independent
+game result. The full goal stays active. Next: select informative comparisons
+from observed actions and evaluate the unchanged investigation policy on actual
+games. [Implementation, failed attempt and verification](../research/hypothesis-tests/README.md).
+
+Preview `0.1.0-20261021-215403` is running with the four tested binary hashes.
+All 44 history entries, model setting, changes, runtime trials/tests and Freeze
+records were preserved. There is no active target, job, test or hold after update.
+
 Automatic metadata hypotheses (2026-10-21): **34% unchanged**. Runtime discovery
 can now retain a bounded local-model review in the same durable engine/MCP job.
 Exact report/path citations and separate alternatives are preserved; wrong

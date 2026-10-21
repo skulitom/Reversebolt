@@ -541,6 +541,18 @@ pub fn candidates(report: &Value, limit: usize) -> Result<Vec<Candidate>> {
     Ok(select(report, "", 0, limit)?.candidates)
 }
 
+/// Resolve an exact discovery path even when it is outside the displayed cards.
+pub fn candidate(report: &Value, id: &str) -> Result<Candidate> {
+    let mut found = None;
+    visit_candidates(report, "", 0, 1, &mut |c| {
+        if c.id == id {
+            found = Some(c.clone());
+        }
+        Ok(())
+    })?;
+    found.ok_or_else(|| "The selected path is absent from this discovery report.".into())
+}
+
 /// Search all observed candidates before applying the result limit. A search
 /// does not read the target; results belong to the retained discovery snapshot.
 pub fn search(report: &Value, query: &str, offset: usize) -> Result<SearchPage> {

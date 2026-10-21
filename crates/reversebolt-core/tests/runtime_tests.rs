@@ -93,6 +93,7 @@ fn fixture() -> (Test, Trial, Trial) {
         },
         value: "0".into(),
         hypothesis: "Changing this field may suppress the rendered response".into(),
+        origin: None,
         actions: vec![
             Action {
                 keys: vec![68],
@@ -443,4 +444,84 @@ fn retained_evidence_paths_and_checksums_are_enforced() {
     assert!(store.read_image(&t, 0, 0).is_err());
     drop(store);
     std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path() {
+    use reversebolt_core::{runtime_hypotheses as h, runtime_test_store::Store};
+    let (mut test, _, _) = fixture();
+    let row = h::Row {
+        id: 17,
+        type_id: 2,
+        field_id: 1,
+        path_id: test.candidate.id.clone(),
+        type_name: "Parameter".into(),
+        field_name: test.candidate.name.clone(),
+        value: test.candidate.value.clone(),
+        object_text: vec!["Speed".into()],
+    };
+    let proposal = h::Proposal {
+        candidate: 17,
+        name: "Speed".into(),
+        explanation: "May influence speed; this remains untested.".into(),
+        question: "Does this field affect the rendered response?".into(),
+        citations: vec![h::Citation {
+            source: "object_text".into(),
+            index: Some(0),
+            quote: "Speed".into(),
+        }],
+        alternatives: vec![],
+    };
+    test.hypothesis = proposal.question.clone();
+    test.origin = Some(h::TestOrigin {
+        reference: h::Reference {
+            review_id: uuid(),
+            hypothesis_path_id: row.path_id.clone(),
+            selected_path_id: row.path_id.clone(),
+        },
+        report_sha256: "a".repeat(64),
+        hypothesis: h::Hypothesis {
+            proposal,
+            candidate: row,
+            alternatives: vec![],
+        },
+    });
+    test.validate_plan().unwrap();
+    let directory = std::env::temp_dir().join(format!("reversebolt-origin-{}", uuid()));
+    let mut store = Store::open(directory.clone()).unwrap();
+    store.record(test.clone()).unwrap();
+    drop(store);
+    let store = Store::open(directory.clone()).unwrap();
+    assert_eq!(store.get(&test.id).unwrap().origin, test.origin);
+    assert_eq!(store.get(&test.id).unwrap().phase, Phase::Stopped);
+    for variant in 0..5 {
+        let mut changed = test.clone();
+        match variant {
+            0 => changed.hypothesis = "A different explanation?".into(),
+            1 => changed.origin.as_mut().unwrap().reference.selected_path_id = "b".repeat(64),
+            2 => {
+                changed
+                    .origin
+                    .as_mut()
+                    .unwrap()
+                    .hypothesis
+                    .proposal
+                    .citations[0]
+                    .quote = "Health".into()
+            }
+            3 => {
+                changed
+                    .origin
+                    .as_mut()
+                    .unwrap()
+                    .hypothesis
+                    .proposal
+                    .candidate = 18
+            }
+            _ => changed.origin.as_mut().unwrap().reference.review_id = "../other".into(),
+        }
+        assert!(changed.validate_plan().is_err());
+    }
+    drop(store);
+    std::fs::remove_dir_all(directory).unwrap();
 }

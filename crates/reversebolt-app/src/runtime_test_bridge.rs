@@ -30,9 +30,10 @@ struct Prepare {
     investigation_id: String,
     catalog_id: String,
     after_revision: u64,
-    candidate_id: String,
+    candidate_id: Option<String>,
     value: String,
-    hypothesis: String,
+    hypothesis: Option<String>,
+    hypothesis_ref: Option<reversebolt_core::runtime_hypotheses::Reference>,
     actions: Vec<Action>,
 }
 pub struct Session {
@@ -164,6 +165,7 @@ impl Session {
                     | "list_processes"
                     | "list_memory_processes"
                     | "search_runtime_values"
+                    | "read_runtime_inventory"
                     | "read_capture"
                     | "read_sequence"
                     | "read_change_evidence"
@@ -276,10 +278,15 @@ impl Session {
                 || t.investigation != p.investigation_id
                 || t.catalog_id != p.catalog_id
                 || t.prepared_revision != p.after_revision
-                || t.candidate.id != p.candidate_id
+                || p.candidate_id
+                    .as_ref()
+                    .is_some_and(|id| *id != t.candidate.id)
                 || t.value != p.value
                 || t.actions != p.actions
-                || t.hypothesis != p.hypothesis
+                || p.hypothesis.as_ref().is_some_and(|h| *h != t.hypothesis)
+                || t.origin.as_ref().map(|o| &o.reference) != p.hypothesis_ref.as_ref()
+                || (p.hypothesis_ref.is_none()
+                    && (p.hypothesis.is_none() || p.candidate_id.is_none()))
                 || t.actor != c.source
             {
                 return Err("This experiment identity belongs to a different plan.".into());
@@ -310,14 +317,67 @@ impl Session {
         {
             return Err("The application changed.".into());
         }
-        let task:Task=serde_json::from_value(json!({"operation":"refresh","catalog_id":p.catalog_id,"after_revision":p.after_revision,"ids":[p.candidate_id]})).map_err(|e|e.to_string())?;
-        let paths = session.view.runtime.paths(&task)?;
-        let candidate = session
-            .view
-            .runtime
+        if session.view.runtime.catalog_id != p.catalog_id
+            || session.view.runtime.revision != p.after_revision
+        {
+            return Err("The runtime catalogue or revision changed.".into());
+        }
+        let mut staged = session.view.runtime.clone();
+        let (candidate_id, hypothesis, origin) = if let Some(reference) = &p.hypothesis_ref {
+            let report = runtime_bridge::catalog_report(&staged)?;
+            let inventory = reversebolt_core::runtime_inventory::build(&report)?;
+            let review = staged
+                .naming
+                .as_ref()
+                .ok_or("No current hypothesis review is available.")?;
+            let origin =
+                reversebolt_core::runtime_hypotheses::resolve(review, reference, &inventory)?;
+            let id = origin.selected()?.path_id.clone();
+            let question = origin.hypothesis.proposal.question.clone();
+            if p.candidate_id.as_ref().is_some_and(|given| *given != id)
+                || p.hypothesis
+                    .as_ref()
+                    .is_some_and(|given| *given != question)
+            {
+                return Err(
+                    "The supplied candidate or question conflicts with the selected hypothesis."
+                        .into(),
+                );
+            }
+            if !staged.cards.iter().any(|c| c.candidate.id == id) {
+                let candidate = reversebolt_core::runtime::candidate(&report, &id)?;
+                let previous_search = staged.search.take();
+                staged.search = Some(reversebolt_core::runtime::SearchPage {
+                    query: String::new(),
+                    offset: 0,
+                    matches: 1,
+                    candidates: vec![candidate],
+                });
+                staged.show_values(&p.catalog_id, p.after_revision, std::slice::from_ref(&id))?;
+                staged.search = previous_search;
+            }
+            (id, question, Some(origin))
+        } else {
+            (
+                p.candidate_id
+                    .clone()
+                    .ok_or("Choose a shown candidate or a retained hypothesis.")?,
+                p.hypothesis
+                    .clone()
+                    .ok_or("Supply a short question for this comparison.")?,
+                None,
+            )
+        };
+        let task = Task::Refresh {
+            catalog_id: p.catalog_id.clone(),
+            after_revision: staged.revision,
+            ids: vec![candidate_id.clone()],
+        };
+        let paths = staged.paths(&task)?;
+        let candidate = staged
             .cards
             .iter()
-            .find(|c| c.candidate.id == p.candidate_id)
+            .find(|c| c.candidate.id == candidate_id)
             .ok_or("Show this candidate as a card first.")?
             .candidate
             .clone();
@@ -337,7 +397,8 @@ impl Session {
             window: session.view.process.window,
             candidate,
             value: p.value,
-            hypothesis: p.hypothesis,
+            hypothesis,
+            origin,
             actions: p.actions,
             prepared_revision: p.after_revision,
             created_unix_ms: now_ms(),
@@ -354,6 +415,9 @@ impl Session {
         if engine.runtime_trials.holds(&test.scope) || engine.changes.holds_process(&info) {
             return Err("An unresolved edit holds this process.".into());
         }
+        // Only an explicit, fully checked test choice adds an off-board candidate.
+        // Its metadata label is unchanged; a model proposal never renames it.
+        engine.live.as_mut().unwrap().view.runtime = staged;
         let start = now_ms();
         let outcome = runtime_bridge::run(&info, &paths, base, &AtomicBool::new(false))
             .and_then(runtime_trial_bridge::evidence);

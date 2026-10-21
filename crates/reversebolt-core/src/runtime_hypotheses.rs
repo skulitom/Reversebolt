@@ -15,7 +15,7 @@ pub struct Review {
     pub error: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Row {
     pub id: usize,
     pub type_id: usize,
@@ -91,7 +91,7 @@ pub fn select(inventory: &Inventory, ids: &[usize]) -> Result<Selection> {
     Ok(selected)
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Citation {
     pub source: String,
@@ -100,7 +100,7 @@ pub struct Citation {
     pub quote: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Proposal {
     pub candidate: usize,
@@ -117,7 +117,7 @@ pub struct Proposals {
     pub hypotheses: Vec<Proposal>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Hypothesis {
     pub proposal: Proposal,
     pub candidate: Row,
@@ -140,6 +140,112 @@ pub struct Batch {
     pub accepted: Vec<Hypothesis>,
     pub rejected: Vec<Rejected>,
     pub limitation: String,
+}
+
+/// An explicit choice of one path within one retained, unverified hypothesis.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Reference {
+    pub review_id: String,
+    pub hypothesis_path_id: String,
+    pub selected_path_id: String,
+}
+
+/// Immutable provenance retained with a comparison, including competing paths.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct TestOrigin {
+    pub reference: Reference,
+    pub report_sha256: String,
+    pub hypothesis: Hypothesis,
+}
+impl TestOrigin {
+    pub fn selected(&self) -> Result<&Row> {
+        let h = &self.hypothesis;
+        if !uuid::Uuid::parse_str(&self.reference.review_id)
+            .is_ok_and(|id| id.to_string() == self.reference.review_id)
+            || self.report_sha256.len() != 64
+            || !self.report_sha256.bytes().all(|c| c.is_ascii_hexdigit())
+            || self.reference.hypothesis_path_id != h.candidate.path_id
+            || h.proposal.candidate != h.candidate.id
+            || h.proposal.alternatives != h.alternatives.iter().map(|r| r.id).collect::<Vec<_>>()
+        {
+            return Err("The hypothesis provenance changed.".into());
+        }
+        // Recheck the same lexical/citation contract without retaining unrelated rows.
+        let mut rows = vec![h.candidate.clone()];
+        rows.extend(h.alternatives.clone());
+        if rows.iter().any(|r| {
+            r.id >= 256
+                || r.path_id.len() != 64
+                || !r.path_id.bytes().all(|c| c.is_ascii_hexdigit())
+        }) || rows.iter().map(|r| r.id).collect::<BTreeSet<_>>().len() != rows.len()
+            || rows
+                .iter()
+                .map(|r| &r.path_id)
+                .collect::<BTreeSet<_>>()
+                .len()
+                != rows.len()
+        {
+            return Err("Hypothesis paths or candidate identifiers are inconsistent.".into());
+        }
+        for (id, row) in rows.iter_mut().enumerate() {
+            row.id = id;
+        }
+        let mut proposal = h.proposal.clone();
+        proposal.candidate = 0;
+        proposal.alternatives = (1..rows.len()).collect();
+        check(
+            &proposal,
+            &Selection {
+                report_sha256: self.report_sha256.clone(),
+                rows,
+                selected_types: vec![],
+                omitted_samples: 0,
+            },
+        )?;
+        std::iter::once(&h.candidate)
+            .chain(&h.alternatives)
+            .find(|r| r.path_id == self.reference.selected_path_id)
+            .ok_or_else(|| {
+                "Choose the hypothesis candidate or one of its retained alternatives.".into()
+            })
+    }
+}
+
+pub fn resolve(
+    review: &Review,
+    reference: &Reference,
+    inventory: &Inventory,
+) -> Result<TestOrigin> {
+    let batch = review
+        .batch
+        .as_ref()
+        .ok_or("No completed hypothesis review is available.")?;
+    if review.status != "complete"
+        || review.error.is_some()
+        || review.evidence_id != reference.review_id
+        || review.report_sha256 != inventory.report_sha256
+        || batch.report_sha256 != inventory.report_sha256
+    {
+        return Err("The hypothesis belongs to a different or incomplete discovery review.".into());
+    }
+    let hypothesis = batch
+        .accepted
+        .iter()
+        .find(|h| h.candidate.path_id == reference.hypothesis_path_id)
+        .ok_or("Choose an accepted hypothesis from the current review.")?;
+    let selection = select(inventory, &batch.selected_types)?;
+    let checked = check(&hypothesis.proposal, &selection)?;
+    if &checked != hypothesis {
+        return Err("The hypothesis no longer matches the exact discovery evidence.".into());
+    }
+    let origin = TestOrigin {
+        reference: reference.clone(),
+        report_sha256: inventory.report_sha256.clone(),
+        hypothesis: checked,
+    };
+    origin.selected()?;
+    Ok(origin)
 }
 
 fn text(value: &str, limit: usize) -> bool {
@@ -272,6 +378,24 @@ pub fn validate(selection: &Selection, proposals: Proposals) -> Result<Batch> {
         }
     }
     Ok(batch)
+}
+
+pub fn proposal_schema() -> serde_json::Value {
+    serde_json::json!({"type":"object","additionalProperties":false,"required":["hypotheses"],"properties":{
+        "hypotheses":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,
+            "required":["candidate","name","explanation","citations","alternatives","question"],"properties":{
+                "candidate":{"type":"integer","minimum":0,"maximum":255},
+                "name":{"type":"string","minLength":1,"maxLength":60},
+                "explanation":{"type":"string","minLength":1,"maxLength":240},
+                "question":{"type":"string","minLength":1,"maxLength":180},
+                "alternatives":{"type":"array","maxItems":4,"uniqueItems":true,"items":{"type":"integer","minimum":0,"maximum":255}},
+                "citations":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"object","additionalProperties":false,
+                    "required":["source","index","quote"],"properties":{
+                        "source":{"enum":["field_name","type_name","object_text"]},
+                        "index":{"type":["integer","null"],"minimum":0},"quote":{"type":"string","minLength":1,"maxLength":256}
+                    }}}
+            }}}
+    }})
 }
 
 #[cfg(test)]

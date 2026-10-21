@@ -13,6 +13,10 @@ runtime descriptions are provisional metadata labels, not verified game meanings
 An installed local model can retain evidence-linked questions and competing
 fields after runtime discovery. These remain shared engine/MCP investigation
 hints and do not rename cards. See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
+Agents can also submit their own cited hypotheses through MCP and connect an exact
+candidate or alternative directly to a durable response comparison. Its question
+and evidence remain attached to the result; gameplay meaning stays unverified.
+See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
 Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.

@@ -238,6 +238,9 @@ pub struct Test {
     pub value: String,
     /// Hypothesis supplied by the caller, never a verified semantic label.
     pub hypothesis: String,
+    /// Evidence for the question, not proof of its gameplay meaning.
+    #[serde(default)]
+    pub origin: Option<crate::runtime_hypotheses::TestOrigin>,
     pub actions: Vec<Action>,
     pub prepared_revision: u64,
     pub created_unix_ms: u128,
@@ -268,7 +271,7 @@ impl Test {
             || self.actor.chars().any(char::is_control)
             || self.window == 0
             || self.hypothesis.trim().is_empty()
-            || self.hypothesis.len() > 160
+            || self.hypothesis.len() > 180
             || self.hypothesis.chars().any(char::is_control)
             || self.actions.len() != 4
             || self.actions.iter().any(|a| !a.valid())
@@ -278,6 +281,14 @@ impl Test {
         self.candidate.locator.validate(&self.scope)?;
         if self.candidate.id != self.candidate.locator.id() {
             return Err("Test candidate identity changed.".into());
+        }
+        if let Some(origin) = &self.origin {
+            let selected = origin.selected()?;
+            if selected.path_id != self.candidate.id
+                || self.hypothesis != origin.hypothesis.proposal.question
+            {
+                return Err("The test does not match its retained hypothesis choice.".into());
+            }
         }
         if self.candidate.name.len() > 4096
             || self.candidate.description.len() > 4096
@@ -631,6 +642,7 @@ impl Test {
     }
     pub fn summary(&self) -> Value {
         serde_json::json!({"id":self.id,"change_id":self.change_id,"hypothesis":self.hypothesis,
+            "hypothesis_ref":self.origin.as_ref().map(|o|&o.reference),
             "candidate_id":self.candidate.id,"phase":self.phase,"revision":self.revision,"pending_capture":self.pending_capture,
             "frames":self.conditions.each_ref().map(|c|c.frames.len()),"reason":self.reason,"assessment":self.assessment,
             "actor":self.actor,"investigation_id":self.investigation,"catalog_id":self.catalog_id,

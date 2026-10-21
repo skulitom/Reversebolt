@@ -235,6 +235,8 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | `reversebolt_start_runtime_job` | One supported-runtime discovery or 1–16 bounded refreshes, with durable shared progress |
 | `reversebolt_search_runtime_values` | Search retained runtime candidates and same-object text before the card limit |
 | `reversebolt_show_runtime_values` | Bring 1–8 current search results onto cards without a fresh target read |
+| `reversebolt_read_runtime_inventory` | Read report-bound type/field metadata or a bounded hypothesis selection |
+| `reversebolt_submit_runtime_hypotheses` | Retain cited agent questions and alternatives through the shared validator |
 | `reversebolt_start_observation_job` | Durable timed captures with a receipt and shared progress |
 | `reversebolt_job_control` | Pause, resume or cancel a current observation job |
 | `reversebolt_job_events` | Read bounded, ordered job events after a cursor |
@@ -795,6 +797,32 @@ Unavailable pages are reported and excluded from correlation; coverage and
 timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Explicit runtime response comparisons
+
+Agents can contribute runtime hypotheses independently of the local model.
+`reversebolt_read_runtime_inventory` takes the current `catalog_id`; omit
+`selected_types` for a type/field index or pass up to eight type IDs for an exact
+256-row selection. It returns the canonical report hash and report-local row IDs.
+Use `reversebolt_submit_runtime_hypotheses` with a new `review_id`, `catalog_id`,
+`after_revision`, `after_review` (current naming evidence ID or null),
+`report_sha256`, `selected_types` and up to twelve `hypotheses`. Each proposal has
+`candidate`, `name`, `explanation`, exact `citations`, `alternatives` and `question`.
+The local model and external agents share the same schema and validator. References
+and lexical grounding are checked; semantics remain unverified. Submission saves
+its request, inventory and receipt before publishing. Identical replay returns the
+archive without replacing the current review, including after restart. A changed
+request cannot reuse its ID. No target read, capture or gameplay write occurs.
+
+`prepare_runtime_test` additionally accepts `hypothesis_ref` with `review_id`,
+`hypothesis_path_id` (the primary hypothesis candidate) and `selected_path_id`
+(that candidate or one retained alternative). In this mode omit `candidate_id`
+and `hypothesis`, or provide exactly matching values. The engine retains the full
+original proposal and resolves even an off-board path from its checked report.
+After plan validation it adds the selected raw card without renaming it. Keep
+supplying the intended replacement `value`, four `actions`, test/change UUIDs and
+current investigation/catalogue/revision. The returned summary carries
+`hypothesis_ref`; `read_runtime_test` includes the complete `origin` snapshot.
+Each alternative gets its own explicit test. A rendered effect does not confirm
+the proposed gameplay name. [Integration evidence](../research/hypothesis-tests/README.md).
 
 Four tools share a durable comparison with the desktop:
 `reversebolt_prepare_runtime_test`, `reversebolt_observe_runtime_test`,
