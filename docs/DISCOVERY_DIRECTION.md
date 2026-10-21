@@ -98,6 +98,15 @@ after preferring text context. Search makes evidence accessible; it does not
 solve automatic relevance or semantic inference. See
 [context/search evidence](../research/runtime-context/README.md).
 
+An exploratory metadata query found a first-person controller with walking,
+running, jumping and gravity fields. Its Active reference was read as null in
+the menu, and no instances of that exact type were observed. Before expanding
+the reader, evaluate a fresh gameplay catalogue and targeted behavioural reads.
+Two bounded setup attempts could not enter gameplay because Anode's GameInput
+helper blocked focus/input; they establish no control effect. This input issue
+does not establish a memory-reader failure. See the
+[gameplay-state investigation](../research/runtime-gameplay/README.md).
+
 Next select by object context, relationships and behaviour, and validate useful
 effects. Neither snapshot
 addresses, stable path IDs nor field names establish

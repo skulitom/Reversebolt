@@ -1,0 +1,141 @@
+{
+  "classification": "exploratory metadata evidence; gameplay setup blocked",
+  "source_path": "C:\\DEV\\Reversebolt\\test-results\\runtime-context-v1\\game\\data\\runtime\\86048-01dd6170d2e43e52\\1d678759-872f-442c-add2-a258b225a26e\\report.json",
+  "source_sha256": "2c2b5c993dfdb85658a6bc47c67f971f2688d6d4c8ebbecb14cf7976864fa0f7",
+  "source_scope": {
+    "pid": 86048,
+    "created": "01dd6170d2e43e52",
+    "session": 2
+  },
+  "query_counts": {
+    "speed": 49,
+    "health": 0,
+    "damage": 0,
+    "ammo": 0,
+    "stamina": 0,
+    "movement": 4,
+    "jump": 9,
+    "player": 265
+  },
+  "candidate_type": {
+    "image": "Assembly-CSharp.dll",
+    "layout_sha256": "b8612713b351e1023c6a830cc92098185016de4fa10a9235313f705b1c308a3c",
+    "type_name": "UnityStandardAssets.Characters.FirstPerson.FirstPersonController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+  },
+  "metadata_fields": [
+    {
+      "id": 10,
+      "name": "m_WalkSpeed",
+      "type_code": 12,
+      "width": 4
+    },
+    {
+      "id": 11,
+      "name": "m_RunSpeed",
+      "type_code": 12,
+      "width": 4
+    },
+    {
+      "id": 20,
+      "name": "m_JumpSpeed",
+      "type_code": 12,
+      "width": 4
+    },
+    {
+      "id": 22,
+      "name": "m_GravityMultiplier",
+      "type_code": 12,
+      "width": 4
+    }
+  ],
+  "active_reference_read_successfully": true,
+  "active_reference_null": true,
+  "observed_exact_type_nodes": 0,
+  "selected_scalar_read_occurrences": 0,
+  "cases": {
+    "1": {
+      "before": {
+        "pid": 39652,
+        "created": "01dd61724b8b9441",
+        "session": 2,
+        "path": "d:\\steam\\steamapps\\common\\Blue Prince\\BLUE PRINCE.exe"
+      },
+      "after": {
+        "pid": 39652,
+        "created": "01dd61724b8b9441",
+        "responding": true,
+        "helper_absent": true,
+        "close_requested": true,
+        "exited": true
+      }
+    },
+    "2": {
+      "before": {
+        "pid": 90744,
+        "created": "01dd6172d9d7125e",
+        "session": 2,
+        "path": "d:\\steam\\steamapps\\common\\Blue Prince\\BLUE PRINCE.exe"
+      },
+      "after": {
+        "pid": 90744,
+        "created": "01dd6172d9d7125e",
+        "responding": true,
+        "helper_absent": true,
+        "close_requested": true,
+        "exited": true
+      }
+    }
+  },
+  "focus_refusal": {
+    "ok": false,
+    "error": "InvalidOperationException: The foreground GameInput service helper (PID 30848) is blocking normal focus/input in this seat. Use accessible control actions or browser automation. An administrator can use scripts/repair-seat-input.ps1 to stop only this seat helper; do not stop the main desktop's services.",
+    "id": 1460
+  },
+  "storage_comparison": [
+    {
+      "name": "MtHollyBlueprint.es3",
+      "before": "43b3a2f86762a24a17924138f2dc86f6d9b54065872462476f08e0d0e8e97b47",
+      "after": "43b3a2f86762a24a17924138f2dc86f6d9b54065872462476f08e0d0e8e97b47"
+    },
+    {
+      "name": "MtHollyBlueprintBackUp.es3",
+      "before": "7ff026502e93b4cfbf79eff6a3cdc5c520d1f5d41c44c50871e489c253fc7e95",
+      "after": "7ff026502e93b4cfbf79eff6a3cdc5c520d1f5d41c44c50871e489c253fc7e95"
+    },
+    {
+      "name": "RewiredSaveData.dat",
+      "before": "42afcef3b492fe9a0a993b8d1fc19a8e583f9cc7030ffbb9e9b3ddeec32498fb",
+      "after": "ad22031cfbd74914f8a87629aa4bbb2ee6b612ad10a6ab197403dbdd75fb2361"
+    },
+    {
+      "name": "Settings.dat",
+      "before": "2c9cf19548a9bcfbed55132919404210a698781df3dc9dfade97d0bd8fe77aeb",
+      "after": "2c9cf19548a9bcfbed55132919404210a698781df3dc9dfade97d0bd8fe77aeb"
+    },
+    {
+      "name": "steam_autocloud.vdf",
+      "before": "232b58a4c7e6f97be2e6377086cca1b44d993398346d529bc005e0fb7c6ca7fd",
+      "after": "232b58a4c7e6f97be2e6377086cca1b44d993398346d529bc005e0fb7c6ca7fd"
+    }
+  ],
+  "manual_screenshots": {
+    "v1": 3,
+    "v2": 0
+  },
+  "controller_pulses": {
+    "v1": 1,
+    "v2": 0
+  },
+  "input_delivered_to_game": "unverified; menu unchanged after the single v1 A pulse",
+  "native_runtime_operations_this_study": 0,
+  "gameplay_writes": 0,
+  "verified_controls": 0,
+  "progress_percent": 31,
+  "limitations": [
+    "The metadata source is a previously retained menu observation, not a fresh gameplay discovery.",
+    "Names are unverified hypotheses. Zero bounded-traversal observations do not prove process-wide absence.",
+    "The null Active field is declared on this type; the retained report does not specify its declared target type.",
+    "Setup images and controller actions are recorded in the tool transcript; no image-hash audit is claimed.",
+    "Controller configuration changed during launches/controller connection; gameplay saves and other baseline files matched."
+  ]
+}

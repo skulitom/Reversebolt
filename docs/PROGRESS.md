@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest gameplay-state investigation (2026-10-21): **31% unchanged**. Retained
+runtime metadata identifies walking, running, jumping and gravity hypotheses in
+a first-person controller type. The menu snapshot read its Active reference as
+null and contains no observed instances/readings for those fields. This shifts
+the next experiment toward a gameplay snapshot rather than immediately widening
+the memory reader. Two bounded Anode setup attempts could not enter gameplay:
+one isolated controller pulse left the menu unchanged, and explicit window focus
+was refused because of the foreground GameInput helper. Both owned games exited,
+the controller was detached and Anode released. No runtime helper or gameplay
+write ran. Gameplay save files match the backup; controller configuration changed
+during launch/connection. The metadata/cleanup audit passed. Product binaries and
+the desktop preview are unchanged. The goal remains active; this experiment's
+input blocker does not block all implementation work.
+[Evidence and limitations](../research/runtime-gameplay/README.md).
+
 Latest runtime context/search (2026-10-21): **31% unchanged**. Search now includes
 direct same-object text and filters the retained catalogue before the display
 limit. Search/show preserve discovery provenance and stale-cursor checks; new
