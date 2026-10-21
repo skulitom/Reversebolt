@@ -19,6 +19,8 @@ pub struct Editor {
     error: Option<String>,
     #[cfg(test)]
     slider_rect: Option<egui::Rect>,
+    #[cfg(test)]
+    value_id: Option<egui::Id>,
 }
 
 pub fn text(value: &Value) -> String {
@@ -81,6 +83,10 @@ pub fn draw(
     }
     let current = text(value);
     let value_id = ui.id().with("direct-value");
+    #[cfg(test)]
+    {
+        editor.value_id = Some(value_id);
+    }
     let focused = ui.memory(|m| m.has_focus(value_id));
     if editor.anchor.is_empty() {
         editor.anchor = current.clone();
@@ -93,6 +99,32 @@ pub fn draw(
             editor.anchor = current.clone();
             editor.offset = 0.;
         }
+    }
+    // TextEdit exposes a UIA value provider, but egui does not consume its
+    // string SetValue action. Handle that explicit edit without a float roundtrip.
+    let accessible = enabled
+        .then(|| {
+            ui.input_mut(|input| {
+                let mut value = None;
+                input.consume_accesskit_action_requests(value_id, |request| {
+                    if request.action != egui::accesskit::Action::SetValue {
+                        return false;
+                    }
+                    if let Some(egui::accesskit::ActionData::Value(text)) = &request.data
+                        && text.len() <= 64
+                    {
+                        value = Some(text.to_string());
+                    }
+                    true
+                });
+                value
+            })
+        })
+        .flatten();
+    if let Some(value) = &accessible {
+        editor.text = value.clone();
+        editor.dirty = true;
+        editor.error = None;
     }
     let size = if editor.text.len() > 14 { 25. } else { 38. };
     let response = ui.add_enabled(
@@ -107,6 +139,9 @@ pub fn draw(
     );
     response
         .widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, enabled, "Value"));
+    ui.ctx().accesskit_node_builder(value_id, |node| {
+        node.add_action(egui::accesskit::Action::SetValue)
+    });
     response
         .clone()
         .on_hover_text("Click to type a value, then press Enter or click away to apply.");
@@ -117,7 +152,10 @@ pub fn draw(
     let enter = response.has_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
     let mut commit = enabled
         && editor.dirty
-        && (enter || response.lost_focus() || (response.changed() && !response.has_focus()));
+        && (accessible.is_some()
+            || enter
+            || response.lost_focus()
+            || (response.changed() && !response.has_focus()));
     editor.focused = response.has_focus();
     if enter {
         response.surrender_focus();
@@ -304,5 +342,42 @@ mod tests {
         assert!((51..=70).contains(&value));
         assert!(frame(vec![]).0.is_none());
         assert!(frame(vec![]).0.is_none());
+    }
+
+    #[test]
+    fn accessible_number_entry_is_exact_once_and_obeys_disabled_state() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        let mut frame = |events, enabled| {
+            let mut result = None;
+            let mut output = ctx.run_ui(
+                egui::RawInput {
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    result = draw(ui, &mut editor, 11, &json!("18446744073709551614"), enabled);
+                },
+            );
+            output.textures_delta.clear();
+            (result, editor.value_id.unwrap())
+        };
+        let (_, id) = frame(vec![], true);
+        let action = || {
+            egui::Event::AccessKitActionRequest(egui::accesskit::ActionRequest {
+                action: egui::accesskit::Action::SetValue,
+                target_tree: egui::accesskit::TreeId::ROOT,
+                target_node: id.value().into(),
+                data: Some(egui::accesskit::ActionData::Value(
+                    "18446744073709551615".into(),
+                )),
+            })
+        };
+        assert!(frame(vec![action()], false).0.is_none());
+        assert_eq!(
+            frame(vec![action()], true).0.as_deref(),
+            Some("18446744073709551615")
+        );
+        assert!(frame(vec![], true).0.is_none());
     }
 }
