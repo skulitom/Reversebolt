@@ -1,0 +1,634 @@
+{
+  "mechanical_audit_passed": true,
+  "model": [
+    "qwen3.8:latest",
+    "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "0.40.7"
+  ],
+  "core_observer_tests": 179,
+  "strict_clippy": true,
+  "cases": [
+    {
+      "case": "latest",
+      "baseline_accepted": 7,
+      "baseline_rejected": 1,
+      "accepted": 12,
+      "rejected": 0,
+      "selection_unchanged": true,
+      "metadata_calls": 2,
+      "baseline_metadata_calls": 9,
+      "prompt_tokens": [
+        36266,
+        9921
+      ],
+      "error": null,
+      "seconds": 91.98499999998603,
+      "baseline_seconds": 80.15803813934326,
+      "proposals": [
+        {
+          "name": "spring",
+          "field": "spring",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does changing the spring value alter how quickly a carried cube snaps into place?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "spring"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "spring"
+          ]
+        },
+        {
+          "name": "damper",
+          "field": "damper",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does adjusting the damper value change the smoothness of the cube's movement while being carried?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "damper"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "damper"
+          ]
+        },
+        {
+          "name": "breakDistance",
+          "field": "breakDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does increasing the breakDistance allow the player to carry a cube further away before it drops?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "breakDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "breakDistance"
+          ]
+        },
+        {
+          "name": "holdDistance",
+          "field": "holdDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does modifying the holdDistance change the position of the cube relative to the player while carrying it?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "holdDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "holdDistance"
+          ]
+        },
+        {
+          "name": "cubeSideSize",
+          "field": "cubeSideSize",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does changing the cubeSideSize alter the physical size of the cube in the game world?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "cubeSideSize"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "cubeSideSize"
+          ]
+        },
+        {
+          "name": "detectionRayLength",
+          "field": "detectionRayLength",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does increasing the detectionRayLength allow the player to interact with objects from a greater distance?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "detectionRayLength"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "detectionRayLength"
+          ]
+        },
+        {
+          "name": "extraDist",
+          "field": "extraDist",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does adjusting the extraDist value change the spacing between the player and the carried cube?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "extraDist"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "extraDist"
+          ]
+        },
+        {
+          "name": "springFallingStrength",
+          "field": "springFallingStrength",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does changing the springFallingStrength alter the speed at which a dropped cube falls?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "springFallingStrength"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "springFallingStrength"
+          ]
+        },
+        {
+          "name": "springMaxDistance",
+          "field": "springMaxDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does increasing the springMaxDistance allow the cube to be pulled from a greater distance?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "springMaxDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "springMaxDistance"
+          ]
+        },
+        {
+          "name": "angularDrag",
+          "field": "angularDrag",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does adjusting the angularDrag value change how easily the cube can be rotated while being carried?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "angularDrag"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "angularDrag"
+          ]
+        },
+        {
+          "name": "drag",
+          "field": "drag",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does changing the drag value alter how quickly the cube stops moving after being released?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "drag"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "drag"
+          ]
+        },
+        {
+          "name": "currentLineFillDistance",
+          "field": "_currentLineFillDistance",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "Does changing the _currentLineFillDistance value affect the visual representation of the line's fill level?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "_currentLineFillDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "_currentLineFillDistance"
+          ]
+        }
+      ],
+      "rejections": [],
+      "receipt_sha256": "ba33f369e898b51694d1e88d2cc94bd95c1bef5a278496d0fe3156a4f997050f",
+      "runner_pid": 65568,
+      "runner_exit_code": 0
+    },
+    {
+      "case": "manifold",
+      "baseline_accepted": 8,
+      "baseline_rejected": 0,
+      "accepted": 12,
+      "rejected": 0,
+      "selection_unchanged": true,
+      "metadata_calls": 2,
+      "baseline_metadata_calls": 9,
+      "prompt_tokens": [
+        35796,
+        10016
+      ],
+      "error": null,
+      "seconds": 80.48499999998603,
+      "baseline_seconds": 72.57976579666138,
+      "proposals": [
+        {
+          "name": "run speed",
+          "field": "runSpeed",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the maximum horizontal velocity for the player character during sprinting?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "runSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "runSpeed"
+          ]
+        },
+        {
+          "name": "gravity acceleration value",
+          "field": "gravityAccelerationValue",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the rate at which the player accelerates downward?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "gravityAccelerationValue"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "terminalSpeed"
+          ]
+        },
+        {
+          "name": "step up speed",
+          "field": "stepUpSpeed",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "How quickly does the player character move upward when climbing over small obstacles?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "stepUpSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "maxStepUp"
+          ]
+        },
+        {
+          "name": "fill speed",
+          "field": "fillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the rate at which a visual line or path fills up?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "fillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "fillSpeed"
+          ]
+        },
+        {
+          "name": "unfill speed",
+          "field": "unfillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the speed at which a filled line or path empties?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "unfillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "unfillSpeed"
+          ]
+        },
+        {
+          "name": "line distance",
+          "field": "LineDistance",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the total length or distance of a line object?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "LineDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "LineDistance"
+          ]
+        },
+        {
+          "name": "distance between sound events on light path",
+          "field": "distanceBetweenSoundEventsOnLightPath",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the spacing of audio cues along a light path?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "distanceBetweenSoundEventsOnLightPath"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "distanceBetweenSoundEventsOnLightPath"
+          ]
+        },
+        {
+          "name": "line loop emitter interval",
+          "field": "lineLoopEmitterInterval",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the frequency at which emitters are triggered in a looping line?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "lineLoopEmitterInterval"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "lineLoopEmitterInterval"
+          ]
+        },
+        {
+          "name": "small emitter segment difference",
+          "field": "smallEmitterSegmentDifference",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the size difference between small emitter segments?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "smallEmitterSegmentDifference"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "smallEmitterSegmentDifference"
+          ]
+        },
+        {
+          "name": "cube side size",
+          "field": "cubeSideSize",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What are the physical dimensions of a cube object?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "cubeSideSize"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "cubeSideSize"
+          ]
+        },
+        {
+          "name": "hold distance",
+          "field": "holdDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the distance at which an object is held or carried?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "holdDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "holdDistance"
+          ]
+        },
+        {
+          "name": "detection ray length",
+          "field": "detectionRayLength",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "question": "What is the range of a detection ray used to identify nearby objects?",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "detectionRayLength"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ],
+          "alternative_fields": [
+            "detectionRayLength"
+          ]
+        }
+      ],
+      "rejections": [],
+      "receipt_sha256": "d885f835bf862e51817968e2872093deb5ed4057b3fac440ddd198d637b09bed",
+      "runner_pid": 8004,
+      "runner_exit_code": 0
+    },
+    {
+      "case": "menu",
+      "baseline_accepted": 2,
+      "baseline_rejected": 2,
+      "accepted": 0,
+      "rejected": 0,
+      "selection_unchanged": true,
+      "metadata_calls": 2,
+      "baseline_metadata_calls": 9,
+      "prompt_tokens": [
+        32835,
+        9555
+      ],
+      "error": null,
+      "seconds": 37.76500000001397,
+      "baseline_seconds": 63.506954193115234,
+      "proposals": [],
+      "rejections": [],
+      "receipt_sha256": "625a42b362e45f3d6340468cb023f9c8ad22218b62e08e79814a2d75122bb232",
+      "runner_pid": 49052,
+      "runner_exit_code": 0
+    },
+    {
+      "case": "fixture",
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "selection_unchanged": true,
+      "metadata_calls": 2,
+      "baseline_metadata_calls": 2,
+      "prompt_tokens": [
+        565,
+        590
+      ],
+      "error": null,
+      "seconds": 2.5160000000032596,
+      "baseline_seconds": 25.45962142944336,
+      "proposals": [],
+      "rejections": [],
+      "receipt_sha256": "cf783e1b52dbb9a6b9384bb774c16504fd7b08e5be1ca4bd32401ff81eeabf59",
+      "runner_pid": 17268,
+      "runner_exit_code": 0
+    },
+    {
+      "case": "opaque",
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "selection_unchanged": true,
+      "metadata_calls": 1,
+      "baseline_metadata_calls": 1,
+      "prompt_tokens": [
+        32828
+      ],
+      "error": null,
+      "seconds": 28.26600000000326,
+      "baseline_seconds": 34.58533477783203,
+      "proposals": [],
+      "rejections": [],
+      "receipt_sha256": "80d69ba91e645c2cdc5104d2ce9035b2ed431d092dfb3fa5b512beaf60c1aa7d",
+      "runner_pid": 7792,
+      "runner_exit_code": 0
+    }
+  ],
+  "promotion_review": "See promotion.json for the separate decision against the frozen protocol.",
+  "limits": [
+    "Known development reports, not held-out evaluation.",
+    "Accepted means reference/lexical checks, not semantic truth or causal effect.",
+    "Question-budget allocation, table compression and wording changed together.",
+    "No native target access, gameplay input, writes or image review in the replay."
+  ]
+}

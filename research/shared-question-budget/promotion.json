@@ -1,0 +1,14 @@
+{
+  "promoted": false,
+  "criteria": {
+    "mechanical_checks": true,
+    "menu_has_no_peripheral_questions": true,
+    "opaque_abstains": true,
+    "fixture_has_object_text_question": false,
+    "movement_retained_in_both_gameplay_cases": false
+  },
+  "reason": "The labelled fixture still abstains. Latest gameplay spends 11 of 12 questions on CarryRigidbody fields and one on a LineDisplay field, omitting the movement questions retained by the baseline. More accepted questions are not an improvement in coverage. No causal or generalization claim follows.",
+  "production_source_restored_sha256": "fe810e9bf2ce46978e8ac4d26fb1e48a0eefeae2cfce1f20be825d8d10ec0563",
+  "prototype_patch_sha256": "33437b354a9ef0a53a1da76661709893398496992b034ab5deb4ae0b35a9a4fd",
+  "reruns_after_inspection": 0
+}
