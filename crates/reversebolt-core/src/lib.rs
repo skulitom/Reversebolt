@@ -5,6 +5,7 @@ pub mod discovery;
 pub mod effects;
 pub mod engine;
 pub mod inputs;
+pub mod intervention;
 pub mod investigation;
 pub mod live;
 pub mod prediction;

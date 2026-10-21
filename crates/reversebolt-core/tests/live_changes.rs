@@ -20,6 +20,7 @@ struct State {
     secondary: Cell<Option<f64>>,
     screen_bias: Cell<f32>,
     mirror: Cell<bool>,
+    reset_during_screen: Cell<bool>,
 }
 impl State {
     fn set(&self, value: f32) {
@@ -62,6 +63,10 @@ impl NativeTarget for Target {
         std::fs::write(path, b"\x89PNG\r\n\x1a\ncontract fixture").map_err(|e| e.to_string())?;
         let value = f32::from_le_bytes(self.state.bytes.borrow()[32..36].try_into().unwrap())
             + self.state.screen_bias.get();
+        if self.state.reset_during_screen.replace(false) {
+            self.state.bytes.borrow_mut()[32..36].copy_from_slice(&50f32.to_le_bytes());
+            self.state.bytes.borrow_mut()[64..68].copy_from_slice(&50f32.to_le_bytes());
+        }
         let mut words = vec![Word {
             text: value.to_string(),
             bounds: [10., 10., 40., 20.],
@@ -129,6 +134,7 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
             secondary: Cell::new(Some(25.)),
             screen_bias: Cell::new(0.),
             mirror: Cell::new(true),
+            reset_during_screen: Cell::new(false),
         });
         let mut session = LiveSession::attach(
             Box::new(Target {
@@ -251,6 +257,18 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
         let observed = session.observe_change(&prepared.id, &mut store).unwrap();
         assert_eq!(observed.observations[0].agrees, selected_offset == 32);
         assert_eq!(
+            observed.observations[0].intervention_outcome,
+            Some(if selected_offset == 32 {
+                reversebolt_core::intervention::Outcome::Matched
+            } else {
+                reversebolt_core::intervention::Outcome::DidNotFollow
+            })
+        );
+        assert_eq!(
+            observed.observations[0].intervention_memory.len(),
+            prepared.models.len()
+        );
+        assert_eq!(
             observed.observations[0].value,
             Some(if selected_offset == 32 { 53. } else { 50. })
         );
@@ -283,10 +301,50 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
             .execute_change(&prepared.id, false, &mut store)
             .unwrap();
         assert_eq!(state.calls.get(), 1, "Completed probes are never replayed");
+        state.reset_during_screen.set(true);
+        let transient = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(
+            transient.observations.last().unwrap().intervention_outcome,
+            Some(reversebolt_core::intervention::Outcome::MemoryChanged)
+        );
+        assert!(
+            transient
+                .observations
+                .last()
+                .unwrap()
+                .probe_comparisons
+                .iter()
+                .all(|c| c.fit == reversebolt_core::probes::Fit::Unavailable)
+        );
+        assert_eq!(
+            state.calls.get(),
+            1,
+            "Reading evidence must never issue writes"
+        );
+        assert_eq!(
+            session
+                .execute_change(&prepared.id, true, &mut store)
+                .unwrap()
+                .phase,
+            Phase::Written
+        );
+        assert_eq!(
+            state.calls.get(),
+            1,
+            "A changed interpretation must refuse restoration"
+        );
+        // Test-only fixture reset makes the original reviewed restoration possible again.
+        state.bytes.borrow_mut()[selected_offset..selected_offset + 4]
+            .copy_from_slice(&53f32.to_le_bytes());
         let restored = session
             .execute_change(&prepared.id, true, &mut store)
             .unwrap();
         assert_eq!(restored.phase, Phase::Restored);
+        let restored = session.observe_change(&prepared.id, &mut store).unwrap();
+        assert_eq!(
+            restored.observations.last().unwrap().intervention_outcome,
+            Some(reversebolt_core::intervention::Outcome::Matched)
+        );
         assert_eq!(
             f32::from_le_bytes(
                 state.bytes.borrow()[selected_offset..selected_offset + 4]
@@ -297,6 +355,10 @@ fn explicit_probes_test_a_location_without_erasing_nonoverlapping_rivals() {
         );
         drop(store);
         let reopened = Store::open(root.join("changes")).unwrap();
+        assert_eq!(
+            reopened.get(&prepared.id).unwrap().observations[0].intervention_outcome,
+            observed.observations[0].intervention_outcome
+        );
         assert_eq!(
             reopened
                 .get(&prepared.id)
@@ -323,6 +385,7 @@ fn session_contract(separate: bool) {
         secondary: Cell::new(Some(25.)),
         screen_bias: Cell::new(0.),
         mirror: Cell::new(false),
+        reset_during_screen: Cell::new(false),
     });
     let mut session = LiveSession::attach(
         Box::new(Target {

@@ -212,6 +212,26 @@ changed, unchanged within 0.55, or unreadable. Missing/ambiguous readings never
 become zero or proof of stability. Unexpected numeric regions are counted but
 not assigned an invented identity. Normal gameplay and timing can produce changes;
 this is descriptive evidence, not causal attribution or a complete effect scope.
+
+Each post-edit/restoration observation now also contains `intervention_memory`:
+complete expected interpretation bytes and separate before/after reads around
+the capture operation, with monotonic intervals, allocation checks and errors.
+It reads at most 200 interpretations of at most eight bytes twice (3,200 bytes
+per observation), separately from discovery snapshots. Sequential reads do not
+establish atomicity or allocation-generation identity. Equal endpoints cannot
+exclude ABA changes or display lag.
+
+`intervention_outcome` distinguishes `matched`, `did_not_follow`, `memory_changed`,
+`memory_unavailable`, `timing_uncertain` and `visual_unavailable`. The first two
+require expected complete bytes at both endpoints and a reliable visual reading.
+If bytes have changed or evidence is unavailable, conditional `probe_comparisons`
+are marked `unavailable`, not votes for another candidate. The ordinary `agrees`
+field still means only that the screen number matched the requested number.
+Older observations default to no memory witnesses and no intervention outcome;
+they cannot be upgraded retrospectively. Use persistence failures to investigate
+timing or representation, and stable mismatches to investigate other locations
+or delayed responses. Neither result eliminates candidates or grants authority.
+
 Each change allows eight post-observations plus its baseline; separate trial
 evidence is bounded to 128 MiB, reserving space for late capture completion.
 The journal retains at most 128 changes. No change is resumed or restored after

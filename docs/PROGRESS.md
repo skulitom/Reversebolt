@@ -4,6 +4,18 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest intervention persistence (2026-10-21): **27% unchanged**. Result captures
+now record the complete tested values immediately before and after the image,
+distinguishing replaced edits from stable edits with no visible response. Missing
+or changed evidence withholds conditional candidate comparisons. Three fixed
+native fixture cases exercised source, copy and external-overwrite outcomes;
+the source case retained a failed additional OCR reading, while the other two
+passed. All 154 workspace tests and packaged checks pass. Desktop preview
+`0.1.0-20261021-090018` is running with history preserved. This adds diagnostic
+evidence for investigation, not verified gameplay authority or generalization;
+all weighted credits remain unchanged and the full goal stays active.
+[Evidence and limits](../research/intervention-persistence/README.md).
+
 Latest original-game location trials (2026-10-21): **27% unchanged**. Four fixed
 Tetris cases retained two abstentions, one preflight application refusal and one
 confirmed byte write with no observed score response. That write's restoration

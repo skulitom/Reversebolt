@@ -589,7 +589,7 @@ impl LivePane {
                                                 let restore_refused=change.restoration.as_ref().is_some_and(|r|!r.attempted && r.error.is_some());
                                                 ui.label(RichText::new(if restore_refused {"Restore wasn't applied"} else {"Trial applied"}).color(if restore_refused {WARNING} else {ACCENT}));
                                                 if let Some(observation)=change.observations.last() {
-                                                    ui.label(RichText::new(if observation.agrees {"Requested number seen"} else {"Effect not confirmed"}).size(12.).color(MUTED));
+                                                    ui.label(RichText::new(observation.intervention_outcome.map(|o|o.label()).unwrap_or(if observation.agrees {"Requested number seen"} else {"Effect not confirmed"})).size(12.).color(MUTED));
                                                 }
                                                 ui.horizontal(|ui| {
                                                     if ui.add_enabled(!busy && live.connected,egui::Button::new("Restore bytes")).on_hover_text("Checks the original value's bytes before restoring. Downstream gameplay effects may remain.").clicked() {handle.submit("restore_change",json!({"change_id":change.id}));}
@@ -775,6 +775,10 @@ impl LivePane {
                         }
                         if let Some(receipt)=change.restoration.as_ref().or(change.write.as_ref()) && let Some(error)=&receipt.error {ui.colored_label(ERROR,error);}
                         if let Some(observation)=change.observations.last() {
+                            if let Some(outcome)=observation.intervention_outcome {
+                                ui.label(outcome.explanation());
+                                ui.label("These checks sample memory at capture endpoints. Changes between reads, display lag and hidden effects remain possible.");
+                            }
                             ui.label(format!("Trial reading: {} · expected {}",observation.value.map_or_else(||"unavailable".into(),|v|v.to_string()),observation.expected));
                             if let Some(comparison)=&observation.comparison {
                                 for value in &comparison.other_values {

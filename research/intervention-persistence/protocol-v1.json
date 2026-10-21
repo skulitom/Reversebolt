@@ -1,0 +1,56 @@
+{
+  "frozen_utc": "2026-10-21T08:00:36.847434+00:00",
+  "base_commit": "9184cb5d255fbef301e8b4c1f98416e6a73aff61",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-090018",
+  "binaries": {
+    "Reversebolt.exe": "998eedf02ba177cf9da71cf86810a05cc217d9b5948e9cfce481221bb16f0e43",
+    "reversebolt-mcp.exe": "7cda5bd6824ffdc518e90abb4f64a1490fea78fed3a30c1f580bd91a1acf3582"
+  },
+  "method_sha256": {
+    "PROTOCOL.md": "2a64fcbf8db232be0c58b602c2ccca522ef1b1e6ebde99c16db852731dd235ad",
+    "run.py": "78ba4a4efa0f5a0f59574e4c7ccdb48ba95d80115e9142737c72399c9858a407",
+    "fixture.ps1": "66497c588912dae516e49b31472bb0ae1417f753ab68bc98004ff692f0d32fe6"
+  },
+  "product_source_sha256": {
+    "crates/reversebolt-core/src/intervention.rs": "3541deab1e3c09bdc03fbfc60e2f276cb89bc94a1943e7c7f24094ab97d06d9b",
+    "crates/reversebolt-core/src/live.rs": "dc7d3dca436f41c105c2e72fbb66b6dd8cffd83a16529b591d948252cd59ac77",
+    "crates/reversebolt-core/src/changes.rs": "7f931e595c408020b69635a69417510b1be11ee175bc592bd96772ec54d754e1",
+    "crates/reversebolt-core/src/lib.rs": "5cd1e66797bbdd8f96cb7328e05c5fa2b78253248fd5afea49fb06364ec10571",
+    "crates/reversebolt-core/tests/live_changes.rs": "6a1d57da351f5ecd8876fa32288fa6f799083b502e7ad3000ff1987c9d887998",
+    "crates/reversebolt-app/src/ui_live.rs": "70beeb61816869295a172aac2c1b773879d2c52d35bce7b5a1ed3aa3194e74c5"
+  },
+  "values": [
+    40,
+    56,
+    31,
+    85,
+    64,
+    27,
+    75,
+    92,
+    44,
+    67,
+    38,
+    50,
+    54,
+    54,
+    50,
+    50
+  ],
+  "cases": [
+    {
+      "case": 0,
+      "source_slot": 0
+    },
+    {
+      "case": 1,
+      "source_slot": 1
+    },
+    {
+      "case": 2,
+      "source_slot": 1,
+      "external_update_after_write": 47
+    }
+  ],
+  "selection": "lowest active OCR track with matches; candidate zero; no replacement or rerun"
+}

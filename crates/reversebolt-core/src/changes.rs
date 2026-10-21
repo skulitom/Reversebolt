@@ -123,6 +123,10 @@ pub struct Observation {
     pub comparison: Option<crate::effects::Comparison>,
     #[serde(default)]
     pub probe_comparisons: Vec<crate::probes::Comparison>,
+    #[serde(default)]
+    pub intervention_memory: Vec<crate::intervention::Sample>,
+    #[serde(default)]
+    pub intervention_outcome: Option<crate::intervention::Outcome>,
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]

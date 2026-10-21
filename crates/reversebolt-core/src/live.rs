@@ -570,8 +570,16 @@ impl LiveSession {
         if change.phase == Phase::Written
             && let Some(probe) = &change.probe
         {
-            observation.probe_comparisons =
-                probe.compare(observation.value.filter(|_| observation.error.is_none()));
+            observation.probe_comparisons = probe.compare(observation.value.filter(|_| {
+                observation.error.is_none()
+                    && matches!(
+                        observation.intervention_outcome,
+                        Some(
+                            crate::intervention::Outcome::Matched
+                                | crate::intervention::Outcome::DidNotFollow
+                        )
+                    )
+            }));
         }
         if let Some(baseline) = &change.baseline {
             observation.comparison = Some(crate::effects::compare(
@@ -611,8 +619,19 @@ impl LiveSession {
             untracked_numbers: 0,
             comparison: None,
             probe_comparisons: vec![],
+            intervention_memory: vec![],
+            intervention_outcome: None,
         };
         let result = (|| -> Result<()> {
+            if !matches!(stage, crate::changes::ObservationStage::BeforeEdit) {
+                observation.intervention_memory = crate::intervention::begin(
+                    &*self.target,
+                    change,
+                    stage,
+                    self.capture_clock,
+                    &self.view.investigation_id,
+                );
+            }
             let begin_us = self.capture_clock.elapsed().as_micros() as u64;
             let screen = self.target.screen(&path);
             observation.capture_interval = Some(CaptureInterval {
@@ -620,6 +639,13 @@ impl LiveSession {
                 begin_us,
                 end_us: self.capture_clock.elapsed().as_micros() as u64,
             });
+            crate::intervention::finish(
+                &*self.target,
+                change,
+                &mut observation.intervention_memory,
+                self.capture_clock,
+                &self.view.investigation_id,
+            );
             let mut screen = screen?;
             if std::fs::metadata(&path).map_err(|e| e.to_string())?.len()
                 > visual::MAX_IMAGE_BYTES as u64
@@ -700,6 +726,12 @@ impl LiveSession {
             Ok(())
         })();
         observation.error = result.err();
+        if !matches!(stage, crate::changes::ObservationStage::BeforeEdit) {
+            observation.intervention_outcome = Some(crate::intervention::assess(
+                &observation,
+                change.models.len(),
+            ));
+        }
         Ok(observation)
     }
 

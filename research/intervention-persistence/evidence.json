@@ -1,0 +1,2161 @@
+{
+  "audit": "post-run; failures retained",
+  "protocol_sha256": "79e8917eaa3a4fef5b47ff536d52f5ffa5fb7974232ed92c077b0191695e0ef4",
+  "binaries": {
+    "Reversebolt.exe": "998eedf02ba177cf9da71cf86810a05cc217d9b5948e9cfce481221bb16f0e43",
+    "reversebolt-mcp.exe": "7cda5bd6824ffdc518e90abb4f64a1490fea78fed3a30c1f580bd91a1acf3582"
+  },
+  "cases": [
+    {
+      "case": 0,
+      "report": {
+        "case": 0,
+        "slot": 0,
+        "errors": [
+          "AssertionError()"
+        ],
+        "protocol_sha256": "79e8917eaa3a4fef5b47ff536d52f5ffa5fb7974232ed92c077b0191695e0ef4",
+        "fixture_pid": 80428,
+        "initial_oracle": {
+          "fields": [
+            2346417783840,
+            2346417786536
+          ],
+          "source": 0,
+          "values": [
+            40,
+            40
+          ]
+        },
+        "engine_pid": 85464,
+        "mcp_pid": 67832,
+        "selected_field": 0,
+        "prepared_oracle": {
+          "fields": [
+            2346417783840,
+            2346417786536
+          ],
+          "source": 0,
+          "values": [
+            50,
+            50
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            2346417783840,
+            2346417786536
+          ],
+          "source": 0,
+          "values": [
+            53,
+            50
+          ]
+        },
+        "checked_oracle": {
+          "fields": [
+            2346417783840,
+            2346417786536
+          ],
+          "source": 0,
+          "values": [
+            53,
+            50
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            2346417783840,
+            2346417786536
+          ],
+          "source": 0,
+          "values": [
+            50,
+            50
+          ]
+        }
+      },
+      "expected_check": "matched",
+      "full_case_passed": false,
+      "stages": [
+        {
+          "file": "applied.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 40182792,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 40423109
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40423109,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40423120
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40182778,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40182792
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "checked-restore.json",
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              72
+            ],
+            "transferred": 1
+          },
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 40182792,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 40423109
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40423109,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40423120
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40182778,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40182792
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 42398203,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 42603294
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42603295,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42603304
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42398188,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42398202
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            },
+            {
+              "stage": "after_restoration",
+              "value": 50.0,
+              "expected": 50.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 44403248,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 44634230
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44634231,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 44634244
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44403239,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 44403248
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": []
+            },
+            {
+              "stage": "after_restoration",
+              "value": null,
+              "expected": 50.0,
+              "agrees": false,
+              "error": "The selected number is uncertain.",
+              "image_sha256": "64c998de9f2b35c524e3659fc4514bc881100f6f676a5141066b7444a82c4e28",
+              "capture_interval": {
+                "begin_us": 46645397,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 46813635
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 46813635,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 46813645
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 46645381,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 46645396
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "visual_unavailable",
+              "probe_comparisons": []
+            }
+          ]
+        },
+        {
+          "file": "checked.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 40182792,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 40423109
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40423109,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40423120
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40182778,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40182792
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 42398203,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 42603294
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42603295,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42603304
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42398188,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42398202
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "restored.json",
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              72
+            ],
+            "transferred": 1
+          },
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 40182792,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 40423109
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40423109,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40423120
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40182778,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 40182792
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 53.0,
+              "expected": 53.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "eb6ba6885f4275709074454def44cae8c03eb7e6ca25df3d64288726aa5bebdd",
+              "capture_interval": {
+                "begin_us": 42398203,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 42603294
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42603295,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42603304
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42398188,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 42398202
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "agreed",
+                  "index": 0,
+                  "observed": 53.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "differed",
+                  "index": 1,
+                  "observed": 53.0
+                }
+              ]
+            },
+            {
+              "stage": "after_restoration",
+              "value": 50.0,
+              "expected": 50.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 44403248,
+                "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                "end_us": 44634230
+              },
+              "intervention_memory": [
+                {
+                  "address": 2346417783840,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44634231,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 44634244
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44403239,
+                      "clock_id": "bf810ad5-c6c7-4b84-ba5a-76527e728047",
+                      "end_us": 44403248
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": []
+            }
+          ]
+        }
+      ],
+      "files": {
+        "applied.json": "390bfd04e9771de08628578f63d970c07956016dc28d85c5dfb4459015df7ec3",
+        "checked-restore.json": "26c4952a9965c8273196d8578c0ef05d0562499e9baed40c5bbb2a297479ab6d",
+        "checked.json": "1c708f5e2f9a0f26d9189d97c802e748c36a472cb765ac7a7b4157b2e6580346",
+        "commands.json": "858b6516a43efcc289718cf9e4e95f87d17f80d8fa80d803e44ae763a7f92a93",
+        "fresh.json": "165e089f36e9ec05a57e2a42dae46b5278899d8cb71d0fed3fdb376b1ba2adb3",
+        "oracle.json": "f78fccaf94c73603bb2a4bb5429d6220b59dfb580b900362d0b56d4d56818ccc",
+        "ordinary.json": "0ad18f4d60a47fdc977c4c16555c5b51871a3727af8bcf2feae67cadf8c85c4a",
+        "prepared.json": "d1cfee5f548c7d64e8320f11455f78c5ea65bfaf1972b1193662104e1b648c9d",
+        "report.json": "37433d662cd2671ab8c48ad2eb6bb64e89c3bd51b8bac886a84b1177dea876db",
+        "restored.json": "951d7006eeeeea12df02ba66ddf1baf5eb413215078895a83a021995edf06298",
+        "states.json": "5d63f2b770a4ba2d3931272122711a14e26e16558747891cf94ae8e5dd1bcc72",
+        "training.json": "0fa7a2bb835ddbf550f9853bd6812eccdacc12eadc08b7e53a478d838dcef522"
+      }
+    },
+    {
+      "case": 1,
+      "report": {
+        "case": 1,
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "79e8917eaa3a4fef5b47ff536d52f5ffa5fb7974232ed92c077b0191695e0ef4",
+        "fixture_pid": 68096,
+        "initial_oracle": {
+          "fields": [
+            2269382182408,
+            2269382183888
+          ],
+          "source": 1,
+          "values": [
+            40,
+            40
+          ]
+        },
+        "engine_pid": 10048,
+        "mcp_pid": 77872,
+        "selected_field": 0,
+        "prepared_oracle": {
+          "fields": [
+            2269382182408,
+            2269382183888
+          ],
+          "source": 1,
+          "values": [
+            50,
+            50
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            2269382182408,
+            2269382183888
+          ],
+          "source": 1,
+          "values": [
+            53,
+            50
+          ]
+        },
+        "checked_oracle": {
+          "fields": [
+            2269382182408,
+            2269382183888
+          ],
+          "source": 1,
+          "values": [
+            53,
+            50
+          ]
+        },
+        "restored_oracle": {
+          "fields": [
+            2269382182408,
+            2269382183888
+          ],
+          "source": 1,
+          "values": [
+            50,
+            50
+          ]
+        },
+        "outcome": "did_not_follow; restored"
+      },
+      "expected_check": "did_not_follow",
+      "full_case_passed": true,
+      "stages": [
+        {
+          "file": "applied.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39935122,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 40121503
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40121504,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 40121512
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39935111,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 39935122
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "checked-restore.json",
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              72
+            ],
+            "transferred": 1
+          },
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39935122,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 40121503
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40121504,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 40121512
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39935111,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 39935122
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 42103092,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 42273487
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42273488,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42273502
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42103081,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42103092
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_restoration",
+              "value": 50.0,
+              "expected": 50.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 44054421,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 44226209
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44226210,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 44226218
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44054411,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 44054420
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": []
+            },
+            {
+              "stage": "after_restoration",
+              "value": 50.0,
+              "expected": 50.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 46194095,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 46376418
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 46376418,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 46376440
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 46194086,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 46194095
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": []
+            }
+          ]
+        },
+        {
+          "file": "checked.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39935122,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 40121503
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40121504,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 40121512
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39935111,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 39935122
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 42103092,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 42273487
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42273488,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42273502
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42103081,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42103092
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "restored.json",
+          "phase": "restored",
+          "reason": "Original bytes were observed again. This does not undo downstream gameplay effects.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              72
+            ],
+            "transferred": 1
+          },
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39935122,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 40121503
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40121504,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 40121512
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39935111,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 39935122
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 42103092,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 42273487
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42273488,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42273502
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42103081,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 42103092
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_restoration",
+              "value": 50.0,
+              "expected": 50.0,
+              "agrees": true,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 44054421,
+                "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                "end_us": 44226209
+              },
+              "intervention_memory": [
+                {
+                  "address": 2269382182408,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44226210,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 44226218
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      72,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44054411,
+                      "clock_id": "0c70a584-d9ea-4833-9f48-572132748469",
+                      "end_us": 44054420
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    72,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "matched",
+              "probe_comparisons": []
+            }
+          ]
+        }
+      ],
+      "files": {
+        "applied.json": "f557101bea48e1c2e66f9d4ce8779d5fee1a96e159973dcb6e39cdf1649c8331",
+        "checked-restore.json": "a46ed9dbd0feec920f6ded200320c72e4075e8f093e11e304e4f67e531dbb0ac",
+        "checked.json": "30b91a7ebc233149de24161e2f9048f7a80f5a181eb4dfc060d9539c01f2f28d",
+        "commands.json": "10f8bbc0f491411c600acc5b82b8392e188433539c90119d5c01755e246c1357",
+        "final-status.json": "e031735c5bd202a2cb1b01535e59f24d508fd7bf95c11002e7ee7b0084611798",
+        "fresh.json": "e59eca8843ee6b1534f75c373bb95d9c49ebae59707a75876623db3d41faeccd",
+        "oracle.json": "a01e0cc9ca4adbcbea832a11a372e02305660f5f6e770e23e27bb4541f85cc03",
+        "ordinary.json": "cd6f7dbbce02e5721bcca6d9df13972135f81ec42399c5712398fd625442a93d",
+        "prepared.json": "fe446ed058d39ced3221a2ad089a961f9a838adc1444abfb7ca793b0c99f21cd",
+        "report.json": "f9acd02caf27d312c042255da27a3b2ee4f58f1849b45e4b0904d8afe70f9f2f",
+        "restored.json": "de8309382dfef788dad345769541f876f349cbd2b07e1437fdc5af35df38c817",
+        "states.json": "aaf0f4b5e78913eaa4368ccc342f6c32f43ec54619ce8c06b15f372ff7c60591",
+        "training.json": "e5f308ab731f0c35130d972047c53de901005b863bd1da5393a9c1a3cd0ee88b"
+      }
+    },
+    {
+      "case": 2,
+      "report": {
+        "case": 2,
+        "slot": 1,
+        "errors": [],
+        "protocol_sha256": "79e8917eaa3a4fef5b47ff536d52f5ffa5fb7974232ed92c077b0191695e0ef4",
+        "fixture_pid": 25040,
+        "initial_oracle": {
+          "fields": [
+            2686416323616,
+            2686416325264
+          ],
+          "source": 1,
+          "values": [
+            40,
+            40
+          ]
+        },
+        "engine_pid": 69748,
+        "mcp_pid": 76720,
+        "selected_field": 0,
+        "prepared_oracle": {
+          "fields": [
+            2686416323616,
+            2686416325264
+          ],
+          "source": 1,
+          "values": [
+            50,
+            50
+          ]
+        },
+        "applied_oracle": {
+          "fields": [
+            2686416323616,
+            2686416325264
+          ],
+          "source": 1,
+          "values": [
+            53,
+            50
+          ]
+        },
+        "checked_oracle": {
+          "fields": [
+            2686416323616,
+            2686416325264
+          ],
+          "source": 1,
+          "values": [
+            47,
+            47
+          ]
+        },
+        "outcome": "memory changed; comparison withheld; restoration refused"
+      },
+      "expected_check": "memory_changed",
+      "full_case_passed": true,
+      "stages": [
+        {
+          "file": "applied.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39876860,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 40063018
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40063018,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 40063028
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39876851,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 39876860
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "checked.json",
+          "phase": "written",
+          "reason": "Requested bytes were observed after writing. Gameplay effects have not been verified.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": null,
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39876860,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 40063018
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40063018,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 40063028
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39876851,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 39876860
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 47.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "038d36ac1a0dad6ea1c00c8460aa324eb3387fc1c01d61b273b1fb6c183b1704",
+              "capture_interval": {
+                "begin_us": 42270408,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 42454047
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42454048,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 42454060
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42270394,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 42270407
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "memory_changed",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "unavailable",
+                  "index": 0,
+                  "observed": null
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "unavailable",
+                  "index": 1,
+                  "observed": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "restored.json",
+          "phase": "written",
+          "reason": "The value's bytes changed since this edit. Nothing was overwritten.",
+          "write": {
+            "attempted": true,
+            "error": null,
+            "observed_after": [
+              84
+            ],
+            "transferred": 1
+          },
+          "restoration": {
+            "attempted": false,
+            "error": "The value's bytes changed since this edit. Nothing was overwritten.",
+            "observed_after": null,
+            "transferred": 0
+          },
+          "observations": [
+            {
+              "stage": "after_edit",
+              "value": 50.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "7e457a81bac23c6d9189eb622691d368cbf36434f3c3fd2ca724988b9ca65ce3",
+              "capture_interval": {
+                "begin_us": 39876860,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 40063018
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 40063018,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 40063028
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      84,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 39876851,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 39876860
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "did_not_follow",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "differed",
+                  "index": 0,
+                  "observed": 50.0
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "agreed",
+                  "index": 1,
+                  "observed": 50.0
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 47.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "038d36ac1a0dad6ea1c00c8460aa324eb3387fc1c01d61b273b1fb6c183b1704",
+              "capture_interval": {
+                "begin_us": 42270408,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 42454047
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42454048,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 42454060
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 42270394,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 42270407
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "memory_changed",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "unavailable",
+                  "index": 0,
+                  "observed": null
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "unavailable",
+                  "index": 1,
+                  "observed": null
+                }
+              ]
+            },
+            {
+              "stage": "after_edit",
+              "value": 47.0,
+              "expected": 53.0,
+              "agrees": false,
+              "error": null,
+              "image_sha256": "038d36ac1a0dad6ea1c00c8460aa324eb3387fc1c01d61b273b1fb6c183b1704",
+              "capture_interval": {
+                "begin_us": 44297355,
+                "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                "end_us": 44497371
+              },
+              "intervention_memory": [
+                {
+                  "address": 2686416323616,
+                  "after": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44497371,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 44497383
+                    }
+                  },
+                  "before": {
+                    "bytes": [
+                      0,
+                      0,
+                      60,
+                      66
+                    ],
+                    "error": null,
+                    "interval": {
+                      "begin_us": 44297345,
+                      "clock_id": "81a622b0-b0c6-4523-b1e9-1def9c8926eb",
+                      "end_us": 44297355
+                    }
+                  },
+                  "expected": [
+                    0,
+                    0,
+                    84,
+                    66
+                  ],
+                  "model": 0
+                }
+              ],
+              "intervention_outcome": "memory_changed",
+              "probe_comparisons": [
+                {
+                  "expected": 53.0,
+                  "fit": "unavailable",
+                  "index": 0,
+                  "observed": null
+                },
+                {
+                  "expected": 50.0,
+                  "fit": "unavailable",
+                  "index": 1,
+                  "observed": null
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "files": {
+        "applied.json": "ab0c1822a72ade8ba2aa119ac2629bbe5a5361298071f9bee5ce4b4340ff9403",
+        "checked.json": "c71275473c0252fdf38d6040453b556b6e171d349114b7a66f5d091929e8556f",
+        "commands.json": "baa3b6233028eeb533c0c274284eb941fee722e56adec7ba0ea1b94871962cb2",
+        "final-status.json": "b941adbb3fe9234c212ca0844dd2f265b8881803b82b5ddba3e1c6ad41a36a8d",
+        "fresh.json": "325186c1a657ae44fc41a767c69b3f57014f89f14bcb656a5ce61fbc79ae6d2f",
+        "oracle.json": "b89bfbde7990378ed7457665a5c98f7c2dd4c0ef8f84fd17dfc7af9c884f5aa0",
+        "ordinary.json": "e5f104f226f3972669dfa9fc9af2508a62a17a1bd924fd8cb96f0756f13a2062",
+        "prepared.json": "eb4a54e014fc1c8519166d51a469c4a9a05572ab92fef284eda0de36ede67d9e",
+        "report.json": "c75d37aa592cf6be5c274a064dbe6a4eea26b3317a31e144ee19627c541a26a4",
+        "restored.json": "7d406acd0a57ce8eaab1afd63aa3b9bea1da0cf9221b25a4a7bcc2859bf2f35a",
+        "states.json": "2d278c0b1262c13e1c12b383537c5e9f683125e6cbdea43dc89b4702db8d1b9e",
+        "training.json": "05feeb1a6d4be57c0626d9c9f197ed471d5813f73f2e1a2bbab8f12b6453f4eb"
+      }
+    }
+  ]
+}
