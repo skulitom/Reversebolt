@@ -212,6 +212,92 @@ fn refused_restoration_preserves_recorded_change_and_is_not_retried() {
     assert_eq!(dir.store().get(&trial.id).unwrap().phase, Phase::Written);
 }
 
+fn original_already_present(inverse: &Patch) -> Evidence {
+    let mut report = receipt(inverse, false).report;
+    report["checks"][0]["bytes"] = json!(inverse.replacement);
+    report["checks"][0]["value"] = scalar_value(inverse.type_code, &inverse.replacement).unwrap();
+    Evidence::new("already-original.json".into(), report).unwrap()
+}
+
+#[test]
+fn already_original_restoration_is_durable_nonwriting_and_replayable() {
+    let dir = Directory::new();
+    let mut store = dir.store();
+    let trial = store.insert(review()).unwrap();
+    store
+        .execute(&trial.id, &trial.context, false, |p| Ok(receipt(p, true)))
+        .unwrap();
+    let recovered = store
+        .execute(&trial.id, &trial.context, true, |inverse| {
+            // The game has independently returned to the original bytes.
+            Ok(original_already_present(inverse))
+        })
+        .unwrap();
+    assert_eq!(recovered.phase, Phase::Restored);
+    let attempt = recovered.restoration.as_ref().unwrap();
+    assert_eq!(attempt.outcome, "already_original");
+    assert_eq!(
+        attempt.evidence.as_ref().unwrap().report["patch"]["attempted"],
+        false
+    );
+    assert_eq!(
+        store
+            .execute(&trial.id, &trial.context, true, |_| panic!(
+                "restore replay wrote"
+            ))
+            .unwrap()
+            .phase,
+        Phase::Restored
+    );
+    assert_eq!(dir.store().get(&trial.id).unwrap().phase, Phase::Restored);
+
+    // Previously saved refusal records remain readable and are not silently upgraded.
+    let mut legacy = recovered;
+    legacy.phase = Phase::Written;
+    legacy.restoration.as_mut().unwrap().outcome = "refused".into();
+    fs::write(dir.record(&legacy), serde_json::to_vec(&legacy).unwrap()).unwrap();
+    assert_eq!(dir.store().get(&legacy.id).unwrap().phase, Phase::Written);
+}
+
+#[test]
+fn already_original_requires_exact_identity_value_and_no_write_evidence() {
+    use reversebolt_core::runtime_trials::{classify, classify_restoration};
+    let trial = review();
+    let inverse = trial
+        .patch
+        .restoration(&receipt(&trial.patch, true).report, now_ms())
+        .unwrap();
+    let original = original_already_present(&inverse).report;
+    assert_eq!(classify(&inverse, &original), "refused");
+    assert_eq!(
+        classify_restoration(&inverse, &original),
+        "already_original"
+    );
+    for (pointer, replacement) in [
+        ("/checks/0/field_address", json!("0x2010")),
+        ("/checks/0/snapshot_object_addresses", json!(["0x2000"])),
+        ("/checks/0/path_id", json!("another")),
+        ("/checks/0/type_code", json!(8)),
+        ("/checks/0/status", json!("missing")),
+        ("/checks/0/bytes", json!(7.5f32.to_le_bytes())),
+        ("/checks/0/value", json!("7.5")),
+        ("/patch/guard", json!("expired")),
+        ("/patch/attempted", json!(true)),
+        ("/patch/transferred", json!(4)),
+        ("/patch/observed_after", json!(trial.patch.expected)),
+        ("/scope/pid", json!(8)),
+        ("/patch_id", json!("another")),
+    ] {
+        let mut report = original.clone();
+        *report.pointer_mut(pointer).unwrap() = replacement;
+        assert_ne!(
+            classify_restoration(&inverse, &report),
+            "already_original",
+            "{pointer}"
+        );
+    }
+}
+
 #[test]
 fn unknown_or_invalid_receipt_holds_same_process_and_survives_restart() {
     for variant in 0..4 {

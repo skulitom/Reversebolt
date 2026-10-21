@@ -232,7 +232,7 @@ pub fn command(
             .iter_mut()
             .find(|c| c.candidate.id == trial.candidate_id)
         {
-            if attempt.outcome == "written" {
+            if matches!(attempt.outcome.as_str(), "written" | "already_original") {
                 card.value = scalar_value(attempt.patch.type_code, &attempt.patch.replacement)?;
                 card.status = "read".into();
                 card.observed_unix_ms = attempt.completed_ms.unwrap_or_else(now_ms);

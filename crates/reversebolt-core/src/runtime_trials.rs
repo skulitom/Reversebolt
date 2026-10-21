@@ -111,21 +111,33 @@ impl Trial {
             return Err("Invalid runtime trial identity.".into());
         }
         Self::validate_baseline(&self.context, &self.patch, &self.baseline)?;
-        for attempt in [&self.write, &self.restoration].into_iter().flatten() {
+        for (restore, attempt) in [(false, &self.write), (true, &self.restoration)]
+            .into_iter()
+            .filter_map(|(restore, attempt)| attempt.as_ref().map(|a| (restore, a)))
+        {
             attempt
                 .patch
                 .validate(&self.context.process, attempt.patch.prepared_unix_ms)?;
             if attempt.evidence.as_ref().is_some_and(|e| !e.valid())
-                || !matches!(attempt.outcome.as_str(), "written" | "refused" | "unknown")
+                || !matches!(
+                    attempt.outcome.as_str(),
+                    "written" | "refused" | "unknown" | "already_original"
+                )
+                || (attempt.outcome == "already_original" && !restore)
                 || (attempt.completed_ms.is_none()
                     && (attempt.evidence.is_some()
                         || attempt.error.is_some()
                         || attempt.outcome != "unknown"))
                 || attempt.outcome
-                    != attempt
-                        .evidence
-                        .as_ref()
-                        .map_or("unknown", |e| classify(&attempt.patch, &e.report))
+                    != attempt.evidence.as_ref().map_or("unknown", |e| {
+                        // Preserve old refused receipts as recorded. Only new explicit
+                        // already-original outcomes require the stronger proof.
+                        if attempt.outcome == "already_original" {
+                            classify_restoration(&attempt.patch, &e.report)
+                        } else {
+                            classify(&attempt.patch, &e.report)
+                        }
+                    })
             {
                 return Err("Invalid runtime trial result evidence.".into());
             }
@@ -170,7 +182,7 @@ impl Trial {
             (Some(_), Some(r)) => {
                 self.phase
                     == match r.outcome.as_str() {
-                        "written" => Phase::Restored,
+                        "written" | "already_original" => Phase::Restored,
                         "refused" => Phase::Written,
                         _ => Phase::Uncertain,
                     }
@@ -406,7 +418,13 @@ impl Store {
         let outcome = evidence
             .as_ref()
             .filter(|e| e.valid())
-            .map_or("unknown", |e| classify(&patch, &e.report));
+            .map_or("unknown", |e| {
+                if restore {
+                    classify_restoration(&patch, &e.report)
+                } else {
+                    classify(&patch, &e.report)
+                }
+            });
         let attempt = if restore {
             record.restoration.as_mut().unwrap()
         } else {
@@ -417,6 +435,7 @@ impl Store {
         attempt.error = error;
         attempt.outcome = outcome.into();
         record.phase = match outcome {
+            "already_original" => Phase::Restored,
             "written" => {
                 if restore {
                     Phase::Restored
@@ -436,11 +455,41 @@ impl Store {
         record.reason=match (restore,outcome) {
             (false,"written")=>"Requested bytes were observed. Gameplay effects remain unverified.",
             (true,"written")=>"Original bytes were observed again. Downstream gameplay effects may remain.",
+            (true,"already_original")=>"Original bytes were already present. No restore write was attempted; downstream gameplay effects may remain.",
             (false,"refused")=>"The value or its reference changed, or the target refused it. No write was attempted.",
             (true,"refused")=>"Restoration was refused. The original change remains recorded; no restore write was attempted.",
             _=>"The operation's effect is uncertain. It will not be retried; further edits to this process are held.",
         }.into();
         self.record(record)
+    }
+}
+
+/// The argument is the exact inverse of a confirmed trial, checked by Store.
+/// An observed original value is not a restore write or a full gameplay rollback.
+pub fn classify_restoration(inverse: &Patch, report: &Value) -> &'static str {
+    let outcome = classify(inverse, report);
+    if outcome != "refused" || report["patch"]["guard"] != "value_changed" {
+        return outcome;
+    }
+    let Ok(desired) = crate::runtime_patch::value_text(inverse.type_code, &inverse.expected) else {
+        return outcome;
+    };
+    let Ok(observed) = Patch::prepare(
+        inverse.path.clone(),
+        &report["checks"][0],
+        &desired,
+        inverse.prepared_unix_ms,
+    ) else {
+        return outcome;
+    };
+    // Reconstructing the reverse checks the value/bytes, representation, path,
+    // field address and entire reference chain without authorizing another write.
+    let mut reverse = inverse.clone();
+    std::mem::swap(&mut reverse.expected, &mut reverse.replacement);
+    if observed.id() == reverse.id() {
+        "already_original"
+    } else {
+        outcome
     }
 }
 
