@@ -1,0 +1,941 @@
+{
+  "audit_kind": "post-run integrity, not acceptance or gameplay control",
+  "protocol_sha256": "54e396b2b5e1e85b34788e275129fb687a816f2f515d11ebe3db9d5643b201eb",
+  "product_binaries": {
+    "Reversebolt.exe": "eb5199895adc2cc02eb6c505d504fa82f5a1133b60147394d64152ee263bca6d",
+    "reversebolt-mcp.exe": "d8cb45a9850ded8951839e4585c356e81832d2d21d31486ab447236f7583cef8"
+  },
+  "cases": [
+    {
+      "game": "2048",
+      "errors": [
+        "Error: Acquire the desktop with seat_lease action=acquire (CLI: anode lease acquire) before desktop work, then send its leaseToken.\r\n\n    at cli (file:///C:/DEV/Reversebolt/research/game-value-search/run.mjs:31:25)\n    at file:///C:/DEV/Reversebolt/research/game-value-search/run.mjs:113:28"
+      ],
+      "captures": 0,
+      "search_outcome": "not attempted",
+      "commands": {},
+      "owned_processes": {},
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 86220,
+          "cpuTime": 0.665149
+        },
+        {
+          "type": "renderer",
+          "id": 67896,
+          "cpuTime": 0.038445
+        },
+        {
+          "type": "renderer",
+          "id": 66188,
+          "cpuTime": 0.116766
+        },
+        {
+          "type": "renderer",
+          "id": 88312,
+          "cpuTime": 0.222519
+        },
+        {
+          "type": "GPU",
+          "id": 81056,
+          "cpuTime": 0.496775
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 75388,
+          "cpuTime": 0.120971
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 61720,
+          "cpuTime": 0.030032
+        }
+      ],
+      "stages": {},
+      "files": {
+        "delivered-keys.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "oracle.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "run.json": "db8758bb376c55b5daf6f59944bd2a0298698e5b6c2267edfca358965ed3ceb9"
+      }
+    },
+    {
+      "game": "tetris",
+      "errors": [],
+      "captures": 32,
+      "search_outcome": "completed fresh sixteen-moment batch",
+      "commands": {
+        "list_processes": 1,
+        "set_observer_model": 1,
+        "attach_process": 2,
+        "list_memory_processes": 1,
+        "job_control": 60,
+        "search_number": 1,
+        "advance_memory": 1
+      },
+      "owned_processes": {
+        "engine": 61952,
+        "mcp": 39616,
+        "input": 56004
+      },
+      "browser_processes": [
+        {
+          "type": "browser",
+          "id": 77972,
+          "cpuTime": 2.633481
+        },
+        {
+          "type": "renderer",
+          "id": 78728,
+          "cpuTime": 0.146438
+        },
+        {
+          "type": "renderer",
+          "id": 79432,
+          "cpuTime": 3.881005
+        },
+        {
+          "type": "renderer",
+          "id": 89052,
+          "cpuTime": 0.280343
+        },
+        {
+          "type": "GPU",
+          "id": 3236,
+          "cpuTime": 3.110718
+        },
+        {
+          "type": "network.mojom.NetworkService",
+          "id": 73232,
+          "cpuTime": 0.180204
+        },
+        {
+          "type": "storage.mojom.StorageService",
+          "id": 12332,
+          "cpuTime": 0.030368
+        }
+      ],
+      "stages": {
+        "initial": {
+          "count": 16,
+          "ids": [
+            "5705ed7d-17af-41d2-a181-b9e6bcea8660",
+            "7f87de06-5d8c-40b8-b661-8ba7a68dc30a",
+            "d3a04e09-2f63-48b3-a097-4514b60969fa",
+            "ecb1a9ec-325a-4aa7-a129-46db2d0731e8",
+            "19dd388a-5bb3-47c4-8b31-392f0d562f57",
+            "9f506c07-ceb3-411e-89bd-6a5865aa76ae",
+            "38505d8b-a6fc-40fd-aa6d-39f0380d940f",
+            "96330656-0a5c-41e9-b127-f33871f0cb19",
+            "f5db6fac-7165-44e1-a7f1-74543c4229dd",
+            "2328d215-6faa-4a6e-b507-68b7c3e2e8b9",
+            "a90e12a1-6598-4fd5-91b7-fe24a0259540",
+            "827b5d44-944d-493f-80d1-af5648e5ca38",
+            "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+            "a137c0bf-0f26-42a4-b909-30b38662a65c",
+            "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+            "5f2f9ac1-6205-46bc-a140-d8aaeee1e071"
+          ],
+          "checks": [
+            {
+              "id": "6990b331-c066-47a9-98f6-ca5b834e351c",
+              "source": "ocr",
+              "track": 2,
+              "after_frame": 12,
+              "basis_ids": [
+                "5705ed7d-17af-41d2-a181-b9e6bcea8660",
+                "7f87de06-5d8c-40b8-b661-8ba7a68dc30a",
+                "d3a04e09-2f63-48b3-a097-4514b60969fa",
+                "ecb1a9ec-325a-4aa7-a129-46db2d0731e8",
+                "19dd388a-5bb3-47c4-8b31-392f0d562f57",
+                "9f506c07-ceb3-411e-89bd-6a5865aa76ae",
+                "38505d8b-a6fc-40fd-aa6d-39f0380d940f",
+                "96330656-0a5c-41e9-b127-f33871f0cb19",
+                "f5db6fac-7165-44e1-a7f1-74543c4229dd",
+                "2328d215-6faa-4a6e-b507-68b7c3e2e8b9",
+                "a90e12a1-6598-4fd5-91b7-fe24a0259540",
+                "827b5d44-944d-493f-80d1-af5648e5ca38"
+              ],
+              "candidate_count": 10,
+              "candidates": [
+                {
+                  "address": "0x7FFF63F5C5B0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -26,
+                    "kind": "I32",
+                    "offset": 5552,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "timing_uncertain",
+                      "observed": 40,
+                      "predicted": 44
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 50
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 60
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 60
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C007C5970",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2082.2237122064475,
+                    "kind": "I32",
+                    "offset": 6512,
+                    "slope": 1.2395875421204098e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "contradicts",
+                      "observed": 40,
+                      "predicted": 49.83406447305515
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.83406447305515
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.83406447305515
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.77026724081861
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C007C5978",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2080.9841246643273,
+                    "kind": "I32",
+                    "offset": 6520,
+                    "slope": 1.2395875421204098e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "contradicts",
+                      "observed": 40,
+                      "predicted": 49.83406447305538
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.83406447305538
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.83406447305538
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.77026724081884
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C007C5A18",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2082.4242494910436,
+                    "kind": "I32",
+                    "offset": 6680,
+                    "slope": 1.2404491616796475e-06,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "contradicts",
+                      "observed": 40,
+                      "predicted": 49.86240937898651
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.86240937898651
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.86240937898651
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.8113438083476
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C007C5A20",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2081.183800329364,
+                    "kind": "I32",
+                    "offset": 6688,
+                    "slope": 1.2404491616796475e-06,
+                    "train_inliers": 6,
+                    "validation_inliers": 6
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "contradicts",
+                      "observed": 40,
+                      "predicted": 49.86240937898674
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.86240937898674
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.86240937898674
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.81134380834783
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C0007C520",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2077.933807898644,
+                    "kind": "I32",
+                    "offset": 34080,
+                    "slope": 1.2385134074030404e-06,
+                    "train_inliers": 6,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "agrees",
+                      "observed": 40,
+                      "predicted": 39.85666932038794
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.78340382125975
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.78340382125975
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.72753943550538
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C0007C528",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2076.695294491241,
+                    "kind": "I32",
+                    "offset": 34088,
+                    "slope": 1.2385134074030404e-06,
+                    "train_inliers": 6,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "agrees",
+                      "observed": 40,
+                      "predicted": 39.85666932038816
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.78340382125975
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.78340382125975
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "agrees",
+                      "observed": 60,
+                      "predicted": 59.72753943550538
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C0007C5C8",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2075.224353099522,
+                    "kind": "I32",
+                    "offset": 34248,
+                    "slope": 1.237642909079658e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "agrees",
+                      "observed": 40,
+                      "predicted": 39.824947786939674
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.73745757205393
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.73745757205393
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.73745757205393
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C0007C5D0",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": 2073.9867101904424,
+                    "kind": "I32",
+                    "offset": 34256,
+                    "slope": 1.237642909079658e-06,
+                    "train_inliers": 5,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "agrees",
+                      "observed": 40,
+                      "predicted": 39.824947786939674
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "agrees",
+                      "observed": 50,
+                      "predicted": 49.73745757205393
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.73745757205393
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 49.73745757205393
+                    }
+                  ]
+                },
+                {
+                  "address": "0x623C0001BF00",
+                  "mapping": {
+                    "exact": false,
+                    "intercept": -35,
+                    "kind": "I32",
+                    "offset": 32512,
+                    "slope": 2.5,
+                    "train_inliers": 6,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "b59de06c-61ae-4993-842f-d7843a6ea7c5",
+                      "outcome": "timing_uncertain",
+                      "observed": 40,
+                      "predicted": 50
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "a137c0bf-0f26-42a4-b909-30b38662a65c",
+                      "outcome": "contradicts",
+                      "observed": 50,
+                      "predicted": 60
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "909198bb-269a-4bc5-b3c0-e3ff33a450ff",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 75
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+                      "outcome": "contradicts",
+                      "observed": 60,
+                      "predicted": 80
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "numeric_readings": {
+            "0": {
+              "label": "Near \u201cC 127.0.o.1\u2022\u00c51534\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "1": {
+              "label": "Number at 1036, 56",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "2": {
+              "label": "Number at 427, 288",
+              "samples": [
+                0,
+                0,
+                10,
+                10,
+                10,
+                20,
+                20,
+                30,
+                30,
+                30,
+                40,
+                40,
+                40,
+                50,
+                60,
+                60
+              ]
+            },
+            "3": {
+              "label": "Near \u201crows\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "4": {
+              "label": "Near \u201cFPS (65-67)\u201d",
+              "samples": [
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66
+              ]
+            }
+          },
+          "budget": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 0,
+            "attempted_bytes": 222654624,
+            "batch": 1,
+            "changed_or_unavailable_bytes": 48332800,
+            "complete_trajectory_bytes": 13467648,
+            "image_budget_bytes": 1845785,
+            "image_disk_bytes": 1845785,
+            "read_bytes": 222654624,
+            "read_unique_bytes": 14225408,
+            "selected_unique_bytes": 16777216
+          }
+        },
+        "focused": {
+          "count": 16,
+          "ids": [
+            "1c388098-f9b4-4795-86a8-01b9a3ad78d6",
+            "41c25b2d-93ab-452f-886a-cec70003e10c",
+            "54596f16-6d51-41f1-acb1-dacc2a4df4b0",
+            "1ebceaa4-72d9-4f65-8891-ad2b5d28ce6f",
+            "3f8613db-57ef-4b42-bf17-33b6fc8f158d",
+            "e54d0b60-3b9f-48ea-8449-f7d1f45f1c72",
+            "f3562db4-6d64-4881-99da-e0df14665b88",
+            "4c7195c4-e2d1-4c52-b5eb-7c1667f5a7a0",
+            "f8cfe121-400c-4da5-bedd-dc733fa385d8",
+            "ea389e51-4dbb-4111-8eaf-5e439cd3b6fe",
+            "06670090-cba0-4f19-a044-01eabb9237cd",
+            "a95f2eac-b320-4605-ac23-efbc554d0a8b",
+            "731dd1cf-0cda-4c27-b402-3930cc2db53f",
+            "14bef75c-2cbb-418e-8f7a-935a3ce4505a",
+            "4e89a5c1-9fdf-4102-8862-1e6410da3e3a",
+            "60027603-5bb9-463d-91a2-d831a9e14f5a"
+          ],
+          "checks": [
+            {
+              "id": "e788899d-dd49-4157-9b75-0150b5af352f",
+              "source": "ocr",
+              "track": 1,
+              "after_frame": 12,
+              "basis_ids": [
+                "1c388098-f9b4-4795-86a8-01b9a3ad78d6",
+                "41c25b2d-93ab-452f-886a-cec70003e10c",
+                "54596f16-6d51-41f1-acb1-dacc2a4df4b0",
+                "1ebceaa4-72d9-4f65-8891-ad2b5d28ce6f",
+                "3f8613db-57ef-4b42-bf17-33b6fc8f158d",
+                "e54d0b60-3b9f-48ea-8449-f7d1f45f1c72",
+                "f3562db4-6d64-4881-99da-e0df14665b88",
+                "4c7195c4-e2d1-4c52-b5eb-7c1667f5a7a0",
+                "f8cfe121-400c-4da5-bedd-dc733fa385d8",
+                "ea389e51-4dbb-4111-8eaf-5e439cd3b6fe",
+                "06670090-cba0-4f19-a044-01eabb9237cd",
+                "a95f2eac-b320-4605-ac23-efbc554d0a8b"
+              ],
+              "candidate_count": 1,
+              "candidates": [
+                {
+                  "address": "0x2000103C6AC",
+                  "mapping": {
+                    "exact": true,
+                    "intercept": 0,
+                    "kind": "I32",
+                    "offset": 44,
+                    "slope": 1,
+                    "train_inliers": 6,
+                    "validation_inliers": 5
+                  },
+                  "samples": [
+                    {
+                      "frame": 13,
+                      "frame_id": "731dd1cf-0cda-4c27-b402-3930cc2db53f",
+                      "outcome": "timing_uncertain",
+                      "observed": 140,
+                      "predicted": 143
+                    },
+                    {
+                      "frame": 14,
+                      "frame_id": "14bef75c-2cbb-418e-8f7a-935a3ce4505a",
+                      "outcome": "agrees",
+                      "observed": 150,
+                      "predicted": 150
+                    },
+                    {
+                      "frame": 15,
+                      "frame_id": "4e89a5c1-9fdf-4102-8862-1e6410da3e3a",
+                      "outcome": "contradicts",
+                      "observed": 160,
+                      "predicted": 152
+                    },
+                    {
+                      "frame": 16,
+                      "frame_id": "60027603-5bb9-463d-91a2-d831a9e14f5a",
+                      "outcome": "contradicts",
+                      "observed": 160,
+                      "predicted": 152
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "numeric_readings": {
+            "0": {
+              "label": "Near \u201cC 127.0.o.1\u2022\u00c51534\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "1": {
+              "label": "Number at 427, 288",
+              "samples": [
+                60,
+                70,
+                80,
+                80,
+                80,
+                90,
+                100,
+                100,
+                110,
+                110,
+                120,
+                130,
+                140,
+                150,
+                160,
+                160
+              ]
+            },
+            "2": {
+              "label": "Near \u201crows\u201d",
+              "samples": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            "3": {
+              "label": "Near \u201cFPS (61-67)\u201d",
+              "samples": [
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66,
+                66
+              ]
+            }
+          },
+          "budget": {
+            "analyzed_current_bytes": 0,
+            "archive_bytes": 566852,
+            "attempted_bytes": 251582512,
+            "batch": 2,
+            "changed_or_unavailable_bytes": 48350336,
+            "complete_trajectory_bytes": 13472704,
+            "image_budget_bytes": 3486378,
+            "image_disk_bytes": 3486378,
+            "read_bytes": 251582512,
+            "read_unique_bytes": 43040768,
+            "selected_unique_bytes": 16785344
+          }
+        }
+      },
+      "search": {
+        "attempted_bytes": 28815360,
+        "boundary_matches": 0,
+        "changed_or_unavailable_bytes": 0,
+        "elapsed_ms": 24,
+        "eligible_bytes": 44949504,
+        "evidence": "C:\\DEV\\Reversebolt\\test-results\\game-value-search-v1\\tetris-1\\engine\\captures\\d2e4bb5f-0348-412d-ab11-5be0f12850e6\\value-search-01.json",
+        "matched_windows": 127,
+        "omitted_windows": 0,
+        "planned_scan_bytes": 28815360,
+        "read_bytes": 28815360,
+        "retained_windows": 127,
+        "source_batch": 1,
+        "source_frame": 16,
+        "source_frame_id": "5f2f9ac1-6205-46bc-a140-d8aaeee1e071",
+        "source_image_sha256": "8ec4e2c8a2c4f9f1c51f84357b94f1954953ae121cdb9cca03592f58a196d317",
+        "source_label": "Number at 427, 288",
+        "source_track": 2,
+        "stop": "planned range completed",
+        "value": 60
+      },
+      "selected_bytes_per_capture": 8128,
+      "input": {
+        "pulses": 113,
+        "trusted_downs": 113,
+        "trusted_ups": 113
+      },
+      "files": {
+        "archived.json": "c0cb2d2baceba25cc63038e9967e3aeff32b18dfae68fb44510eaa5cad5ab0c6",
+        "attached.json": "4f20e05c2303f8b69e71e8225a679109529b0c3e680d1a7655a8f0a6c983d3bb",
+        "commands.json": "9da5df59e8178d7b44a734c9d05ccb683f1bc14c3bf599609e56da5cc45a6d09",
+        "delivered-keys.json": "23a1c4d9c60ed1e249b83c69de003992501e29b6f1301f6da1db56b790e0b94f",
+        "final-status.json": "d6cafb408b408e8fd3945e39ca33163a5098f03eda1866c29a3f478e08ce1456",
+        "focused-completed.json": "c4e12430193adcb8581ee38a73ce840931c8c2d563a7a0ac0256a673b4b43586",
+        "initial-completed.json": "7074558c8a857113ce0a084ee6a496c3acfa6b3c4daa30290e8c1a85f1d24c17",
+        "input-config.json": "4fe4f5d8fbcda2d887014f5643598593d98e93fefbeea984e26e48d048d3bcea",
+        "input-control.json": "ac83c752a9ef6d8e5541779f7fc72517272a4546613fd80dd453954b3173b789",
+        "oracle.json": "ccd414bb84a01663c4979cc59581b91385f65b7099942eda2852a2b2ad5ddc3f",
+        "run.json": "519a7e0905081c644780b4046b811243ff2e26a53b5ecb86b5909b8fa88d825c",
+        "scope-selection.json": "81eabf7a50904eac8fffe4dd11e3b7215fea8731c3d757b5c49fb3560814b442",
+        "search-summary.json": "6b6bcf9fe01d4c4368145035fb767d5689d0332912e23572c3825b54fa574a04",
+        "searched.json": "b12a90597243544f34dfd075a28b1859cf2b3f6f224a2d7b159326dc8e370480",
+        "selection.json": "d9501b3b99754a853e494a6271418954eb1b8e8a0ec27b5f824c70f6aaa3e585",
+        "states.json": "7b82c7f56be227a266e586ac918bf87051c9384db797e7650da95a2ed2566e65",
+        "track-selection.json": "c7e5b2fee22b5a0e0a6523593ee4e6864cf9d1687f48f3f15bee5947260349e4"
+      }
+    }
+  ]
+}

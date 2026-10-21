@@ -1,0 +1,73 @@
+{
+  "protocol_sha256": "54e396b2b5e1e85b34788e275129fb687a816f2f515d11ebe3db9d5643b201eb",
+  "jobs": [
+    {
+      "game": "2048",
+      "job_id": "j_e22799f58514421a93ae6da30bf7c2be",
+      "state": "completed",
+      "exit_code": 1,
+      "elapsed_ms": 3073,
+      "cursor": "91"
+    },
+    {
+      "game": "tetris",
+      "job_id": "j_86870b220fc941cda97b1c50b9616e55",
+      "state": "completed",
+      "exit_code": 0,
+      "elapsed_ms": 107798,
+      "cursor": "3088"
+    }
+  ],
+  "launch_correction": "The 2048 helper lacked ANODE_AGENT_ID/ANODE_LEASE_TOKEN. The Tetris launch passed the held lease through its environment. The 2048 failure is retained without retry.",
+  "cleanup": [
+    {
+      "case": "2048-1",
+      "ownedPids": [
+        86220,
+        67896,
+        66188,
+        88312,
+        81056,
+        75388,
+        61720,
+        null
+      ],
+      "remaining": []
+    },
+    {
+      "case": "tetris-1",
+      "ownedPids": [
+        77972,
+        78728,
+        79432,
+        89052,
+        3236,
+        73232,
+        12332,
+        61952,
+        39616,
+        56004
+      ],
+      "remaining": []
+    }
+  ],
+  "desktop": {
+    "checked_utc": "2026-10-21T10:18:36.2213843Z",
+    "pid": 86012,
+    "session": 1,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-105104\\Reversebolt.exe",
+    "sha256": "EB5199895ADC2CC02EB6C505D504FA82F5A1133B60147394D64152EE263BCA6D",
+    "status_ok": true,
+    "history_count": 8,
+    "observer_model": "qwen3.8:latest",
+    "live_connected": false
+  },
+  "anode_lease_released": true,
+  "viewer_hidden": true,
+  "manual_screenshot_views": 0,
+  "memory_writes": 0,
+  "preflight": {
+    "oracle": "passed; leading text, DOM boxes and changed text",
+    "scorer": "passed six outcomes after correcting malformed timestamp ordering in the owned synthetic fixture before the final pre-game freeze"
+  }
+}

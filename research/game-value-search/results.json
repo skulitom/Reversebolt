@@ -1,0 +1,2137 @@
+{
+  "cases": [
+    {
+      "game": "2048",
+      "replicate": "1",
+      "directory": "C:\\DEV\\Reversebolt\\test-results\\game-value-search-v1\\2048-1",
+      "run_errors": [
+        "Error: Acquire the desktop with seat_lease action=acquire (CLI: anode lease acquire) before desktop work, then send its leaseToken.\r\n\n    at cli (file:///C:/DEV/Reversebolt/research/game-value-search/run.mjs:31:25)\n    at file:///C:/DEV/Reversebolt/research/game-value-search/run.mjs:113:28"
+      ],
+      "captured": 0,
+      "per_stage": {},
+      "counters": {
+        "score": {
+          "outcomes": {},
+          "distinct_oracle_values": []
+        },
+        "best": {
+          "outcomes": {},
+          "distinct_oracle_values": []
+        }
+      },
+      "rows": [],
+      "input": {
+        "injected_pulses": 0,
+        "browser_keydowns": 0,
+        "trusted_keydowns": 0,
+        "by_key": {},
+        "sampled_polls": 0,
+        "poll_fields": [],
+        "capture_contexts": 0
+      },
+      "search_outcome": "not attempted",
+      "oracle_nonnumeric": "Not measured; no game-variable or board/piece reads",
+      "files": {
+        "run.json": "db8758bb376c55b5daf6f59944bd2a0298698e5b6c2267edfca358965ed3ceb9",
+        "oracle.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "delivered-keys.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      }
+    },
+    {
+      "game": "tetris",
+      "replicate": "1",
+      "directory": "C:\\DEV\\Reversebolt\\test-results\\game-value-search-v1\\tetris-1",
+      "run_errors": [],
+      "captured": 32,
+      "per_stage": {
+        "initial": {
+          "score": {
+            "correct": 14,
+            "unscorable": 2
+          },
+          "rows": {
+            "correct": 16
+          }
+        },
+        "focused": {
+          "score": {
+            "correct": 14,
+            "unscorable": 2
+          },
+          "rows": {
+            "correct": 16
+          }
+        }
+      },
+      "counters": {
+        "score": {
+          "outcomes": {
+            "correct": 28,
+            "unscorable": 4
+          },
+          "distinct_oracle_values": [
+            0,
+            1,
+            4,
+            9,
+            10,
+            14,
+            18,
+            20,
+            23,
+            26,
+            30,
+            34,
+            39,
+            40,
+            42,
+            47,
+            50,
+            52,
+            55,
+            59,
+            60,
+            61,
+            65,
+            69,
+            70,
+            72,
+            75,
+            79,
+            80,
+            84,
+            88,
+            90,
+            95,
+            99,
+            100,
+            101,
+            104,
+            108,
+            110,
+            111,
+            115,
+            119,
+            120,
+            124,
+            127,
+            130,
+            133,
+            137,
+            140,
+            143,
+            147,
+            150,
+            160
+          ]
+        },
+        "rows": {
+          "outcomes": {
+            "correct": 32
+          },
+          "distinct_oracle_values": [
+            0
+          ]
+        }
+      },
+      "rows": [
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 1,
+          "counter": "score",
+          "interval_ms": [
+            1792577736496,
+            1792577736891
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 0,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 1,
+          "counter": "rows",
+          "interval_ms": [
+            1792577736496,
+            1792577736891
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.5652160644531,
+                317,
+                11.478271484375,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 2,
+          "counter": "score",
+          "interval_ms": [
+            1792577739987,
+            1792577740293
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 0,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 2,
+          "counter": "rows",
+          "interval_ms": [
+            1792577739987,
+            1792577740293
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.5652160644531,
+                317,
+                11.478271484375,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 3,
+          "counter": "score",
+          "interval_ms": [
+            1792577743133,
+            1792577743431
+          ],
+          "status": "correct",
+          "expected": 10,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 10,
+              "bounds": [
+                427,
+                285,
+                56,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 3,
+          "counter": "rows",
+          "interval_ms": [
+            1792577743133,
+            1792577743431
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.5652160644531,
+                317,
+                11.478271484375,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 4,
+          "counter": "score",
+          "interval_ms": [
+            1792577746227,
+            1792577746518
+          ],
+          "status": "correct",
+          "expected": 10,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 10,
+              "bounds": [
+                427,
+                285,
+                56,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 4,
+          "counter": "rows",
+          "interval_ms": [
+            1792577746227,
+            1792577746518
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.5652160644531,
+                317,
+                11.478271484375,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 5,
+          "counter": "score",
+          "interval_ms": [
+            1792577749352,
+            1792577749639
+          ],
+          "status": "correct",
+          "expected": 10,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 10,
+              "bounds": [
+                427,
+                285,
+                56,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 5,
+          "counter": "rows",
+          "interval_ms": [
+            1792577749352,
+            1792577749639
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.5652160644531,
+                317,
+                11.478271484375,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 6,
+          "counter": "score",
+          "interval_ms": [
+            1792577752371,
+            1792577752683
+          ],
+          "status": "correct",
+          "expected": 20,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 20,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 6,
+          "counter": "rows",
+          "interval_ms": [
+            1792577752371,
+            1792577752683
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 7,
+          "counter": "score",
+          "interval_ms": [
+            1792577755466,
+            1792577755778
+          ],
+          "status": "correct",
+          "expected": 20,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 20,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 7,
+          "counter": "rows",
+          "interval_ms": [
+            1792577755466,
+            1792577755778
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 8,
+          "counter": "score",
+          "interval_ms": [
+            1792577758567,
+            1792577758852
+          ],
+          "status": "unscorable",
+          "reason": "Value or geometry changed during image interval"
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 8,
+          "counter": "rows",
+          "interval_ms": [
+            1792577758567,
+            1792577758852
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 9,
+          "counter": "score",
+          "interval_ms": [
+            1792577761615,
+            1792577761913
+          ],
+          "status": "correct",
+          "expected": 30,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 30,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 9,
+          "counter": "rows",
+          "interval_ms": [
+            1792577761615,
+            1792577761913
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 10,
+          "counter": "score",
+          "interval_ms": [
+            1792577764644,
+            1792577764934
+          ],
+          "status": "correct",
+          "expected": 30,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 30,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 10,
+          "counter": "rows",
+          "interval_ms": [
+            1792577764644,
+            1792577764934
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 11,
+          "counter": "score",
+          "interval_ms": [
+            1792577767617,
+            1792577767928
+          ],
+          "status": "correct",
+          "expected": 40,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 40,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 11,
+          "counter": "rows",
+          "interval_ms": [
+            1792577767617,
+            1792577767928
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 12,
+          "counter": "score",
+          "interval_ms": [
+            1792577770669,
+            1792577770967
+          ],
+          "status": "correct",
+          "expected": 40,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 40,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 10
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 12,
+          "counter": "rows",
+          "interval_ms": [
+            1792577770669,
+            1792577770967
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 13,
+          "counter": "score",
+          "interval_ms": [
+            1792577773906,
+            1792577774207
+          ],
+          "status": "unscorable",
+          "reason": "Value or geometry changed during image interval"
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 13,
+          "counter": "rows",
+          "interval_ms": [
+            1792577773906,
+            1792577774207
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 14,
+          "counter": "score",
+          "interval_ms": [
+            1792577776946,
+            1792577777268
+          ],
+          "status": "correct",
+          "expected": 50,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 50,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 14,
+          "counter": "rows",
+          "interval_ms": [
+            1792577776946,
+            1792577777268
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 15,
+          "counter": "score",
+          "interval_ms": [
+            1792577780415,
+            1792577780713
+          ],
+          "status": "correct",
+          "expected": 60,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 60,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 15,
+          "counter": "rows",
+          "interval_ms": [
+            1792577780415,
+            1792577780713
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 16,
+          "counter": "score",
+          "interval_ms": [
+            1792577783493,
+            1792577783801
+          ],
+          "status": "correct",
+          "expected": 60,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Number at 427, 288",
+              "value": 60,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "initial",
+          "batch": 1,
+          "frame": 16,
+          "counter": "rows",
+          "interval_ms": [
+            1792577783493,
+            1792577783801
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 3,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 1,
+          "counter": "score",
+          "interval_ms": [
+            1792577785816,
+            1792577786148
+          ],
+          "status": "correct",
+          "expected": 60,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 60,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 1,
+          "counter": "rows",
+          "interval_ms": [
+            1792577785816,
+            1792577786148
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 2,
+          "counter": "score",
+          "interval_ms": [
+            1792577788863,
+            1792577789149
+          ],
+          "status": "correct",
+          "expected": 70,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 70,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 2,
+          "counter": "rows",
+          "interval_ms": [
+            1792577788863,
+            1792577789149
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 3,
+          "counter": "score",
+          "interval_ms": [
+            1792577791855,
+            1792577792140
+          ],
+          "status": "correct",
+          "expected": 80,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 80,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 3,
+          "counter": "rows",
+          "interval_ms": [
+            1792577791855,
+            1792577792140
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 4,
+          "counter": "score",
+          "interval_ms": [
+            1792577794824,
+            1792577795110
+          ],
+          "status": "correct",
+          "expected": 80,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 80,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 4,
+          "counter": "rows",
+          "interval_ms": [
+            1792577794824,
+            1792577795110
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 5,
+          "counter": "score",
+          "interval_ms": [
+            1792577797794,
+            1792577798092
+          ],
+          "status": "correct",
+          "expected": 80,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 80,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 5,
+          "counter": "rows",
+          "interval_ms": [
+            1792577797794,
+            1792577798092
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 6,
+          "counter": "score",
+          "interval_ms": [
+            1792577800844,
+            1792577801174
+          ],
+          "status": "correct",
+          "expected": 90,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 90,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 6,
+          "counter": "rows",
+          "interval_ms": [
+            1792577800844,
+            1792577801174
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 7,
+          "counter": "score",
+          "interval_ms": [
+            1792577803921,
+            1792577804240
+          ],
+          "status": "correct",
+          "expected": 100,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 100,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 7,
+          "counter": "rows",
+          "interval_ms": [
+            1792577803921,
+            1792577804240
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 8,
+          "counter": "score",
+          "interval_ms": [
+            1792577806923,
+            1792577807222
+          ],
+          "status": "correct",
+          "expected": 100,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 100,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 8,
+          "counter": "rows",
+          "interval_ms": [
+            1792577806923,
+            1792577807222
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 9,
+          "counter": "score",
+          "interval_ms": [
+            1792577809900,
+            1792577810194
+          ],
+          "status": "correct",
+          "expected": 110,
+          "bounds": [
+            426.96875,
+            285.3125,
+            54.515625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 110,
+              "bounds": [
+                428,
+                285,
+                53,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 9,
+          "counter": "rows",
+          "interval_ms": [
+            1792577809900,
+            1792577810194
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 10,
+          "counter": "score",
+          "interval_ms": [
+            1792577812905,
+            1792577813194
+          ],
+          "status": "unscorable",
+          "reason": "Value or geometry changed during image interval"
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 10,
+          "counter": "rows",
+          "interval_ms": [
+            1792577812905,
+            1792577813194
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 11,
+          "counter": "score",
+          "interval_ms": [
+            1792577815882,
+            1792577816179
+          ],
+          "status": "correct",
+          "expected": 120,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 120,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 11,
+          "counter": "rows",
+          "interval_ms": [
+            1792577815882,
+            1792577816179
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 12,
+          "counter": "score",
+          "interval_ms": [
+            1792577818902,
+            1792577819193
+          ],
+          "status": "correct",
+          "expected": 130,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 130,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 1
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 12,
+          "counter": "rows",
+          "interval_ms": [
+            1792577818902,
+            1792577819193
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 13,
+          "counter": "score",
+          "interval_ms": [
+            1792577821906,
+            1792577822194
+          ],
+          "status": "unscorable",
+          "reason": "Value or geometry changed during image interval"
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 13,
+          "counter": "rows",
+          "interval_ms": [
+            1792577821906,
+            1792577822194
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 14,
+          "counter": "score",
+          "interval_ms": [
+            1792577824837,
+            1792577825144
+          ],
+          "status": "correct",
+          "expected": 150,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 150,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 14,
+          "counter": "rows",
+          "interval_ms": [
+            1792577824837,
+            1792577825144
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                447.0514831542969,
+                317,
+                11.3681640625,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 15,
+          "counter": "score",
+          "interval_ms": [
+            1792577828179,
+            1792577828466
+          ],
+          "status": "correct",
+          "expected": 160,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 160,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 15,
+          "counter": "rows",
+          "interval_ms": [
+            1792577828179,
+            1792577828466
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 16,
+          "counter": "score",
+          "interval_ms": [
+            1792577831215,
+            1792577831498
+          ],
+          "status": "correct",
+          "expected": 160,
+          "bounds": [
+            426.421875,
+            285.3125,
+            55.625,
+            22
+          ],
+          "observed": [
+            {
+              "track": 1,
+              "label": "Number at 427, 288",
+              "value": 160,
+              "bounds": [
+                427,
+                285,
+                54,
+                20
+              ],
+              "matches": 0
+            }
+          ]
+        },
+        {
+          "phase": "focused",
+          "batch": 2,
+          "frame": 16,
+          "counter": "rows",
+          "interval_ms": [
+            1792577831215,
+            1792577831498
+          ],
+          "status": "correct",
+          "expected": 0,
+          "bounds": [
+            445.328125,
+            319.625,
+            11.125,
+            22
+          ],
+          "observed": [
+            {
+              "track": 2,
+              "label": "Near \u201crows\u201d",
+              "value": 0,
+              "bounds": [
+                446.0869445800781,
+                317,
+                11.37579345703125,
+                23
+              ],
+              "matches": 0
+            }
+          ]
+        }
+      ],
+      "input": {
+        "injected_pulses": 113,
+        "browser_keydowns": 113,
+        "trusted_keydowns": 113,
+        "by_key": {
+          " ": 1,
+          "ArrowLeft": 21,
+          "ArrowDown": 42,
+          "ArrowRight": 42,
+          "ArrowUp": 7
+        },
+        "sampled_polls": 605,
+        "poll_fields": [
+          "begin_us",
+          "down",
+          "end_us",
+          "focus"
+        ],
+        "capture_contexts": 32
+      },
+      "search_outcome": "completed fresh sixteen-moment batch",
+      "oracle_nonnumeric": "Not measured; no game-variable or board/piece reads",
+      "files": {
+        "run.json": "519a7e0905081c644780b4046b811243ff2e26a53b5ecb86b5909b8fa88d825c",
+        "oracle.json": "ccd414bb84a01663c4979cc59581b91385f65b7099942eda2852a2b2ad5ddc3f",
+        "delivered-keys.json": "23a1c4d9c60ed1e249b83c69de003992501e29b6f1301f6da1db56b790e0b94f",
+        "final-status.json": "d6cafb408b408e8fd3945e39ca33163a5098f03eda1866c29a3f478e08ce1456"
+      }
+    }
+  ]
+}

@@ -23,3 +23,4 @@
 /research/learned-references/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/capture-stability/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/value-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/game-value-search/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

@@ -4,6 +4,17 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest independent-game wider-search evaluation (2026-10-21): **30% unchanged**.
+The unchanged published build completed sixteen initial and sixteen fresh Tetris
+observations. A 27.48 MiB search retained 127 small areas, but its new exact
+numeric candidate contradicted two later observations. The 2048 case stopped
+before discovery because a harness helper lacked Anode lease credentials; that
+failure remains recorded. Automated scoring found 28 correct score readings and
+four changing, unscorable intervals. No gameplay control or restoration was
+tested. All weighted credits remain unchanged and the full goal stays active.
+The desktop preview remains `0.1.0-20261021-105104`, freshly verified running;
+production source did not change. [Evidence and limits](../research/game-value-search/README.md).
+
 Latest value-guided search (2026-10-21): **30%**. A number card's “Find this
 value” action and the shared MCP command search up to 512 MiB beyond the current
 sample, then collect wholly fresh temporal evidence from small selected areas.

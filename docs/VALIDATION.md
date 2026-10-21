@@ -1,5 +1,21 @@
 # Preview 0.1.0 validation — 2026-10-20
 
+## Independent-game wider-search evaluation — 2026-10-21
+
+The unchanged `0.1.0-20261021-105104` build completed initial/search/fresh automatic
+observation on original Javascript Tetris. The newly frozen exact candidate
+contradicted two fresh readings; no controlling value was established. Original
+2048 failed during harness setup before product observation, and was not retried.
+The revised evaluator parses DOM counter text outside the target renderer, with
+automated spatial/timing scoring and no game-variable numeric oracle. Both the
+owned oracle fixture and six-outcome scorer preflight pass; the post-run audit
+verifies frozen inputs, provenance, budgets, and trusted input receipt.
+
+All 17 recorded owned game/helper processes exited, Anode was released, and the
+existing desktop build was freshly verified. No production edits or new memory
+writes occurred, so the prior 176-test/package validation remains the baseline.
+[Frozen method, retained failure, results and limits](../research/game-value-search/README.md).
+
 ## Value-guided broad search — 2026-10-21
 
 All 176 workspace tests, strict Clippy, formatting, release build and packaged
