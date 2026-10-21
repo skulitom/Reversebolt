@@ -1,0 +1,311 @@
+{
+  "audit_passed": true,
+  "frozen_files_verified": 21,
+  "mock_snapshots": [
+    {
+      "root_address": "0x7ff8cbf60050",
+      "identity": 10,
+      "pause_held_us": 11,
+      "stop_to_resume_us": 12
+    },
+    {
+      "root_address": "0x7ff8cbf60050",
+      "identity": 14,
+      "pause_held_us": 13,
+      "stop_to_resume_us": 15
+    },
+    {
+      "root_address": "0x7ff8cbf60050",
+      "identity": 18,
+      "pause_held_us": 9,
+      "stop_to_resume_us": 10
+    },
+    {
+      "root_address": "0x7ff8cbf60050",
+      "identity": 22,
+      "pause_held_us": 17,
+      "stop_to_resume_us": 18
+    },
+    {
+      "root_address": "0x7ff8cbf60050",
+      "identity": 26,
+      "pause_held_us": 9,
+      "stop_to_resume_us": 10
+    },
+    {
+      "root_address": "0x7ff8cbf60000",
+      "identity": 32,
+      "pause_held_us": 13,
+      "stop_to_resume_us": 14
+    }
+  ],
+  "observed_address_reuse_with_changed_identity": 4,
+  "balanced_pauses": {
+    "starts": 6,
+    "stops": 6
+  },
+  "game": {
+    "pid": 78756,
+    "created": "01dd615844717331",
+    "helper_sha256": "d531a7cd38e370e520e91653829c0b95fb4ef178680661ed9f1a750beb72affb",
+    "raw_sha256": "cded1ba2813772385dcaedf84e889891d666eed0439dc3068ad20fa9958e7a00",
+    "catalog_ms": 952,
+    "catalog_classes": 16153,
+    "catalog_fields": 85015,
+    "catalog_roots": 3288,
+    "snapshots": [
+      {
+        "pause_held_us": 7302,
+        "stop_to_resume_us": 7521,
+        "helper_allocations_while_paused": 0,
+        "helper_deallocations_while_paused": 0,
+        "processed_nodes": 1024,
+        "time_or_read_budget_reached": false,
+        "node_capacity_reached": true,
+        "nodes": 1024,
+        "unknown_type_nodes": 492,
+        "roots": 3288,
+        "reads": 2910,
+        "scalar_reads": 1871,
+        "main_game_scalar_reads": 45
+      },
+      {
+        "pause_held_us": 6057,
+        "stop_to_resume_us": 6225,
+        "helper_allocations_while_paused": 0,
+        "helper_deallocations_while_paused": 0,
+        "processed_nodes": 1024,
+        "time_or_read_budget_reached": false,
+        "node_capacity_reached": true,
+        "nodes": 1024,
+        "unknown_type_nodes": 492,
+        "roots": 3288,
+        "reads": 2910,
+        "scalar_reads": 1871,
+        "main_game_scalar_reads": 45
+      }
+    ],
+    "loader": {
+      "elapsed_ms": 3852,
+      "helper_absent": true,
+      "inspection_exit": 0,
+      "stage": "complete",
+      "unload_exit": 1
+    },
+    "edit_authority": false
+  },
+  "coverage": [
+    {
+      "depths": {
+        "0": 1024
+      },
+      "null_roots": 2136,
+      "root_statuses": {
+        "followed": 1050,
+        "null_or_not_followed": 2136,
+        "node_budget": 102
+      },
+      "edge_statuses": {
+        "node_budget": 473,
+        "null_or_not_followed": 423,
+        "followed": 143
+      }
+    },
+    {
+      "depths": {
+        "0": 1024
+      },
+      "null_roots": 2136,
+      "root_statuses": {
+        "followed": 1050,
+        "null_or_not_followed": 2136,
+        "node_budget": 102
+      },
+      "edge_statuses": {
+        "node_budget": 473,
+        "null_or_not_followed": 423,
+        "followed": 143
+      }
+    }
+  ],
+  "catalog_omissions": {
+    "open_generic_class": 802,
+    "uncatalogued_parent": 1094
+  },
+  "game_after": {
+    "pid": 78756,
+    "created": "01dd615844717331",
+    "session": 2,
+    "window": 16385088,
+    "responding": true,
+    "helper_present": false
+  },
+  "unity_fixture_build": "failed before compilation: no active Editor license; no activation or retry",
+  "sdk_contract_sources": [
+    {
+      "path": "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.18f1\\Editor\\Data\\il2cpp\\libil2cpp\\il2cpp-api-functions.h",
+      "sha256": "d71a58ad9c78dbbb622bdf8750ade929af436c943d783dfb3cb7d3507d4190cd"
+    },
+    {
+      "path": "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.18f1\\Editor\\Data\\il2cpp\\libil2cpp\\il2cpp-api.cpp",
+      "sha256": "741b40dcd25909277ebd8cd217657ff114e5d55fbc3e6abdef51b1e6def9d376"
+    },
+    {
+      "path": "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.18f1\\Editor\\Data\\il2cpp\\libil2cpp\\vm\\Object.cpp",
+      "sha256": "707ce8d83c943bf0e797272f1d58dd47bbda3b2565860c0a6e22bbd40c6448d5"
+    },
+    {
+      "path": "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.18f1\\Editor\\Data\\il2cpp\\libil2cpp\\gc\\BoehmGC.cpp",
+      "sha256": "f47eb4140707187b81710d2a8fec2ce146eabb0b132e1803d01f33f33c3511a3"
+    },
+    {
+      "path": "C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.18f1\\Editor\\Data\\il2cpp\\external\\bdwgc\\misc.c",
+      "sha256": "6ec1ca8ac05b388e26dd34169a169092f6784e06cd01f2d3ae0e6f6b5d31a9dd"
+    }
+  ],
+  "cleanup": {
+    "remaining_owned_processes": [],
+    "lease_released": true,
+    "owned_game_window_absent": true,
+    "steam_sessions": [
+      1
+    ],
+    "mock_job": "j_136cb3e8adae42d5b49a262edb364e2f",
+    "mock_exit": 0,
+    "game_job": "j_ce90d86e93b74227935406a147644e62",
+    "game_exit": 0,
+    "checked_utc": "2026-10-21T12:35:52.4212455Z"
+  },
+  "desktop": {
+    "pid": 67560,
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-122703\\Reversebolt.exe",
+    "session": 1,
+    "ok": true,
+    "history_count": 29,
+    "observer_model": "qwen3.8:latest",
+    "sha256": "2bdd4f38631d445cb2b8c5c73e3b4b16bf00fff5c24ab139abd522b1219a50cf",
+    "changed_this_turn": false
+  },
+  "screenshots": 0,
+  "gameplay_inputs": 0,
+  "game_field_write_calls": 0,
+  "edit_authority": false,
+  "progress_percent": 31,
+  "raw_artifacts": [
+    {
+      "path": "test-results/runtime-objects-v1/blue-prince/probe.json",
+      "sha256": "cded1ba2813772385dcaedf84e889891d666eed0439dc3068ad20fa9958e7a00",
+      "bytes": 2747011
+    },
+    {
+      "path": "test-results/runtime-objects-v1/blue-prince/stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-objects-v1/blue-prince/stdout.jsonl",
+      "sha256": "4e047509f4655f6ebf745deca923c8980d009bd08a3137c68d347c7849171a1b",
+      "bytes": 787
+    },
+    {
+      "path": "test-results/runtime-objects-v1/blue-prince/summary.json",
+      "sha256": "c9061265089e72645fdac8a25b70de48ab39decd1fdedb5a412e744ded2e455f",
+      "bytes": 1434
+    },
+    {
+      "path": "test-results/runtime-objects-v1/cleanup.json",
+      "sha256": "ad2c21128a841738d13a1d863790280cf06bee8fbb9d3a9cf6a171f4631639a9",
+      "bytes": 335
+    },
+    {
+      "path": "test-results/runtime-objects-v1/desktop.json",
+      "sha256": "d6ed9018e31db4fdd4d7a3591bf060436ea0d3547cd7dcb4991d08d544200597",
+      "bytes": 310
+    },
+    {
+      "path": "test-results/runtime-objects-v1/game-after.json",
+      "sha256": "7f19bebf77626530d62df6db91f62186851cc7282baa801f7ccde5883953b714",
+      "bytes": 165
+    },
+    {
+      "path": "test-results/runtime-objects-v1/game-identity.json",
+      "sha256": "266b9085cf77170f3e36277ddbb487263adfa426b819b192d7b13c01cefc19cb",
+      "bytes": 285
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/execution.json",
+      "sha256": "6737c91a4d18f570672c369c5e30dbb2968a0e9a191ff67986b43d9ce87dea43",
+      "bytes": 609
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/host.jsonl",
+      "sha256": "ff9d7575ef88741fa18c555834aba05d11b8955a75c9a3d010c7a0281eccdf1c",
+      "bytes": 23
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/identity.json",
+      "sha256": "7fc25cfe4ce74f0690e76fb0fb887a26c3e964b7b4a40f2faac82896c2821a61",
+      "bytes": 75
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-0.json",
+      "sha256": "731a2e0c1eb993e090ecacf3896fafe7e35d03e2213093619b212c14ea019a32",
+      "bytes": 4885
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-0.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-0.stdout.jsonl",
+      "sha256": "cb6fd10557a7093643b320c2f04d8edf86653e6d1fb2958d80d56827ce5868aa",
+      "bytes": 781
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-1.json",
+      "sha256": "f3533274db8b618de8ed2be39edd7b0e1ab568bad0dc77f541e1fb68f6204991",
+      "bytes": 4890
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-1.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-1.stdout.jsonl",
+      "sha256": "04c4cfdba35b6eb9a9da7f25dc751492cd965dda65007131a5929b20625f6c91",
+      "bytes": 781
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-2.json",
+      "sha256": "c6c45ff9122c27f091ff46298a43d00aeffe0279c0089edc422d56d7c4eb8ea1",
+      "bytes": 4886
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-2.stderr.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/probe-2.stdout.jsonl",
+      "sha256": "110551f54bfccf4aa366ea28855898277d2e1d6aa2b0fbfa7f3bde018960362c",
+      "bytes": 779
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/stop",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "test-results/runtime-objects-v1/mock/wrong-identity.jsonl",
+      "sha256": "9cda1c20864d1d1eb1eefd7d8c227cb7a22a65e14f2699417d016b7b460355c7",
+      "bytes": 48
+    },
+    {
+      "path": "test-results/runtime-objects-v1/unity-build.log",
+      "sha256": "135439bb69eb08b78240bf06eb5406399cb04137e829a465405d3e0d01ff7cdb",
+      "bytes": 2234
+    }
+  ]
+}

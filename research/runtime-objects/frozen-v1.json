@@ -1,0 +1,110 @@
+{
+  "frozen_utc": "2026-10-21T12:32:04.824585+00:00",
+  "files": [
+    {
+      "path": "research/runtime-objects/Cargo.lock",
+      "sha256": "99564142ac94405f51be25cbf6dc0bccb2cbf5472c6aa6d236b8256440d8205d",
+      "bytes": 5385
+    },
+    {
+      "path": "research/runtime-objects/Cargo.toml",
+      "sha256": "50c32aaec133f1e66ef145bcc3adf580ccba4382e970f0434d036a5fa308e07b",
+      "bytes": 412
+    },
+    {
+      "path": "research/runtime-objects/fixture/Assets/Editor/BuildFixture.cs",
+      "sha256": "a2cfd69743340f7a8c3a32fe3fefa944236ef92b2879e28d69133ffe9c4e5341",
+      "bytes": 1289
+    },
+    {
+      "path": "research/runtime-objects/fixture/Assets/RuntimeState.cs",
+      "sha256": "4ab6d4bb21c38b4f88ee068a8ac003ece629c1f53bbcf86724fbdc6fa13c80e6",
+      "bytes": 1924
+    },
+    {
+      "path": "research/runtime-objects/fixture/Packages/manifest.json",
+      "sha256": "6121fb9da71e3430413f00e63e2748c5ee8d2e69049c3963bc448cac6880a404",
+      "bytes": 20
+    },
+    {
+      "path": "research/runtime-objects/fixture/ProjectSettings/ProjectVersion.txt",
+      "sha256": "9ddb03244dc51a6bd555565edf18eca092ce2231d9e8d9d85a1d7188667f9cbf",
+      "bytes": 29
+    },
+    {
+      "path": "research/runtime-objects/freeze.py",
+      "sha256": "f9cb108d9dfb2126b80109c875c1d87fe9c4abd0dfe31f5b3081312a19ed1750",
+      "bytes": 890
+    },
+    {
+      "path": "research/runtime-objects/game_case.py",
+      "sha256": "922c54bc3a249e57a44b1910176fc71638615b4b64f1564625c370667155a0c6",
+      "bytes": 2113
+    },
+    {
+      "path": "research/runtime-objects/mock/Cargo.toml",
+      "sha256": "fa59069a180bb38cc3dc683ed2563a31c70a3ece1c79e9a23143bd81830d7fcd",
+      "bytes": 158
+    },
+    {
+      "path": "research/runtime-objects/mock/src/lib.rs",
+      "sha256": "2bd050561c509b90fce64cf255c8cdfa919eb1a420078f079d9a13a9d0af3821",
+      "bytes": 6573
+    },
+    {
+      "path": "research/runtime-objects/mock_case.py",
+      "sha256": "7c147af3cb4b8a51082f4f527c779ec4d3ea905bed8b40141e3c26ee27df7cb8",
+      "bytes": 3424
+    },
+    {
+      "path": "research/runtime-objects/probe/Cargo.toml",
+      "sha256": "05c0421ba66a8c2266f05687a3aac6c68760ca46500ff97a507913cefa173ea0",
+      "bytes": 357
+    },
+    {
+      "path": "research/runtime-objects/probe/src/bin/object-host.rs",
+      "sha256": "e5dd0a0ad33c46ccbed7ee618c5695e74767bcb7e47a482e293fc7c1fcffe43d",
+      "bytes": 1621
+    },
+    {
+      "path": "research/runtime-objects/probe/src/lib.rs",
+      "sha256": "6a336845d953a0750e80f7c546f3b683becc23243e19b38d31216ee83f7efa13",
+      "bytes": 23723
+    },
+    {
+      "path": "research/runtime-objects/PROTOCOL.md",
+      "sha256": "4473ff6f1c5b3d34a0ff3ef2a91b2c89b9c9faf0aff6f3745f707d61d294a92b",
+      "bytes": 3333
+    },
+    {
+      "path": "research/runtime-probe/probe/src/win.rs",
+      "sha256": "42b79d1040df53725ff5cc76bd68f6d133171bbe862099f22574fcb24d398258",
+      "bytes": 3993
+    },
+    {
+      "path": "research/runtime-probe/probe/src/bin/probe-loader.rs",
+      "sha256": "64c292bd2ceabb3a2d3103ed6b95f10ae728fed6f80a927fac182cd782469a6c",
+      "bytes": 9650
+    },
+    {
+      "path": "target/runtime-objects/debug/reversebolt_runtime_probe.dll",
+      "sha256": "d531a7cd38e370e520e91653829c0b95fb4ef178680661ed9f1a750beb72affb",
+      "bytes": 553984
+    },
+    {
+      "path": "target/runtime-objects/debug/reversebolt_mock_runtime.dll",
+      "sha256": "dd97f7388e7ff1907b6a6af6623955ffb9c122ba91b9227adc92087d0ea9556e",
+      "bytes": 130048
+    },
+    {
+      "path": "target/runtime-objects/debug/probe-loader.exe",
+      "sha256": "033f0e951f53c8c2dceb146c8d94483bea0a2da9ba95e69f28d6fdb1b0d8f53a",
+      "bytes": 615424
+    },
+    {
+      "path": "target/runtime-objects/debug/object-host.exe",
+      "sha256": "bdc3490aebcddf96bdd4f98dd21edd169a126e129aedf22a8e9ac3705293cfb3",
+      "bytes": 351232
+    }
+  ]
+}

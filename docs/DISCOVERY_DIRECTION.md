@@ -57,12 +57,20 @@ and no game-specific filters. Both helpers unloaded. This is explicit temporary
 instrumentation, not a passive remote-memory API or a production feature.
 See [method, evidence and limits](../research/runtime-probe/README.md).
 
-Next demonstrate live instance object/value identity, lifetime handling and
-relocation on independent programs without adding game rules. The current probe
-leaves 51,837 instance fields unresolved; even its static values may be defaults
-from uninitialized classes. A type inventory or a readable value alone does not
-establish a useful control. Keep automatic reads separate from mechanisms that
-execute code in the target, and expose unsupported access paths explicitly.
+A subsequent bounded object reader now follows supported static roots and
+reference fields during brief managed-thread pauses. In Blue Prince it read
+1,871 instance scalar values per snapshot, including 45 in the main game image.
+The owned stress fixture demonstrated reference replacement and address reuse;
+object IDs deliberately belong only to one snapshot. Both real-game snapshots
+hit the 1,024-node limit; 492 objects had uncatalogued runtime types, and the full
+root queue prevented discovering additional child objects.
+See [object evidence and contract](../research/runtime-objects/README.md).
+
+Next widen constructed-type, collection and root coverage, establish refreshable
+reference paths and validate useful effects. Neither snapshot addresses nor
+field names establish persistent identity or edit authority. Static values may
+be defaults from uninitialized classes. Keep automatic reads separate from
+mechanisms that execute code in the target, and expose unsupported paths.
 
 Supporting a runtime does encode platform knowledge, much like supporting PE or
 numeric encodings. It must not encode particular game classes, field names or

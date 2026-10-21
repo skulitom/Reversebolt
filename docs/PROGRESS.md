@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest live-object feasibility study (2026-10-21): **31% unchanged**. The unchanged
+Rust reader took two Blue Prince snapshots with 1,871 instance scalar reads each,
+including 45 in the main game image. Managed read sections lasted 7.302/6.057 ms;
+both recorded zero helper Rust heap operations and no memory-read failures. Six
+owned stress snapshots verified cycles, inheritance and changing identities at
+reused addresses, with balanced suspension/resumption. Real-game coverage remains
+partial: both snapshots hit 1,024 nodes, and 492 objects had uncatalogued types.
+The root queue filled before additional child objects could be discovered.
+Useful gameplay authority, persistent identity and product integration remain
+unfinished. The attempted Unity fixture build lacked an active Editor license;
+no activation/retry occurred. Preview `0.1.0-20261021-122703` remains running with
+29 history entries. Full goal and weighted credits unchanged.
+[Evidence and lifetime contract](../research/runtime-objects/README.md).
+
 Latest runtime feasibility study (2026-10-21): **31% unchanged**. A standalone
 Rust IL2CPP probe completed two unchanged inspections of Blue Prince: 16,955
 types, 87,225 fields and 989 scalar reads per pass, with 38 reads in the game's

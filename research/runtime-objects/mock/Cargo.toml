@@ -1,0 +1,8 @@
+[package]
+name = "reversebolt-object-mock"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+[lib]
+name = "reversebolt_mock_runtime"
+crate-type = ["cdylib"]
