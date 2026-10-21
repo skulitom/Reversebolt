@@ -29,5 +29,6 @@ guarded write/restoration receipts, frames, measurements and storage backup.
 Run `python research/manifold-runtime/measure.py test-results/manifold-runtime-v1`
 to recompute the screenshot contrast. No game-specific logic was added to the
 product. Automatic useful naming/ranking, broader effects, and revalidation
-remain unresolved; overall progress remains 31% pending the broader capability
-gate.
+remain unresolved. The later milestone assessment awards one validation point
+for this narrow real-game contrast (32% total), without discovery or held-out
+generalization credit; see `docs/PROGRESS.md`.

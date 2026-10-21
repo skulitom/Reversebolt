@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "operations": 17,
+  "pauses": 40,
+  "maximum_stop_to_resume_us": 83,
+  "freezes": 5,
+  "tools": 45,
+  "product_revision": "d4e2b0d0a628a1e3a6186ea32b6c269590bcd889",
+  "native_ui_run": "friendly-controls-v2",
+  "native_ui_actions": 8,
+  "final_native_run": "friendly-controls-v3",
+  "native_ui_screenshots": 1,
+  "game_screenshots": 0,
+  "gameplay_input": 0,
+  "helpers_unloaded": true,
+  "helper_heap_operations_while_paused": 0,
+  "independent_game_credit": false,
+  "artifact_audit_passed": true,
+  "desktop": {
+    "version": "0.1.0-20261021-191551",
+    "pid": 30888,
+    "history_preserved": 44,
+    "model_preserved": "qwen3.8:latest",
+    "published_binaries_match": true
+  },
+  "smoke": "test-results/smoke-746e292f/report.json",
+  "cleanup": [
+    {
+      "pid": 67924,
+      "exit": 0
+    },
+    {
+      "pid": 89300,
+      "exit": 1
+    },
+    {
+      "pid": 96448,
+      "exit": 1
+    },
+    {
+      "pid": 67704,
+      "exit": 1
+    }
+  ]
+}

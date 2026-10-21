@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Named direct controls and first real-game effect (2026-10-21): **32%**. Cards omit
+unidentified placeholders, use editable numbers with +/- controls by default, and
+reserve sliders for known small ranges. A Freeze checkbox periodically holds
+supported internal numeric/boolean values through the same engine/MCP path. Other
+observations show an unavailable checkbox. Names/descriptions derived from runtime
+metadata remain provisional. Native re-holding, stop, replay/conflict, object
+replacement, overlap rejection and restart checks passed; the desktop preview is
+updated with all 44 history entries and the model setting preserved.
+[Control implementation and evidence](../research/friendly-controls/README.md).
+
+One validation point is earned by the separately frozen Manifold Garden test:
+ordinary lateral input produced image-change medians of 6.419 before intervention,
+0.258 with the selected walking-speed float set to zero, and 6.399 after restoring
+the original bytes. Stationary variation was about 0.258. Candidate selection was
+manual, and image differences measure the rendered response rather than exact
+world-space velocity. This is narrow causal evidence in an actual independent
+game, not automatic semantic discovery or held-out generalization. Existing saves
+were unchanged; a new empty slot was used. [Method and limits](../research/manifold-runtime/README.md).
+
+Credits: foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation **3/15**, intent/editing 1/10, agent 5/10, generalization 0/10.
+Total **32/100**. The full goal remains active. Automatic meaningful naming,
+selection, broader gameplay validation and recovery across loads remain unfinished.
+
 Direct value controls (2026-10-21): **31% unchanged**. Live cards now put a large
 editable number and prominent slider, or an On/Off checkbox, directly on the
 card. Release applies one drag; text applies on Enter/focus loss; checkbox and
