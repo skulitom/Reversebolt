@@ -326,7 +326,32 @@ impl LiveSession {
                 before,
             });
         }
-        let change = crate::changes::Change::prepare(scope, models, observed, desired, actor)?;
+        let mut change = crate::changes::Change::prepare(scope, models, observed, desired, actor)?;
+        if change.phase == crate::changes::Phase::Prepared {
+            let mut tracks: Vec<_> = self.view.tracks.iter().filter(|t| t.active).collect();
+            tracks.sort_by_key(|t| (t.id != track, t.id));
+            change.omitted_tracks = tracks.len().saturating_sub(crate::effects::MAX_WATCHES);
+            change.watches = tracks
+                .into_iter()
+                .take(crate::effects::MAX_WATCHES)
+                .map(|t| crate::effects::Watch {
+                    track: t.id,
+                    label: t.label.clone(),
+                    bounds: t.bounds,
+                })
+                .collect();
+            let baseline = self.capture_change(
+                &change,
+                store,
+                crate::changes::ObservationStage::BeforeEdit,
+                observed,
+            )?;
+            if !baseline.agrees || baseline.error.is_some() {
+                change.phase = crate::changes::Phase::Unavailable;
+                change.reason = "The fresh screen reading does not support this trial. Keep observing before preparing again.".into();
+            }
+            change.baseline = Some(baseline);
+        }
         store.insert(change)
     }
 
@@ -357,8 +382,7 @@ impl LiveSession {
         id: &str,
         store: &mut crate::changes::Store,
     ) -> Result<crate::changes::Change> {
-        use crate::changes::{Observation, Phase, now_ms};
-        use sha2::{Digest, Sha256};
+        use crate::changes::{ObservationStage, Phase};
         let mut change = store.get(id)?;
         if !matches!(change.phase, Phase::Written | Phase::Restored) {
             return Err("There is no settled write to observe.".into());
@@ -366,13 +390,40 @@ impl LiveSession {
         if change.observations.len() >= 8 {
             return Err("This trial reached its eight-observation limit.".into());
         }
-        change.check_target(&*self.target, &self.change_scope(change.scope.track)?)?;
-        let (path, reservation) = store.reserve_image(&change.id)?;
         let expected = if change.phase == Phase::Restored {
             change.observed
         } else {
             change.desired
         };
+        let stage = if change.phase == Phase::Restored {
+            ObservationStage::AfterRestoration
+        } else {
+            ObservationStage::AfterEdit
+        };
+        let mut observation = self.capture_change(&change, store, stage, expected)?;
+        if let Some(baseline) = &change.baseline {
+            observation.comparison = Some(crate::effects::compare(
+                &change.watches,
+                change.scope.track,
+                change.omitted_tracks,
+                &baseline.readings,
+                &observation.readings,
+            ));
+        }
+        change.observations.push(observation);
+        store.record(change)
+    }
+
+    fn capture_change(
+        &self,
+        change: &crate::changes::Change,
+        store: &crate::changes::Store,
+        stage: crate::changes::ObservationStage,
+        expected: f64,
+    ) -> Result<crate::changes::Observation> {
+        use crate::changes::{Observation, now_ms};
+        change.check_target(&*self.target, &self.change_scope(change.scope.track)?)?;
+        let (path, reservation) = store.reserve_image(&change.id)?;
         let mut observation = Observation {
             time_ms: now_ms(),
             image: path.to_string_lossy().into_owned(),
@@ -382,9 +433,21 @@ impl LiveSession {
             agrees: false,
             error: None,
             warning: None,
+            stage: Some(stage),
+            capture_interval: None,
+            readings: vec![],
+            untracked_numbers: 0,
+            comparison: None,
         };
         let result = (|| -> Result<()> {
-            let mut screen = self.target.screen(&path)?;
+            let begin_us = self.capture_clock.elapsed().as_micros() as u64;
+            let screen = self.target.screen(&path);
+            observation.capture_interval = Some(CaptureInterval {
+                clock_id: self.view.investigation_id.clone(),
+                begin_us,
+                end_us: self.capture_clock.elapsed().as_micros() as u64,
+            });
+            let mut screen = screen?;
             if std::fs::metadata(&path).map_err(|e| e.to_string())?.len()
                 > visual::MAX_IMAGE_BYTES as u64
             {
@@ -398,10 +461,7 @@ impl LiveSession {
                     "Window geometry changed; the old reading region cannot be reused.".into(),
                 );
             }
-            observation.image_sha256 = format!(
-                "{:x}",
-                Sha256::digest(std::fs::read(&path).map_err(|e| e.to_string())?)
-            );
+            observation.image_sha256 = visual::digest(&visual::image_bytes(&path)?);
             // A supplemental recognizer can fail after Windows OCR supplied
             // valid words. Keep that warning and evaluate the actual readings.
             observation.warning = self
@@ -409,14 +469,55 @@ impl LiveSession {
                 .recognize(&mut screen)
                 .err()
                 .or(screen.warning.clone());
-            let readings: Vec<_> = number_readings(&screen.words)
-                .into_iter()
-                .filter(|r| same_text_region(r.bounds, change.scope.bounds))
-                .collect();
-            if readings.len() != 1 {
-                return Err("The selected number could not be read unambiguously.".into());
+            let readings = number_readings(&screen.words);
+            // Legacy records still support their original single-region check.
+            let fallback = vec![crate::effects::Watch {
+                track: change.scope.track,
+                label: change.scope.label.clone(),
+                bounds: change.scope.bounds,
+            }];
+            let watches = if change.watches.is_empty() {
+                &fallback
+            } else {
+                &change.watches
+            };
+            for watch in watches {
+                let matches: Vec<_> = readings
+                    .iter()
+                    .filter(|r| same_text_region(r.bounds, watch.bounds))
+                    .collect();
+                let unique = matches.len() == 1
+                    && watches
+                        .iter()
+                        .filter(|w| same_text_region(matches[0].bounds, w.bounds))
+                        .count()
+                        == 1;
+                let (value, reason) = if unique {
+                    (
+                        matches[0].value,
+                        matches[0].reason.chars().take(160).collect(),
+                    )
+                } else {
+                    (
+                        None,
+                        "The region could not be associated unambiguously.".into(),
+                    )
+                };
+                observation.readings.push(crate::effects::Reading {
+                    track: watch.track,
+                    value,
+                    reason,
+                });
             }
-            observation.value = readings[0].value;
+            observation.untracked_numbers = readings
+                .iter()
+                .filter(|r| !watches.iter().any(|w| same_text_region(r.bounds, w.bounds)))
+                .count();
+            observation.value = observation
+                .readings
+                .iter()
+                .find(|r| r.track == change.scope.track)
+                .and_then(|r| r.value);
             observation.agrees = observation
                 .value
                 .is_some_and(|v| (v - expected).abs() <= 0.55);
@@ -426,8 +527,7 @@ impl LiveSession {
             Ok(())
         })();
         observation.error = result.err();
-        change.observations.push(observation);
-        store.record(change)
+        Ok(observation)
     }
 
     /// Retain the evidence, but revoke the connection and hypotheses on exit.

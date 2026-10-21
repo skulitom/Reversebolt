@@ -492,3 +492,26 @@ See [operation evidence and limits](research/LIVE_TRIAL_EDITS.md). Next: scoped
 causal effect checks, recovery beyond restoring bytes, and unchanged evaluation
 on independently implemented games; broader visual and hidden-rule discovery
 remain necessary parts of the full goal.
+
+## 2026-10-21 — broader trial observations: remains 22%
+
+Explicit trial preparation now captures a fresh baseline and watches up to 32
+screen-number regions. Post-edit/restoration checks compare other values as
+well as the requested number. Cards show fresh contextual readings and a short
+change notice; Inspect holds details. Agents can retrieve hash-checked
+before/after images through the new read-only evidence tool, including after
+restart. Missing/ambiguous readings remain unknown.
+
+The automated native matrix found a residual resource change after restoration,
+also detected independent time drift, and failed to reveal private hidden state
+changes. Those distinctions are retained: observed differences are not causal
+attribution or proof of complete rollback. No gameplay meaning or unseen-game
+acceptance gate has been passed. The fixed category credits and total remain
+**22 / 100**, with the full goal active.
+
+All 105 workspace tests, strict Clippy, formatting, the three-mode native matrix
+and a separate published-build UI/MCP run pass. Preview
+`0.1.0-20261021-031846` is running with prior history and model settings retained.
+See [effect observations and limits](research/EFFECT_OBSERVATIONS.md).
+Next: grounded action/context measurements and controlled contrasts to separate
+ordinary activity from intervention effects, including nonnumeric behavior.

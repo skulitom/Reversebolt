@@ -69,6 +69,14 @@ another reading. Details stay behind **Inspect**. Trial changes are limited to
 memory or an uncertain earlier write can prevent a trial. Connecting never
 starts writes automatically. See [trial behavior and limits](docs/research/LIVE_TRIAL_EDITS.md).
 
+Reviewing an edit now saves a fresh before-image and checks the selected number.
+Subsequent checks also compare up to 31 other observed numbers. A card flags
+other values that changed, and their cards show the fresh readings. **Inspect**
+shows the comparison; agents can retrieve the original before/after images.
+Changes can come from ordinary gameplay or recognition errors as well as the
+edit. Unseen effects remain unknown, even when all observed numbers match.
+See [effect-observation evidence](docs/research/EFFECT_OBSERVATIONS.md).
+
 **Search more memory** archives the current batch's evidence and moves to other
 eligible addresses. Collect fresh changing observations for each batch. The
 coverage display distinguishes addresses read from those with complete memory

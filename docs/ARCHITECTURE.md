@@ -281,6 +281,17 @@ does not establish recovery of gameplay state. See [the operation contract and
 evidence](research/LIVE_TRIAL_EDITS.md). Transaction and journal failure semantics
 remain distinct from the existing read-only observation-job ledger.
 
+Trial preparation now captures a baseline and freezes up to 32 observed OCR
+regions. The selected number must still agree. Post-edit/restoration observations
+carry monotonic capture bounds and compare each other region with that baseline.
+Ambiguous associations and missing values remain unreadable. Comparisons are
+descriptive: ordinary gameplay and timing are alternative causes, and unobserved
+state is not certified. Cards consume the fresh readings across all watched
+values. The read-only evidence API serves hash-checked baseline/post image pairs
+even after restart, retaining appearance for later interpretation without
+claiming automatic visual effect detection. See
+[effect-observation evidence](research/EFFECT_OBSERVATIONS.md).
+
 1. Broader renderer support, efficient incremental snapshots and coverage planning.
 2. A timestamped observation bus: screen tracks, motion, appearance, input, audio.
 3. Hypotheses over objects and relationships, not two fixed scalar tracks.

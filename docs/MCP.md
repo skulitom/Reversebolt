@@ -44,6 +44,7 @@ never creates a private simulator or duplicate session.
 | `reversebolt_apply_change` | Explicitly attempt the prepared native write and record a screen-number check |
 | `reversebolt_restore_change` | Restore original bytes only while the original scope and complete interpretations still match |
 | `reversebolt_observe_change` | Add a source-hashed post-trial reading without writing process memory |
+| `reversebolt_read_change_evidence` | Read the before-image and one recorded post-edit/restoration image, with hashes and comparisons |
 | `reversebolt_advance_memory` | Archive a memory batch, release its raw snapshots and select new addresses |
 | `reversebolt_detach_process` | Release the connection and snapshots; leave application running |
 | `reversebolt_open_practice` | New randomized disposable target; optional reproducible seed |
@@ -126,18 +127,35 @@ effects. `uncertain` is a held outcome, never permission to retry. Repeating an
 already completed change ID does not write again; it may add a visual check.
 Inspect a failed response and the recorded state before deciding what happened.
 
-The automatic post-write check and `observe_change` capture the original OCR
-region and store its PNG hash, reading, expected value, agreement and warnings.
-Geometry changes and ambiguous readings stay explicit. These checks do not test
-other gameplay effects. Each change allows eight observations; separate trial
+Preparation captures a fresh before-image and checks that the selected number
+still agrees. Failure makes the plan unavailable. It freezes at most 32 active
+OCR regions, including the selected number, and records any omitted track count.
+The automatic post-write check and `observe_change` store a PNG hash, monotonic
+capture-operation interval, stage, selected reading and the other region readings.
+Each post-reading compares those same regions against the before-image:
+changed, unchanged within 0.55, or unreadable. Missing/ambiguous readings never
+become zero or proof of stability. Unexpected numeric regions are counted but
+not assigned an invented identity. Normal gameplay and timing can produce changes;
+this is descriptive evidence, not causal attribution or a complete effect scope.
+Each change allows eight post-observations plus its baseline; separate trial
 evidence is bounded to 128 MiB, reserving space for late capture completion.
 The journal retains at most 128 changes. No change is resumed or restored after
 restart, target replacement, or memory-batch/geometry changes. Earlier records
 remain history. See [native validation evidence](research/LIVE_TRIAL_EDITS.md).
 
+Call `read_change_evidence` with `change_id` and zero-based `observation` (0–7)
+from that change's history. It returns two native MCP PNG image blocks, preceded
+by their identities, then JSON with baseline/post metadata and the comparison.
+This makes appearance and other nonnumeric evidence available for interpretation;
+the comparison itself currently measures screen numbers only. The image pair is
+capped at 16 MiB, each image at 10 MiB. The engine checks stored hashes and confines
+paths to its change-evidence directory. Replaced images are refused. This
+read-only call works after disconnect/restart without restoring target access.
+Older records without a baseline explicitly lack this evidence.
+
 ## Image-grounded agent observations
 
-There are now 28 tools. `reversebolt_read_capture` returns native MCP PNG image
+There are now 29 tools. `reversebolt_read_capture` returns native MCP PNG image
 content and metadata. Choose `investigation_id` and a `frame_id` from
 `status.state.live` (the frame list is `live.frames`). The engine reads only its
 own recorded image path and checks the current bytes against the capture's

@@ -4,6 +4,10 @@ Date: 2026-10-21. This is an experimental editing path for observed screen
 numbers. It does not identify gameplay authority, prove a slider range, or
 establish independent-game compatibility.
 
+This records the first native trial implementation. The subsequent
+[broader observation pass](EFFECT_OBSERVATIONS.md) adds a fresh baseline,
+other-number comparisons and paired image access for agents.
+
 The [compact evidence record](../../research/live-trial-edits/evidence/native-v1.json)
 retains successful and failed run summaries, source/raw-evidence checksums and
 the published binary hashes. Full local receipts and images are under

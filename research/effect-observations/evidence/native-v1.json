@@ -1,0 +1,478 @@
+{
+  "date": "2026-10-21",
+  "scope": "Known, purpose-built native fixtures. Descriptive OCR comparisons only; no causal authority, complete recovery, automatic appearance-effect inference or independent-game claim.",
+  "tests": {
+    "workspace_passed": 105,
+    "clippy": "passed -D warnings",
+    "formatting": "passed"
+  },
+  "matrix": {
+    "scope": "Automated native effect-observation matrix. Run inside Anode's seat.\n\nThe external fixture owns private truth. No address, field layout, effect mode\nor control file is passed to the discovery engine. This is synthetic integration\nevidence, not independent-game validation.\n",
+    "cases": [
+      {
+        "mode": "coupled",
+        "driver_exit": 0,
+        "outcome": "write and restore observed through MCP",
+        "error": null,
+        "comparison_after_edit": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 22.0,
+              "before": 25.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "changed",
+              "track": 1
+            }
+          ]
+        },
+        "comparison_after_restore": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 19.0,
+              "before": 25.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "changed",
+              "track": 1
+            }
+          ]
+        },
+        "images": true,
+        "private_audit": {
+          "mode": "coupled",
+          "writes": 2,
+          "resource": 19,
+          "hidden": 0,
+          "quantity": 50
+        }
+      },
+      {
+        "mode": "drift",
+        "driver_exit": 0,
+        "outcome": "write and restore observed through MCP",
+        "error": null,
+        "comparison_after_edit": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 127.0,
+              "before": 120.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "changed",
+              "track": 1
+            }
+          ]
+        },
+        "comparison_after_restore": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 138.0,
+              "before": 120.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "changed",
+              "track": 1
+            }
+          ]
+        },
+        "images": true,
+        "private_audit": {
+          "mode": "drift",
+          "writes": 2,
+          "resource": 140,
+          "hidden": 0,
+          "quantity": 50
+        }
+      },
+      {
+        "mode": "hidden",
+        "driver_exit": 0,
+        "outcome": "write and restore observed through MCP",
+        "error": null,
+        "comparison_after_edit": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 25.0,
+              "before": 25.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "unchanged",
+              "track": 1
+            }
+          ]
+        },
+        "comparison_after_restore": {
+          "limitation": "Only these sampled screen regions were compared. Changes can come from ordinary gameplay, timing, OCR or the edit. Unseen, delayed and nonnumeric effects remain unverified; restored bytes do not establish recovered gameplay state.",
+          "omitted_tracks": 0,
+          "other_values": [
+            {
+              "after": 25.0,
+              "before": 25.0,
+              "label": "Near \u201cResource\u201d",
+              "status": "unchanged",
+              "track": 1
+            }
+          ]
+        },
+        "images": true,
+        "private_audit": {
+          "mode": "hidden",
+          "writes": 2,
+          "resource": 25,
+          "hidden": 2,
+          "quantity": 50
+        }
+      }
+    ]
+  },
+  "published_run": {
+    "models_bundled": true,
+    "native_edit_restore": "passed",
+    "paired_mcp_images": "hashes verified",
+    "uia": {
+      "quantity": 50,
+      "resource": 19,
+      "other_value_notice": true,
+      "inspect_before": 25,
+      "inspect_after": 19
+    }
+  },
+  "delivery": {
+    "version": "0.1.0-20261021-031846",
+    "pid": 79288,
+    "session": 1,
+    "previousPid": 69476,
+    "historyRetained": true,
+    "historyCount": 8,
+    "observerModel": "qwen3.8:latest",
+    "activeJobs": null,
+    "analysis": null,
+    "manifest": {
+      "value": [
+        {
+          "name": "reversebolt-mcp.exe",
+          "sha256": "E2B30DEEB6E6E5515D32869967D431C5FD5DCC74006BC965AC6CA604142FD9EA"
+        },
+        {
+          "name": "Reversebolt.exe",
+          "sha256": "37B40B73EA92471BD670B98BEA8628D1E1E0323766ADB776D79C069BBF5A074E"
+        }
+      ],
+      "Count": 2
+    },
+    "publishedSmoke": "test-results/smoke-8bcba2a3/report.json"
+  },
+  "published_smoke": {
+    "practice": [
+      {
+        "seed": 8675309,
+        "matches": [
+          4,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      },
+      {
+        "seed": 1001,
+        "matches": [
+          3,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      },
+      {
+        "seed": 20261020,
+        "matches": [
+          3,
+          4
+        ],
+        "unique_controls": 2,
+        "edit_restore": "passed"
+      }
+    ],
+    "mcp_tools": 29,
+    "shared_session": "passed",
+    "auth_and_origin": "passed",
+    "stale_restore": "rejected",
+    "restart": "history retained; controls invalidated"
+  },
+  "source_files": [
+    {
+      "path": "crates/reversebolt-core/src/effects.rs",
+      "bytes": 2672,
+      "sha256": "7d648a2d6248f9d615579057f219f36373c18b4a0e63983ba00abd2dd7d82d28"
+    },
+    {
+      "path": "crates/reversebolt-core/src/changes.rs",
+      "bytes": 22038,
+      "sha256": "307597eea6e31d6a8ee8b67970d129f725ee7137e8aa7a6a1a20f59a694500bf"
+    },
+    {
+      "path": "crates/reversebolt-core/src/live.rs",
+      "bytes": 84005,
+      "sha256": "8767e54b12bd42e241f19235a14b7c1b6be52e9988a07353dfb4e0d9a467177e"
+    },
+    {
+      "path": "crates/reversebolt-core/tests/effects.rs",
+      "bytes": 1768,
+      "sha256": "e2971346249101e0cc40ce34bce84010cc76b05bd606f7c2d33fc458276ee0da"
+    },
+    {
+      "path": "crates/reversebolt-core/tests/live_changes.rs",
+      "bytes": 9204,
+      "sha256": "b5912dee19ddac88eb830a7c1af68fd62cbce2a6f749fa5b2c6d2427142bd2cf"
+    },
+    {
+      "path": "crates/reversebolt-app/src/service.rs",
+      "bytes": 26392,
+      "sha256": "9e7b214074af0486155aabc8678f082b3596a69281eb3c6ce4b123e16ef84969"
+    },
+    {
+      "path": "crates/reversebolt-app/src/jobs.rs",
+      "bytes": 59784,
+      "sha256": "e4045ea3b0b299f9a04c165748995997a59fe43218cec667ce6212e116ba2b68"
+    },
+    {
+      "path": "crates/reversebolt-app/src/ui_live.rs",
+      "bytes": 51846,
+      "sha256": "903b8014384d8f6106652548312522df70a53ac8a979ce568907f8daf994a2ab"
+    },
+    {
+      "path": "crates/reversebolt-mcp/src/main.rs",
+      "bytes": 24885,
+      "sha256": "2fac4ddd60638495fa26a5e9df21bde830aa82b11e5d109ad5a09b5909aff3d2"
+    },
+    {
+      "path": "scripts/effect-fixture.ps1",
+      "bytes": 3479,
+      "sha256": "38fc24930b26aa24e844545a61ca8290c32387b91f4410a02e12462eb6f4988c"
+    },
+    {
+      "path": "scripts/effect-observation-smoke.py",
+      "bytes": 3997,
+      "sha256": "15b6eeeb1756210d9e3b2f63c4554a0a649403d53dc0ba78550d367306688f39"
+    },
+    {
+      "path": "scripts/trial-edit-smoke.py",
+      "bytes": 6997,
+      "sha256": "c22826435fa25d959cab544af195b55d7c47b743ea0059fbb245df035abfbc9b"
+    },
+    {
+      "path": "models/manifest.json",
+      "bytes": 1028,
+      "sha256": "08f25ecf30a7398bb578d438b1b3755794728853ed628f768951b6bd01a885c1"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "test-results/effect-observations-67b1a8f8/report.json",
+      "bytes": 4677,
+      "sha256": "6575fe7ab9e2980a8652d751cd8a885a880d1a726cd3b1c47d4a7b202e190a54"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/trial-result.json",
+      "bytes": 3510079,
+      "sha256": "8d98f3dc55632f497ff9fa2c68e85e73c2d82ad5bd2075483eadcd229c330abe"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/private-audit.json",
+      "bytes": 68,
+      "sha256": "9873ee1c7b76ddb56259612d1bdb81b9f9b682acd08262075985dd429bc87d9e"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa.json",
+      "bytes": 11155,
+      "sha256": "3156aedeb66b90bd5d73725dd6fa4cb168be510eaaed64fdc23929be7c762673"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/trial-result.json",
+      "bytes": 3510990,
+      "sha256": "90442d58fb62276731c422fbaec37f757d15dce4763bbf510fc25cf7bd07d839"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/private-audit.json",
+      "bytes": 67,
+      "sha256": "ef5290cddd50a152631e2bb7e6dd0309f25e6cb8a0a4423a8252f79e8d7a2307"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4.json",
+      "bytes": 11161,
+      "sha256": "8f2135e6e827d1fb74409955bec30ad6f2d568d74294ff2bf8a2f4518263cf57"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/trial-result.json",
+      "bytes": 3520224,
+      "sha256": "d63263370a5386e6e0714dc2566c5b0dfb14637dd762b8b44b8078f2f8ee4c3d"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/private-audit.json",
+      "bytes": 67,
+      "sha256": "04b7088f11c4aa95cf19c8520ed1eb6527c9b36d865c018e6b031806b41f51a2"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38.json",
+      "bytes": 11160,
+      "sha256": "4bced8a2d2d4185e4533bb0e8e03c898bf3bf293ca807a2101e72b424e4031fd"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/trial-result.json",
+      "bytes": 3595289,
+      "sha256": "806ca28f4818fe1a0b869525c449ea5ce2c9f80940d527d515543843a92c70c1"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/private-audit.json",
+      "bytes": 68,
+      "sha256": "9873ee1c7b76ddb56259612d1bdb81b9f9b682acd08262075985dd429bc87d9e"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971.json",
+      "bytes": 10392,
+      "sha256": "e4d48a75d078b65471ea07d1d69f57a337cf1bf4235db3866f4c4cd20fcd3f9b"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/ui-evidence.json",
+      "bytes": 47962,
+      "sha256": "87350df1ebc2bdf552afb9e29a5a168c6832dfe38c2c8ab26d3762b799b6039b"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/desktop-delivery.json",
+      "bytes": 1005,
+      "sha256": "74335d7f0f61e67c8ed65f7bce1a3a201d84e9b688f3e27608f47d547a199634"
+    },
+    {
+      "path": "test-results/smoke-8bcba2a3/report.json",
+      "bytes": 653,
+      "sha256": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+    }
+  ],
+  "images": [
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-ff078604-3911-4fa8-ae33-e180d0d4b64b.png",
+      "bytes": 14842,
+      "sha256": "937dde32c6481535136f59f10d3c85620bd2d78bcc2a7551bc747b41a9076554"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-e79e2dc5-8be5-41bc-8e59-0bc41a893d81.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-4cb49ceb-ab01-4a4b-90fa-2fd6707d172a.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-06af6470-5c9e-419d-9334-fbd59c56211b.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-54451181-4ae2-4927-8e6f-ae2960c10311.png",
+      "bytes": 14767,
+      "sha256": "c4dad47934a30f300be8c51681ddc2751c0f9c1ab8cc548685a787b450de4e5b"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/coupled/session/changes/c90e7714-ac7b-4471-bd2b-54a588a1cdfa-44a2013b-edc6-47a4-bb1c-c2b6b29dd5ea.png",
+      "bytes": 14767,
+      "sha256": "c4dad47934a30f300be8c51681ddc2751c0f9c1ab8cc548685a787b450de4e5b"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-447d17ca-409a-4b13-ba56-d344f20e592d.png",
+      "bytes": 15272,
+      "sha256": "81ab23f2e3c96adc91ac2f5a00e7a9a7a0dd952fc790ba2631ca3125bd992591"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-af39eb39-cc58-49cb-9f91-b57283c0d14f.png",
+      "bytes": 15186,
+      "sha256": "1ddf54c3eba6b618fe4c7df9873c9953c12882f372a009ce43452cc5dab1aa8f"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-ed6e21e7-3a6f-40d9-a677-180eca8b6cac.png",
+      "bytes": 14890,
+      "sha256": "d12d95077c9fc76d75d4dcbde755f4dff4911c8d436b101c3469649c158040bd"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-ce38c784-259e-48a5-9632-45cf2a31aa7a.png",
+      "bytes": 15359,
+      "sha256": "02fa92efaa5115e99f6109d97ec8069ff6593704b23380a410cf8d85ca85bfc4"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-01becd01-823b-4467-bfda-0ef844bf29ff.png",
+      "bytes": 15359,
+      "sha256": "a1932d7fdeec113a9e7003d5df5fb6a7c731e877013965c1c46ce849b59d7636"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/drift/session/changes/c5d81c98-6b79-44ae-bdac-27eba1e912d4-c5e80d6e-e04a-447c-8c17-8f1adf0dafb5.png",
+      "bytes": 15715,
+      "sha256": "c7365ff74f1319654aaa23ec17f1769a5c0248f6cb258dbc6a52654827d8a4e0"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-e97ec45a-00db-46b0-a2ee-3a34078fdd4c.png",
+      "bytes": 14842,
+      "sha256": "937dde32c6481535136f59f10d3c85620bd2d78bcc2a7551bc747b41a9076554"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-6940b05c-6a9e-4343-b6f0-3b1c0c1fec9f.png",
+      "bytes": 14815,
+      "sha256": "556cc90c79d16619929163978fe79c514a5c8b96afa0e9b83fd59aa5b7fc8283"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-8abc5dcc-3733-4d15-bec0-0444be62c572.png",
+      "bytes": 14815,
+      "sha256": "556cc90c79d16619929163978fe79c514a5c8b96afa0e9b83fd59aa5b7fc8283"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-026c04e5-df8a-4531-917b-a104603c1e3c.png",
+      "bytes": 14815,
+      "sha256": "556cc90c79d16619929163978fe79c514a5c8b96afa0e9b83fd59aa5b7fc8283"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-ebb3ac1a-c84a-4a01-89f6-f7cc1f08129d.png",
+      "bytes": 14842,
+      "sha256": "937dde32c6481535136f59f10d3c85620bd2d78bcc2a7551bc747b41a9076554"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/hidden/session/changes/88e5f76b-ed35-4477-a393-8f3f7e3a0b38-9ec72fc8-3904-4f36-9b09-a2c073879469.png",
+      "bytes": 14842,
+      "sha256": "937dde32c6481535136f59f10d3c85620bd2d78bcc2a7551bc747b41a9076554"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-d2541693-f33c-4cfd-b5f5-3e3f9f65ff57.png",
+      "bytes": 14842,
+      "sha256": "937dde32c6481535136f59f10d3c85620bd2d78bcc2a7551bc747b41a9076554"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-eb879653-1819-4aca-a2a4-fc04b8a0e3f8.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-bad84e60-674b-47bc-b1cb-28f45eda5a47.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-5dc0822c-cc6e-420e-8362-ebe711ce79fc.png",
+      "bytes": 14901,
+      "sha256": "58d6f23c8c96e641ad1be2a536910f3a4c81eb169261d300193ef7a94b790026"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-ec5413ba-759f-4d43-a7b3-bb3dd31b7a56.png",
+      "bytes": 14767,
+      "sha256": "c4dad47934a30f300be8c51681ddc2751c0f9c1ab8cc548685a787b450de4e5b"
+    },
+    {
+      "path": "test-results/effect-observations-67b1a8f8/desktop/session/changes/5fed3022-f766-4246-903b-8f35bc5d0971-2bfddd84-67a3-4029-995f-810295cc49aa.png",
+      "bytes": 14767,
+      "sha256": "c4dad47934a30f300be8c51681ddc2751c0f9c1ab8cc548685a787b450de4e5b"
+    }
+  ]
+}

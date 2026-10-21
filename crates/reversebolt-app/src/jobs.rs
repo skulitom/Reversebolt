@@ -115,7 +115,13 @@ fn control(c: &Command) -> bool {
 fn read_only(action: &str) -> bool {
     matches!(
         action,
-        "status" | "history" | "job_events" | "read_capture" | "read_sequence" | "list_processes"
+        "status"
+            | "history"
+            | "job_events"
+            | "read_capture"
+            | "read_sequence"
+            | "read_change_evidence"
+            | "list_processes"
     )
 }
 fn pop(inbox: &mut VecDeque<Request>) -> Option<Request> {

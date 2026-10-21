@@ -427,3 +427,18 @@ closed and the Anode lease released. These results demonstrate the experimental
 workflow, not semantic authority, full gameplay rollback, atomic target-thread
 access or independent-game compatibility. See [trial evidence and preserved
 failures](research/LIVE_TRIAL_EDITS.md).
+
+## Broader trial observations — 2026-10-21
+
+All 105 workspace tests pass, including stale-baseline refusal, contextual
+differences, unreadable/ambiguous values, monotonic capture evidence and
+hash/path checks for historical image pairs. Strict Clippy and formatting pass.
+The native three-mode matrix detects visible coupled changes and independent
+time drift while leaving hidden mutations unobserved. The private audit
+preserves that failure; unchanged screen values are not called complete recovery.
+
+The published model bundle passed a separate coupled fixture run. UI Automation
+verified both fresh cards and the Inspect comparison after restoration.
+The published 29-tool smoke is `test-results/smoke-8bcba2a3/report.json`.
+Preview `0.1.0-20261021-031846` is running with eight retained history entries
+and the previous local model. See [the full evidence](research/EFFECT_OBSERVATIONS.md).

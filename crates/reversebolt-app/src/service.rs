@@ -117,7 +117,12 @@ impl EngineHandle {
                 working.store(true, Ordering::SeqCst);
                 let read_only = matches!(
                     command.action.as_str(),
-                    "status" | "history" | "list_processes" | "read_capture" | "read_sequence"
+                    "status"
+                        | "history"
+                        | "list_processes"
+                        | "read_capture"
+                        | "read_sequence"
+                        | "read_change_evidence"
                 );
                 let result = if command.action == "open_practice" {
                     engine.view.error = None;
@@ -141,6 +146,7 @@ impl EngineHandle {
                         | "read_capture"
                         | "submit_observation"
                         | "read_sequence"
+                        | "read_change_evidence"
                         | "submit_temporal_observation"
                         | "prepare_change"
                         | "apply_change"
@@ -169,6 +175,7 @@ impl EngineHandle {
                                 | "capture"
                                 | "submit_observation"
                                 | "read_sequence"
+                                | "read_change_evidence"
                                 | "submit_temporal_observation"
                                 | "prepare_change"
                                 | "apply_change"
@@ -245,6 +252,21 @@ fn native_command(
         }
     }
     match command.action.as_str() {
+        "read_change_evidence" => {
+            let id = command.args["change_id"]
+                .as_str()
+                .ok_or("Supply the change identity.")?;
+            let index = command.args["observation"]
+                .as_u64()
+                .ok_or("Choose an observation index from change history.")?
+                as usize;
+            let (baseline, after, bytes) = engine.changes.read_images(id, index)?;
+            let images: Vec<_> = [format!("{id}:before"), format!("{id}:observation:{index}")].into_iter().zip(bytes)
+                .map(|(frame_id, bytes)| json!({"frame_id":frame_id,"png_base64":base64::engine::general_purpose::STANDARD.encode(bytes)})).collect();
+            return Ok(
+                json!({"change_id":id,"observation":index,"baseline":baseline,"after":after,"images":images,"limitation":reversebolt_core::effects::LIMITATION}),
+            );
+        }
         "prepare_change" => {
             let session = engine
                 .live

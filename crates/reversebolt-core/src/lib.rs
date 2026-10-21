@@ -1,6 +1,7 @@
 pub mod changes;
 pub mod coverage;
 pub mod discovery;
+pub mod effects;
 pub mod engine;
 pub mod live;
 pub mod prediction;

@@ -17,6 +17,8 @@ struct State {
     calls: Cell<usize>,
     resize: Cell<bool>,
     dead: Cell<bool>,
+    secondary: Cell<Option<f64>>,
+    screen_bias: Cell<f32>,
 }
 impl State {
     fn set(&self, value: f32) {
@@ -50,18 +52,28 @@ impl NativeTarget for Target {
     }
     fn screen(&self, path: &Path) -> Result<Screen> {
         std::fs::write(path, b"\x89PNG\r\n\x1a\ncontract fixture").map_err(|e| e.to_string())?;
-        let value = f32::from_le_bytes(self.state.bytes.borrow()[32..36].try_into().unwrap());
+        let value = f32::from_le_bytes(self.state.bytes.borrow()[32..36].try_into().unwrap())
+            + self.state.screen_bias.get();
+        let mut words = vec![Word {
+            text: value.to_string(),
+            bounds: [10., 10., 40., 20.],
+            line: 0,
+            source: TextSource::WindowsOcr,
+        }];
+        if let Some(value) = self.state.secondary.get() {
+            words.push(Word {
+                text: value.to_string(),
+                bounds: [10., 55., 40., 20.],
+                line: 1,
+                source: TextSource::WindowsOcr,
+            });
+        }
         Ok(Screen {
             path: path.to_string_lossy().into(),
             width: 100,
             height: if self.state.resize.get() { 110 } else { 100 },
             text: String::new(),
-            words: vec![Word {
-                text: value.to_string(),
-                bounds: [10., 10., 40., 20.],
-                line: 0,
-                source: TextSource::WindowsOcr,
-            }],
+            words,
             warning: None,
             method: "contract fixture".into(),
         })
@@ -74,6 +86,7 @@ impl NativeTarget for Target {
         }
         self.state.calls.set(self.state.calls.get() + 1);
         bytes[offset..offset + patch.after.len()].copy_from_slice(&patch.after);
+        self.state.secondary.set(Some(11.));
         WriteReceipt {
             attempted: true,
             transferred: patch.after.len(),
@@ -95,6 +108,8 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
         calls: Cell::new(0),
         resize: Cell::new(false),
         dead: Cell::new(false),
+        secondary: Cell::new(Some(25.)),
+        screen_bias: Cell::new(0.),
     });
     let mut session = LiveSession::attach(
         Box::new(Target {
@@ -136,12 +151,30 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
         state.set(value);
         session.capture().unwrap();
     }
+    state.screen_bias.set(2.);
+    let stale_screen = session
+        .prepare_change(id, 53., "agent", &mut store)
+        .unwrap();
+    assert_eq!(stale_screen.phase, Phase::Unavailable);
+    assert!(!stale_screen.baseline.as_ref().unwrap().agrees);
+    assert!(
+        session
+            .execute_change(&stale_screen.id, false, &mut store)
+            .is_err()
+    );
+    assert_eq!(state.calls.get(), 0);
+    state.screen_bias.set(0.);
     let change = session
         .prepare_change(id, 53., "agent", &mut store)
         .unwrap();
     assert_eq!(change.phase, Phase::Prepared);
     assert_eq!(state.calls.get(), 0);
     assert!(change.models.len() >= 2);
+    assert_eq!(change.watches.len(), 2);
+    assert_eq!(
+        change.baseline.as_ref().unwrap().readings[1].value,
+        Some(25.)
+    );
     let result = session
         .execute_change(&change.id, false, &mut store)
         .unwrap();
@@ -160,6 +193,30 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
     assert_eq!(checked.observations[0].value, Some(53.));
     assert_eq!(checked.observations[0].image_sha256.len(), 64);
     assert!(checked.observations[0].warning.is_some());
+    assert_eq!(
+        checked.observations[0]
+            .comparison
+            .as_ref()
+            .unwrap()
+            .other_values[0]
+            .status,
+        reversebolt_core::effects::Status::Changed
+    );
+    assert!(
+        change
+            .baseline
+            .as_ref()
+            .unwrap()
+            .capture_interval
+            .as_ref()
+            .unwrap()
+            .end_us
+            <= checked.observations[0]
+                .capture_interval
+                .as_ref()
+                .unwrap()
+                .begin_us
+    );
     assert!(
         session
             .prepare_change(id, 56., "agent", &mut store)
@@ -169,10 +226,21 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
         .execute_change(&change.id, false, &mut store)
         .unwrap();
     assert_eq!(state.calls.get(), 1);
+    state.secondary.set(None);
+    let missing = session.observe_change(&change.id, &mut store).unwrap();
+    assert_eq!(
+        missing.observations[1]
+            .comparison
+            .as_ref()
+            .unwrap()
+            .other_values[0]
+            .status,
+        reversebolt_core::effects::Status::Unreadable
+    );
     state.resize.set(true);
     let resized = session.observe_change(&change.id, &mut store).unwrap();
-    assert!(!resized.observations[1].agrees);
-    assert!(resized.observations[1].error.is_some());
+    assert!(!resized.observations[2].agrees);
+    assert!(resized.observations[2].error.is_some());
     state.resize.set(false);
     let restored = session
         .execute_change(&change.id, true, &mut store)
@@ -190,6 +258,22 @@ fn session_prepares_trials_checks_source_evidence_and_revokes_passive_prediction
     );
     state.dead.set(true);
     assert!(session.observe_change(&change.id, &mut store).is_err());
+    // Evidence remains inspectable after target loss and engine restart. It
+    // cannot silently load replaced files or escape the operation directory.
+    drop(store);
+    let mut reopened = Store::open(root.join("changes")).unwrap();
+    let (baseline, after, images) = reopened.read_images(&change.id, 0).unwrap();
+    assert_eq!(images.len(), 2);
+    assert!(after.comparison.unwrap().other_values[0].before == Some(25.));
+    std::fs::write(&baseline.image, b"\x89PNG\r\n\x1a\nchanged").unwrap();
+    assert!(reopened.read_images(&change.id, 0).is_err());
+    let mut substituted = reopened.get(&change.id).unwrap();
+    let outside = root.join("outside.png");
+    std::fs::write(&outside, &images[0]).unwrap();
+    substituted.baseline.as_mut().unwrap().image = outside.to_string_lossy().into();
+    reopened.record(substituted).unwrap();
+    assert!(reopened.read_images(&change.id, 0).is_err());
+    assert!(reopened.read_images(&change.id, 99).is_err());
     assert_eq!(root.parent(), Some(std::env::temp_dir().as_path()));
     std::fs::remove_dir_all(root).unwrap();
 }

@@ -301,20 +301,29 @@ impl LivePane {
             let trial_observation = state
                 .changes
                 .iter()
-                .rev()
                 .filter(|c| {
                     c.scope.investigation == live.investigation_id
                         && c.scope.batch == live.coverage.batch
-                        && c.scope.track == track.id
                 })
-                .filter_map(|c| c.observations.last())
-                .find(|o| {
+                .flat_map(|c| c.observations.iter().map(move |o| (c, o)))
+                .filter_map(|(c, o)| {
+                    o.readings
+                        .iter()
+                        .find(|r| r.track == track.id)
+                        .map(|r| r.value)
+                        .or_else(|| (c.scope.track == track.id).then_some(o.value))
+                        .map(|value| (o, value))
+                })
+                .filter(|(o, _)| {
                     live.latest
                         .as_ref()
                         .is_none_or(|f| o.time_ms >= f.started_unix_ms)
-                });
-            let value = trial_observation
-                .map_or_else(|| track.samples.last().copied().flatten(), |o| o.value);
+                })
+                .max_by_key(|(o, _)| o.time_ms);
+            let value = trial_observation.map_or_else(
+                || track.samples.last().copied().flatten(),
+                |(_, value)| value,
+            );
             cards.push((
                 CardSource::Ocr,
                 track.id,
@@ -323,7 +332,7 @@ impl LivePane {
                 "Visible in the app. Still identifying what it controls.".into(),
                 value.is_some(),
                 trial_observation
-                    .map(|o| observation_age(o.time_ms, now))
+                    .map(|(o, _)| observation_age(o.time_ms, now))
                     .or_else(|| {
                         live.frames
                             .last()
@@ -493,6 +502,10 @@ impl LivePane {
                                         });
                                     }
                                     if let Some(change)=change {
+                                        if let Some(comparison)=change.observations.last().and_then(|o|o.comparison.as_ref()) {
+                                            let count=comparison.other_values.iter().filter(|v|v.status==reversebolt_core::effects::Status::Changed).count();
+                                            if count>0 {ui.label(RichText::new(format!("{count} other value{} changed · Inspect",if count==1 {""}else{"s"})).size(12.).color(WARNING));}
+                                        }
                                         use reversebolt_core::changes::Phase;
                                         match change.phase {
                                             Phase::Prepared => {
@@ -552,7 +565,15 @@ impl LivePane {
                         if let Some(receipt)=change.restoration.as_ref().or(change.write.as_ref()) && let Some(error)=&receipt.error {ui.colored_label(ERROR,error);}
                         if let Some(observation)=change.observations.last() {
                             ui.label(format!("Trial reading: {} · expected {}",observation.value.map_or_else(||"unavailable".into(),|v|v.to_string()),observation.expected));
-                            ui.label("Only this screen number was checked. Hidden and downstream effects remain unknown.");
+                            if let Some(comparison)=&observation.comparison {
+                                for value in &comparison.other_values {
+                                    let shown=|n:Option<f64>|n.map_or_else(||"unreadable".into(),|n|n.to_string());
+                                    ui.label(format!("{}: {} → {}",value.label,shown(value.before),shown(value.after)));
+                                }
+                                ui.label(&comparison.limitation);
+                                ui.label(format!("{} tracks omitted; {} other numeric regions in this image were not tracked.",comparison.omitted_tracks,observation.untracked_numbers));
+                            } else {ui.label("Only this screen number was checked. Hidden and downstream effects remain unknown.");}
+                            if let Some(error)=&observation.error {ui.colored_label(WARNING,error);}
                         }
                     }
                     if external == CardSource::Temporal {

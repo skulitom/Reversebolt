@@ -111,6 +111,24 @@ pub struct Observation {
     pub error: Option<String>,
     #[serde(default)]
     pub warning: Option<String>,
+    #[serde(default)]
+    pub stage: Option<ObservationStage>,
+    #[serde(default)]
+    pub capture_interval: Option<crate::visual::CaptureInterval>,
+    #[serde(default)]
+    pub readings: Vec<crate::effects::Reading>,
+    #[serde(default)]
+    pub untracked_numbers: usize,
+    #[serde(default)]
+    pub comparison: Option<crate::effects::Comparison>,
+}
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ObservationStage {
+    BeforeEdit,
+    AfterEdit,
+    AfterRestoration,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -129,6 +147,12 @@ pub struct Change {
     pub write: Option<WriteReceipt>,
     pub restoration: Option<WriteReceipt>,
     pub observations: Vec<Observation>,
+    #[serde(default)]
+    pub watches: Vec<crate::effects::Watch>,
+    #[serde(default)]
+    pub omitted_tracks: usize,
+    #[serde(default)]
+    pub baseline: Option<Observation>,
 }
 
 fn agrees_region(target: &dyn NativeTarget, model: &Model) -> Result<()> {
@@ -265,6 +289,9 @@ impl Change {
             write: None,
             restoration: None,
             observations: vec![],
+            watches: vec![],
+            omitted_tracks: 0,
+            baseline: None,
         })
     }
 
@@ -508,6 +535,45 @@ impl Store {
     }
     pub fn directory(&self) -> &Path {
         &self.directory
+    }
+    /// Historical evidence can be inspected after disconnect/restart, but cannot
+    /// grant a new target capability. Only recorded, confined, hashed PNGs load.
+    pub fn read_images(
+        &self,
+        id: &str,
+        observation: usize,
+    ) -> Result<(Observation, Observation, Vec<Vec<u8>>)> {
+        let change = self.get(id)?;
+        let baseline = change
+            .baseline
+            .ok_or("This older trial has no before-image.")?;
+        let after = change
+            .observations
+            .get(observation)
+            .cloned()
+            .ok_or("Unknown trial observation.")?;
+        let root = self.directory.canonicalize().map_err(|e| e.to_string())?;
+        let mut images = vec![];
+        let mut total = 0;
+        for evidence in [&baseline, &after] {
+            let path = Path::new(&evidence.image)
+                .canonicalize()
+                .map_err(|e| e.to_string())?;
+            if path.parent() != Some(root.as_path()) || path.extension().is_none_or(|e| e != "png")
+            {
+                return Err("The trial image is outside its evidence directory.".into());
+            }
+            let bytes = crate::visual::image_bytes(&path)?;
+            if crate::visual::digest(&bytes) != evidence.image_sha256 {
+                return Err("The trial image changed and no longer supports this evidence.".into());
+            }
+            total += bytes.len();
+            if total > crate::temporal::MAX_SEQUENCE_BYTES {
+                return Err("The trial image pair exceeds its 16 MiB budget.".into());
+            }
+            images.push(bytes);
+        }
+        Ok((baseline, after, images))
     }
     /// Failed captures keep their reservation because a native worker may finish
     /// later. Never reuse an image path, including after a process crash.
