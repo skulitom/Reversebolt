@@ -1,0 +1,8 @@
+{
+  "job_id": "j_34f89c945f1943a280a2ea63fa764178",
+  "exit_code": 1,
+  "stage": "output directory creation, before session guard, browser, engine, input or oracle startup",
+  "error": "ENOENT: mkdir C:\\DEV\\Reversebolt\\test-results\\game-location-probes-v1\\tetris-1; parent did not exist",
+  "recovery": "Created only the missing parent directory; launched the unchanged frozen method for the first game execution. No observed game case was rerun.",
+  "protocol_sha256": "5373bde9d41b177bda10c80fd3a566fd38664cad0d6b70c136b18902bafb2f7a"
+}

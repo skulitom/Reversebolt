@@ -4,6 +4,17 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest original-game location trials (2026-10-21): **27% unchanged**. Four fixed
+Tetris cases retained two abstentions, one preflight application refusal and one
+confirmed byte write with no observed score response. That write's restoration
+was refused; no gameplay control or complete recovery was established. The
+result exposed missing refusal receipts, now fixed with persistent operation
+outcomes and a short card status. All 151 tests, strict Clippy and packaged checks
+pass. Desktop preview `0.1.0-20261021-085002` is running with history preserved.
+The main surface remains draggable named cards with brief descriptions; technical
+details stay in Inspect. All weighted credits remain unchanged and the full goal
+remains active. [Evidence and limits](../research/game-location-probes/README.md).
+
 Latest automatic prospective checks (2026-10-21): **27% unchanged**. Connection
 can now choose a numeric finding, freeze predictions and check later observations
 without manual capture/check commands. A controlled fixture completed the full

@@ -1,0 +1,85 @@
+{
+  "frozen_at_utc": "2026-10-21T07:28:35.334920+00:00",
+  "product_commit": "a0dcba3b8bf82049ccc295b6449936f7459b7b5b",
+  "binary_directory": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-081604",
+  "binaries": {
+    "Reversebolt.exe": "d5b63de9ea610717d7e5b7995d69d720b69647c46ed2fac715913a65d952d191",
+    "reversebolt-mcp.exe": "a13c2d046391fad58b55db6add8d7263823613910a2e2f0aa1ffbb3ae5f25a52"
+  },
+  "browser": "C:/Users/artem/AppData/Local/ms-playwright/chromium-1248/chrome-win64/chrome.exe",
+  "model": null,
+  "budget_mib": 16,
+  "oracle_interval_ms": 50,
+  "oracle_max_gap_ms": 200,
+  "run_timeout_seconds": 420,
+  "input_seconds": 300,
+  "order": [
+    [
+      "tetris",
+      1
+    ],
+    [
+      "tetris",
+      2
+    ]
+  ],
+  "input": {
+    "2048": {
+      "prefix": [],
+      "keys": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    },
+    "tetris": {
+      "prefix": [
+        32
+      ],
+      "keys": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        37,
+        38,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        39,
+        38
+      ],
+      "hold_ms": 80,
+      "period_ms": 350
+    }
+  },
+  "upstream_manifest_sha256": "f02541097de36c56974232d722a6bd5049fdab0bae33ba850a5fd702e4b5f67f",
+  "cpu_probe_ms": 3000,
+  "fresh_captures": 8,
+  "method_sha256": {
+    "PROTOCOL.md": "dbb612e2b0c88f91b5574c2ffd1ad6967360cbd510286118f358511a5a33573c",
+    "run.mjs": "1bede6fe881dae4d22adabec949c8adc7c97aae9f4741e1396b053a5a698db0b",
+    "input.py": "6caf8eddd1261d584f8312da38602a058be13aadcd96744927b9ff33c601282f",
+    "score.py": "c6e592dc637ac5a3e5dec9b30e4b9938022bb73bfa53c16bdbc18b381758c351"
+  },
+  "product_evidence": "../automatic-checks/protocol-v1.json",
+  "product_evidence_sha256": "c6d15ff9a08f85bae0350de9841ce777850b8f53397ca0524a0e51813406e428",
+  "selection": {
+    "1": "candidate zero",
+    "2": "last candidate"
+  },
+  "requested_delta": 3,
+  "settle_ms": 750
+}

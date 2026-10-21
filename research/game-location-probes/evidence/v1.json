@@ -1,0 +1,2197 @@
+{
+  "audit": "post-run; not a preregistered evaluator",
+  "protocol_sha256": "5373bde9d41b177bda10c80fd3a566fd38664cad0d6b70c136b18902bafb2f7a",
+  "binaries": {
+    "Reversebolt.exe": "d5b63de9ea610717d7e5b7995d69d720b69647c46ed2fac715913a65d952d191",
+    "reversebolt-mcp.exe": "a13c2d046391fad58b55db6add8d7263823613910a2e2f0aa1ffbb3ae5f25a52"
+  },
+  "cases": [
+    {
+      "case": 1,
+      "outcome": "abstained: insufficient fresh contrast",
+      "unrevised_runner_label": "selected probe unavailable; no replacement",
+      "selected_candidate": 0,
+      "memory_process": {
+        "created": "01DD612DEA69049D",
+        "name": "chrome.exe",
+        "pid": 17260,
+        "session": 2,
+        "title": "",
+        "window": 0
+      },
+      "captures": 16,
+      "pulses_and_trusted_keydowns": 127,
+      "ocr": {
+        "score": {
+          "correct": 14,
+          "unscorable": 2
+        },
+        "rows": {
+          "correct": 16
+        }
+      },
+      "candidates": [
+        {
+          "index": 0,
+          "address": "0x745C006505C8",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 17864,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 5
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36443644,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 36443666
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36443684,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36634201
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "c31d563d-e149-42e4-bb68-86b3658fc243",
+                "number": 13,
+                "sha256": "bbeb4ffc655d1a7ed9618bf83d3fa74383d8096a52d5e4cbf6d2546c5cb9f5df",
+                "started_unix_ms": 1792567815239,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 200,
+                "capture_interval": {
+                  "begin_us": 36644426,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36644467
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 200,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39537597,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 39537618
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39537639,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39739491
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "16877ad2-40c7-4d0f-8c53-8ccc35707035",
+                "number": 14,
+                "sha256": "af5742a546fbf3125caa1a2938f2bc83a3eb430e1bf2a7ff1044a50f7b82af9f",
+                "started_unix_ms": 1792567818332,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 211,
+                "capture_interval": {
+                  "begin_us": 39749070,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39749106
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 211,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 42587589,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 42587611
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 42587630,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42817891
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "08796db2-a27f-4497-a35e-4f6b5c9e48ad",
+                "number": 15,
+                "sha256": "4a7475678db9b5cca991e9c9b353747a738d9cbca04dba6b424be68438c6d303",
+                "started_unix_ms": 1792567821382,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 42826445,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42826478
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45634740,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 45634764
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45634789,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45828430
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "ff17fb15-8cb4-4571-a2d6-4c3586fdca09",
+                "number": 16,
+                "sha256": "65602efaa4c2e37f27d3c6922c224c2e0fb84a0bc8304d06e2896a76a814fcb9",
+                "started_unix_ms": 1792567824430,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 202,
+                "capture_interval": {
+                  "begin_us": 45836902,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45836946
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 202,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "address": "0x745C00650790",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 18320,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 5
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C00650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36443668,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 36443676
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36443684,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36634201
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "c31d563d-e149-42e4-bb68-86b3658fc243",
+                "number": 13,
+                "sha256": "bbeb4ffc655d1a7ed9618bf83d3fa74383d8096a52d5e4cbf6d2546c5cb9f5df",
+                "started_unix_ms": 1792567815239,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 200,
+                "capture_interval": {
+                  "begin_us": 36644426,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36644467
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 200,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C00650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39537619,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 39537629
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39537639,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39739491
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "16877ad2-40c7-4d0f-8c53-8ccc35707035",
+                "number": 14,
+                "sha256": "af5742a546fbf3125caa1a2938f2bc83a3eb430e1bf2a7ff1044a50f7b82af9f",
+                "started_unix_ms": 1792567818332,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 211,
+                "capture_interval": {
+                  "begin_us": 39749070,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39749106
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 211,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C00650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 42587613,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 42587622
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 42587630,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42817891
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "08796db2-a27f-4497-a35e-4f6b5c9e48ad",
+                "number": 15,
+                "sha256": "4a7475678db9b5cca991e9c9b353747a738d9cbca04dba6b424be68438c6d303",
+                "started_unix_ms": 1792567821382,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 42826445,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42826478
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C00650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45634768,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 45634779
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45634789,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45828430
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "ff17fb15-8cb4-4571-a2d6-4c3586fdca09",
+                "number": 16,
+                "sha256": "65602efaa4c2e37f27d3c6922c224c2e0fb84a0bc8304d06e2896a76a814fcb9",
+                "started_unix_ms": 1792567824430,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 202,
+                "capture_interval": {
+                  "begin_us": 45836902,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45836946
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 202,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "address": "0x745C006507C0",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 18368,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 5
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36443677,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 36443684
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36443684,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36634201
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "c31d563d-e149-42e4-bb68-86b3658fc243",
+                "number": 13,
+                "sha256": "bbeb4ffc655d1a7ed9618bf83d3fa74383d8096a52d5e4cbf6d2546c5cb9f5df",
+                "started_unix_ms": 1792567815239,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 200,
+                "capture_interval": {
+                  "begin_us": 36644426,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 36644467
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 200,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39537630,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 39537639
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39537639,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39739491
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "16877ad2-40c7-4d0f-8c53-8ccc35707035",
+                "number": 14,
+                "sha256": "af5742a546fbf3125caa1a2938f2bc83a3eb430e1bf2a7ff1044a50f7b82af9f",
+                "started_unix_ms": 1792567818332,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 211,
+                "capture_interval": {
+                  "begin_us": 39749070,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 39749106
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 211,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 42587622,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 42587630
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 42587630,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42817891
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "08796db2-a27f-4497-a35e-4f6b5c9e48ad",
+                "number": 15,
+                "sha256": "4a7475678db9b5cca991e9c9b353747a738d9cbca04dba6b424be68438c6d303",
+                "started_unix_ms": 1792567821382,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 42826445,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 42826478
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  220,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x745C006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45634780,
+                    "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                    "end_us": 45634789
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                220,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45634789,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45828430
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "ff17fb15-8cb4-4571-a2d6-4c3586fdca09",
+                "number": 16,
+                "sha256": "65602efaa4c2e37f27d3c6922c224c2e0fb84a0bc8304d06e2896a76a814fcb9",
+                "started_unix_ms": 1792567824430,
+                "width": 1104
+              },
+              "observed": 110,
+              "outcome": "agrees",
+              "predicted": 110,
+              "read": {
+                "address": "0x745C0064C000",
+                "begin_ms": 202,
+                "capture_interval": {
+                  "begin_us": 45836902,
+                  "clock_id": "8a082ea4-18bf-453d-a79b-7b26aea0b09a",
+                  "end_us": 45836946
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 202,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        }
+      ],
+      "stages": {
+        "prepared": {
+          "ok": false,
+          "error": "This location has overlapping interpretations that still need fresh evidence."
+        }
+      },
+      "oracle_operation_windows": [
+        {
+          "from": "before_prepare",
+          "to": "after_prepare",
+          "samples": 3,
+          "actual": [
+            110
+          ],
+          "display": [
+            110
+          ],
+          "dom": [
+            110
+          ],
+          "playing": [
+            false
+          ]
+        }
+      ],
+      "files": {
+        "attached.json": "e49f6836867c881bafede8b937281165fd0f0f9d4c27efd56fed3a52f73bd04f",
+        "before-trial-status.json": "3dd6d2ab24b4f060b7c9ce2e500d3d08cb136ca726f4d7b3d47dab41f0815847",
+        "commands.json": "7357a0ae03ba1cf84e56a0761f3859640f0543dbd73c0006f97ab21b8cc348e5",
+        "delivered-keys.json": "f6553cbe60ddc1cf938a459f397bd2d5a40ee4c6999a5f6ae9b4bb47c74b1443",
+        "final-status.json": "f6f07eb14687a65c5ee11026aefb6b9fe008af888d0bf4fd5d350235e5126e3d",
+        "frozen-status.json": "d03c451e766c810e7c947346b5925fd885a142fde1aa2aedf63950972559d224",
+        "input-config.json": "d24fc1b962f36fc543d588d15d622c508e5253cde0382c677fa4d795483125d1",
+        "input-control.json": "62a46051cde8ac9a7d9196682ec745a8eb5a9c2411fd12922050f56b484e8361",
+        "oracle.json": "82307707d1b85a2cd6cda70782aa19dbfb73d8c0a301bd8cc43ad1dbf60bb6c1",
+        "ordinary.json": "cf75372f5fcb17f254fc711dd62697952b1883e95d1298b518e8cca65fa5591e",
+        "prepared.json": "fd368eebbc47953acd977464c91abcda5fed1185740203ad613547fe390ceac8",
+        "run.json": "2c00b2d7dedbcdbd20d90d78b394d12c6749fd51cdc871e095b4c36d7f9016e4",
+        "scope-selection.json": "fd5f86afccf8f43366c73455b9b93346a8e3ef946b8e8351247509ecbbb4ffca",
+        "score.json": "65f36a2ab57c378eae0a5b64d666d30016213b2684d7a58bca8b2ca1801cc8ce",
+        "states.json": "5e2477ec6773928d40f2129f27a920b71d72b06a22b1f238d7ad704aa1eb62ef",
+        "trial-stages.json": "5fa236142db0198635706758c067d4e63db33948c36dae57c73034135cf5923b"
+      },
+      "input_files": {
+        "input-control.jsonl": "cb1ce32661e1357994a5e937b31fac03ec8204639ab179a5a622a2cf64595f29",
+        "input.jsonl": "34af19e78ec375222edda1a1b91f49fd64ce0ab4399da6ff57da5295a073e92c"
+      }
+    },
+    {
+      "case": 2,
+      "outcome": "abstained: insufficient fresh contrast",
+      "unrevised_runner_label": "selected probe unavailable; no replacement",
+      "selected_candidate": 4,
+      "memory_process": {
+        "created": "01DD612E2D58E1EA",
+        "name": "chrome.exe",
+        "pid": 70076,
+        "session": 2,
+        "title": "",
+        "window": 0
+      },
+      "captures": 16,
+      "pulses_and_trusted_keydowns": 128,
+      "ocr": {
+        "score": {
+          "correct": 16
+        },
+        "rows": {
+          "correct": 16
+        }
+      },
+      "candidates": [
+        {
+          "index": 0,
+          "address": "0x5B34003EF140",
+          "mapping": {
+            "exact": false,
+            "intercept": -30,
+            "kind": "I32",
+            "offset": 12608,
+            "slope": 10,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF140",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36928318,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 36928340
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36928385,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37157307
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "f6c40a49-e07e-4391-bac6-48aced5694ed",
+                "number": 13,
+                "sha256": "698b35acc00b7d0aa0e68ae90148777bdb4bdb0a2311ad5c150ad4158f73fd2a",
+                "started_unix_ms": 1792567928070,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 235,
+                "capture_interval": {
+                  "begin_us": 37163457,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37163483
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 235,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF140",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39952077,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 39952094
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39952127,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40173853
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "d230ff30-bd47-47e6-9846-c27a48615ae2",
+                "number": 14,
+                "sha256": "677c69fa4ad18461dff39ef9dbc9b02cb2209125a8203468b4b3c59920164eed",
+                "started_unix_ms": 1792567931093,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 40179045,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40179059
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF140",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 43010515,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 43010537
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 43010570,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43228944
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "fdaf39db-5c4a-43b9-ba73-3e0e7f09356a",
+                "number": 15,
+                "sha256": "233c3cda606e8f96f9a484576de8f882d35ca17fb0e4ba5e5fee4aad3b1a2306",
+                "started_unix_ms": 1792567934152,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 223,
+                "capture_interval": {
+                  "begin_us": 43234148,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43234162
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 223,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF140",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45999466,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 45999485
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45999529,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46217138
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "e522ac63-4a29-4b84-ae8e-6948071319e7",
+                "number": 16,
+                "sha256": "81ea562e70448b4a1e541fa07b25ed7d576f04b0093e43d7990d3f44bb6e7cd9",
+                "started_unix_ms": 1792567937141,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 222,
+                "capture_interval": {
+                  "begin_us": 46221970,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46221985
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 222,
+                "requested": 57344,
+                "retained": 57344
+              }
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "address": "0x5B34003EF160",
+          "mapping": {
+            "exact": false,
+            "intercept": -30,
+            "kind": "I32",
+            "offset": 12640,
+            "slope": 10,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF160",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36928341,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 36928352
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36928385,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37157307
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "f6c40a49-e07e-4391-bac6-48aced5694ed",
+                "number": 13,
+                "sha256": "698b35acc00b7d0aa0e68ae90148777bdb4bdb0a2311ad5c150ad4158f73fd2a",
+                "started_unix_ms": 1792567928070,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 235,
+                "capture_interval": {
+                  "begin_us": 37163457,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37163483
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 235,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF160",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39952095,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 39952103
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39952127,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40173853
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "d230ff30-bd47-47e6-9846-c27a48615ae2",
+                "number": 14,
+                "sha256": "677c69fa4ad18461dff39ef9dbc9b02cb2209125a8203468b4b3c59920164eed",
+                "started_unix_ms": 1792567931093,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 40179045,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40179059
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF160",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 43010538,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 43010546
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 43010570,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43228944
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "fdaf39db-5c4a-43b9-ba73-3e0e7f09356a",
+                "number": 15,
+                "sha256": "233c3cda606e8f96f9a484576de8f882d35ca17fb0e4ba5e5fee4aad3b1a2306",
+                "started_unix_ms": 1792567934152,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 223,
+                "capture_interval": {
+                  "begin_us": 43234148,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43234162
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 223,
+                "requested": 57344,
+                "retained": 57344
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  13,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34003EF160",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45999486,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 45999496
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                13,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45999529,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46217138
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "e522ac63-4a29-4b84-ae8e-6948071319e7",
+                "number": 16,
+                "sha256": "81ea562e70448b4a1e541fa07b25ed7d576f04b0093e43d7990d3f44bb6e7cd9",
+                "started_unix_ms": 1792567937141,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B34003EC000",
+                "begin_ms": 222,
+                "capture_interval": {
+                  "begin_us": 46221970,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46221985
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 222,
+                "requested": 57344,
+                "retained": 57344
+              }
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "address": "0x5B34006505C8",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 17864,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36928353,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 36928365
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36928385,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37157307
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "f6c40a49-e07e-4391-bac6-48aced5694ed",
+                "number": 13,
+                "sha256": "698b35acc00b7d0aa0e68ae90148777bdb4bdb0a2311ad5c150ad4158f73fd2a",
+                "started_unix_ms": 1792567928070,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 37167092,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37167126
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39952103,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 39952113
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39952127,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40173853
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "d230ff30-bd47-47e6-9846-c27a48615ae2",
+                "number": 14,
+                "sha256": "677c69fa4ad18461dff39ef9dbc9b02cb2209125a8203468b4b3c59920164eed",
+                "started_unix_ms": 1792567931093,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 231,
+                "capture_interval": {
+                  "begin_us": 40183230,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40183275
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 231,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 43010546,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 43010555
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 43010570,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43228944
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "fdaf39db-5c4a-43b9-ba73-3e0e7f09356a",
+                "number": 15,
+                "sha256": "233c3cda606e8f96f9a484576de8f882d35ca17fb0e4ba5e5fee4aad3b1a2306",
+                "started_unix_ms": 1792567934152,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 43237234,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43237277
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006505C8",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45999496,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 45999508
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45999529,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46217138
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "e522ac63-4a29-4b84-ae8e-6948071319e7",
+                "number": 16,
+                "sha256": "81ea562e70448b4a1e541fa07b25ed7d576f04b0093e43d7990d3f44bb6e7cd9",
+                "started_unix_ms": 1792567937141,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 46225795,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46225841
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "address": "0x5B3400650790",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 18320,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B3400650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36928366,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 36928376
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36928385,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37157307
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "f6c40a49-e07e-4391-bac6-48aced5694ed",
+                "number": 13,
+                "sha256": "698b35acc00b7d0aa0e68ae90148777bdb4bdb0a2311ad5c150ad4158f73fd2a",
+                "started_unix_ms": 1792567928070,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 37167092,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37167126
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B3400650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39952113,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 39952120
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39952127,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40173853
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "d230ff30-bd47-47e6-9846-c27a48615ae2",
+                "number": 14,
+                "sha256": "677c69fa4ad18461dff39ef9dbc9b02cb2209125a8203468b4b3c59920164eed",
+                "started_unix_ms": 1792567931093,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 231,
+                "capture_interval": {
+                  "begin_us": 40183230,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40183275
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 231,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B3400650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 43010555,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 43010562
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 43010570,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43228944
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "fdaf39db-5c4a-43b9-ba73-3e0e7f09356a",
+                "number": 15,
+                "sha256": "233c3cda606e8f96f9a484576de8f882d35ca17fb0e4ba5e5fee4aad3b1a2306",
+                "started_unix_ms": 1792567934152,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 43237234,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43237277
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B3400650790",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45999508,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 45999518
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45999529,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46217138
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "e522ac63-4a29-4b84-ae8e-6948071319e7",
+                "number": 16,
+                "sha256": "81ea562e70448b4a1e541fa07b25ed7d576f04b0093e43d7990d3f44bb6e7cd9",
+                "started_unix_ms": 1792567937141,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 46225795,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46225841
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "address": "0x5B34006507C0",
+          "mapping": {
+            "exact": false,
+            "intercept": 0,
+            "kind": "I32",
+            "offset": 18368,
+            "slope": 0.5,
+            "train_inliers": 6,
+            "validation_inliers": 6
+          },
+          "samples": [
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 36928376,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 36928384
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 13,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 36928385,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37157307
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "f6c40a49-e07e-4391-bac6-48aced5694ed",
+                "number": 13,
+                "sha256": "698b35acc00b7d0aa0e68ae90148777bdb4bdb0a2311ad5c150ad4158f73fd2a",
+                "started_unix_ms": 1792567928070,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 238,
+                "capture_interval": {
+                  "begin_us": 37167092,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 37167126
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 238,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 39952120,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 39952126
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 14,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 39952127,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40173853
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "d230ff30-bd47-47e6-9846-c27a48615ae2",
+                "number": 14,
+                "sha256": "677c69fa4ad18461dff39ef9dbc9b02cb2209125a8203468b4b3c59920164eed",
+                "started_unix_ms": 1792567931093,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 231,
+                "capture_interval": {
+                  "begin_us": 40183230,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 40183275
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 231,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 43010562,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 43010569
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 15,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 43010570,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43228944
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "fdaf39db-5c4a-43b9-ba73-3e0e7f09356a",
+                "number": 15,
+                "sha256": "233c3cda606e8f96f9a484576de8f882d35ca17fb0e4ba5e5fee4aad3b1a2306",
+                "started_unix_ms": 1792567934152,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 43237234,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 43237277
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            },
+            {
+              "before_image": {
+                "bytes": [
+                  200,
+                  0,
+                  0,
+                  0
+                ],
+                "read": {
+                  "address": "0x5B34006507C0",
+                  "begin_ms": 0,
+                  "capture_interval": {
+                    "begin_us": 45999518,
+                    "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                    "end_us": 45999529
+                  },
+                  "disposition": "retained_generation_unverified",
+                  "end_ms": 0,
+                  "requested": 4,
+                  "retained": 4
+                }
+              },
+              "bytes": [
+                200,
+                0,
+                0,
+                0
+              ],
+              "frame": 16,
+              "image": {
+                "capture_interval": {
+                  "begin_us": 45999529,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46217138
+                },
+                "epoch": 0,
+                "height": 642,
+                "id": "e522ac63-4a29-4b84-ae8e-6948071319e7",
+                "number": 16,
+                "sha256": "81ea562e70448b4a1e541fa07b25ed7d576f04b0093e43d7990d3f44bb6e7cd9",
+                "started_unix_ms": 1792567937141,
+                "width": 1104
+              },
+              "observed": 100,
+              "outcome": "agrees",
+              "predicted": 100,
+              "read": {
+                "address": "0x5B340064C000",
+                "begin_ms": 226,
+                "capture_interval": {
+                  "begin_us": 46225795,
+                  "clock_id": "a693e476-9ec4-40a3-9f13-358d75100f03",
+                  "end_us": 46225841
+                },
+                "disposition": "retained_generation_unverified",
+                "end_ms": 226,
+                "requested": 65536,
+                "retained": 65536
+              }
+            }
+          ]
+        }
+      ],
+      "stages": {
+        "prepared": {
+          "ok": false,
+          "error": "This location has overlapping interpretations that still need fresh evidence."
+        }
+      },
+      "oracle_operation_windows": [
+        {
+          "from": "before_prepare",
+          "to": "after_prepare",
+          "samples": 4,
+          "actual": [
+            100
+          ],
+          "display": [
+            100
+          ],
+          "dom": [
+            100
+          ],
+          "playing": [
+            false
+          ]
+        }
+      ],
+      "files": {
+        "attached.json": "ef1241d8e462345470bd64f35d17049e2e8a92e264cd198c7092c15c3ad031a0",
+        "before-trial-status.json": "438ce078502b69b51e227ce93cb51b7c2313df16d7e7cb1bd43af72a3ad82e17",
+        "commands.json": "a1c6291d740fb665cc10971968eeb44793481f6a5e69ba678e18ec4402820d87",
+        "delivered-keys.json": "669c2c9f4411e1bc5433d67346e5217010784631f467327b9fe6332e5f6387e5",
+        "final-status.json": "5ed7a96ea85481f2c94feec79f0ff903d052f81f75d88d7411d261a9cf1a0abf",
+        "frozen-status.json": "20601d1b9e175749f1580e97586517b7c6d7b0cc11f6d313002aeb814def853a",
+        "input-config.json": "03e0d2186df4a46688dfd914b7e47fd66be2ae2565b714746406750858b7b8cb",
+        "input-control.json": "62a46051cde8ac9a7d9196682ec745a8eb5a9c2411fd12922050f56b484e8361",
+        "oracle.json": "80e41f2561ac00acb94057e8328c1fdc426df867600b9bef89855d549b6bfcc3",
+        "ordinary.json": "1ae5bdb20bea65250c6f29337ddbf7b64bb6780bbe9403301447e7aeea698b82",
+        "prepared.json": "7b60fbd673835623c94f0b168dbdc67e2fb472d530bfc0e546c4ac745da765f3",
+        "run.json": "eadbbeeba555933c22156dfb861489cc65a4b24f8d1918260e8945ada1d6b209",
+        "scope-selection.json": "1e31fa570554f0489283b3e596cb5ef4e4fb5f9850643ba9bda1a716ff13e25c",
+        "score.json": "518ecaa789c8fc95365206c5c475e63e3147edd1750120fba8eba1d8c495503d",
+        "states.json": "66021f3c2fb8076ddb5381fa4cc8ee9715dcf882a06892aad793c60d395c9aee",
+        "trial-stages.json": "7182d0738d6d84cc9077fe2dc67de76cc2d29553ed7a7f02f969f7e6692d4518"
+      },
+      "input_files": {
+        "input-control.jsonl": "fdab3e0f06be375ab02e7ea49ce12c1ebecf6d0245ced11ab0163ace9d5fa026",
+        "input.jsonl": "14e774446103496f0798604cd5836d27c54d8e65abe7015a00c31c5468a72c89"
+      }
+    }
+  ]
+}

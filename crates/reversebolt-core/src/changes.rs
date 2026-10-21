@@ -495,6 +495,12 @@ impl Store {
                 }
                 change.reason =
                     "The value's bytes changed since this edit. Nothing was overwritten.".into();
+                let receipt = WriteReceipt::refused(change.reason.clone());
+                if restore {
+                    change.restoration = Some(receipt);
+                } else {
+                    change.write = Some(receipt);
+                }
                 return self.record(change);
             }
         }
@@ -504,6 +510,12 @@ impl Store {
                 "The current bytes differ from this edit. Nothing was overwritten.".into();
             if !restore {
                 change.phase = Phase::Refused;
+            }
+            let receipt = WriteReceipt::refused(change.reason.clone());
+            if restore {
+                change.restoration = Some(receipt);
+            } else {
+                change.write = Some(receipt);
             }
             return self.record(change);
         }

@@ -16,3 +16,4 @@
 /research/capture-alignment/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/location-probes/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /research/automatic-checks/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/research/game-location-probes/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

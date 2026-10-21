@@ -586,7 +586,8 @@ impl LivePane {
                                                 if ui.add_enabled(!busy && still_requested && live.connected,egui::Button::new(if change.probe.is_some() {"Try test"} else {"Try edit"})).clicked() {handle.submit("apply_change",json!({"change_id":change.id}));}
                                             }
                                             Phase::Written => {
-                                                ui.label(RichText::new("Trial applied").color(ACCENT));
+                                                let restore_refused=change.restoration.as_ref().is_some_and(|r|!r.attempted && r.error.is_some());
+                                                ui.label(RichText::new(if restore_refused {"Restore wasn't applied"} else {"Trial applied"}).color(if restore_refused {WARNING} else {ACCENT}));
                                                 if let Some(observation)=change.observations.last() {
                                                     ui.label(RichText::new(if observation.agrees {"Requested number seen"} else {"Effect not confirmed"}).size(12.).color(MUTED));
                                                 }

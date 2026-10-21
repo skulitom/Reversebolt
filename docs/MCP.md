@@ -194,6 +194,14 @@ effects. `uncertain` is a held outcome, never permission to retry. Repeating an
 already completed change ID does not write again; it may add a visual check.
 Inspect a failed response and the recorded state before deciding what happened.
 
+Expected-byte conflicts retain a refusal receipt with `attempted: false`, zero
+transferred bytes and the reason in `error`. A refused restoration is recorded
+in `restoration` while preserving the original `write` receipt and `written`
+phase. That phase describes the earlier write, not a successful restoration.
+An absent receipt is not proof of success; older builds did not record receipts
+for preflight conflicts. Inspect `reason` as well, and never infer restoration
+from a successful tool response alone.
+
 Preparation captures a fresh before-image and checks that the selected number
 still agrees. Failure makes the plan unavailable. It freezes at most 32 active
 OCR regions, including the selected number, and records any omitted track count.

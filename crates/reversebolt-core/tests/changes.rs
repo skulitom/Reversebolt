@@ -94,11 +94,16 @@ impl NativeTarget for Fixture {
         Ok(vec![self.region.borrow().clone()])
     }
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
-        self.bytes
+        let mut bytes = self
+            .bytes
             .borrow()
             .get((address - 4096) as usize..(address - 4096) as usize + length)
             .map(|v| v.to_vec())
-            .ok_or("bad range".into())
+            .ok_or("bad range".to_string())?;
+        if self.mode.get() == 3 && length == 1 {
+            bytes[0] ^= 1; // Simulate a change after full-model reads.
+        }
+        Ok(bytes)
     }
     fn screen(&self, _: &Path) -> Result<Screen> {
         Err("not used".into())
@@ -210,6 +215,75 @@ fn restoration_guards_the_whole_interpretation_including_unchanged_bytes() {
     assert_eq!(result.phase, Phase::Written);
     assert!(result.reason.contains("Nothing was overwritten"));
     assert_eq!(f.calls.get(), 1);
+    let reopened = Store::open(store.directory().to_owned()).unwrap();
+    let recorded = reopened.get(&id).unwrap();
+    let refusal = recorded.restoration.unwrap();
+    assert!(!refusal.attempted);
+    assert_eq!(refusal.transferred, 0);
+    assert!(refusal.observed_after.is_none());
+    assert_eq!(refusal.error.as_deref(), Some(result.reason.as_str()));
+    let original = recorded.write.unwrap();
+    assert!(original.attempted);
+    assert!(original.error.is_none());
+    assert_eq!(original.observed_after, result.patch.map(|p| p.after));
+}
+
+#[test]
+fn changed_value_records_an_application_refusal_without_entering_backend() {
+    let (_dir, mut store, f, id) = setup();
+    f.bytes.borrow_mut()[0] ^= 1;
+    let before = f.bytes.borrow().clone();
+    let result = store.execute(&id, &f, &f.scope(), false).unwrap();
+    assert_eq!(result.phase, Phase::Refused);
+    assert_eq!(f.calls.get(), 0);
+    assert_eq!(*f.bytes.borrow(), before);
+    let reopened = Store::open(store.directory().to_owned()).unwrap();
+    let recorded = reopened.get(&id).unwrap();
+    let refusal = recorded.write.unwrap();
+    assert!(!refusal.attempted);
+    assert_eq!(refusal.transferred, 0);
+    assert!(refusal.observed_after.is_none());
+    assert_eq!(refusal.error.as_deref(), Some(result.reason.as_str()));
+    assert!(recorded.restoration.is_none());
+}
+
+#[test]
+fn late_patch_conflict_records_the_correct_operation_without_another_write() {
+    for restore in [false, true] {
+        let (_dir, mut store, f, id) = setup();
+        if restore {
+            store.execute(&id, &f, &f.scope(), false).unwrap();
+        }
+        let before = f.bytes.borrow().clone();
+        f.mode.set(3);
+        let result = store.execute(&id, &f, &f.scope(), restore).unwrap();
+        assert_eq!(f.calls.get(), usize::from(restore));
+        assert_eq!(*f.bytes.borrow(), before);
+        assert_eq!(
+            result.phase,
+            if restore {
+                Phase::Written
+            } else {
+                Phase::Refused
+            }
+        );
+        assert!(result.reason.contains("current bytes differ"));
+        let recorded = Store::open(store.directory().to_owned())
+            .unwrap()
+            .get(&id)
+            .unwrap();
+        let refusal = if restore {
+            assert!(recorded.write.unwrap().attempted);
+            recorded.restoration.unwrap()
+        } else {
+            assert!(recorded.restoration.is_none());
+            recorded.write.unwrap()
+        };
+        assert!(!refusal.attempted);
+        assert_eq!(refusal.transferred, 0);
+        assert!(refusal.observed_after.is_none());
+        assert_eq!(refusal.error.as_deref(), Some(result.reason.as_str()));
+    }
 }
 
 #[test]
