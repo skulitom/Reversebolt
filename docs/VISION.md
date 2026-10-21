@@ -46,6 +46,12 @@ the engine can actually edit. Do not invent names or enable a cosmetic slider
 when the causal meaning and editable state have not been established. These
 intermediate cards can be inspected while the shared engine keeps learning.
 
+Keep the main view focused on those cards. People can arrange them by dragging
+or with accessible move actions, adjust supported values by dragging or typing,
+and click the relevant action. Activity and application diagnostics open only
+when requested. An observed name or a user-supplied label is not proof of an
+effect; short descriptions must reflect what has actually been established.
+
 ## Completion evidence
 
 The full goal is complete only when these capabilities work together in the

@@ -506,3 +506,35 @@ raw evidence is under `test-results/rule-checks-v1/`. The 29-tool smoke is
 `test-results/smoke-22ab43ef/report.json`. Preview `0.1.0-20261021-045650` is
 responding on the desktop with eight history entries and the local model choice
 preserved. See [the complete method, failures and limits](research/CONDITIONAL_PREDICTIONS.md).
+
+## Control-focused interface — 2026-10-21
+
+The existing 128 workspace tests, strict Clippy, formatting and clean release
+build pass. Automated Anode checks use the owned two-value WinForms effect
+fixture: arrange by menu and drag, change the trial request through its numeric
+control, review/apply, inspect effects, and restore the original bytes. Quantity
+goes 50 → 53 → 50; the coupled Resource goes 25 → 22 → 19. Restoration is correctly
+described as restoring bytes, not undoing downstream effects. No game was driven.
+
+Activity and application diagnostics appear only after their buttons are used.
+Automatic continuation shows a compact status with Pause/Stop, and cancellation
+still works. Reading age keeps a fixed line so controls do not move as time passes.
+Published native evidence and the initial UI traces are under
+`test-results/control-cards-v2/`; the packaged shared-engine/MCP smoke is
+`test-results/smoke-b3004f2f/report.json`.
+
+Retained failures: a fractional-coordinate drag was rejected before input; an
+early post-write observation preceded neural OCR completion; the original age
+line shifted controls when readings became stale. A long instantaneous automated
+drag missed the narrow handle: diagnostic traces show no drag payload, while
+a shorter initial step or an 80 ms delivered press succeeds. The final input
+check runs inside Anode, guards the owned foreground process/session and always
+releases the mouse. Temporary pointer tracing is absent from product code.
+Card order is local to the current observation batch. These UI checks establish
+no new gameplay understanding or game compatibility.
+
+The final preview `0.1.0-20261021-053218` passes bidirectional native dragging and
+the accessible move menu with no diagnostic sections in the main view. It is
+responding in the user's desktop session with all eight history entries and the
+local model choice retained. Compact receipt:
+`research/interface/evidence/control-cards-v2.json`.

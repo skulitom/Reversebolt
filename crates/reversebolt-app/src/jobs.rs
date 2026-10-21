@@ -36,15 +36,6 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
         && state.fence.is_none()
         && analysis.is_none();
     if only_history {
-        egui::CollapsingHeader::new("Observation history").show(ui, |ui| {
-            for job in state.history.jobs.values().rev().take(6) {
-                ui.label(format!(
-                    "Observation {} · {:?} · {} recorded moments",
-                    job.id, job.phase, job.next_step
-                ));
-            }
-        });
-        ui.add_space(8.);
         return;
     }
     egui::Frame::new().fill(SURFACE).inner_margin(12).corner_radius(8).show(ui,|ui| {
@@ -54,12 +45,12 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
                 job::Phase::Paused=>"Paused",job::Phase::Cancelling=>"Finishing current work, then stopping",_=>"Historical",
             };
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
-            let title = if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Capturing motion" } else if plan.is_some_and(|s| s.compare) { "Finding controls" } else { "Observation" };
+            let title = if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.local_model.is_some());
             ui.horizontal_wrapped(|ui| {
-                ui.label(RichText::new(format!("{} · {phase} · {} / {} moments",title,job.next_step,job.steps.len())).color(ACCENT));
-                if job.phase==job::Phase::Running {ui.label(RichText::new("Keys sampled while the selected window is active").size(12.).color(MUTED));}
-                if model_step { ui.label("Reading images locally…"); }
+                if job.phase==job::Phase::Running { ui.spinner(); }
+                ui.label(RichText::new(if job.phase==job::Phase::Running {format!("{title}…")} else {phase.into()}).color(ACCENT))
+                    .on_hover_text(format!("{} / {} moments. Keys sampled while the selected window is active.{}",job.next_step,job.steps.len(),if model_step {" Reading images locally."} else {""}));
                 if job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
                 }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish any active capture or model request, then pause.").clicked() {

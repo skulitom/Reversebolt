@@ -6,6 +6,11 @@ Part of the Bolt family. Humans and agents use the same engine and session.
 **Research preview:** connect a running application, capture its window and
 bounded memory, and compare changing screen numbers with memory trajectories.
 Connecting starts observation automatically; values appear as simple cards.
+The main view keeps names, short descriptions and relevant actions together.
+Drag a card's arrange handle to reorder it, or click the handle for accessible
+move actions. Editable trial values can be dragged or typed. Detailed evidence
+opens through **Inspect**; application diagnostics and activity are separate
+views. Card arrangement belongs to the current observation batch.
 An image-reading agent can contribute provisional observations through MCP;
 the desktop shows their sources and uncertainty alongside OCR.
 Agents can also read ordered image sequences and contribute appearance or

@@ -13,6 +13,12 @@ enum CardSource {
     Temporal,
 }
 
+#[derive(Clone)]
+struct CardDrag {
+    scope: String,
+    key: (CardSource, usize),
+}
+
 type FindingCard = (
     CardSource,
     usize,
@@ -81,6 +87,8 @@ pub struct LivePane {
     detail: Option<(String, CardSource, usize)>,
     requested: std::collections::BTreeMap<usize, f64>,
     edit_scope: String,
+    card_order: Vec<(CardSource, usize)>,
+    show_inspector: bool,
 }
 
 impl LivePane {
@@ -266,6 +274,8 @@ impl LivePane {
         let edit_scope = format!("{}:{}", live.investigation_id, live.coverage.batch);
         if self.edit_scope != edit_scope {
             self.requested.clear();
+            self.card_order.clear();
+            self.show_inspector = false;
             self.edit_scope = edit_scope;
         }
         if self.detail.as_ref().is_some_and(|(scope, _, _)| {
@@ -289,10 +299,7 @@ impl LivePane {
                 handle.submit("detach_process", json!({}));
             }
         });
-        ui.label(
-            RichText::new("Each card is something Reversebolt is learning about your app.")
-                .color(MUTED),
-        );
+        ui.label(RichText::new("Your controls, as they are discovered.").color(MUTED));
         if !live.connected {
             ui.colored_label(
                 WARNING,
@@ -346,7 +353,7 @@ impl LivePane {
                 track.id,
                 title,
                 value.map_or_else(|| "—".into(), |v| v.to_string()),
-                "Visible in the app. Still identifying what it controls.".into(),
+                "On-screen value; its effect is still unknown.".into(),
                 value.is_some(),
                 trial_observation
                     .map(|(o, _)| observation_age(o.time_ms, now))
@@ -382,7 +389,7 @@ impl LivePane {
                         .map(|o| brief_description(&o.input.explanation))
                         .unwrap_or_else(|| "A provisional visual finding.".into())
                 } else {
-                    "Interpreted from the app. Its effect is not verified yet.".into()
+                    "Visual finding with an unknown effect.".into()
                 },
                 readable,
                 latest
@@ -413,7 +420,7 @@ impl LivePane {
                 track.label.clone(),
                 value,
                 if current {
-                    "Interpreted across several moments. Its effect is not verified."
+                    "A change over time with an unknown effect."
                 } else {
                     "An earlier change. Waiting for a fresh observation."
                 }
@@ -426,6 +433,15 @@ impl LivePane {
                     .map(|f| observation_age(f.started_unix_ms, now)),
             ));
         }
+        self.card_order
+            .retain(|key| cards.iter().any(|c| (c.0, c.1) == *key));
+        for card in &cards {
+            let key = (card.0, card.1);
+            if !self.card_order.contains(&key) {
+                self.card_order.push(key);
+            }
+        }
+        cards.sort_by_key(|c| self.card_order.iter().position(|key| *key == (c.0, c.1)));
         ui.ctx()
             .request_repaint_after(std::time::Duration::from_secs(1));
         if cards.is_empty() {
@@ -446,32 +462,52 @@ impl LivePane {
                 });
         }
         let columns = if ui.available_width() >= 650.0 { 2 } else { 1 };
+        let mut move_card = None;
+        let mut drop_targets = Vec::new();
         for row in cards.chunks(columns) {
             ui.columns(columns, |cols| {
                 for (column, (external, id, title, value, description, readable, age)) in
                     cols.iter_mut().zip(row)
                 {
                     column.push_id((external, id), |ui| {
-                        egui::Frame::new()
+                        let key = (*external, *id);
+                        let position = self.card_order.iter().position(|k| *k == key).unwrap_or(0);
+                        let card = egui::Frame::new()
                             .fill(SURFACE)
                             .inner_margin(18)
                             .corner_radius(8)
                             .show(ui, |ui| {
                                 ui.set_width(ui.available_width());
                                 ui.set_min_height(148.0);
-                                ui.label(RichText::new(title).size(19.0).strong());
+                                ui.horizontal(|ui| {
+                                    ui.label(RichText::new(title).size(19.0).strong());
+                                    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                                        let grip = ui.add(egui::Button::new("↕").sense(egui::Sense::click_and_drag()))
+                                            .on_hover_text(format!("Arrange {title}: drag onto another card, or click for options."));
+                                        grip.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, format!("Arrange {title}")));
+                                        grip.dnd_set_drag_payload(CardDrag { scope: self.edit_scope.clone(), key });
+                                        egui::Popup::menu(&grip).show(|ui| {
+                                            if ui.add_enabled(position > 0, egui::Button::new("Move earlier")).clicked() {
+                                                move_card = Some((key, position - 1));
+                                                ui.close();
+                                            }
+                                            if ui.add_enabled(position + 1 < self.card_order.len(), egui::Button::new("Move later")).clicked() {
+                                                move_card = Some((key, position + 1));
+                                                ui.close();
+                                            }
+                                        });
+                                    });
+                                });
                                 let pattern = action_evidence(live,*external,*id).and_then(|e| {
                                     if live.rule_checks.iter().any(|c|c.source==e.source && c.track==e.track && c.invalidated.is_none()) {
                                         Some("Checking why the outcome varies.".into())
                                     } else {e.patterns.iter().find_map(|p|p.brief())}
                                 });
-                                ui.label(RichText::new(pattern.as_deref().unwrap_or(description)).size(13.0).color(MUTED));
-                                if let Some(age) = age {
-                                    ui.label(RichText::new(age).size(12.).color(MUTED));
-                                }
+                                ui.label(RichText::new(brief_description(pattern.as_deref().unwrap_or(description))).size(13.0).color(MUTED));
                                 ui.add_space(12.0);
                                 ui.horizontal(|ui| {
-                                    ui.label(RichText::new(value).size(32.0).color(ACCENT));
+                                    ui.label(RichText::new(value).size(32.0).color(ACCENT))
+                                        .on_hover_text(age.as_deref().unwrap_or("Observation time unavailable"));
                                     ui.label(
                                         RichText::new(
                                             if *external == CardSource::Image
@@ -499,6 +535,10 @@ impl LivePane {
                                         .color(MUTED),
                                     );
                                 });
+                                // Keep this line present as readings age so the actions never move beneath the pointer.
+                                if let Some(age) = age {
+                                    ui.label(RichText::new(age).size(12.).color(MUTED));
+                                }
                                 if ui.button("Inspect").clicked() {
                                     self.detail = Some((
                                         format!(
@@ -514,11 +554,13 @@ impl LivePane {
                                     let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
                                     let eligible=live.prediction_check.as_ref().is_some_and(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && check.invalidated.is_none());
                                     if let Some(observed)=observed.filter(|_|eligible) {
-                                        let requested=self.requested.entry(*id).or_insert(observed+3.);
+                                        let requested=self.requested.entry(*id).or_insert_with(|| {
+                                            change.filter(|c| c.phase==reversebolt_core::changes::Phase::Prepared).map_or(observed, |c| c.desired)
+                                        });
                                         ui.horizontal(|ui| {
                                             let label=ui.label("Try value");
-                                            ui.add_enabled(!busy,egui::DragValue::new(requested).speed(1.).range((observed-20.)..=(observed+20.))).labelled_by(label.id).on_hover_text("Drag to adjust, or click to type. Trial changes are limited to 20 from the observed value.");
-                                            if ui.add_enabled(!busy,egui::Button::new("Review edit")).clicked() {
+                                            ui.add_enabled(!busy && live.connected,egui::DragValue::new(requested).speed(1.).range((observed-20.)..=(observed+20.))).labelled_by(label.id).on_hover_text("Drag to adjust, or click to type. Trial changes are limited to 20 from the observed value.");
+                                            if ui.add_enabled(!busy && live.connected && *requested != observed,egui::Button::new("Review edit")).clicked() {
                                                 handle.submit("prepare_change",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"track":id,"value":*requested}));
                                             }
                                         });
@@ -554,10 +596,39 @@ impl LivePane {
                                     }
                                 }
                             });
+                        drop_targets.push((key, position, card.response));
                     });
                 }
             });
             ui.add_space(12.0);
+        }
+        // Resolve drops after every source has rendered, including a quick drag
+        // from a later card to an earlier card within the same input frame.
+        for (key, position, response) in drop_targets {
+            if let Some(drag) = response.dnd_hover_payload::<CardDrag>()
+                && drag.scope == self.edit_scope
+                && drag.key != key
+            {
+                ui.painter().rect_stroke(
+                    response.rect,
+                    8.,
+                    egui::Stroke::new(1., ACCENT),
+                    egui::StrokeKind::Inside,
+                );
+            }
+            if let Some(drag) = response.dnd_release_payload::<CardDrag>()
+                && drag.scope == self.edit_scope
+                && drag.key != key
+            {
+                move_card = Some((drag.key, position));
+            }
+        }
+        if let Some((key, destination)) = move_card
+            && let Some(source) = self.card_order.iter().position(|k| *k == key)
+        {
+            self.card_order.remove(source);
+            self.card_order
+                .insert(destination.min(self.card_order.len()), key);
         }
         if ui
             .add_enabled(
@@ -570,8 +641,20 @@ impl LivePane {
             handle.submit("advance_memory",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"auto_observe":true}));
         }
         ui.add_space(12.0);
-        egui::CollapsingHeader::new("Investigation details")
-            .show(ui, |ui| self.investigation(ui, handle, state, busy));
+        if ui.button("Inspect application").clicked() {
+            self.show_inspector = true;
+        }
+        if self.show_inspector {
+            let mut open = true;
+            egui::Window::new("Application details")
+                .open(&mut open)
+                .default_width(600.)
+                .vscroll(true)
+                .show(ui.ctx(), |ui| {
+                    self.investigation(ui, handle, state, busy);
+                });
+            self.show_inspector = open;
+        }
         if let Some((_, external, id)) = self.detail.clone() {
             let card = cards
                 .iter()
@@ -752,7 +835,7 @@ impl LivePane {
                 ui.add_space(12.0);
                 ui.horizontal_wrapped(|ui| {
                     if ui.add_enabled(!busy && live.connected && live.sample_count > 0 && live.coverage.batch < 24,
-                        theme::primary("Continue discovery")).on_hover_text("Start another automatic pass over different memory. The current report is archived.").clicked() {
+                        theme::primary("Continue discovery")).on_hover_text("Start another automatic pass over different memory. Current findings are saved.").clicked() {
                         handle.submit("advance_memory",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"auto_observe":true}));
                         self.image=None;
                     }

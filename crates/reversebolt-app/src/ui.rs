@@ -13,6 +13,7 @@ pub struct Workbench {
     show_connection: bool,
     show_live: bool,
     show_observer: bool,
+    show_activity: bool,
     observer_model: String,
     live: crate::ui_live::LivePane,
 }
@@ -34,6 +35,7 @@ impl Workbench {
             show_connection: false,
             show_live: true,
             show_observer: false,
+            show_activity: false,
             observer_model,
             live: crate::ui_live::LivePane::default(),
         }
@@ -64,7 +66,7 @@ impl eframe::App for Workbench {
                         .strong()
                         .color(Color32::WHITE),
                 );
-                ui.label(RichText::new("A Bolt workbench").size(13.0).color(MUTED));
+                ui.label(RichText::new("Make it your game").size(13.0).color(MUTED));
                 ui.add_space(24.0);
                 if ui
                     .add_enabled(
@@ -88,17 +90,9 @@ impl eframe::App for Workbench {
                 ui.add_space(14.0);
                 ui.separator();
                 ui.add_space(14.0);
-                ui.label(
-                    RichText::new("Research preview")
-                        .strong()
-                        .color(Color32::WHITE),
-                );
-                ui.label("Connect an app. Discover controls as you play.");
-                ui.add_space(12.0);
-                ui.label("Gameplay understanding is still in development.");
-                ui.add_space(22.0);
-                ui.separator();
-                ui.add_space(14.0);
+                if ui.button("Activity").clicked() {
+                    self.show_activity = true;
+                }
                 if ui
                     .add(
                         egui::Button::new(RichText::new("Agent connection").color(ACCENT))
@@ -108,11 +102,6 @@ impl eframe::App for Workbench {
                 {
                     self.show_connection = !self.show_connection;
                 }
-                ui.label(
-                    RichText::new("Desktop + MCP\nOne shared session")
-                        .size(13.0)
-                        .color(MUTED),
-                );
                 if self.show_connection {
                     ui.add_space(8.0);
                     ui.label(RichText::new(&self.endpoint).size(12.0));
@@ -123,7 +112,7 @@ impl eframe::App for Workbench {
                 }
                 ui.with_layout(egui::Layout::bottom_up(egui::Align::LEFT), |ui| {
                     ui.label(
-                        RichText::new("v0.1.0  /  Rust + MIT")
+                        RichText::new("Research preview · v0.1.0")
                             .size(12.0)
                             .color(MUTED),
                     );
@@ -255,20 +244,41 @@ impl eframe::App for Workbench {
                         });
                     }
                     }
-                    ui.add_space(12.0);
-                    egui::CollapsingHeader::new("Activity").show(ui, |ui| {
-                    if state.history.is_empty() {
-                        ui.label(RichText::new("Your actions and agent actions will appear here.").color(MUTED));
-                    }
-                    for event in state.history.iter().rev().take(6) {
-                        ui.horizontal_wrapped(|ui| {
-                            ui.label(RichText::new(if event.source=="agent" { "Agent" } else { "You" }).size(12.0).color(ACCENT));
-                            ui.label(RichText::new(&event.text).size(13.0));
-                        });
-                    }
-                    });
                 });
             });
+        if self.show_activity {
+            egui::Window::new("Activity")
+                .open(&mut self.show_activity)
+                .default_width(480.)
+                .vscroll(true)
+                .show(ui.ctx(), |ui| {
+                    if state.history.is_empty() {
+                        ui.label("Your actions and agent actions will appear here.");
+                    }
+                    for event in state.history.iter().rev().take(40) {
+                        ui.horizontal_wrapped(|ui| {
+                            ui.label(
+                                RichText::new(if event.source == "agent" {
+                                    "Agent"
+                                } else {
+                                    "You"
+                                })
+                                .size(12.)
+                                .color(ACCENT),
+                            );
+                            ui.label(&event.text);
+                        });
+                    }
+                    egui::CollapsingHeader::new("Observation history").show(ui, |ui| {
+                        for job in job_state.history.jobs.values().rev().take(6) {
+                            ui.label(format!(
+                                "{:?} · {} recorded moments",
+                                job.phase, job.next_step
+                            ));
+                        }
+                    });
+                });
+        }
         self.live.picker(ui.ctx(), &self.handle, &state, busy);
     }
 }

@@ -4,6 +4,15 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Latest interface refinement (2026-10-21): **25% unchanged**. The main surface is
+now focused on short named cards, with drag arrangement and accessible move
+actions. Activity and application diagnostics open separately. Numeric trial
+controls still use the existing engine's eligibility and explicit review gates;
+unknown findings do not gain cosmetic editors or invented gameplay meanings.
+Automated native UI checks exercise arrangement, editing/restoration, and
+stable action positions as observations age. This is usability work, with no
+additional inference, causal-validation or generalization credit.
+
 | Capability | Weight | Evidence needed for full credit |
 |---|---:|---|
 | Foundation and delivery | 10 | Open repository, shared persistent engine, accessible desktop, versioned runnable delivery |

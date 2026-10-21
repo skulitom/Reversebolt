@@ -1,0 +1,73 @@
+{
+  "scope": "Control-focused desktop UX, owned native fixtures only. No game-generalization credit.",
+  "workspace_tests": 128,
+  "final_version": "0.1.0-20261021-053218",
+  "desktop": {
+    "version": "0.1.0-20261021-053218",
+    "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261021-053218\\Reversebolt.exe",
+    "pid": 74776,
+    "session": 1,
+    "responding": true,
+    "previous_pid": 85380,
+    "history_count": 8,
+    "history_preserved": true,
+    "observer_model": "qwen3.8:latest",
+    "sha256": "3E7341C1C79EDBE0B5860FE31FF3587EB31F9E5FD0F83B7DF0ACCAFA680FEF03"
+  },
+  "evidence": [
+    {
+      "path": "test-results/control-cards-v2/final/uia.json",
+      "sha256": "d380a058d0a17b2d2c7b7f520e5a23f7e20afe0c269d5aaaf24b5af62dcb8e81"
+    },
+    {
+      "path": "test-results/control-cards-v2/published/uia.json",
+      "sha256": "7fa0af0f480d57af62e3e22d82274527cf919f8451a0f31537b2050851ae8575"
+    },
+    {
+      "path": "test-results/control-cards-v2/published/audit.json",
+      "sha256": "9873ee1c7b76ddb56259612d1bdb81b9f9b682acd08262075985dd429bc87d9e"
+    },
+    {
+      "path": "test-results/control-cards-v2/native/uia.json",
+      "sha256": "406c54a4bfc0e45042da14c8a2eb2630fd3036fc73fd378a7b6cee63bc6a4399"
+    },
+    {
+      "path": "test-results/control-cards-v2/tests.log",
+      "sha256": "48deed69059ce5dfb1bf43775af6619bd2f46a0df7499342333de5fe70d550ab"
+    },
+    {
+      "path": "test-results/control-cards-v2/clippy-clean.log",
+      "sha256": "8a1d1a3fbb6ddf8590f853629bc9d8c9ba7389d31242fcbeeb6fb666e30e8b98"
+    },
+    {
+      "path": "test-results/control-cards-v2/build-clean.log",
+      "sha256": "7ac8ea787035d2bf59b663373955621a119dd9a978adfdb13ad1a0ada8096921"
+    },
+    {
+      "path": "test-results/control-cards-v2/desktop/desktop-delivery.json",
+      "sha256": "1526d59a8c02f772034ecf50c2b00c5679a835ad42eaf75f3a4b0664bcb7f32e"
+    },
+    {
+      "path": "test-results/smoke-b3004f2f/report.json",
+      "sha256": "f85bc6c9b89048ab8971725a7ad9b43b409b762dfeb019b8f8e915c26e74af5b"
+    }
+  ],
+  "verified": [
+    "card drag both directions",
+    "accessible reorder menu",
+    "numeric trial request via accessibility",
+    "explicit review, write, effect read, original-byte restoration",
+    "unchanged action positions as readings age",
+    "automatic continuation and stop",
+    "application diagnostics and activity opened on demand",
+    "no diagnostic sections on the default card surface",
+    "history and local model preserved on desktop update"
+  ],
+  "limits": [
+    "Card order lasts for the current observation batch.",
+    "Only eligible numeric trial values are editable; findings are not verified gameplay controls.",
+    "Byte restoration left the fixture downstream resource changed (25 to 22 to 19).",
+    "An instantaneous long automation drag skipped the handle before the press was processed; traces retained. Native test delivers the press for 80 ms before motion."
+  ],
+  "progress_percent": 25
+}
