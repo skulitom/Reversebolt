@@ -23,14 +23,34 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+## Direct edits
+
+The server exposes 44 tools. `reversebolt_set_runtime_value` combines a fresh
+runtime reading, durable preparation and guarded application in one command.
+Supply a canonical lowercase UUID `change_id`, the current `investigation_id`,
+`catalog_id`, `after_revision`, `candidate_id`, and exact string `value` (number
+or `true`/`false`). The direct card number, slider and checkbox use this action.
+Canonical boolean bytes are required. Numeric adjustments remain limited to 20.
+
+`reversebolt_set_observed_value` provides the same direct action for a mapped
+OCR number: `change_id`, `investigation_id`, `batch`, `track`, numeric `value`.
+Existing mapping consensus, fresh observation and trial bounds still apply.
+
+Both commands change process memory. A saved request ID returns its retained
+result on identical delivery, including interrupted preparation, without resuming
+it. Conflicting arguments are refused. Runtime retries compare encoded value and
+the original revision; OCR retries compare numeric desired value and scope.
+The existing restore commands provide guarded Undo. Human takeover and unknown
+write holds apply. Transport success is not evidence of a successful edit or a
+useful gameplay effect: inspect the returned phase and receipts.
+
 ## Explicit internal-value trials
 
 The internal-value cards and MCP share a durable edit history in
 `state.runtime_trials`. `reversebolt_prepare_runtime_change` takes the current
 runtime catalogue ID/revision, a displayed candidate ID, and an exact numeric
-string as `value`. It freshly reads that path, advances the revision and saves
-a review without writing gameplay fields. The requested finite change must be
-nonzero and no greater than 20. Integer strings preserve 64-bit precision.
+string or `true`/`false` as `value`. It freshly reads that path, advances the revision and saves
+a review without writing gameplay fields. Numeric changes must be finite, nonzero and no greater than 20. Integer strings preserve 64-bit precision.
 
 `reversebolt_apply_runtime_change` takes that review's `data.id` as `change_id`.
 It explicitly attempts one guarded write with the original investigation,

@@ -351,7 +351,7 @@ impl LiveSession {
         actor: &str,
         store: &mut crate::changes::Store,
     ) -> Result<crate::changes::Change> {
-        self.prepare_change_inner(track, desired, actor, store, None)
+        self.prepare_change_inner(track, desired, actor, store, None, None)
     }
 
     pub fn prepare_probe(
@@ -362,7 +362,24 @@ impl LiveSession {
         actor: &str,
         store: &mut crate::changes::Store,
     ) -> Result<crate::changes::Change> {
-        self.prepare_change_inner(track, desired, actor, store, Some(selection))
+        self.prepare_change_inner(track, desired, actor, store, Some(selection), None)
+    }
+
+    pub fn prepare_direct_change(
+        &mut self,
+        track: usize,
+        desired: f64,
+        actor: &str,
+        store: &mut crate::changes::Store,
+        id: &str,
+    ) -> Result<crate::changes::Change> {
+        if id.len() != 36
+            || !uuid::Uuid::parse_str(id).is_ok_and(|uuid| uuid.to_string() == id)
+            || store.get(id).is_ok()
+        {
+            return Err("This edit needs a new valid identity.".into());
+        }
+        self.prepare_change_inner(track, desired, actor, store, None, Some(id))
     }
 
     fn prepare_change_inner(
@@ -372,6 +389,7 @@ impl LiveSession {
         actor: &str,
         store: &mut crate::changes::Store,
         probe: Option<(&str, usize)>,
+        direct_id: Option<&str>,
     ) -> Result<crate::changes::Change> {
         if self.refresh_connection() || !self.view.connected {
             return Err("The original application is no longer connected.".into());
@@ -459,6 +477,10 @@ impl LiveSession {
             });
         }
         let mut change = crate::changes::Change::prepare(scope, models, observed, desired, actor)?;
+        if let Some(id) = direct_id {
+            change.id = id.into();
+            change.direct = true;
+        }
         if let Some((_, selected)) = probe {
             let group = group.unwrap();
             let alternatives = check

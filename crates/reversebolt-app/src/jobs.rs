@@ -1632,6 +1632,8 @@ mod tests {
     #[test]
     fn runtime_trials_obey_human_hold_and_active_observation_ownership() {
         for action in [
+            "set_runtime_value",
+            "set_observed_value",
             "prepare_runtime_change",
             "apply_runtime_change",
             "restore_runtime_change",
@@ -1687,6 +1689,8 @@ mod tests {
             "apply_runtime_change"
         );
         for action in [
+            "set_runtime_value",
+            "set_observed_value",
             "prepare_runtime_change",
             "apply_runtime_change",
             "restore_runtime_change",

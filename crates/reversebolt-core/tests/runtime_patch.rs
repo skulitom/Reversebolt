@@ -62,6 +62,34 @@ fn numeric_encoding_preserves_integer_limits_and_rejects_unsupported_values() {
 }
 
 #[test]
+fn boolean_toggle_requires_canonical_bytes_and_exact_receipt_to_restore() {
+    let (path, mut check) = reading();
+    check["type_code"] = json!(2);
+    check["bytes"] = json!([0]);
+    check["value"] = json!({"boolean": false, "raw": 0});
+    let patch = Patch::prepare(path.clone(), &check, "true", 100).unwrap();
+    assert_eq!(patch.expected, [0]);
+    assert_eq!(patch.replacement, [1]);
+    assert_eq!(patch.check(2, 0x1010, &[0x1000], &[0], 101), Guard::Ready);
+    assert_eq!(
+        patch.check(2, 0x1010, &[0x1000], &[1], 101),
+        Guard::ValueChanged
+    );
+    let report = json!({"operation":"patch_runtime_path","scope":path.scope,"patch_id":patch.id(),"checks":[check.clone()],
+        "patch":{"state":"written","attempted":true,"transferred":1,"guard":"ready","observed_after":[1]}});
+    let inverse = patch.restoration(&report, 200).unwrap();
+    assert_eq!(inverse.expected, [1]);
+    assert_eq!(inverse.replacement, [0]);
+    assert!(Patch::prepare(path.clone(), &check, "false", 100).is_err());
+    check["bytes"] = json!([2]);
+    check["value"] = json!({"boolean":true,"raw":2});
+    assert!(Patch::prepare(path, &check, "false", 100).is_err());
+    for text in ["0", "1", "True", " false "] {
+        assert!(encode(2, text).is_err());
+    }
+}
+
+#[test]
 fn trial_preparation_checks_evidence_bounds_and_finite_values() {
     let (path, check) = reading();
     let patch = Patch::prepare(path.clone(), &check, "4.5", 100).unwrap();

@@ -342,7 +342,7 @@ pub unsafe extern "C" fn il2cpp_class_get_fields(class: Ptr, iter: *mut Ptr) -> 
         1 => (10000, ROOT_COUNT),
         2 => (1, 4),
         3 => (5, 1),
-        10 | 14 => (6, 5),
+        10 | 14 => (6, if cfg!(feature = "direct-controls") { 6 } else { 5 }),
         _ => (0, 0),
     };
     unsafe {
@@ -379,6 +379,7 @@ pub extern "C" fn il2cpp_field_get_name(field: Ptr) -> *const u8 {
             c"Items",
             c"LongLabel",
             c"Numbers",
+            c"Enabled",
         ][id - 1]
             .as_ptr()
             .cast()
@@ -399,7 +400,7 @@ pub extern "C" fn il2cpp_field_get_offset(field: Ptr) -> usize {
     if id >= 10000 {
         (id - 10000) * 8
     } else {
-        [20, 24, 28, 32, 16, 16, 24, 32, 40, 48][id - 1]
+        [20, 24, 28, 32, 16, 16, 24, 32, 40, 48, 20][id - 1]
     }
 }
 #[unsafe(no_mangle)]
@@ -429,6 +430,7 @@ pub extern "C" fn il2cpp_type_get_type(typ: Ptr) -> i32 {
             4 => 0x1c,
             7 | 9 => 0x0e,
             8 | 10 => 0x1d,
+            11 => 2,
             _ => panic!("unknown field type"),
         }
     }

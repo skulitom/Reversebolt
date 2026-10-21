@@ -154,12 +154,14 @@ impl EngineHandle {
                         | "read_sequence"
                         | "read_change_evidence"
                         | "submit_temporal_observation"
+                        | "set_observed_value"
                         | "prepare_change"
                         | "prepare_probe"
                         | "apply_change"
                         | "restore_change"
                         | "observe_change"
                         | "inspect_runtime"
+                        | "set_runtime_value"
                         | "prepare_runtime_change"
                         | "apply_runtime_change"
                         | "restore_runtime_change"
@@ -192,12 +194,14 @@ impl EngineHandle {
                                 | "read_sequence"
                                 | "read_change_evidence"
                                 | "submit_temporal_observation"
+                                | "set_observed_value"
                                 | "prepare_change"
                                 | "prepare_probe"
                                 | "apply_change"
                                 | "restore_change"
                                 | "observe_change"
                                 | "inspect_runtime"
+                                | "set_runtime_value"
                                 | "prepare_runtime_change"
                                 | "apply_runtime_change"
                                 | "restore_runtime_change"
@@ -274,7 +278,10 @@ fn native_command(
         }
     }
     match command.action.as_str() {
-        "prepare_runtime_change" | "apply_runtime_change" | "restore_runtime_change" => {
+        "set_runtime_value"
+        | "prepare_runtime_change"
+        | "apply_runtime_change"
+        | "restore_runtime_change" => {
             return crate::runtime_trial_bridge::command(
                 engine,
                 command,
@@ -317,7 +324,32 @@ fn native_command(
                 json!({"change_id":id,"observation":index,"baseline":baseline,"after":after,"images":images,"limitation":reversebolt_core::effects::LIMITATION}),
             );
         }
-        "prepare_change" | "prepare_probe" => {
+        "set_observed_value" | "prepare_change" | "prepare_probe" => {
+            let direct = command.action == "set_observed_value";
+            let direct_id = if direct {
+                let id = command.args["change_id"]
+                    .as_str()
+                    .ok_or("Supply a unique edit identity.")?;
+                if !uuid::Uuid::parse_str(id).is_ok_and(|uuid| uuid.to_string() == id) {
+                    return Err("Invalid edit identity.".into());
+                }
+                if let Ok(change) = engine.changes.get(id) {
+                    if !change.direct
+                        || command.args["investigation_id"] != change.scope.investigation
+                        || command.args["batch"] != change.scope.batch
+                        || command.args["track"] != change.scope.track
+                        || command.args["value"].as_f64() != Some(change.desired)
+                    {
+                        return Err(
+                            "This edit identity already belongs to a different request.".into()
+                        );
+                    }
+                    return Ok(json!(change));
+                }
+                Some(id)
+            } else {
+                None
+            };
             let session = engine
                 .live
                 .as_mut()
@@ -335,7 +367,15 @@ fn native_command(
             let value = command.args["value"]
                 .as_f64()
                 .ok_or("Supply a finite requested value.")?;
-            let change = if command.action == "prepare_probe" {
+            let change = if let Some(id) = direct_id {
+                session.prepare_direct_change(
+                    track,
+                    value,
+                    &command.source,
+                    &mut engine.changes,
+                    id,
+                )?
+            } else if command.action == "prepare_probe" {
                 let prediction = command.args["prediction_id"]
                     .as_str()
                     .ok_or("Choose the current prediction check.")?;
@@ -360,6 +400,20 @@ fn native_command(
                     change.id, change.scope.label
                 ),
             );
+            if direct && change.phase == reversebolt_core::changes::Phase::Prepared {
+                return native_command(
+                    engine,
+                    &Command {
+                        action: "apply_change".into(),
+                        args: json!({"change_id":change.id}),
+                        source: command.source.clone(),
+                    },
+                    directory,
+                    owner,
+                    analysis,
+                    published,
+                );
+            }
             return Ok(json!(change));
         }
         "apply_change" | "restore_change" | "observe_change" => {

@@ -17,6 +17,7 @@ mod theme;
 mod ui;
 mod ui_live;
 mod ui_runtime_trial;
+mod ui_value_control;
 
 use fs2::FileExt;
 

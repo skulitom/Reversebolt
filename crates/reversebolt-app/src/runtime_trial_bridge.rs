@@ -37,7 +37,38 @@ pub fn command(
     base: &Path,
     published: &Arc<RwLock<View>>,
 ) -> Result<Value> {
-    let prepare = command.action == "prepare_runtime_change";
+    let direct = command.action == "set_runtime_value";
+    let direct_id = if direct {
+        let id = command.args["change_id"]
+            .as_str()
+            .ok_or("Supply a unique edit identity.")?;
+        if id.len() != 36 || !uuid::Uuid::parse_str(id).is_ok_and(|uuid| uuid.to_string() == id) {
+            return Err("Invalid edit identity.".into());
+        }
+        if let Ok(record) = engine.runtime_trials.get(id) {
+            if !record.direct
+                || command.args["investigation_id"] != record.context.investigation
+                || command.args["catalog_id"] != record.context.catalog_id
+                || command.args["candidate_id"] != record.candidate_id
+                || command.args["after_revision"]
+                    .as_u64()
+                    .and_then(|r| r.checked_add(1))
+                    != Some(record.context.revision)
+                || command.args["value"]
+                    .as_str()
+                    .and_then(|v| encode(record.patch.type_code, v).ok())
+                    .as_ref()
+                    != Some(&record.patch.replacement)
+            {
+                return Err("This edit identity already belongs to a different request.".into());
+            }
+            return Ok(json!(record));
+        }
+        Some(id)
+    } else {
+        None
+    };
+    let prepare = command.action == "prepare_runtime_change" || direct;
     let restore = command.action == "restore_runtime_change";
     let id = if prepare {
         None
@@ -61,6 +92,9 @@ pub fn command(
     session.refresh_connection();
     if !session.view.connected || !session.view.runtime.available {
         return Err("No connected supported runtime is available.".into());
+    }
+    if direct && command.args["investigation_id"] != session.view.investigation_id {
+        return Err("The application changed before this edit could begin.".into());
     }
     let info = session
         .view
@@ -127,18 +161,34 @@ pub fn command(
             desired,
             end,
         )?;
-        let trial = Trial::prepare(
+        let mut trial = Trial::prepare(
             context,
             candidate.name,
             command.source.clone(),
             patch,
             baseline,
         )?;
+        if let Some(id) = direct_id {
+            trial.id = id.into();
+            trial.direct = true;
+        }
         let trial = engine.runtime_trials.insert(trial)?;
         engine.event(
             &command.source,
             "Reviewed an internal-value trial. No value was changed.",
         );
+        if direct {
+            return self::command(
+                engine,
+                &Command {
+                    action: "apply_runtime_change".into(),
+                    args: json!({"change_id":trial.id}),
+                    source: command.source.clone(),
+                },
+                base,
+                published,
+            );
+        }
         return Ok(json!(trial));
     }
     if engine.changes.holds_process(&info) {

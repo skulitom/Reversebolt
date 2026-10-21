@@ -122,7 +122,7 @@ pub(crate) fn observation_age(observed: u128, now: u128) -> String {
 pub struct LivePane {
     runtime_catalog: String,
     runtime_query: String,
-    runtime_requested: std::collections::BTreeMap<String, String>,
+    runtime_requested: std::collections::BTreeMap<String, crate::ui_value_control::Editor>,
     picker: bool,
     query: String,
     selected: Option<ProcessInfo>,
@@ -130,6 +130,7 @@ pub struct LivePane {
     focus_search: bool,
     image: Option<(String, egui::TextureHandle)>,
     detail: Option<(String, CardSource, usize)>,
+    ocr_editors: std::collections::BTreeMap<usize, crate::ui_value_control::Editor>,
     requested: std::collections::BTreeMap<usize, f64>,
     probe_choice: std::collections::BTreeMap<usize, usize>,
     edit_scope: String,
@@ -320,6 +321,7 @@ impl LivePane {
         let edit_scope = format!("{}:{}", live.investigation_id, live.coverage.batch);
         if self.edit_scope != edit_scope {
             self.requested.clear();
+            self.ocr_editors.clear();
             self.probe_choice.clear();
             let carried = live.prediction_checks.iter().any(|c| {
                 c.rechecked_from.as_ref().is_some_and(|origin| {
@@ -365,24 +367,8 @@ impl LivePane {
             self.card_order
                 .retain(|(source, _)| *source != CardSource::Runtime);
         }
-        if live.runtime.available {
-            if ui
-                .add_enabled(
-                    !busy && live.connected,
-                    egui::Button::new("Find internal values"),
-                )
-                .clicked()
-            {
-                handle.submit(
-                    "start_runtime_job",
-                    json!({"task":{"operation":"discover"}}),
-                );
-            }
-            if let Some(notice) = &live.runtime.notice {
-                ui.label(RichText::new(notice).size(12.).color(MUTED));
-            }
-            if live.runtime.catalog_source.is_some() {
-                egui::CollapsingHeader::new("Find more values").show(ui,|ui|{
+        if live.runtime.available && live.runtime.catalog_source.is_some() {
+            egui::CollapsingHeader::new("Add controls").show(ui,|ui|{
                     ui.horizontal(|ui|{
                         ui.add(egui::TextEdit::singleline(&mut self.runtime_query).hint_text("Search names and nearby labels").char_limit(96));
                         if ui.add_enabled(!busy,egui::Button::new("Search")).clicked() {
@@ -390,7 +376,7 @@ impl LivePane {
                         }
                     });
                     if let Some(page)=&live.runtime.search {
-                        ui.label(RichText::new(format!("{} matches from discovery. Refresh a card for a new reading.",page.matches)).size(12.).color(MUTED));
+                        ui.label(RichText::new(format!("{} matches from discovery.",page.matches)).size(12.).color(MUTED));
                         for candidate in &page.candidates {
                             ui.horizontal_wrapped(|ui|{
                                 ui.label(runtime_name(&candidate.name));
@@ -412,7 +398,6 @@ impl LivePane {
                         });
                     }
                 });
-            }
         }
         if !live.connected {
             ui.colored_label(
@@ -613,7 +598,7 @@ impl LivePane {
         let mut drop_targets = Vec::new();
         for row in cards.chunks(columns) {
             ui.columns(columns, |cols| {
-                for (column, (external, id, title, value, description, readable, age)) in
+                for (column, (external, id, title, value, description, readable, _age)) in
                     cols.iter_mut().zip(row)
                 {
                     column.push_id((external, id), |ui| {
@@ -629,6 +614,9 @@ impl LivePane {
                                 ui.horizontal(|ui| {
                                     ui.label(RichText::new(title).size(19.0).strong());
                                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                                        if ui.small_button("i").on_hover_text("Details").clicked() {
+                                            self.detail = Some((format!("{}:{}",live.investigation_id,live.coverage.batch),*external,*id));
+                                        }
                                         let grip = ui.add(egui::Button::new("↕").sense(egui::Sense::click_and_drag()))
                                             .on_hover_text(format!("Arrange {title}: drag onto another card, or click for options."));
                                         grip.widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::Button, true, format!("Arrange {title}")));
@@ -652,129 +640,20 @@ impl LivePane {
                                 });
                                 ui.label(RichText::new(brief_description(pattern.as_deref().unwrap_or(description))).size(13.0).color(MUTED));
                                 ui.add_space(12.0);
-                                ui.horizontal(|ui| {
-                                    ui.label(RichText::new(value).size(32.0).color(ACCENT))
-                                        .on_hover_text(age.as_deref().unwrap_or("Observation time unavailable"));
-                                    ui.label(
-                                        RichText::new(
-                                            if *external == CardSource::Image
-                                                && live
-                                                    .visual_tracks
-                                                    .iter()
-                                                    .find(|t| t.id == *id)
-                                                    .is_some_and(|t| {
-                                                        t.observations
-                                                            .last()
-                                                            .is_some_and(Option::is_none)
-                                                            && t.observations
-                                                                .iter()
-                                                                .any(Option::is_some)
-                                                    })
-                                            {
-                                                "Earlier"
-                                            } else if *external == CardSource::Ocr && live.prediction_checks.iter().any(|c|c.source==reversebolt_core::prediction::Source::Ocr && c.track==*id && c.invalidated.is_none() && c.automatic_selection.is_some() && c.candidates.iter().any(|m|m.samples.len()<reversebolt_core::prediction::MIN_FRESH)) {
-                                                "Checking"
-                                            } else if *readable {
-                                                "Learning"
-                                            } else {
-                                                "Uncertain"
-                                            },
-                                        )
-                                        .size(12.0)
-                                        .color(MUTED),
-                                    );
-                                });
-                                // Keep this line present as readings age so the actions never move beneath the pointer.
-                                if let Some(age) = age {
-                                    ui.label(RichText::new(age).size(12.).color(MUTED));
-                                }
-                                if ui.button("Inspect").clicked() {
-                                    self.detail = Some((
-                                        format!(
-                                            "{}:{}",
-                                            live.investigation_id, live.coverage.batch
-                                        ),
-                                        *external,
-                                        *id,
-                                    ));
-                                }
-                                if *external==CardSource::Runtime && let Some(card)=live.runtime.cards.get(*id) {
-                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Refresh value")).clicked() {
-                                        handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]}}));
-                                    }
-                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Watch changes")).on_hover_text("Check this internal value six times while you play. No screenshots or gameplay changes.").clicked() {
-                                        handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]},"count":6,"interval_ms":1000}));
-                                    }
-                                    if !card.readings.is_empty() {
-                                        let missing=card.readings.iter().filter(|r|r.status!="read").count();
-                                        ui.label(RichText::new(format!("{} checks · {} differences{}",card.readings.len(),card.observed_differences(),if missing>0 {format!(" · {missing} unavailable")} else {String::new()})).size(12.).color(MUTED));
-                                    }
-                                    let draft = self.runtime_requested.entry(card.candidate.id.clone()).or_insert_with(|| crate::ui_runtime_trial::initial_draft(card));
-                                    crate::ui_runtime_trial::controls(ui, handle, state, card, draft, !busy && live.connected);
-                                }
-                                if *external==CardSource::Ocr {
-                                    let change=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==*id);
-                                    let observed=value.parse::<f64>().ok().filter(|v|v.is_finite());
-                                    let eligible=live.prediction_checks.iter().any(|check|check.source==reversebolt_core::prediction::Source::Ocr && check.track==*id && reversebolt_core::probes::choices(check).is_ok_and(|groups|groups.iter().any(|g|g.eligible)));
-                                    if !eligible && *readable {
-                                        let unrestored=state.changes.iter().any(|c|c.scope.investigation==live.investigation_id && (c.phase.unresolved() || c.phase==reversebolt_core::changes::Phase::Written));
-                                        if ui.add_enabled(!busy && live.connected && !unrestored && live.value_searches.len()<reversebolt_core::value_search::MAX_SEARCHES,egui::Button::new("Find this value"))
-                                            .on_hover_text("Use this observed number to search more widely, then watch fresh changes. Earlier findings stay in history.").clicked() {
-                                            handle.submit("search_number",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
-                                        }
-                                        if ui.add_enabled(!busy && live.connected && !unrestored && live.change_searches.len()<reversebolt_core::change_search::MAX_SEARCHES,
-                                            egui::Button::new("Follow changes")).on_hover_text("Watch this number across a larger memory sample, including values stored with a different scale or offset. Keep playing while it watches, then checks fresh changes.").clicked() {
-                                            handle.submit("start_change_search",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
+                                match external {
+                                    CardSource::Runtime => {
+                                        if let Some(card) = live.runtime.cards.get(*id) {
+                                            let editor = self.runtime_requested.entry(card.candidate.id.clone()).or_default();
+                                            crate::ui_runtime_trial::controls(ui, handle, state, card, editor, !busy && live.connected);
                                         }
                                     }
-                                    if let Some(observed)=observed.filter(|_|eligible) {
-                                        let requested=self.requested.entry(*id).or_insert_with(|| {
-                                            change.filter(|c| c.phase==reversebolt_core::changes::Phase::Prepared).map_or(observed, |c| c.desired)
-                                        });
-                                        ui.horizontal(|ui| {
-                                            let label=ui.label("Try value");
-                                            ui.add_enabled(!busy && live.connected,egui::DragValue::new(requested).speed(1.).range((observed-20.)..=(observed+20.))).labelled_by(label.id).on_hover_text("Drag to adjust, or click to type. Trial changes are limited to 20 from the observed value.");
-                                            if ui.add_enabled(!busy && live.connected && *requested != observed,egui::Button::new("Review edit")).clicked() {
-                                                handle.submit("prepare_change",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"track":id,"value":*requested}));
-                                            }
-                                        });
-
+                                    CardSource::Ocr => {
+                                        let editor = self.ocr_editors.entry(*id).or_default();
+                                        crate::ui_value_control::ocr(ui, handle, state, *id, editor, !busy && live.connected);
                                     }
-                                    if let Some(change)=change {
-                                        if let Some(comparison)=change.observations.last().and_then(|o|o.comparison.as_ref()) {
-                                            let count=comparison.other_values.iter().filter(|v|v.status==reversebolt_core::effects::Status::Changed).count();
-                                            if count>0 {ui.label(RichText::new(format!("{count} other value{} changed · Inspect",if count==1 {""}else{"s"})).size(12.).color(WARNING));}
-                                        }
-                                        use reversebolt_core::changes::Phase;
-                                        match change.phase {
-                                            Phase::Prepared => {
-                                                ui.label(RichText::new(format!("Try {} → {}",change.observed,change.desired)).color(ACCENT));
-                                                ui.label(RichText::new(if change.probe.is_some() {"Tests one possibility; other explanations remain."} else {"Experimental edit. Gameplay effects are unverified."}).size(12.).color(MUTED));
-                                                if let Some(probe)=&change.probe {self.probe_choice.entry(*id).or_insert(probe.selected);}
-                                                let still_requested=self.requested.get(id).is_some_and(|v|*v==change.desired)
-                                                    && change.probe.as_ref().is_none_or(|p|self.probe_choice.get(id)==Some(&p.selected));
-                                                if ui.add_enabled(!busy && still_requested && live.connected,egui::Button::new(if change.probe.is_some() {"Try test"} else {"Try edit"})).clicked() {handle.submit("apply_change",json!({"change_id":change.id}));}
-                                            }
-                                            Phase::Written => {
-                                                let restore_refused=change.restoration.as_ref().is_some_and(|r|!r.attempted && r.error.is_some());
-                                                ui.label(RichText::new(if restore_refused {"Restore wasn't applied"} else {"Trial applied"}).color(if restore_refused {WARNING} else {ACCENT}));
-                                                if let Some(observation)=change.observations.last() {
-                                                    ui.label(RichText::new(observation.intervention_outcome.map(|o|o.label()).unwrap_or(if observation.agrees {"Requested number seen"} else {"Effect not confirmed"})).size(12.).color(MUTED));
-                                                }
-                                                ui.horizontal(|ui| {
-                                                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Restore bytes")).on_hover_text("Checks the original value's bytes before restoring. Downstream gameplay effects may remain.").clicked() {handle.submit("restore_change",json!({"change_id":change.id}));}
-                                                    if ui.add_enabled(!busy && live.connected && change.observations.len()<8,egui::Button::new("Check effect")).clicked() {handle.submit("observe_change",json!({"change_id":change.id}));}
-                                                    watch_change_button(ui, handle, change, !busy && live.connected);
-                                                });
-                                            }
-                                            Phase::Restored => {
-                                                ui.label(RichText::new("Original bytes restored").size(12.).color(MUTED));
-                                                watch_change_button(ui, handle, change, !busy && live.connected);
-                                            }
-                                            Phase::Unavailable => {ui.label(RichText::new("Still narrowing down this edit").size(12.).color(MUTED));}
-                                            Phase::Uncertain|Phase::Writing|Phase::Restoring => {ui.colored_label(WARNING,"Write outcome uncertain · edits held");}
-                                            Phase::Refused|Phase::Expired => {ui.label(RichText::new("Trial not applied · prepare again").size(12.).color(MUTED));}
-                                        }
+                                    _ => {
+                                        ui.label(RichText::new(value).size(38.).color(ACCENT));
+                                        ui.label(RichText::new(if *readable { "Learning" } else { "Uncertain" }).small().color(MUTED));
                                     }
                                 }
                             });
@@ -953,8 +832,25 @@ impl LivePane {
                             ui.label(format!("{} samples · longest unsampled interval {:.0} ms",context.polls.len(),context.largest_unsampled_us as f64/1000.));
                         });
                     }
+                    if external==CardSource::Ocr {
+                        ui.horizontal(|ui| {
+                            if ui.add_enabled(!busy && live.connected,egui::Button::new("Find this value")).clicked() {
+                                handle.submit("search_number",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
+                            }
+                            if ui.add_enabled(!busy && live.connected,egui::Button::new("Follow changes")).clicked() {
+                                handle.submit("start_change_search",json!({"investigation_id":live.investigation_id,"batch":live.coverage.batch,"after_frame":live.sample_count,"track":id}));
+                            }
+                        });
+                    }
                     if external==CardSource::Ocr && let Some(change)=state.changes.iter().rev().find(|c|c.scope.investigation==live.investigation_id && c.scope.batch==live.coverage.batch && c.scope.track==id) {
                         ui.label(&change.reason);
+                        if change.phase==reversebolt_core::changes::Phase::Prepared && ui.add_enabled(!busy && live.connected, egui::Button::new("Apply reviewed test")).clicked() {
+                            handle.submit("apply_change",json!({"change_id":change.id}));
+                        }
+                        if matches!(change.phase,reversebolt_core::changes::Phase::Written|reversebolt_core::changes::Phase::Restored) {
+                            watch_change_button(ui,handle,change,!busy && live.connected);
+                        }
+
                         if let Some(probe)=&change.probe {
                             ui.label(&probe.limitation);
                             egui::CollapsingHeader::new("What the possibilities predict").show(ui,|ui| {
@@ -987,6 +883,13 @@ impl LivePane {
                         if let Some(card)=live.runtime.cards.get(id) {
                             ui.label("Found directly in the application's internal state. A name alone does not establish what it controls.");
                             ui.label(format!("Latest check: {}",card.status.replace('_'," ")));
+                            ui.horizontal(|ui| {
+                                for (name,count) in [("Refresh value",1),("Watch changes",6)] {
+                                    if ui.add_enabled(!busy && live.connected,egui::Button::new(name)).clicked() {
+                                        handle.submit("start_runtime_job",json!({"task":{"operation":"refresh","catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[card.candidate.id]},"count":count,"interval_ms":1000}));
+                                    }
+                                }
+                            });
                             ui.label("Refresh follows the current object at this path. Collections can change occupants.");
                             crate::ui_runtime_trial::history(ui, handle, state, card, !busy && live.connected);
                             if !card.readings.is_empty() {
@@ -1095,6 +998,12 @@ impl LivePane {
                     );
                 });
                 ui.label(&live.process.title);
+                if live.runtime.available {
+                    if ui.add_enabled(!busy && live.connected,egui::Button::new("Find internal values")).clicked() {
+                        handle.submit("start_runtime_job",json!({"task":{"operation":"discover"}}));
+                    }
+                    if let Some(notice)=&live.runtime.notice { ui.label(notice); }
+                }
                 egui::CollapsingHeader::new("Memory source").show(ui, |ui| {
                     let current = live.memory_process.as_ref().unwrap_or(&live.process);
                     ui.label(format!("Reading {} (PID {})", current.name, current.pid));

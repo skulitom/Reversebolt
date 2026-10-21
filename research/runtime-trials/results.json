@@ -1,0 +1,168 @@
+{
+  "runtime-trials-v1": {
+    "audit": "passed",
+    "revision": "40d3f9a1e467558df27416457c048e4c2252a03d",
+    "frozen_sha256": "d86c9c3497aa72ee6200d8e313c48abae8a0d7ec12d4a204aba6c4d46339598c",
+    "binaries": {
+      "reversebolt-mcp.exe": "0950919052263414d912b23202c6fff46418a0b9457da624efd8990647b943ca",
+      "reversebolt-runtime-candidates.exe": "e5d88e9c57a21340fc8f1073c2583e8bcc61b98ba1de4c18fb4d85b176810920",
+      "reversebolt-runtime-loader.exe": "b6b36875ee67f243cddb699b3f06fc59d633026f7ae2a6f7baa08e22708eff2b",
+      "Reversebolt.exe": "2da08bcd449e618d93d599eb5f9118d1e2700a7fd7b8e67e49aa54309c768273",
+      "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+      "reversebolt_runtime.dll": "99e7378cb8f8850f5c161b3c181c3f46ec414afea90d00ba1a0ea448507aca06"
+    },
+    "source_files": 137,
+    "cases": 20,
+    "helper_operations": 19,
+    "balanced_pauses": 44,
+    "max_stop_to_resume_us": 66,
+    "confirmed_numeric_writes": 6,
+    "refusals": 2,
+    "trials": 8,
+    "oracle_checks": 9,
+    "ui_restore": "invoked through accessibility; shared result confirmed",
+    "execution": [
+      {
+        "pid": 44468,
+        "exit": 0
+      },
+      {
+        "pid": 89576,
+        "exit": 1
+      },
+      {
+        "pid": 86388,
+        "exit": 1
+      },
+      {
+        "pid": 86884,
+        "exit": 1
+      }
+    ],
+    "smoke": {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\smoke-bbc89375\\report.json",
+      "sha256": "482ee19994e99b18accf4081bc52219445cdbf3c85834dd3a9d5af837b4c7475",
+      "result": {
+        "practice": [
+          {
+            "seed": 8675309,
+            "matches": [
+              4,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          },
+          {
+            "seed": 1001,
+            "matches": [
+              3,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          },
+          {
+            "seed": 20261020,
+            "matches": [
+              3,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          }
+        ],
+        "mcp_tools": 42,
+        "shared_session": "passed",
+        "auth_and_origin": "passed",
+        "stale_restore": "rejected",
+        "restart": "history retained; controls invalidated"
+      }
+    },
+    "verified_controls": 0,
+    "scope": "Owned ABI fixture. No real-game semantics, persistent actor identity or complete gameplay rollback proven."
+  },
+  "runtime-trials-v2": {
+    "audit": "passed",
+    "revision": "0f4dd42fea3755280d951830a61319c3f9b7a296",
+    "frozen_sha256": "1b0c8588dd227d9cd609d2be9441175b5e204ecd57debce021f7d11465e816c1",
+    "binaries": {
+      "reversebolt-mcp.exe": "0950919052263414d912b23202c6fff46418a0b9457da624efd8990647b943ca",
+      "reversebolt-runtime-candidates.exe": "e5d88e9c57a21340fc8f1073c2583e8bcc61b98ba1de4c18fb4d85b176810920",
+      "reversebolt-runtime-loader.exe": "b6b36875ee67f243cddb699b3f06fc59d633026f7ae2a6f7baa08e22708eff2b",
+      "Reversebolt.exe": "2baa7bb7be8534de27f7815f65074227187702f9b505c318f047e24c227abe08",
+      "reversebolt_path_fixture.dll": "b0593a63a9fa620effd193cac044e0e9b6d775a0f2ec4119e663cca55108933e",
+      "reversebolt_runtime.dll": "99e7378cb8f8850f5c161b3c181c3f46ec414afea90d00ba1a0ea448507aca06"
+    },
+    "source_files": 138,
+    "cases": 20,
+    "helper_operations": 19,
+    "balanced_pauses": 44,
+    "max_stop_to_resume_us": 95,
+    "confirmed_numeric_writes": 6,
+    "refusals": 2,
+    "trials": 8,
+    "oracle_checks": 9,
+    "ui_restore": "invoked through accessibility; shared result confirmed",
+    "execution": [
+      {
+        "pid": 5852,
+        "exit": 0
+      },
+      {
+        "pid": 89744,
+        "exit": 1
+      },
+      {
+        "pid": 60004,
+        "exit": 1
+      },
+      {
+        "pid": 97060,
+        "exit": 1
+      }
+    ],
+    "smoke": {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\smoke-c3b0211a\\report.json",
+      "sha256": "482ee19994e99b18accf4081bc52219445cdbf3c85834dd3a9d5af837b4c7475",
+      "result": {
+        "practice": [
+          {
+            "seed": 8675309,
+            "matches": [
+              4,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          },
+          {
+            "seed": 1001,
+            "matches": [
+              3,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          },
+          {
+            "seed": 20261020,
+            "matches": [
+              3,
+              4
+            ],
+            "unique_controls": 2,
+            "edit_restore": "passed"
+          }
+        ],
+        "mcp_tools": 42,
+        "shared_session": "passed",
+        "auth_and_origin": "passed",
+        "stale_restore": "rejected",
+        "restart": "history retained; controls invalidated"
+      }
+    },
+    "verified_controls": 0,
+    "scope": "Owned ABI fixture. No real-game semantics, persistent actor identity or complete gameplay rollback proven."
+  }
+}

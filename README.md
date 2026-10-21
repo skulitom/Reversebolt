@@ -8,17 +8,17 @@ Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and
 bounded-memory observations to compare screen numbers with memory trajectories.
 Values appear as simple cards; their gameplay meaning remains unverified.
-**Find more values** searches the retained runtime catalogue, including nearby
-object text. **Show card** brings a result onto the board; **Refresh value** reads
-its current path again. Text marked **First seen with** belongs to the discovery
-snapshot and is a clue, not a verified description or persistent object identity.
-**Watch changes** takes six fresh internal-value readings, with a one-second
-delay after each completed check. Cards summarize recent differences; **Inspect**
-shows timing, unavailable gaps and any older readings omitted from the 16-reading
-history. Pause lets an active read finish; Resume continues the remaining checks.
-See the [runtime workflow](research/runtime-product/README.md) and
-[context/search evidence](research/runtime-context/README.md), plus
-[internal-value tracking](research/runtime-watch/README.md).
+Editable numbers use a large direct-entry field and a slider; booleans use an
+On/Off checkbox. Release a drag, press Enter or leave the number field to apply.
+**Undo** restores a confirmed edit when its original guards still hold. Each edit
+freshly checks its target and saves its intent/result behind the single gesture.
+Numeric runtime trials remain limited to adjustments of 20; gameplay effects
+remain unverified. Screen-number controls need an eligible mapping first.
+**Add controls** searches the retained runtime catalogue. **Show card** brings a
+result onto the board. The small **i** button opens reading history, refresh/watch
+actions and detailed evidence. Object labels are clues, not verified descriptions
+or persistent identity. See [direct controls](research/direct-controls/PROTOCOL.md)
+and [durable runtime trials](research/runtime-trials/README.md).
 When a numeric finding has matches early enough in the observation pass,
 Reversebolt automatically freezes its predictions and checks later readings.
 It chooses by investigation effort and reading coverage, not an invented gameplay
@@ -26,7 +26,7 @@ meaning. No edits happen automatically; findings can remain uncertain or fail.
 The main view keeps names, short descriptions and relevant actions together.
 Drag a card's arrange handle to reorder it, or click the handle for accessible
 move actions. Editable trial values can be dragged or typed. Detailed evidence
-opens through **Inspect**; application diagnostics and activity are separate
+opens through the **i** button; application diagnostics and activity are separate
 views. Card arrangement belongs to the current observation batch.
 An image-reading agent can contribute provisional observations through MCP;
 the desktop shows their sources and uncertainty alongside OCR.
@@ -59,7 +59,7 @@ then **Connect**. Discovery starts immediately. Supported runtimes first produce
 internal-value cards. The visual/memory fallback uses a bounded 16-moment pass
 while you play; comparisons begin after 12 moments. Each card
 has a name, short description and current value. **Learning** means its effect
-and controlling state are still unverified; **Inspect** opens its details.
+and controlling state are still unverified; the **i** button opens its details.
 Use **Pause** or **Stop** at any time. **Keep looking** starts another pass over
 different memory. Screenshots, activity and manual tools are collapsed behind
 details. Results are unverified correlations. This preview

@@ -2,7 +2,10 @@
 
 The next discovery work prioritizes runtime structure and memory behaviour
 alongside visual evidence, so hidden values need not begin as screen numbers.
-This is an implementation direction, not an existing runtime adapter capability.
+The IL2CPP adapter discovers and re-reads bounded paths and supports guarded
+number/boolean trials. Semantic control selection and useful-effect verification
+remain incomplete. Direct card gestures and MCP actions share the same serialized
+engine, durable intents, guarded writes and restoration history.
 See [discovery direction and evidence](DISCOVERY_DIRECTION.md).
 
 Value-guided search is a selection pass, separate from correspondence fitting.

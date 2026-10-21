@@ -156,6 +156,8 @@ pub struct ObservationCursor {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Change {
     pub id: String,
+    #[serde(default)]
+    pub direct: bool,
     pub prepared_ms: u128,
     pub actor: String,
     pub scope: Scope,
@@ -307,6 +309,7 @@ impl Change {
             else {"The remaining interpretations do not agree on one edit. More investigation is needed."}.into();
         Ok(Self {
             id: uuid::Uuid::new_v4().to_string(),
+            direct: false,
             prepared_ms: now_ms(),
             actor: actor.chars().take(40).collect(),
             scope,

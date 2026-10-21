@@ -54,6 +54,11 @@ pub fn encode(kind: i32, text: &str) -> Result<Vec<u8>> {
         };
     }
     match kind {
+        2 => match text {
+            "true" => Ok(vec![1]),
+            "false" => Ok(vec![0]),
+            _ => Err("Enter true or false for a boolean value.".into()),
+        },
         4 => integer!(i8),
         5 => integer!(u8),
         6 => integer!(i16),
@@ -74,7 +79,7 @@ pub fn encode(kind: i32, text: &str) -> Result<Vec<u8>> {
             .filter(|v| v.is_finite())
             .map(|v| v.to_le_bytes().to_vec())
             .ok_or_else(|| "Enter a finite 64-bit floating-point value.".into()),
-        _ => Err("Runtime trials currently support numeric scalars only.".into()),
+        _ => Err("Runtime trials support numbers and boolean values.".into()),
     }
 }
 
@@ -87,6 +92,7 @@ fn bounded_difference(kind: i32, a: &[u8], b: &[u8]) -> Result<()> {
             .unwrap_or_else(|| v.to_string())
     };
     let within = match kind {
+        2 => a[0] <= 1 && b[0] <= 1 && a != b,
         4..=11 => {
             let before: i128 = value_text(before)
                 .parse()
@@ -110,9 +116,22 @@ fn bounded_difference(kind: i32, a: &[u8], b: &[u8]) -> Result<()> {
         _ => false,
     };
     if !within {
-        return Err("Trial must change a finite numeric value by at most 20.".into());
+        return Err(
+            "Change a finite number by at most 20, or toggle a boolean stored as 0 or 1.".into(),
+        );
     }
     Ok(())
+}
+
+pub fn value_text(kind: i32, bytes: &[u8]) -> Result<String> {
+    let value = scalar_value(kind, bytes)?;
+    if kind == 2 {
+        return Ok(value["boolean"].to_string());
+    }
+    Ok(value
+        .as_str()
+        .map(str::to_owned)
+        .unwrap_or_else(|| value.to_string()))
 }
 
 impl Patch {

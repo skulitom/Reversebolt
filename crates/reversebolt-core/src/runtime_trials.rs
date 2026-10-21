@@ -62,6 +62,8 @@ pub struct Attempt {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Trial {
     pub id: String,
+    #[serde(default)]
+    pub direct: bool,
     pub actor: String,
     pub context: Context,
     pub candidate_id: String,
@@ -86,11 +88,7 @@ impl Trial {
         {
             return Err("Review requires exact evidence for this runtime path.".into());
         }
-        let desired = crate::runtime::scalar_value(patch.type_code, &patch.replacement)?;
-        let text = desired
-            .as_str()
-            .map(str::to_owned)
-            .unwrap_or_else(|| desired.to_string());
+        let text = crate::runtime_patch::value_text(patch.type_code, &patch.replacement)?;
         let checked = Patch::prepare(
             patch.path.clone(),
             &baseline.report["checks"][0],
@@ -196,6 +194,7 @@ impl Trial {
         Self::validate_baseline(&context, &patch, &baseline)?;
         Ok(Self {
             id: uuid::Uuid::new_v4().to_string(),
+            direct: false,
             actor,
             context,
             candidate_id: patch.path.id(),

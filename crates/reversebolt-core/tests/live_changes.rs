@@ -740,9 +740,35 @@ fn session_contract(separate: bool) {
     );
     assert_eq!(state.calls.get(), 0);
     state.screen_bias.set(0.);
-    let change = session
-        .prepare_change(id, 53., "agent", &mut store)
-        .unwrap();
+    let change = if separate {
+        assert!(
+            session
+                .prepare_direct_change(id, 53., "agent", &mut store, "../bad")
+                .is_err()
+        );
+        let request = uuid::Uuid::new_v4().to_string();
+        assert!(
+            session
+                .prepare_direct_change(id, 53., "agent", &mut store, &request.to_uppercase())
+                .is_err()
+        );
+        let change = session
+            .prepare_direct_change(id, 53., "agent", &mut store, &request)
+            .unwrap();
+        assert_eq!(change.id, request);
+        assert!(change.direct);
+        assert!(
+            session
+                .prepare_direct_change(id, 54., "agent", &mut store, &request)
+                .is_err()
+        );
+        assert_eq!(state.calls.get(), 0);
+        change
+    } else {
+        session
+            .prepare_change(id, 53., "agent", &mut store)
+            .unwrap()
+    };
     assert_eq!(change.phase, Phase::Prepared);
     assert_eq!(change.scope.process.pid, if separate { 92 } else { 91 });
     if separate {
