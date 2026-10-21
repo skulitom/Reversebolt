@@ -163,6 +163,9 @@ gameplay meaning. See [the contract and native evidence](research/INPUT_CONTEXT.
 | Tool | Behavior |
 |---|---|
 | `reversebolt_status` | Session, values, matches, evidence, edit history |
+| `reversebolt_start_runtime_job` | One supported-runtime discovery or 1–16 bounded refreshes, with durable shared progress |
+| `reversebolt_search_runtime_values` | Search retained runtime candidates and same-object text before the card limit |
+| `reversebolt_show_runtime_values` | Bring 1–8 current search results onto cards without a fresh target read |
 | `reversebolt_start_observation_job` | Durable timed captures with a receipt and shared progress |
 | `reversebolt_job_control` | Pause, resume or cancel a current observation job |
 | `reversebolt_job_events` | Read bounded, ordered job events after a cursor |
@@ -204,9 +207,11 @@ tool call as a successful edit.
 
 Application investigation: list processes → attach using `pid`, `created` and
 `window` returned by the list → watch automatic discovery in status → inspect
-evidence → detach. Connection starts one durable 16-capture pass with no initial
-delay and one second between completed captures. Comparisons begin at
-capture 12. Attachment returns `data.automatic_observation`, its job receipt;
+evidence → detach. Supported IL2CPP attachment starts one runtime discovery with
+no images or gameplay-field writes. Other applications start a durable 16-capture
+visual/memory pass with no initial delay and one second between completed
+captures; comparisons begin at capture 12. Attachment returns
+`data.automatic_observation`, its job receipt;
 read the returned `jobs` for the advanced client request counter. An unsuccessful
 automatic start is reported separately without undoing a successful connection.
 On uncertain attachment delivery, inspect status before retrying, because a new
@@ -217,6 +222,32 @@ Use `auto_observe:false` on `attach_process` for controlled manual experiments.
 false). A timed observation job can use `compare:true` to update its findings after
 each capture with enough evidence; this never refits an active prediction check.
 The desktop uses the same controller and displays progress and pause/stop controls.
+
+For internal-value discovery, inspect `state.live.runtime.available`, its current
+`catalog_id`, `revision` and `cards`. `search_runtime_values` requires that catalogue
+ID and a query (at most 96 characters); optional offset pages up to 20 results.
+`show_runtime_values` requires the exact catalogue/revision and 1–8 distinct IDs
+from the current search. It advances the revision and preserves existing newer
+readings. Newly shown cards retain their discovery age until refreshed.
+
+`start_runtime_job` takes the normal job request envelope and a `task`:
+`operation: "discover"`, or `operation: "refresh"` with current `catalog_id`,
+`after_revision` and 1–4 displayed candidate `ids`. Optional `count` is 1–16
+(default 1; discovery permits only 1). Optional `interval_ms` is 250–60000
+(default 1000), measured after the previous check completes. The desktop's
+**Watch changes** uses six checks at 1000 ms. Successive revisions are pinned;
+the job does not silently adapt after another selection changes its catalogue.
+
+Each card retains at most 16 `readings`, with revision, operation start/end bounds,
+status, value, bytes and report path/digest. `readings_dropped` counts omitted older
+readings. Unavailable readings remain gaps, and difference counts compare only
+adjacent successful reads. Pausing allows the current runtime read to publish
+before the job becomes Paused; Resume continues its remaining pinned checks.
+Cancellation, invalidation and unresolved outcomes retain their existing guards.
+These histories identify path occupants, not persistent actors or verified effects.
+Temporary helper instrumentation and brief managed-thread pauses are required;
+no images, input sampling or gameplay-field writes occur. See the
+[native watcher evaluation](../research/runtime-watch/README.md).
 
 With at least four future captures scheduled in that same job and available in
 the batch budget, comparison automatically selects up to eight currently readable

@@ -12,8 +12,13 @@ Values appear as simple cards; their gameplay meaning remains unverified.
 object text. **Show card** brings a result onto the board; **Refresh value** reads
 its current path again. Text marked **First seen with** belongs to the discovery
 snapshot and is a clue, not a verified description or persistent object identity.
+**Watch changes** takes six fresh internal-value readings, with a one-second
+delay after each completed check. Cards summarize recent differences; **Inspect**
+shows timing, unavailable gaps and any older readings omitted from the 16-reading
+history. Pause lets an active read finish; Resume continues the remaining checks.
 See the [runtime workflow](research/runtime-product/README.md) and
-[context/search evidence](research/runtime-context/README.md).
+[context/search evidence](research/runtime-context/README.md), plus
+[internal-value tracking](research/runtime-watch/README.md).
 When a numeric finding has matches early enough in the observation pass,
 Reversebolt automatically freezes its predictions and checks later readings.
 It chooses by investigation effort and reading coverage, not an invented gameplay

@@ -4,17 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
-Internal-value watch implementation checkpoint (2026-10-21): **31% unchanged**.
+Internal-value watch delivery (2026-10-21): **31% unchanged**.
 Selected runtime paths now support bounded repeated checks through cards and MCP,
 with gaps, provenance and a capped history. In-flight pause/resume testing caught
 and repaired cancellation of the current read, which could invalidate later
 pinned revisions. Cancellation during a pending pause still stops later checks.
-All 213 workspace tests, strict Clippy, formatting and native-runner syntax checks
-pass. Native helper/GUI evaluation and desktop publication remain pending; these
-automated tests do not establish a useful gameplay control. Prioritize structured
-runtime/memory hypotheses and measured effects, including stable coefficients;
-use images when they answer a specific question. The full goal remains active.
-[Implementation checkpoint](../research/runtime-watch/README.md).
+All 213 workspace tests, strict Clippy, formatting and the release build passed.
+The frozen native fixture completed 22 refreshes through GUI/shared engine/MCP,
+including unavailable-value recovery, bounded-history rollover, in-flight pause
+and resumed reads, replay, stale-request refusal and queued cancellation. All 23
+helpers unloaded; 48 managed pauses were balanced with zero helper Rust heap
+operations while paused. Refreshes took 68–80 ms in this fixture. Accessibility
+checks used no screenshots; no gameplay input or writes ran. Frozen 39-tool smoke
+and the source/binary/report/cleanup audit passed. Preview
+`0.1.0-20261021-171456` is running with all 29 history entries exactly preserved
+and the same local model. Prioritize structured runtime/memory hypotheses and
+measured effects, including stable coefficients. This fixture grants no causal or
+independent-game generalization credit. The full goal remains active.
+[Implementation and evidence](../research/runtime-watch/README.md).
 
 Latest gameplay-state investigation (2026-10-21): **31% unchanged**. Retained
 runtime metadata identifies walking, running, jumping and gravity hypotheses in
