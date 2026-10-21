@@ -94,11 +94,16 @@ fn identified_name(name: &str) -> bool {
     let lower = name.to_lowercase();
     name.chars().filter(|c| c.is_alphabetic()).count() >= 3
         && name.chars().count() <= 80
+        && !matches!(lower.as_str(), "value" | "number" | "internal value")
         && !["unidentified", "unknown", "internal value", "value "]
             .iter()
             .any(|p| lower.starts_with(p))
         && !name.contains(['<', '>', '$', '{', '}'])
         && !name.chars().any(|c| c.is_control())
+}
+fn runtime_owner(name: &str) -> String {
+    let plain = name.split([',', '`', '[']).next().unwrap_or("");
+    runtime_name(plain.rsplit(['.', '+']).next().unwrap_or(plain))
 }
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
@@ -454,7 +459,7 @@ impl LivePane {
                 value,
                 brief_description(&format!(
                     "{title} setting for {}. Gameplay effect not yet checked.",
-                    runtime_name(context)
+                    runtime_owner(context)
                 )),
                 card.status == "read",
                 Some(observation_age(card.observed_unix_ms, now)),

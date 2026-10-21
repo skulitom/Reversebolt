@@ -8,8 +8,15 @@ Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and
 bounded-memory observations to compare screen numbers with memory trajectories.
 Values appear as simple cards; their gameplay meaning remains unverified.
-Editable numbers use a large direct-entry field and a slider; booleans use an
-On/Off checkbox. Release a drag, press Enter or leave the number field to apply.
+Unnamed readings stay off the board. Named cards have short descriptions;
+runtime descriptions are provisional metadata labels, not verified game meanings.
+Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
+On/Off checkbox. Sliders require known small domain bounds, rather than an invented
+range around the current number. Press Enter or leave the number field to apply.
+**Freeze** periodically holds a supported internal value using fresh guarded
+checks. Uncheck it to stop and leave the last value in place. It stops on reference
+changes and never resumes automatically after restart; it is not a per-frame lock.
+Other observation types show an unavailable Freeze control until supported.
 **Undo** restores a confirmed edit when its original guards still hold. Each edit
 freshly checks its target and saves its intent/result behind the single gesture.
 Numeric runtime trials remain limited to adjustments of 20; gameplay effects
@@ -17,12 +24,13 @@ remain unverified. Screen-number controls need an eligible mapping first.
 **Add controls** searches the retained runtime catalogue. **Show card** brings a
 result onto the board. The small **i** button opens reading history, refresh/watch
 actions and detailed evidence. Object labels are clues, not verified descriptions
-or persistent identity. See [direct controls](research/direct-controls/PROTOCOL.md)
+or persistent identity. See [current controls](research/friendly-controls/PROTOCOL.md)
 and [durable runtime trials](research/runtime-trials/README.md).
 When a numeric finding has matches early enough in the observation pass,
 Reversebolt automatically freezes its predictions and checks later readings.
 It chooses by investigation effort and reading coverage, not an invented gameplay
-meaning. No edits happen automatically; findings can remain uncertain or fail.
+meaning. Discovery never initiates edits; an explicitly enabled Freeze can reapply
+its chosen value. Findings can remain uncertain or fail.
 The main view keeps names, short descriptions and relevant actions together.
 Drag a card's arrange handle to reorder it, or click the handle for accessible
 move actions. Editable trial values can be dragged or typed. Detailed evidence

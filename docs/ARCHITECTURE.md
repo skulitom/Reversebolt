@@ -370,3 +370,16 @@ not replace existing checks. Trial scopes bind the relevant check ID, while any
 attempted write invalidates passive evidence across the collection and expires
 other unapplied plans. Legacy single-check JSON is read as a historical list.
 See [multiple-check verification](../research/multiple-checks/README.md).
+# Periodic runtime holds
+
+`state.freezes` contains explicit live hold requests. The controller schedules at
+most one due check through the existing engine worker, after queued human work,
+outside observation jobs. The first fresh read pins the field and reference chain.
+Subsequent checks require the same chain, compare typed bytes, and write only when
+the value drifted. Overlapping active holds are rejected. Each write checkpoints
+its exact intent before the existing guarded runtime patch helper runs; completion
+is checkpointed before another tick. Unknown effects and failed result persistence
+fence the process. Restart converts active holds to stopped and in-flight intents
+to uncertain. No restart or request replay repeats a write. Runtime helper reports
+remain evidence; timing, address reuse and downstream effects remain limitations.
+

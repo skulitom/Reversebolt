@@ -210,6 +210,13 @@ fn step(
         &read.path,
     )?;
     let patch = engine.view.freezes[index].check(&read.report["checks"][0], end)?;
+    if engine.view.freezes.iter().enumerate().any(|(i, other)| {
+        i != index && other.active() && engine.view.freezes[index].overlaps(other)
+    }) {
+        return Err(
+            "Another control is already holding these bytes. Freeze stopped before writing.".into(),
+        );
+    }
     engine.view.freezes[index].evidence = Some(read.path);
     let Some(patch) = patch else {
         return Ok(());

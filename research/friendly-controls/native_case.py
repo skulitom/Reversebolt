@@ -155,6 +155,11 @@ try:
     host_command('write',address=int(f['identity']['field'],16),bytes=list(struct.pack('<f',2.5)))
     f=wait_freeze(f['id'],lambda x:x['writes']==2,'number-reheld');read_f(f,struct.pack('<f',4.5),'number-reheld-oracle')
     checked=f['checks'];f=wait_freeze(f['id'],lambda x:x['checks']>=checked+2,'number-noop');assert f['writes']==2
+    live=status()['state']['live'];rt=live['runtime'];alias=next(c for c in rt['cards'] if c['candidate']['name']=='Coefficient' and c['candidate']['id']!=args['candidate_id'])
+    alias_args=dict(freeze_id=str(uuid.uuid4()),enabled=True,investigation_id=live['investigation_id'],catalog_id=rt['catalog_id'],after_revision=rt['revision'],candidate_id=alias['candidate']['id'],value='7.5')
+    alias=call('set_runtime_freeze',alias_args,'alias-enable')['data']
+    alias=wait_freeze(alias['id'],lambda x:x['phase']=='stopped','alias-stop');assert alias['writes']==0 and 'already holding' in alias['reason']
+    read_f(f,struct.pack('<f',4.5),'alias-no-write-oracle')
     f=stop(f,'number-off');host_command('write',address=int(f['identity']['field'],16),bytes=list(struct.pack('<f',3.5)))
     time.sleep(1.2);read_f(f,struct.pack('<f',3.5),'number-off-oracle')
     assert call('set_runtime_freeze',args,'enable-replay')['data']['phase']=='stopped'
@@ -164,7 +169,8 @@ try:
     b=stop(b,'boolean-off');host_command('write',address=int(b['identity']['field'],16),bytes=[0]);read_f(b,bytes([0]),'boolean-off-oracle')
     args,f=enable('Coefficient','4.5','replacement-enable');host_command('tick',mode=0)
     f=wait_freeze(f['id'],lambda x:x['phase']=='stopped','replacement-stop');assert 'object changed' in f['reason']
-    args,f=enable('Coefficient','3.5','restart-enable');assert f['writes']==0
+    current=next(c['value'] for c in status()['state']['live']['runtime']['cards'] if c['candidate']['name']=='Coefficient')
+    args,f=enable('Coefficient',str(current),'restart-enable');assert f['writes']==0
     engine.terminate();engine.wait(timeout=10);count=operations();engine=launch()
     restart=call('status',label='restart');assert restart['state']['live'] is None and operations()==count
     assert all(f['phase']=='stopped' for f in restart['state']['freezes'])
@@ -176,6 +182,7 @@ try:
         call('show_runtime_values',dict(catalog_id=rt['catalog_id'],after_revision=rt['revision'],ids=[chosen['id']]),'ui-show-'+name)
     save('processes',dict(app_pid=engine.pid,target_pid=host.pid,session=identity['session']))
     (OUT/'ui-ready').touch();print(json.dumps({'ui_ready':True,'app_pid':engine.pid}),flush=True)
+    if '--no-ui' in sys.argv[2:]: (OUT/'finish').touch()
     deadline=time.monotonic()+900
     while not (OUT/'finish').exists() and time.monotonic()<deadline:
         assert engine.poll() is None;time.sleep(.2)

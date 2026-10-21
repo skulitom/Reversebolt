@@ -25,6 +25,19 @@ never creates a private simulator or duplicate session.
 
 ## Direct edits
 
+`reversebolt_set_runtime_freeze` enables a periodically checked hold. Pass a fresh
+canonical `freeze_id`, `enabled:true`, exact investigation/catalogue/revision and
+candidate, and the desired string `value`. Stop with the same identity and
+`enabled:false`. Replays do not restart stopped holds. `state.freezes` exposes
+phase, reason, checks, writes, pinned references and last write intent/evidence.
+The desktop checkbox uses this same engine path. Stop can wait for the current
+check to finish, and leaves the last value in place. A changed object, overlapping
+hold, refused write or uncertain result stops the hold. Unknown effects fence
+further writes. Restarts never resume holds. Checks share the sole worker, pause
+for investigation jobs and respect human control. Up to eight holds can be active;
+128 activation records are retained. This is periodic checking, not a promised
+per-frame lock. OCR/image observations do not yet support holding.
+
 The server exposes 45 tools. `reversebolt_set_runtime_value` combines a fresh
 runtime reading, durable preparation and guarded application in one command.
 Supply a canonical lowercase UUID `change_id`, the current `investigation_id`,

@@ -110,3 +110,19 @@ fn restarting_never_resumes_holds_and_interrupted_intents_remain_fenced() {
     unknown.stop("off");
     assert_eq!(unknown.phase, "uncertain");
 }
+
+#[test]
+fn aliases_and_partially_overlapping_values_cannot_be_held_independently() {
+    let (mut a, c) = fixture();
+    a.check(&c, 100).unwrap();
+    let mut b = a.clone();
+    b.identity.as_mut().unwrap().objects = vec!["0x2000".into()];
+    assert!(a.overlaps(&b));
+    b.identity.as_mut().unwrap().field = "0x1012".into();
+    assert!(a.overlaps(&b));
+    b.identity.as_mut().unwrap().field = "0x1014".into();
+    assert!(!a.overlaps(&b));
+    b.identity.as_mut().unwrap().field = "0x1010".into();
+    b.path.scope.pid = 8;
+    assert!(!a.overlaps(&b));
+}

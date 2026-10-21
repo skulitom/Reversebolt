@@ -34,6 +34,23 @@ pub struct Freeze {
     pub evidence: Option<String>,
 }
 impl Freeze {
+    pub fn overlaps(&self, other: &Self) -> bool {
+        if self.path.scope != other.path.scope {
+            return false;
+        }
+        let range = |f: &Self| -> Option<(u64, u64)> {
+            let start =
+                u64::from_str_radix(f.identity.as_ref()?.field.strip_prefix("0x")?, 16).ok()?;
+            Some((
+                start,
+                start.checked_add(encode(f.kind, &f.value).ok()?.len() as u64)?,
+            ))
+        };
+        match (range(self), range(other)) {
+            (Some((a, b)), Some((c, d))) => a < d && c < b,
+            _ => false,
+        }
+    }
     pub fn active(&self) -> bool {
         matches!(self.phase.as_str(), "active" | "writing")
     }
