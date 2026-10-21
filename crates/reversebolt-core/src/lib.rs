@@ -17,6 +17,7 @@ pub mod rule_checks;
 pub mod runtime;
 pub mod runtime_inventory;
 pub mod runtime_patch;
+pub mod runtime_tests;
 pub mod runtime_trials;
 pub mod temporal;
 pub mod value_search;

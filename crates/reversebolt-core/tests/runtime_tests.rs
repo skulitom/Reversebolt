@@ -1,0 +1,389 @@
+//! Synthetic protocol checks, not evidence of gameplay understanding.
+use reversebolt_core::{
+    changes::Phase as TrialPhase,
+    inputs::{Buffer, Focus, Poll, Window},
+    runtime::{Candidate, FieldRef, Locator, Member, Scope, Step, TypeKey},
+    runtime_patch::Patch,
+    runtime_tests::{Action, Frame, InputWitness, METRIC_ID, Phase, Test},
+    runtime_trials::{Attempt, Context, Evidence, Trial},
+    visual::{CaptureInterval, digest},
+};
+use serde_json::{Value, json};
+
+fn uuid() -> String {
+    uuid::Uuid::new_v4().to_string()
+}
+fn check(p: &Patch, bytes: &[u8]) -> Value {
+    json!({"path_id":p.path.id(),"status":"read","type_code":p.type_code,"bytes":bytes,
+        "value":reversebolt_core::runtime::scalar_value(p.type_code,bytes).unwrap(),
+        "field_address":format!("0x{:x}",p.field_address),
+        "snapshot_object_addresses":p.object_addresses.iter().map(|a|format!("0x{a:x}")).collect::<Vec<_>>()})
+}
+fn reading(p: &Patch, bytes: &[u8]) -> Evidence {
+    Evidence::new(
+        "read.json".into(),
+        json!({"operation":"refresh_runtime_paths","scope":p.path.scope,"checks":[check(p,bytes)]}),
+    )
+    .unwrap()
+}
+fn attempt(p: Patch) -> Attempt {
+    let report = json!({"operation":"patch_runtime_path","scope":p.path.scope,"patch_id":p.id(),"checks":[check(&p,&p.expected)],
+        "patch":{"state":"written","attempted":true,"transferred":p.replacement.len(),"guard":"ready","observed_after":p.replacement}});
+    Attempt {
+        started_ms: p.prepared_unix_ms,
+        completed_ms: Some(p.prepared_unix_ms + 20),
+        patch: p,
+        evidence: Some(Evidence::new("write.json".into(), report).unwrap()),
+        outcome: "written".into(),
+        error: None,
+    }
+}
+fn fixture() -> (Test, Trial, Trial) {
+    let scope = Scope {
+        pid: 7,
+        created: "0123456789abcdef".into(),
+        session: 2,
+    };
+    let ty = TypeKey {
+        image: "Fixture.dll".into(),
+        type_name: "Parameter".into(),
+        layout_sha256: "a".repeat(64),
+    };
+    let field = FieldRef {
+        declaring: ty.clone(),
+        field_id: 1,
+    };
+    let path = Locator {
+        scope: scope.clone(),
+        root: field.clone(),
+        steps: vec![Step {
+            owner: ty,
+            member: Member::Field { field },
+        }],
+    };
+    let patch = Patch {
+        path: path.clone(),
+        type_code: 12,
+        expected: 3.5f32.to_le_bytes().to_vec(),
+        replacement: 0f32.to_le_bytes().to_vec(),
+        field_address: 0x1010,
+        object_addresses: vec![0x1000],
+        prepared_unix_ms: 16000,
+    };
+    let test = Test {
+        id: uuid(),
+        change_id: uuid(),
+        actor: "agent".into(),
+        investigation: uuid(),
+        catalog_id: uuid(),
+        scope: scope.clone(),
+        window: 42,
+        candidate: Candidate {
+            id: path.id(),
+            name: "Coefficient".into(),
+            description: "Observed field".into(),
+            locator: path,
+            value: json!("3.5"),
+            bytes: patch.expected.clone(),
+            type_code: 12,
+            snapshot_id: 0,
+            node_id: 0,
+            edit_authority: false,
+            context: vec![],
+        },
+        value: "0".into(),
+        hypothesis: "Changing this field may suppress the rendered response".into(),
+        actions: vec![
+            Action {
+                keys: vec![68],
+                hold_ms: 200
+            };
+            4
+        ],
+        metric: METRIC_ID.into(),
+        revision: 0,
+        phase: Phase::Baseline,
+        pending_capture: false,
+        conditions: Default::default(),
+        assessment: None,
+        reason: String::new(),
+    };
+    let write = attempt(patch.clone());
+    let trial = Trial {
+        id: test.change_id.clone(),
+        direct: true,
+        actor: "agent".into(),
+        context: Context {
+            investigation: test.investigation.clone(),
+            catalog_id: test.catalog_id.clone(),
+            revision: 2,
+            process: scope,
+        },
+        candidate_id: test.candidate.id.clone(),
+        name: "Coefficient".into(),
+        baseline: reading(&patch, &patch.expected),
+        patch: patch.clone(),
+        phase: TrialPhase::Written,
+        reason: String::new(),
+        write: Some(write.clone()),
+        restoration: None,
+    };
+    let inverse = patch
+        .restoration(&write.evidence.unwrap().report, 24000)
+        .unwrap();
+    let restored = Trial {
+        restoration: Some(attempt(inverse)),
+        phase: TrialPhase::Restored,
+        ..trial.clone()
+    };
+    (test, trial, restored)
+}
+
+fn window(clock: &str, begin: u64, end: u64, press: bool) -> Window {
+    let mut buffer = Buffer::new(clock.into(), "monitor".into(), 0);
+    for t in (begin + 1000..end - 100).step_by(16000) {
+        buffer
+            .push(Poll {
+                begin_us: t,
+                end_us: t + 100,
+                focus: Focus::SelectedForeground,
+                down: if press && (100_000..300_000).contains(&(t - begin)) {
+                    vec![68]
+                } else {
+                    vec![]
+                },
+            })
+            .unwrap();
+    }
+    buffer.window(begin, end).unwrap()
+}
+fn next(test: &Test, difference: f64) -> (Frame, Window) {
+    let condition = test.condition_index().unwrap();
+    let n = test.conditions[condition].frames.len();
+    let begin = (condition as u64 * 10 + n as u64 + 1) * 620_000;
+    let previous = test.conditions[condition]
+        .frames
+        .last()
+        .map_or(begin, |f| f.interval.end_us);
+    let interval = CaptureInterval {
+        clock_id: test.investigation.clone(),
+        begin_us: begin,
+        end_us: begin + 20_000,
+    };
+    let input = window(&test.investigation, previous, interval.end_us, n >= 2);
+    let wall = [10_000, 17_000, 25_000][condition] + n as u128 * 1000;
+    let f = Frame {
+        path: format!("{condition}-{n}.png"),
+        sha256: "a".repeat(64),
+        input_path: format!("{condition}-{n}.json"),
+        input_sha256: digest(&serde_json::to_vec(&Some(&input)).unwrap()),
+        width: 640,
+        height: 360,
+        interval: interval.clone(),
+        started_unix_ms: wall,
+        completed_unix_ms: wall + 20,
+        sampling: None,
+        difference: (n > 0).then_some(if n == 1 { 0.25 } else { difference }),
+        input: InputWitness::check(None, None, &interval, previous),
+    };
+    (f, input)
+}
+fn condition(test: &mut Test, difference: f64) {
+    for _ in 0..6 {
+        let (f, input) = next(test, difference);
+        test.begin_capture(test.revision).unwrap();
+        test.finish_capture(f, Some(&input)).unwrap();
+    }
+}
+fn ready(changed: f64) -> (Test, Trial) {
+    let (mut t, write, restored) = fixture();
+    condition(&mut t, 6.);
+    assert_eq!(t.phase, Phase::ReadyToApply);
+    t.sync_trial(&write).unwrap();
+    condition(&mut t, changed);
+    assert_eq!(t.phase, Phase::ReadyToRestore);
+    t.conditions[1].runtime_evidence = Some(reading(&write.patch, &write.patch.replacement));
+    t.conditions[1].runtime_checked_unix_ms = Some(23000);
+    t.sync_trial(&restored).unwrap();
+    condition(&mut t, 6.);
+    t.conditions[2].runtime_evidence = Some(reading(&write.patch, &write.patch.expected));
+    t.conditions[2].runtime_checked_unix_ms = Some(31000);
+    (t, restored)
+}
+
+#[test]
+fn comparison_needs_ordered_action_images_value_checks_and_recovery() {
+    for (difference, status) in [
+        (0.3, "suppression_observed"),
+        (6., "suppression_not_observed"),
+    ] {
+        let (mut t, restored) = ready(difference);
+        assert!(t.assessment.is_none());
+        t.complete(&restored, t.revision).unwrap();
+        assert_eq!(t.phase, Phase::Complete);
+        assert_eq!(t.assessment.as_ref().unwrap().status, status);
+        assert!(!t.candidate.edit_authority);
+        assert!(t.complete(&restored, t.revision).is_err());
+    }
+}
+
+#[test]
+fn weak_baseline_and_missing_sampling_never_reach_apply() {
+    let (mut t, _, _) = fixture();
+    condition(&mut t, 1.);
+    assert_eq!(t.phase, Phase::Stopped);
+    let (mut t, _, _) = fixture();
+    for _ in 0..6 {
+        let (mut f, _) = next(&t, 6.);
+        f.input_sha256 = digest(b"null");
+        t.begin_capture(t.revision).unwrap();
+        t.finish_capture(f, None).unwrap();
+    }
+    assert_eq!(t.phase, Phase::Stopped);
+}
+
+#[test]
+fn input_witness_rejects_wrong_keys_focus_taps_duration_gaps_and_late_input() {
+    let interval = CaptureInterval {
+        clock_id: "clock".into(),
+        begin_us: 600_000,
+        end_us: 620_000,
+    };
+    let action = Action {
+        keys: vec![68],
+        hold_ms: 200,
+    };
+    let good = window("clock", 0, 620_000, true);
+    let check = |w: &Window| InputWitness::check(Some(w), Some(&action), &interval, 0).matches;
+    assert!(check(&good));
+    for variant in 0..10 {
+        let mut w = good.clone();
+        match variant {
+            0 => w.polls[0].focus = Focus::OutsideSelected,
+            1 => w.polls[12].down = vec![65],
+            2 => w.polls[12].down.clear(),
+            3 => w.polls[0].begin_us = 40000,
+            4 => w.largest_unsampled_us = 0,
+            5 => w.omitted_polls = 1,
+            6 => w.clock_id = "different".into(),
+            7 => w.polls.iter_mut().for_each(|p| {
+                if !p.down.is_empty() {
+                    p.down.clear()
+                }
+            }),
+            8 => w.polls.iter_mut().for_each(|p| {
+                if p.begin_us > 300_000 {
+                    p.down = vec![68]
+                }
+            }),
+            _ => w.polls[12].end_us = w.polls[13].begin_us + 1,
+        }
+        assert!(!check(&w), "variant {variant}");
+    }
+    let wrong = Action {
+        hold_ms: 500,
+        ..action
+    };
+    assert!(!InputWitness::check(Some(&good), Some(&wrong), &interval, 0).matches);
+    let idle = window("clock", 0, 620000, false);
+    assert!(InputWitness::check(Some(&idle), None, &interval, 0).matches);
+}
+
+#[test]
+fn overwritten_values_moved_references_and_bad_read_chronology_are_inconclusive() {
+    for variant in 0..7 {
+        let (mut t, trial) = ready(0.3);
+        let c = &mut t.conditions[1];
+        match variant {
+            0 => c.runtime_evidence = Some(reading(&trial.patch, &trial.patch.expected)),
+            1 => {
+                let mut patch = trial.patch.clone();
+                patch.object_addresses[0] += 16;
+                c.runtime_evidence = Some(reading(&patch, &patch.replacement));
+            }
+            2 => c.runtime_evidence.as_mut().unwrap().report_sha256 = "b".repeat(64),
+            3 => c.runtime_checked_unix_ms = Some(17000),
+            4 => c.runtime_checked_unix_ms = Some(26000),
+            5 => t.conditions[2].frames[0].started_unix_ms = 23000,
+            _ => t.conditions[2].runtime_evidence = None,
+        }
+        t.complete(&trial, t.revision).unwrap();
+        assert_eq!(
+            t.assessment.unwrap().status,
+            "inconclusive",
+            "variant {variant}"
+        );
+    }
+}
+
+#[test]
+fn stale_cursor_changed_geometry_generation_or_digest_cannot_append() {
+    let (mut t, _, _) = fixture();
+    let (f, w) = next(&t, 6.);
+    assert!(t.begin_capture(1).is_err());
+    t.begin_capture(0).unwrap();
+    assert!(t.begin_capture(0).is_err());
+    t.finish_capture(f, Some(&w)).unwrap();
+    let original = t.clone();
+    for variant in 0..5 {
+        let mut t = original.clone();
+        let (mut f, mut w) = next(&t, 6.);
+        match variant {
+            0 => f.width += 1,
+            1 => f.interval.clock_id = "wrong".into(),
+            2 => w.generation = "different".into(),
+            3 => f.input_sha256 = "b".repeat(64),
+            _ => f.interval.begin_us = 0,
+        }
+        if variant == 2 {
+            f.input_sha256 = digest(&serde_json::to_vec(&Some(&w)).unwrap());
+        }
+        t.begin_capture(t.revision).unwrap();
+        assert!(t.finish_capture(f, Some(&w)).is_err());
+        assert_eq!(t.conditions[0].frames.len(), 1);
+        assert!(t.pending_capture);
+        t.recover();
+        assert_eq!(t.phase, Phase::Stopped);
+        assert!(t.begin_capture(t.revision).is_err());
+    }
+}
+
+#[test]
+fn premature_edit_early_undo_wrong_trial_and_restart_stop_comparison() {
+    let (mut t, write, _) = fixture();
+    t.sync_trial(&write).unwrap();
+    assert_eq!(t.phase, Phase::Stopped);
+    let (mut t, _, _) = fixture();
+    condition(&mut t, 6.);
+    assert!(t.sync_trial(&write).is_err()); // different planned identity
+    let (mut t, write, restored) = fixture();
+    condition(&mut t, 6.);
+    t.sync_trial(&write).unwrap();
+    t.sync_trial(&restored).unwrap();
+    assert_eq!(t.phase, Phase::Stopped);
+    let (mut t, _, _) = fixture();
+    condition(&mut t, 6.);
+    t.recover();
+    assert_eq!(t.phase, Phase::Stopped);
+    assert!(t.complete(&restored, t.revision).is_err());
+}
+
+#[test]
+fn invalid_plans_are_rejected_before_capture_and_without_mutation() {
+    let (good, _, _) = fixture();
+    for variant in 0..8 {
+        let mut t = good.clone();
+        match variant {
+            0 => t.id = "../escape".into(),
+            1 => t.change_id = t.id.clone(),
+            2 => t.actions[0].keys = vec![68, 68],
+            3 => t.actions[0].hold_ms = 1001,
+            4 => t.metric = "other".into(),
+            5 => t.value = "NaN".into(),
+            6 => t.candidate.value = json!("4.5"),
+            _ => t.scope.pid += 1,
+        }
+        assert!(t.begin_capture(0).is_err());
+        assert!(!t.pending_capture);
+    }
+}

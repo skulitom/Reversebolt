@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Response-test foundation and numeric editing (2026-10-21): **33% unchanged**.
+The shared Rust library now defines a bounded, cursor-checked baseline / changed /
+recovered comparison. It rejects incomplete input, repeated taps, changed references,
+overwritten replacements and inconsistent timing. A versioned Rust image metric
+retains the previous two visual decisions across 36 saved Manifold images; this is
+retrospective reuse, with no new game launch, input or screenshot review. Seven
+synthetic protocol tests and an analytic metric test passed. The library is not yet
+connected to desktop/MCP actions, owned capture storage or human/job interruption,
+so it earns no new implementation or generalization credit.
+
+Direct numeric stepping now uses the visible uncommitted draft, preserving exact
+64-bit integers when a +/- click coincides with focus loss. The complete workspace
+passed 253 tests, strict Clippy and the 45-tool smoke. Preview
+`0.1.0-20261021-202940` is running with all 44 history entries, the observer model,
+trials and Freeze records preserved. The requested named-card, direct-number and
+Freeze UI remains the desktop experience; the full goal stays active.
+[Scope, evidence and remaining integration](../research/runtime-test-protocol/README.md).
+
 Competing real-game hypotheses (2026-10-21): **33%**. A retained model proposal
 was automatically rebound to fresh runtime metadata in a new Manifold Garden
 process. Identical bounded input sequences separated two equal-valued movement

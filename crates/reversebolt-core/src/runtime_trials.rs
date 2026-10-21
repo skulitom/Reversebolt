@@ -43,7 +43,7 @@ impl Evidence {
             report,
         })
     }
-    fn valid(&self) -> bool {
+    pub(crate) fn valid(&self) -> bool {
         Self::new(self.path.clone(), self.report.clone())
             .is_ok_and(|e| e.report_sha256 == self.report_sha256)
     }
@@ -101,7 +101,7 @@ impl Trial {
         Ok(())
     }
 
-    fn validate(&self) -> Result<()> {
+    pub(crate) fn validate(&self) -> Result<()> {
         if uuid::Uuid::parse_str(&self.id).is_err()
             || self.id.len() != 36
             || self.candidate_id != self.patch.path.id()

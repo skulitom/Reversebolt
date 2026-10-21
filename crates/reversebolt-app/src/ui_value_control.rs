@@ -21,6 +21,8 @@ pub struct Editor {
     slider_rect: Option<egui::Rect>,
     #[cfg(test)]
     value_id: Option<egui::Id>,
+    #[cfg(test)]
+    increase_rect: Option<egui::Rect>,
 }
 
 pub fn text(value: &Value) -> String {
@@ -165,6 +167,10 @@ pub fn draw(
             increase.widget_info(|| {
                 egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, "Increase value")
             });
+            #[cfg(test)]
+            {
+                editor.increase_rect = Some(increase.rect);
+            }
             if increase.clicked() {
                 step = 1.;
             }
@@ -195,11 +201,18 @@ pub fn draw(
         response.surrender_focus();
         editor.focused = false;
     }
-    if step != 0.
-        && let Some(value) = shifted(kind, &current, step)
-    {
-        editor.text = value;
-        commit = true;
+    if step != 0. {
+        // A step is relative to the draft the user can see, including a change
+        // committed by focus loss in this frame, not an older backend reading.
+        let base = if editor.dirty { &editor.text } else { &current };
+        if let Some(value) = shifted(kind, base, step) {
+            editor.text = value;
+            editor.error = None;
+            commit = true;
+        } else {
+            editor.error = Some("Enter a valid number before using + or −.".into());
+            commit = false;
+        }
     }
     // Only a known domain range can justify a slider. A small observed value
     // or a write-limit is not evidence that the setting itself has that range.
@@ -445,5 +458,50 @@ mod tests {
             Some("18446744073709551615")
         );
         assert!(frame(vec![], true).0.is_none());
+    }
+
+    #[test]
+    fn step_uses_the_visible_uncommitted_number_without_losing_integer_precision() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        let render = |editor: &mut Editor, events| {
+            let mut requested = None;
+            let mut output = ctx.run_ui(
+                egui::RawInput {
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    requested = draw(ui, editor, 11, &json!("3"), true, None);
+                },
+            );
+            output.textures_delta.clear();
+            requested
+        };
+        assert!(render(&mut editor, vec![]).is_none());
+        ctx.memory_mut(|m| m.request_focus(editor.value_id.unwrap()));
+        editor.text = "18446744073709551614".into();
+        editor.dirty = true;
+        editor.focused = true;
+        let pos = editor.increase_rect.unwrap().center();
+        let events = vec![
+            egui::Event::PointerMoved(pos),
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: true,
+                modifiers: Default::default(),
+            },
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: false,
+                modifiers: Default::default(),
+            },
+        ];
+        assert_eq!(
+            render(&mut editor, events).as_deref(),
+            Some("18446744073709551615")
+        );
     }
 }

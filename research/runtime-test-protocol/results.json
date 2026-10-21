@@ -1,0 +1,57 @@
+{
+  "metric": "rgb601-triangle640x360-crop24,40,592,296-gaussian1-mad-v1",
+  "retrospective_only": true,
+  "new_captures": 0,
+  "game_input_actions": 0,
+  "retained_images": 36,
+  "image_pairs": 30,
+  "results": [
+    {
+      "candidate": 0,
+      "conditions": {
+        "baseline": {
+          "stationary": 0.11327839663988312,
+          "response_median": 6.229390179875821
+        },
+        "changed": {
+          "stationary": 0.11249657596785975,
+          "response_median": 6.228868014974434
+        },
+        "restored": {
+          "stationary": 0.11206286523009495,
+          "response_median": 6.653368106281958
+        }
+      },
+      "visual_suppression_criterion": false,
+      "previous_measurement_sha256": "168b26a3252b08dcea0a8767f98beeefc1a9ae51a8d4e9f8fd03e7384db2fa9a"
+    },
+    {
+      "candidate": 1,
+      "conditions": {
+        "baseline": {
+          "stationary": 0.11318138239590943,
+          "response_median": 6.653336719320672
+        },
+        "changed": {
+          "stationary": 0.11408304419284149,
+          "response_median": 0.11578650018261505
+        },
+        "restored": {
+          "stationary": 0.11390042914536158,
+          "response_median": 6.421258674214755
+        }
+      },
+      "visual_suppression_criterion": true,
+      "previous_measurement_sha256": "a150a7dd490ddde9581b5d1d1829266ffe7c9149dd2b908507bbc24a4acebfa7"
+    }
+  ],
+  "source_sha256": {
+    "crates/reversebolt-core/src/runtime_tests.rs": "95d6f4e3a4d6d377ebe23e8f9f38e91dc83200e294a83694decee5fe7883cfee",
+    "crates/reversebolt-core/tests/runtime_tests.rs": "535f0d9a578c8df261426de099b0370d946aed4563565fae70c76f89808cb897",
+    "crates/reversebolt-vision/src/response.rs": "fa8e85e7689d8c8ed885917a1013afb1366a4abeca43fcf2113a9a17a0a68f9f",
+    "crates/reversebolt-vision/examples/response_audit.rs": "e67acfd6fcd39f916e160dbaf1619abec84afde0d8b2b0151632ba400413ba38",
+    "research/runtime-test-protocol/audit.py": "a6ba298ec67c42a0ab6b28c5f32bbbd7b818b8198703f2d4b307c2e7949348dc"
+  },
+  "measurement_sha256": "d9c6f121b2113d2fdc384c1d928a5536769802ec748ac737a4e3d7d9b73f6dbe",
+  "limitation": "This is a retrospective metric-port check on exploratory images. Rust and Pillow blur differ; identical numerical output is not claimed. These captures have no engine-owned input windows and cannot pass the new full protocol. The synthetic protocol tests do not establish real-game delivery, semantics or generalization. No new candidate is promoted."
+}
