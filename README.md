@@ -42,6 +42,9 @@ Editable numbers use a large direct-entry field with −/+ buttons; booleans use
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.
 Use the up/down keys while editing to adjust the displayed draft by one.
+Known bounds also apply to typed values and the number buttons; buttons stop at
+the limits. Unidentified names and placeholder observation explanations stay off
+the control board while discovery continues.
 **Freeze** periodically holds a supported internal value using fresh guarded
 checks. Uncheck it to stop and leave the last value in place. It stops on reference
 changes and never resumes automatically after restart; it is not a per-frame lock.

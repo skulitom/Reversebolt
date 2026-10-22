@@ -112,7 +112,17 @@ fn identified_name(name: &str) -> bool {
                 "data", "parameter", "property", "setting", "state",
             ].contains(word)
         })
-        && !matches!(words.as_slice(), ["n", "a"] | ["not", "identified"] | ["not", "known"])
+        && !matches!(words.as_slice(),
+            ["n", "a"] | ["tbd"] | ["pending", "identification"]
+            | ["not", "identified"] | ["not", "known"]
+            | ["not", "yet", "identified"] | ["not", "yet", "named"]
+            | ["to", "be", "identified"] | ["no", "label"] | ["no", "name"])
+        // A plausible prefix must not disguise an unresolved label, such as
+        // "Health (unidentified)". Keep the underlying discovery available.
+        && !words.iter().any(|word| [
+            "unidentified", "unknown", "unnamed", "unlabelled", "unlabeled",
+            "unrecognized", "unrecognised",
+        ].contains(word))
         && ![
             "unidentified",
             "unknown",
@@ -146,6 +156,13 @@ fn observation_description(text: &str) -> Option<String> {
                 | "not known"
                 | "unidentified value"
                 | "effect unknown"
+                | "unknown value"
+                | "unknown gameplay effect"
+                | "not yet identified"
+                | "no explanation available"
+                | "no description available"
+                | "description pending"
+                | "tbd"
                 | "n/a"
                 | "a provisional visual finding"
                 | "visual finding with an unknown effect"
@@ -1559,6 +1576,13 @@ mod card_copy_tests {
             "uint64",
             "N/A",
             "Not identified",
+            "Not yet identified",
+            "To be identified",
+            "Pending identification",
+            "Health (unidentified)",
+            "Value unknown",
+            "No label",
+            "TBD",
             "0xDEADBEEF1234",
             "F0123456789abcdef",
             "ffffffffffffffff",
@@ -1591,6 +1615,13 @@ mod card_copy_tests {
             "No description.",
             "Not identified.",
             "Effect unknown.",
+            "Unknown value.",
+            "Unknown gameplay effect.",
+            "Not yet identified.",
+            "No explanation available.",
+            "No description available.",
+            "Description pending.",
+            "TBD",
         ] {
             assert!(observation_description(description).is_none());
         }

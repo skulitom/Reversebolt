@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Direct control consistency (2026-10-22): **35% unchanged**.
+Expanded placeholder filtering excludes labels such as “Not yet identified” and
+“Health (unidentified)” from cards and add-controls results, plus additional
+placeholder observation explanations. Existing direct number entry, steppers,
+On/Off and per-card Freeze affordances remain; unsupported Freeze stays disabled.
+Known numeric domain bounds now apply to typed/accessibility entry, keyboard
+arrows and number buttons as well as sliders. Endpoint buttons are disabled.
+Integer bounds are checked without rounding the input through floating point;
+integer sliders require exactly representable whole-number endpoints.
+
+All 12 targeted automated UI tests and strict app Clippy pass. No game, screenshot,
+model or native memory operation was used. Current raw discoveries still supply
+no domain bounds, so these retain direct number entry without a slider. This
+does not establish gameplay meanings for raw field names. The preview availability
+check still reports the executable missing after quarantine; no replacement was
+published or launched.
+
 Immutable appearance sequences (2026-10-22): **35% unchanged**.
 The shared reader/MCP and automatic evidence archive now compare selected original
 appearances with consecutive later captures, keeping templates unchanged. Signed

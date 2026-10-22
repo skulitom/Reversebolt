@@ -71,6 +71,36 @@ fn shifted(kind: i32, anchor: &str, delta: f64) -> Option<String> {
     }
 }
 
+fn encode_bounded(
+    kind: i32,
+    text: &str,
+    bounds: Option<&std::ops::RangeInclusive<f64>>,
+) -> Result<Vec<u8>, String> {
+    let encoded = encode(kind, text)?;
+    if let Some(range) = bounds {
+        // Do not round large integers through f64 just to check a UI bound.
+        let inside = if (4..=11).contains(&kind) {
+            text.parse::<i128>().is_ok_and(|value| {
+                value >= range.start().ceil() as i128 && value <= range.end().floor() as i128
+            })
+        } else if kind == 12 {
+            text.parse::<f32>()
+                .is_ok_and(|value| range.contains(&f64::from(value)))
+        } else {
+            text.parse::<f64>()
+                .is_ok_and(|value| range.contains(&value))
+        };
+        if !inside {
+            return Err(format!(
+                "Choose a value from {} to {}.",
+                range.start(),
+                range.end()
+            ));
+        }
+    }
+    Ok(encoded)
+}
+
 pub fn draw(
     ui: &mut egui::Ui,
     editor: &mut Editor,
@@ -106,6 +136,8 @@ pub fn draw(
         ui.label(RichText::new(text(value)).size(36.).color(ACCENT));
         return None;
     }
+    let bounds =
+        bounds.filter(|r| r.start().is_finite() && r.end().is_finite() && r.start() <= r.end());
     let current = text(value);
     let value_id = ui.id().with("direct-value");
     #[cfg(test)]
@@ -167,12 +199,23 @@ pub fn draw(
     };
     let response = ui
         .horizontal(|ui| {
+            let step_enabled = |delta| {
+                enabled
+                    && shifted(kind, &editor.text, delta)
+                        .is_some_and(|v| encode_bounded(kind, &v, bounds.as_ref()).is_ok())
+            };
+            let decrease_enabled = step_enabled(-1.);
+            let increase_enabled = step_enabled(1.);
             let decrease = ui.add_enabled(
-                enabled,
+                decrease_enabled,
                 egui::Button::new(RichText::new("−").size(24.)).min_size(egui::vec2(36., 46.)),
             );
             decrease.widget_info(|| {
-                egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, "Decrease value")
+                egui::WidgetInfo::labeled(
+                    egui::WidgetType::Button,
+                    decrease_enabled,
+                    "Decrease value",
+                )
             });
             if decrease.clicked() {
                 step = -1.;
@@ -188,11 +231,15 @@ pub fn draw(
                     .hint_text("Value"),
             );
             let increase = ui.add_enabled(
-                enabled,
+                increase_enabled,
                 egui::Button::new(RichText::new("+").size(24.)).min_size(egui::vec2(36., 46.)),
             );
             increase.widget_info(|| {
-                egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, "Increase value")
+                egui::WidgetInfo::labeled(
+                    egui::WidgetType::Button,
+                    increase_enabled,
+                    "Increase value",
+                )
             });
             #[cfg(test)]
             {
@@ -262,11 +309,15 @@ pub fn draw(
     }
     // Only a known domain range can justify a slider. A small observed value
     // or a write-limit is not evidence that the setting itself has that range.
-    if let Some(range) = bounds.filter(|r| {
-        r.start().is_finite()
-            && r.end().is_finite()
-            && r.start() < r.end()
+    if let Some(range) = bounds.as_ref().filter(|r| {
+        r.start() < r.end()
             && r.end() - r.start() <= 20.
+            // The slider uses floating-point offsets. Only exact integral
+            // endpoints are suitable for an integer slider; typing stays exact.
+            && (!(4..=11).contains(&kind)
+                || [*r.start(), *r.end()].iter().all(|v| {
+                    v.fract() == 0. && v.abs() <= 9_007_199_254_740_991.
+                }))
     }) {
         editor.anchor = range.start().to_string();
         if !editor.dragging {
@@ -315,7 +366,7 @@ pub fn draw(
     }
     if commit {
         editor.dirty = false;
-        match encode(kind, &editor.text) {
+        match encode_bounded(kind, &editor.text, bounds.as_ref()) {
             Ok(desired) if Some(&desired) != encode(kind, &current).ok().as_ref() => {
                 return Some(editor.text.clone());
             }
@@ -455,6 +506,11 @@ mod tests {
             (Some(1.0..=5.0), true),
             (Some(0.0..=1000.0), false),
             (Some(f64::NAN..=5.0), false),
+            (Some(1.5..=5.5), false),
+            (
+                Some(9_007_199_254_740_992.0..=9_007_199_254_740_996.0),
+                false,
+            ),
         ] {
             let mut output = ctx.run_ui(egui::RawInput::default(), |ui| {
                 assert!(draw(ui, &mut editor, 8, &json!("3"), true, bounds.clone()).is_none());
@@ -462,6 +518,91 @@ mod tests {
             output.textures_delta.clear();
             assert_eq!(editor.slider_rect.is_some(), has_slider);
         }
+    }
+
+    #[test]
+    fn known_bounds_apply_to_direct_entry_arrows_and_buttons() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        let render = |editor: &mut Editor, events, current: &str| {
+            let mut requested = None;
+            let mut output = ctx.run_ui(
+                egui::RawInput {
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    requested = draw(ui, editor, 8, &json!(current), true, Some(1.0..=5.0));
+                },
+            );
+            output.textures_delta.clear();
+            requested
+        };
+        assert!(render(&mut editor, vec![], "3").is_none());
+        let id = editor.value_id.unwrap();
+        let entry = |value: &str| {
+            egui::Event::AccessKitActionRequest(egui::accesskit::ActionRequest {
+                action: egui::accesskit::Action::SetValue,
+                target_tree: egui::accesskit::TreeId::ROOT,
+                target_node: id.value().into(),
+                data: Some(egui::accesskit::ActionData::Value(value.into())),
+            })
+        };
+        assert!(render(&mut editor, vec![entry("6")], "3").is_none());
+        assert_eq!(editor.error.as_deref(), Some("Choose a value from 1 to 5."));
+        assert_eq!(
+            render(&mut editor, vec![entry("5")], "3").as_deref(),
+            Some("5")
+        );
+
+        // Keyboard adjustments must obey the same range as the slider.
+        ctx.memory_mut(|m| m.request_focus(id));
+        editor.text = "5".into();
+        editor.focused = true;
+        let up = egui::Event::Key {
+            key: egui::Key::ArrowUp,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: Default::default(),
+        };
+        assert!(render(&mut editor, vec![up], "5").is_none());
+        assert!(editor.error.is_some());
+
+        // At the endpoint the + button is disabled, with no write request.
+        ctx.memory_mut(|m| m.surrender_focus(id));
+        editor.focused = false;
+        assert!(render(&mut editor, vec![], "5").is_none());
+        let pos = editor.increase_rect.unwrap().center();
+        let click = vec![
+            egui::Event::PointerMoved(pos),
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: true,
+                modifiers: Default::default(),
+            },
+            egui::Event::PointerButton {
+                pos,
+                button: egui::PointerButton::Primary,
+                pressed: false,
+                modifiers: Default::default(),
+            },
+        ];
+        assert!(render(&mut editor, click, "5").is_none());
+    }
+
+    #[test]
+    fn bounds_check_preserves_integer_precision_and_actual_float_storage() {
+        let range = 0.0..=9_007_199_254_740_992.0;
+        assert!(encode_bounded(11, "9007199254740992", Some(&range)).is_ok());
+        assert!(encode_bounded(11, "9007199254740993", Some(&range)).is_err());
+        assert!(encode_bounded(11, "18446744073709551615", None).is_ok());
+        assert!(encode_bounded(8, "1", Some(&(1.5..=5.5))).is_err());
+        assert!(encode_bounded(8, "2", Some(&(1.5..=5.5))).is_ok());
+        // This decimal rounds up to 0.1f32, beyond the exact f64 endpoint.
+        assert!(encode_bounded(12, "0.1", Some(&(0.0..=0.1))).is_err());
+        assert!(encode_bounded(13, "0.1", Some(&(0.0..=0.1))).is_ok());
     }
 
     #[test]
