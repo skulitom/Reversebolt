@@ -2,6 +2,7 @@
 //! Model metadata and dictionary attribution are in NOTICE.md. Observations are
 //! provisional: neither a model score nor a stable region verifies meaning.
 mod geometry;
+pub mod patch_motion;
 pub mod response;
 
 use geometry::{Projection, Quad, bounds, crop, distance, ordered, overlap, rectangle, resize};

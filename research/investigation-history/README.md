@@ -35,8 +35,10 @@ New tests cover:
   unsupported nested content, using small injected limits instead of large files.
 
 The [frozen replay](PROTOCOL.md) also used a disposable copy of completed comparison
-`080b5643-5718-494f-9ed6-751bf8059402` from the earlier planned-input Manifold Garden
-evaluation. It retained that record, added eight explicitly synthetic stopped
+`080b5643-5718-494f-9ed6-751bf8059402` from the earlier planned-input **owned ABI
+fixture and striped renderer** evaluation. The previous version incorrectly
+called it Manifold Garden; [the provenance correction](PROVENANCE-CORRECTION.md)
+identifies the source. It retained that record, added eight explicitly synthetic stopped
 records and reopened the store. The ninth record in the original investigation
 was refused; one record in a new investigation was accepted.
 

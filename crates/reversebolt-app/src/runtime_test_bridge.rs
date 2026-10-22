@@ -231,8 +231,24 @@ impl Session {
                 let input = engine.runtime_tests.read_input(&test, condition, frame)?;
                 use base64::Engine as _;
                 result["png_base64"] =
-                    json!(base64::engine::general_purpose::STANDARD.encode(image));
+                    json!(base64::engine::general_purpose::STANDARD.encode(&image));
                 result["input"] = json!(input);
+                if frame > 0 {
+                    let measured = (|| -> Result<_> {
+                        let prior = engine
+                            .runtime_tests
+                            .read_image(&test, condition, frame - 1)?;
+                        reversebolt_vision::patch_motion::measure(&prior, &image)
+                    })();
+                    let (measurement, error) = match measured {
+                        Ok(report) => (Some(report), None),
+                        Err(error) => (None, Some(error)),
+                    };
+                    result["patch_motion"] = json!({"condition":condition,"before_frame":frame-1,"after_frame":frame,
+                        "before_sha256":test.conditions[condition].frames[frame-1].sha256,
+                        "after_sha256":test.conditions[condition].frames[frame].sha256,
+                        "measurement":measurement,"error":error});
+                }
             }
             return Ok(result);
         }

@@ -1,0 +1,99 @@
+{
+  "runs": [
+    {
+      "version": "patch-motion-v1",
+      "frozen_sha256": "cb3b4d6c2202de95b6e27e73d91eee1a41ebbf76b0c65be04349073b0b3c6bb8",
+      "result_sha256": "d1a00855cb96a0d375c4278ab74e40dd8647b16ad7f9dd92278c1e0a184353cd"
+    },
+    {
+      "version": "patch-motion-v2",
+      "frozen_sha256": "25c1580f0c1a73b4d3bf0ed59e5beb3c4899f3975c04e2cc80f60778279e9445",
+      "result_sha256": "8928b94b72b45d314fbbad3eee527c9fe362e8b1875acf6a1a2849465b14e57f"
+    },
+    {
+      "version": "patch-motion-v3",
+      "frozen_sha256": "1bca52f2059ba3b3e6b09aa16137fb05897bedc03d7e06ad74fed4f8a2cd5b13",
+      "result_sha256": "8928b94b72b45d314fbbad3eee527c9fe362e8b1875acf6a1a2849465b14e57f"
+    }
+  ],
+  "same_archived_binary_all_runs": true,
+  "final_source_replay_equals_v2": true,
+  "source_correction": "V1 mislabeled three owned striped-fixture cases as Manifold Garden. V2/V3 retain those images correctly labeled and add genuine Manifold Garden observations.",
+  "images": 48,
+  "intervals": 43,
+  "legacy_difference_values_exactly_preserved": 43,
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "intervals": 14,
+      "patches": 294,
+      "matched": 51,
+      "nonzero_matches": 15,
+      "statuses": {
+        "low_texture": 220,
+        "matched": 51,
+        "poor_match": 14,
+        "search_boundary": 8,
+        "inconsistent_reverse": 1
+      },
+      "consensus_intervals": 0
+    },
+    {
+      "name": "Owned striped fixture retained baseline",
+      "intervals": 5,
+      "patches": 105,
+      "matched": 0,
+      "nonzero_matches": 0,
+      "statuses": {
+        "low_texture": 36,
+        "search_boundary": 69
+      },
+      "consensus_intervals": 0
+    },
+    {
+      "name": "Owned striped fixture retained changed",
+      "intervals": 5,
+      "patches": 105,
+      "matched": 0,
+      "nonzero_matches": 0,
+      "statuses": {
+        "search_boundary": 105
+      },
+      "consensus_intervals": 0
+    },
+    {
+      "name": "Owned striped fixture retained recovered",
+      "intervals": 5,
+      "patches": 105,
+      "matched": 0,
+      "nonzero_matches": 0,
+      "statuses": {
+        "search_boundary": 105
+      },
+      "consensus_intervals": 0
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "intervals": 14,
+      "patches": 294,
+      "matched": 36,
+      "nonzero_matches": 4,
+      "statuses": {
+        "low_texture": 234,
+        "matched": 36,
+        "ambiguous": 13,
+        "poor_match": 9,
+        "search_boundary": 1,
+        "inconsistent_reverse": 1
+      },
+      "consensus_intervals": 0
+    }
+  ],
+  "new_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "workspace_test_executions_passed": 313,
+  "test_log_sha256": "22de2f6494a0c51412f7b204313c531d6bea6cdc8d359f4b7d1974bf59f7e07c",
+  "limitation": "Low known-game match coverage, no broad motion consensus, no ground-truth flow map or verified gameplay meaning. One epoch-guard test also runs in the example target."
+}

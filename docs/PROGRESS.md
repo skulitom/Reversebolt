@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Sparse patch-motion evidence (2026-10-22): **35% unchanged**.
+Shared observation reads and automatic evidence archives now include local image
+displacements with hash bindings and explicit unresolved patches. Historical
+comparison reads retain the current image even if its predecessor is unavailable.
+These measurements do not assign gameplay meaning or change control eligibility.
+
+A frozen replay of 48 saved images preserves all 43 prior image-difference values
+exactly. Match coverage is low: Hyperbolica has 0–6 of 21 patches per pair and
+Manifold Garden 1–4; no pair supports a broad consensus. The owned striped fixture
+remains unresolved. V1 incorrectly labeled those fixture cases as Manifold Garden;
+V2 corrects the labels and adds genuine game captures, preserving the original
+artifacts. V3 verifies the final source with identical results. No new captures,
+models, target access, input or gameplay writes ran. All 313 test executions and
+strict Clippy pass (one test also runs in the example target). No new verified
+control or generalization is established. This source increment is unpublished
+and the preview remains unavailable. [Evidence and limits](../research/patch-motion/README.md).
+
 Comparison history across investigations (2026-10-22): **35% unchanged**.
 The former eight-record lifetime cap is now eight comparisons per investigation
 with 128 retained historical records. Existing results remain readable and old
@@ -13,12 +30,14 @@ record fits. A shared 512 MiB capture-evidence quota keeps retained images bound
 
 All 306 workspace tests and strict Clippy pass, including the actual command,
 checkpoint and engine-restart path. A frozen disposable-copy replay retains a
-completed Manifold Garden comparison alongside eight clearly synthetic history
+completed owned-fixture comparison alongside eight clearly synthetic history
 records. The original record and 90 source evidence files are unchanged; production
 readers verify eighteen image/input pairs and eighteen execution receipts after
 restart. No game, model, target access, input or field write ran. No new gameplay
 effect or generalization is established. This source change is unpublished and
-the preview remains unavailable. [Evidence and limits](../research/investigation-history/README.md).
+the preview remains unavailable. The prior version mislabeled this source as
+Manifold Garden; [the correction](../research/investigation-history/PROVENANCE-CORRECTION.md)
+does not change frozen artifacts or credit. [Evidence and limits](../research/investigation-history/README.md).
 
 Distinct paths and retained alternatives (2026-10-22): **35% unchanged**.
 The comparison planner now includes eligible alternatives and keeps different

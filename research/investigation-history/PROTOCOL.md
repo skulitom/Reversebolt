@@ -2,8 +2,10 @@
 
 Run the new file-only `history-replay` example against a disposable copy of the
 completed comparison 080b5643-5718-494f-9ed6-751bf8059402 from
-`test-results/planned-input-v1/case/data/runtime-tests`. This is an earlier,
-hand-selected Manifold Garden comparison, not an automatic discovery success.
+`test-results/planned-input-v1/case/data/runtime-tests`. This is an earlier owned
+ABI fixture/striped-renderer comparison, not an automatic discovery success.
+Correction: the original frozen protocol incorrectly called it Manifold Garden;
+its frozen copy is retained unchanged. See [provenance](PROVENANCE-CORRECTION.md).
 
 Freeze source, executable and all input-file hashes before running. Archive the
 executable. The replay must create a new output directory and never open the

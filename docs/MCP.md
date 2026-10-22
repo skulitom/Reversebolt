@@ -39,6 +39,24 @@ to an appropriate comparison. These associations establish no button meaning,
 gameplay property, numeric bound or edit authority. The metadata model does not
 yet use this evidence automatically.
 
+`patch_motion` additionally reports sparse patch correspondences for each saved
+image pair, with both image IDs/hashes and explicit measurement errors. It is
+computed automatically with play evidence and retained in the automatic activity
+review's evidence archive. It uses no model call. Displacements are integer pixels
+in a normalized 256×144 image: positive x is right, positive y is down. The output
+lists all 21 patches, matched/zero/nonzero counts, per-patch brightness changes and
+residual RMS, and an optional consensus with its support count and one-pixel
+tolerance. Read its `source_dimensions` and `measurement_dimensions` explicitly.
+
+Unresolved matches have null displacement, not zero. Flat/repeated patterns,
+occlusion, large motion and inconsistent reverse matches are excluded. The
+heuristic thresholds are not calibrated probabilities. A zero displacement or a
+consensus does not identify an actor, camera, physical speed or lack of movement.
+Current known-game replay has low match coverage and no broad consensus; this
+measurement is not ready to validate movement. Existing play-context selection,
+comparison assessment, names and edit authority remain unchanged.
+See [measurement evidence and limits](../research/patch-motion/README.md).
+
 ## Direct edits
 
 Automatic metadata reviews may create literal internal questions after a valid
@@ -935,6 +953,13 @@ use `reversebolt_restore_runtime_change`; gather the recovery condition only aft
 the linked trial is restored. Read returns the complete test; optional zero-based
 `condition` (0–2) and `frame` (0–5) return a checksum-checked native MCP image and
 its sampled input window. A stopped plan is immutable and cannot be resumed.
+
+When `read_runtime_test` requests a frame greater than zero, `patch_motion`
+describes its difference from the preceding saved image in the same condition,
+with both hashes. The first frame has no predecessor measurement. An unavailable
+or invalid previous image produces a motion error while the requested current
+image can remain readable. A corrupted requested image still fails its hash check.
+No saved comparison assessment is changed by this additional read-time measurement.
 
 Only one test can be active; the limit is eight saved tests **per investigation**,
 128 retained records per data directory and 15 minutes per active test. Closed

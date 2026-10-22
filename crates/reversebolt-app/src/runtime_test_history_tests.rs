@@ -144,3 +144,91 @@ fn comparison_capacity_and_old_request_replay_survive_engine_restart() {
     );
     std::fs::remove_dir_all(resolved).unwrap();
 }
+
+#[test]
+fn historical_frame_read_exposes_motion_and_isolates_prior_image_failure() {
+    let parent = std::env::temp_dir().canonicalize().unwrap();
+    let directory = parent.join(format!("reversebolt-motion-read-{}", id()));
+    std::fs::create_dir(&directory).unwrap();
+    let mut engine = Engine::load(directory.join("state.json")).unwrap();
+    let mut test = saved(&id());
+    let folder = directory.join("runtime-tests").join(&test.id);
+    std::fs::create_dir(&folder).unwrap();
+    let mut encoded = std::io::Cursor::new(vec![]);
+    image::GrayImage::from_pixel(80, 45, image::Luma([60]))
+        .write_to(&mut encoded, image::ImageFormat::Png)
+        .unwrap();
+    let bytes = encoded.into_inner();
+    for i in 0..2 {
+        let interval = reversebolt_core::visual::CaptureInterval {
+            clock_id: test.investigation.clone(),
+            begin_us: i * 1000000,
+            end_us: i * 1000000 + 1000,
+        };
+        let frame = runtime_tests::Frame {
+            path: format!("{}/0-{i}.png", test.id),
+            sha256: reversebolt_core::visual::digest(&bytes),
+            input_path: format!("{}/0-{i}.input.json", test.id),
+            input_sha256: reversebolt_core::visual::digest(b"null"),
+            width: 80,
+            height: 45,
+            input: InputWitness::check(None, None, &interval, interval.begin_us),
+            interval,
+            started_unix_ms: i as u128,
+            completed_unix_ms: i as u128,
+            sampling: None,
+            difference: if i == 0 { None } else { Some(0.) },
+        };
+        std::fs::write(folder.join(format!("0-{i}.png")), &bytes).unwrap();
+        std::fs::write(folder.join(format!("0-{i}.input.json")), b"null").unwrap();
+        test.conditions[0].frames.push(frame);
+    }
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let request = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id,"condition":0,"frame":1}),
+    };
+    let read = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(read["patch_motion"]["measurement"]["matched_patches"], 0);
+    assert!(read["patch_motion"]["measurement"]["consensus"].is_null());
+    assert_eq!(
+        read["patch_motion"]["before_sha256"],
+        test.conditions[0].frames[0].sha256
+    );
+    assert_eq!(
+        read["patch_motion"]["after_sha256"],
+        test.conditions[0].frames[1].sha256
+    );
+    assert_eq!(read["test"], json!(test));
+    std::fs::write(folder.join("0-0.png"), b"changed").unwrap();
+    let partial = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert!(partial["patch_motion"]["measurement"].is_null());
+    assert!(partial["patch_motion"]["error"].is_string());
+    assert_eq!(partial["png_base64"], read["png_base64"]);
+    assert_eq!(partial["test"], json!(test));
+    std::fs::write(folder.join("0-1.png"), b"changed").unwrap();
+    assert!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .is_err()
+    );
+    drop(session);
+    drop(engine);
+    let resolved = directory.canonicalize().unwrap();
+    assert_eq!(resolved.parent().unwrap(), parent);
+    assert!(
+        resolved
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-motion-read-")
+    );
+    std::fs::remove_dir_all(resolved).unwrap();
+}

@@ -7,7 +7,7 @@ use reversebolt_core::{Result, visual::MAX_IMAGE_BYTES};
 
 pub use reversebolt_core::runtime_tests::METRIC_ID;
 
-fn prepare(bytes: &[u8]) -> Result<GrayImage> {
+pub(crate) fn grayscale(bytes: &[u8]) -> Result<GrayImage> {
     if bytes.len() > MAX_IMAGE_BYTES {
         return Err("Response image exceeds the 10 MiB budget.".into());
     }
@@ -27,6 +27,11 @@ fn prepare(bytes: &[u8]) -> Result<GrayImage> {
                 as u8,
         ])
     });
+    Ok(gray)
+}
+
+fn prepare(bytes: &[u8]) -> Result<GrayImage> {
+    let gray = grayscale(bytes)?;
     let scaled = imageops::resize(&gray, 640, 360, FilterType::Triangle);
     Ok(imageops::blur(
         &imageops::crop_imm(&scaled, 24, 40, 592, 296).to_image(),
