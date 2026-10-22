@@ -4,6 +4,35 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+New-game baseline and measured investigation context (2026-10-22): **35% unchanged**.
+The unchanged published pipeline completed in Hyperbolica: fifteen automatic
+captures, four bounded evaluator inputs, one completed/unloaded helper, and two
+cited questions (walking speed and shake strength). Six metadata calls and one
+image call were retained. The image model marked the response ambiguous, so the
+original planner refused and no comparison, field edit or Freeze occurred. The
+existing saved-game hash is unchanged. Freight Hopper setup was first stopped
+before inspection because Play created a Steam lobby and exposed a leaderboard;
+that setup failure remains recorded.
+
+Source now distinguishes a positive image interpretation from a measured
+contrast worth investigating. The explicit versioned basis retains the model's
+false flag, wording and uncertainty, while preserving all timing/input/evidence
+checks and edit guards. An offline replay rehashed all fifteen saved images and
+recomputed the production metric, proposing one comparison with four 198 ms
+holds. It used no new model call, target access, input or write. The proposed
+comparison has not been executed. All 293 workspace tests and strict Clippy pass.
+There is no new verified gameplay control or generalization credit.
+
+**Current desktop status:** a later Windows behavior detection quarantined the
+published preview and closed its desktop process. The earlier clean startup and
+cleanup checks are retained as historical observations, not clearance. Windows
+also refuses reading that build-output copy. No restore, exclusion, republish or
+external submission followed. The source improvement is unpublished; the review
+submission still awaits approval. This supersedes the running-preview status
+below. All owned test processes exited and Anode was released. The full goal
+remains active. [Native/replay evidence](../research/independent-runtime/README.md)
+and [detection follow-up](../research/security-review/FOLLOWUP-2026-10-22.md).
+
 Desktop preview publication (2026-10-22): **35% unchanged**. Preview
 `0.1.0-20261022-010125` is now running on the user's desktop with the named-card,
 direct-number, arrow-key and conditional-slider refinements, shared agent

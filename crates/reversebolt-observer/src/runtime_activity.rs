@@ -1,4 +1,4 @@
-//! Interpret paired play images before seeing internal metadata.
+//! Interpret paired play images independently of internal metadata.
 use crate::{Frame, Observer, Result, response_text, runtime_naming::Stage};
 use reversebolt_core::{
     play_context::{Context, Observation, Source},
@@ -48,11 +48,7 @@ impl Receipt {
         if self.error.is_some() {
             return None;
         }
-        let context = Context {
-            source: self.source.clone(),
-            observation: self.observation.clone()?,
-        };
-        context.validate().ok().map(|()| context)
+        Context::from_observation(self.source.clone(), self.observation.clone()?).ok()
     }
 }
 impl Observer {
@@ -137,7 +133,7 @@ mod tests {
         input.frames.swap(0, 1);
         input.frames[0].evidence.timestamp_ns += 1;
         assert!(input.validate().is_err());
-        let uncertain = Receipt {
+        let mut uncertain = Receipt {
             source,
             stage: None,
             error: None,
@@ -147,6 +143,20 @@ mod tests {
                 uncertainty: "Could be unchanged.".into(),
             }),
         };
+        let context = uncertain.context().unwrap();
+        assert_eq!(
+            context.basis,
+            reversebolt_core::play_context::Basis::MeasuredContrastV1
+        );
+        assert!(!context.observation.consistent_visible_change);
+        assert_eq!(
+            context.observation.description,
+            "Repeating shapes are ambiguous."
+        );
+        uncertain.error = Some("Model failed".into());
+        assert!(uncertain.context().is_none());
+        uncertain.error = None;
+        uncertain.source.quiet_difference = 100.;
         assert!(uncertain.context().is_none());
     }
 }

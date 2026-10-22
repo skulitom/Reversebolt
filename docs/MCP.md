@@ -824,6 +824,16 @@ timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Explicit runtime response comparisons
 
+Comparison plans now include `activity_context` and `activity_limitation`.
+A context with `basis: "measured_contrast_v1"` preserves the image model's
+`consistent_visible_change: false` verdict and uncertainty, while using the
+existing measured contrast and four bounded input episodes to propose an
+investigation. This does not assert a semantic change or permit a write. Positive
+interpretations retain their legacy shape (omitted `basis`, default
+`interpreted`). Unknown bases and unversioned negative contexts are rejected.
+The same context follows into test-origin provenance. See
+[the frozen native refusal and offline replay](../research/independent-runtime/README.md).
+
 Agents can contribute runtime hypotheses independently of the local model.
 `reversebolt_read_runtime_inventory` takes the current `catalog_id`; omit
 `selected_types` for a type/field index or pass up to eight type IDs for an exact

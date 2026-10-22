@@ -1,0 +1,13 @@
+{
+  "packet": "test-results\\security-review-followup-v1\\Reversebolt-followup-review.zip",
+  "bytes": 8245,
+  "sha256": "4f6b0cd568ede9d4e77df79ddcb3d50def51b24f44e4ed7869dbbb4d280f6712",
+  "entries": [
+    "FOLLOWUP.md",
+    "events.json",
+    "provenance.json"
+  ],
+  "uploaded": false,
+  "executable_included": false,
+  "new_sample_reading_refused_by_windows": true
+}

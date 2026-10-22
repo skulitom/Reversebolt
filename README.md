@@ -3,6 +3,10 @@
 An open-source Rust workbench for discovering what controls an unfamiliar game.
 Part of the Bolt family. Humans and agents use the same engine and session.
 
+**Local preview status:** Windows quarantined the October 22 desktop build after
+a native discovery test. That preview is currently unavailable; the subsequent
+planning change is source-only. [Detection details](research/security-review/FOLLOWUP-2026-10-22.md).
+
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and
@@ -22,13 +26,15 @@ Agents can also submit their own cited hypotheses through MCP and connect an exa
 candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.
 See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
-The current desktop preview also exposes a read-only comparison planner using
-retained play timing and cited field hypotheses. The first actual-game run
-abstained and its restart was blocked by Windows security. The latest source
-build passes a window/picker smoke check with protection enabled; game attachment
-has not been revalidated and the earlier behavioral detection remains unresolved.
+Source builds expose a read-only comparison planner using retained play timing
+and cited field hypotheses. The published build passed a limited window/picker
+check and a native discovery run, but was subsequently quarantined by Windows.
 See [comparison planning and its limits](research/comparison-planner/README.md)
-and [the current preview check](research/desktop-preview-ui/README.md).
+and [the earlier preview check](research/desktop-preview-ui/README.md).
+An independent Hyperbolica run found two metadata hypotheses but no eligible
+comparison. A later offline revision separates measured contrast from the
+model's ambiguous interpretation without promoting either to a verified control.
+See [the native baseline and revised planning evidence](research/independent-runtime/README.md).
 Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.

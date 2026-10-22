@@ -186,14 +186,14 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     let review = rt
         .naming
         .as_ref()
-        .ok_or("Wait for a completed activity-informed review.")?;
+        .ok_or("Wait for a completed metadata review with retained activity evidence.")?;
     if c.args["catalog_id"] != rt.catalog_id || c.args["review_id"] != review.evidence_id {
         return Err("The catalogue or hypothesis review changed.".into());
     }
     let context = review
         .play_context
         .as_ref()
-        .ok_or("No consistent observed activity is available for a comparison plan.")?;
+        .ok_or("No bounded measured activity is available for a comparison plan.")?;
     let response = crate::play_evidence::read(
         session,
         &json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()}),
@@ -221,7 +221,8 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     };
     Ok(
         json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
-        "report_sha256":review.report_sha256,"observed_actions":actions,"choices":choices,"next":next,"busy":busy,"limitation":p::LIMITATION}),
+        "report_sha256":review.report_sha256,"activity_context":context,"activity_limitation":reversebolt_core::play_context::LIMITATION,
+        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"limitation":p::LIMITATION}),
     )
 }
 

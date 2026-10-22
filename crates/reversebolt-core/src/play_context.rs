@@ -1,4 +1,4 @@
-//! Bounded activity context for metadata questions, never a semantic control.
+//! Bounded activity evidence for investigation, never a semantic control.
 use crate::{
     Result,
     action_patterns::Exposure,
@@ -7,7 +7,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
-pub const LIMITATION: &str = "A model interpretation of two sampled image pairs, associated with a sampled key. No key meaning, game delivery, persistent actor, physical quantity, causal relationship to an internal field or edit authority is established. The context informed the metadata review; it does not prove that any returned hypothesis explains this response.";
+pub const LIMITATION: &str = "Two measured image contrasts associated with a sampled key, with the model's interpretation and uncertainty retained separately. Measured contrast can justify investigating an ambiguous response; it does not overrule the model or establish a consistent semantic change. No key meaning, game delivery, persistent actor, physical quantity, causal relationship to an internal field or edit authority is established. Metadata questions are generated independently; no returned hypothesis is proven to explain this response.";
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Frame {
     pub id: String,
@@ -200,17 +200,47 @@ impl Observation {
         Ok(())
     }
 }
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Basis {
+    #[default]
+    Interpreted,
+    MeasuredContrastV1,
+}
+impl Basis {
+    fn is_interpreted(&self) -> bool {
+        *self == Self::Interpreted
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Context {
+    /// Legacy positive interpretations retain their original serialized shape.
+    #[serde(default, skip_serializing_if = "Basis::is_interpreted")]
+    pub basis: Basis,
     pub source: Source,
     pub observation: Observation,
 }
 impl Context {
+    pub fn from_observation(source: Source, observation: Observation) -> Result<Self> {
+        let basis = if observation.consistent_visible_change {
+            Basis::Interpreted
+        } else {
+            Basis::MeasuredContrastV1
+        };
+        let context = Self {
+            basis,
+            source,
+            observation,
+        };
+        context.validate()?;
+        Ok(context)
+    }
+
     pub fn validate(&self) -> Result<()> {
         self.source.validate()?;
         self.observation.validate()?;
-        if !self.observation.consistent_visible_change {
-            return Err("Uncertain activity cannot condition metadata hypotheses.".into());
+        if (self.basis == Basis::Interpreted) != self.observation.consistent_visible_change {
+            return Err("The activity basis disagrees with the retained interpretation.".into());
         }
         Ok(())
     }

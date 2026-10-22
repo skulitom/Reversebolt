@@ -1,0 +1,83 @@
+{
+  "artifact_audit_passed": true,
+  "offline_replay_only": true,
+  "original_image_interpretation_preserved": true,
+  "metadata_questions_unchanged": true,
+  "images_rehashed_and_metrics_recomputed": 15,
+  "basis": "measured_contrast_v1",
+  "model_consistent_visible_change": false,
+  "planned_choices": 1,
+  "planned_hold_ms": [
+    198,
+    198,
+    198,
+    198
+  ],
+  "next": {
+    "actions": [
+      {
+        "hold_ms": 198,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          65
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          65
+        ]
+      }
+    ],
+    "alternatives": [
+      {
+        "field_id": 24,
+        "field_name": "jumpSpeed",
+        "id": 24,
+        "object_text": [],
+        "path_id": "458a9908d535eb55b08562dfe849c9371c300b585c603a9d8fd03f3bfdd81978",
+        "type_id": 14,
+        "type_name": "Player, HyperAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "value": "2.2"
+      }
+    ],
+    "explanation": "The field name walkingSpeed suggests a parameter that controls the rate of horizontal movement, which is a core gameplay mechanic distinct from jump or rotation settings.",
+    "field_id": 23,
+    "hypothesis_ref": {
+      "hypothesis_path_id": "fc2ade9059660a98bbee1b88761032f85dcbfdf36c1848f291016f51644f68f5",
+      "review_id": "59b40e08-b56e-4974-a70e-cd98519ab43d",
+      "selected_path_id": "fc2ade9059660a98bbee1b88761032f85dcbfdf36c1848f291016f51644f68f5"
+    },
+    "name": "walking speed",
+    "observed_value": "2.25",
+    "previous_test": null,
+    "question": "Does adjusting the walking speed value change the distance the player travels per second while moving on the ground?",
+    "status": "untried",
+    "type_id": 14,
+    "value": "0"
+  },
+  "new_model_calls": 0,
+  "target_access": false,
+  "field_edits": 0,
+  "workspace_tests_passed": 293,
+  "test_log_sha256": "fec6d154df746cac02bc9599e1ba5aa2e858ac503109fba99af215b30de174ac",
+  "frozen_manifest_sha256": "25344acaabb856be1f04e14fd0d8f71af5fb9cdab1faada33b2378277f094056",
+  "replay_sha256": "6a878ef071b224e5c8d59e135b021790b39c59daea1cb8ee79713144422a63cf",
+  "limitations": [
+    "Known development case, not new independent acceptance.",
+    "The plan has not been executed in the game; no gameplay control was verified.",
+    "The original native run still had no eligible comparison and made no edit.",
+    "The desktop preview was subsequently quarantined; this source update is unpublished."
+  ]
+}

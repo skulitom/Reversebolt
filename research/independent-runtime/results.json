@@ -1,0 +1,126 @@
+{
+  "artifact_audit_passed": true,
+  "native_workflow_finished": true,
+  "postrun_binary_rehash_unavailable": [
+    "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-010125\\Reversebolt.exe"
+  ],
+  "later_security_detection": {
+    "events": [
+      {
+        "id": 1117,
+        "timeUtc": "2026-10-22T00:22:22.3921413Z",
+        "threat": "Behavior:Win32/DefenseEvasion.A!ml",
+        "action": "Quarantine",
+        "process": "Reversebolt.exe",
+        "target": "dist/0.1.0-20261022-010125/Reversebolt.exe",
+        "intelligence": "AV: 1.461.140.0, AS: 1.461.140.0, NIS: 1.461.140.0"
+      },
+      {
+        "id": 1116,
+        "timeUtc": "2026-10-22T00:22:20.9501747Z",
+        "threat": "Behavior:Win32/DefenseEvasion.A!ml",
+        "action": "Not Applicable",
+        "process": "Reversebolt.exe",
+        "target": "dist/0.1.0-20261022-010125/Reversebolt.exe",
+        "intelligence": "AV: 1.461.140.0, AS: 1.461.140.0, NIS: 1.461.140.0"
+      },
+      {
+        "id": 1116,
+        "timeUtc": "2026-10-22T00:22:00.0803163Z",
+        "threat": "Behavior:Win32/DefenseEvasion.A!ml",
+        "action": "Not Applicable",
+        "process": "python.exe",
+        "target": "dist/0.1.0-20261022-010125/Reversebolt.exe",
+        "intelligence": "AV: 1.461.140.0, AS: 1.461.140.0, NIS: 1.461.140.0"
+      }
+    ],
+    "desktopPid": 83600,
+    "desktopProcessExited": true,
+    "publishedSampleAvailable": false,
+    "preDetectionSha256": "5a88e59668b6aa165f889309b8731d25fe8f3925deb38cad88e1df3f05fdbfe9",
+    "interpretation": "Detection arrived after the earlier cleanup check. The exact trigger is not established. Nothing was restored, excluded, relaunched or submitted."
+  },
+  "original_product_commit": "18830e566f8c4f600b512be2682be00953cd89de",
+  "product_unchanged_between_targets": true,
+  "freight_hopper_setup": {
+    "stopped_before_attach": true,
+    "reason": "The ordinary Play action automatically created a Steam P2P lobby. The selected level screen also displayed leaderboard rank. Offline-only comparison scope was not established.",
+    "setup_images_reviewed": 4,
+    "normal_menu_storage_changed": true
+  },
+  "hyperbolica": {
+    "app_id": "1256230",
+    "installed_build": "8675290",
+    "setup_images_reviewed": 3,
+    "automatic_images": 15,
+    "manual_measurement_image_reviews": 0,
+    "input_holds": 4,
+    "metadata_model_calls": 6,
+    "image_model_calls": 1,
+    "observed_types": 77,
+    "observed_fields": 327,
+    "reachable_paths": 8729,
+    "questions": [
+      {
+        "name": "walking speed",
+        "field": "walkingSpeed",
+        "value": "2.25",
+        "alternatives": 1,
+        "primary_path": "fc2ade9059660a98bbee1b88761032f85dcbfdf36c1848f291016f51644f68f5"
+      },
+      {
+        "name": "shake strength",
+        "field": "shakeStrength",
+        "value": "0",
+        "alternatives": 1,
+        "primary_path": "db169e9771b93c7b7c20ee6a77a38503e78704d02639a3b6555f5244ef7dcded"
+      }
+    ],
+    "rejected_questions": 0,
+    "image_interpretation": {
+      "consistent_visible_change": false,
+      "description": "In both pairs, the cyan robot on the right shifts slightly leftward and the foreground red conical plants on the left disappear. The camera angle appears to adjust slightly, revealing more of the right-side background in the 'after' frames.",
+      "uncertainty": "The changes are subtle and could be attributed to minor camera drift or animation rather than a specific control input. The disappearance of the red plants is consistent, but the robot's movement is slight and ambiguous."
+    },
+    "planner_refusal": "No consistent observed activity is available for a comparison plan.",
+    "comparisons": 0,
+    "field_edits": 0,
+    "original_game_save_unchanged": true,
+    "logs_and_analytics_added": true
+  },
+  "helpers": [
+    {
+      "report_sha256": "f1c987f9524e8d8e80350a76edee7e1c1b0377a7ec5423ff43a3aebf149c49e9",
+      "events_sha256": "fdd5968cc31e746b2bc0d8e5cfba29cc53824103635dbcd748e4ff1b90932190",
+      "graph_complete": false,
+      "roots_complete": true
+    }
+  ],
+  "pause_count": 52,
+  "max_stop_to_resume_us": 2045,
+  "cleanup": {
+    "ownedPids": [
+      64484,
+      84124,
+      28500,
+      68996,
+      68756
+    ],
+    "ownedProcessesExited": true,
+    "mcpExitCode": 0,
+    "desktopPid": 83600,
+    "desktopResponsive": true,
+    "newRelatedDetectionEvents": 0,
+    "protection": {
+      "RealTimeProtectionEnabled": true,
+      "AntivirusEnabled": true,
+      "IsTamperProtected": true
+    },
+    "originalReviewSampleSha256": "a99d229af90a32e21425a43b8b5c353a90b914437c462b15f629bf6b2cd4060a",
+    "noRestorationNeeded": true
+  },
+  "frozen_manifest_sha256": "8ff59347af51eaa4c684839738a785b57a4f42b642fd9a3f08cf23b1037ba864",
+  "receipt_sha256": "fad60b3d86a65386a34efc0e15ff055173770f4fd656638991a6c9ef3f7ccfd3",
+  "measurement_source_sha256": "079f30dcdfc8a6f59688321f12c4bec7112552b40b6b30feb38154936497bdef",
+  "limitation": "No gameplay control was tested or validated. Paths may alias. Root scan completion is not full graph coverage. Neither the two accepted names nor an artifact audit establish generalization."
+}

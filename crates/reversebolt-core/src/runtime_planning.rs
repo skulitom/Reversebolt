@@ -270,6 +270,7 @@ mod tests {
         )
         .unwrap();
         let context = Context {
+            basis: Default::default(),
             source: crate::play_context::select(&frames, &evidence, "clock", 1)
                 .unwrap()
                 .unwrap(),
@@ -318,6 +319,44 @@ mod tests {
         let mut incomplete = evidence;
         incomplete.episodes.retain(|e| e.first_interval < 7);
         assert!(actions(&context, &frames, &incomplete).is_err());
+    }
+    #[test]
+    fn measured_contrast_keeps_model_ambiguity_and_all_timing_guards() {
+        let (mut context, frames, evidence) = observed();
+        context.observation.consistent_visible_change = false;
+        context.observation.description = "The visible change is ambiguous.".into();
+        // A legacy interpretation cannot silently become a measured-only basis.
+        assert!(actions(&context, &frames, &evidence).is_err());
+        let context = Context::from_observation(context.source, context.observation).unwrap();
+        let plan = actions(&context, &frames, &evidence).unwrap();
+        assert_eq!(plan.actions.len(), 4);
+        assert!(!context.observation.consistent_visible_change);
+        let saved = serde_json::to_value(&context).unwrap();
+        assert_eq!(saved["basis"], "measured_contrast_v1");
+        let restored: Context = serde_json::from_value(saved.clone()).unwrap();
+        assert_eq!(restored, context);
+        let mut unknown = saved;
+        unknown["basis"] = json!("measured_contrast_future");
+        assert!(serde_json::from_value::<Context>(unknown).is_err());
+        let mut missing = frames.clone();
+        missing[2].input_context = None;
+        assert!(actions(&context, &missing, &evidence).is_err());
+        let mut contradicted = evidence.clone();
+        for action in &mut contradicted.actions {
+            action.quiet_median_difference = Some(12.);
+        }
+        assert!(actions(&context, &frames, &contradicted).is_err());
+        let (positive, _, _) = observed();
+        assert!(
+            serde_json::to_value(&positive)
+                .unwrap()
+                .get("basis")
+                .is_none()
+        );
+        assert_eq!(
+            serde_json::from_value::<Context>(serde_json::to_value(&positive).unwrap()).unwrap(),
+            positive
+        );
     }
     #[test]
     fn questions_round_robin_types_without_counting_aliases_as_competitors() {

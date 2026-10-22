@@ -1,5 +1,12 @@
 # Windows security detection investigation
 
+**Latest status, 2026-10-22:** a second published build was detected after a
+native discovery run. Windows quarantined it and closed the desktop preview;
+hashing its build-output copy is also refused. No replacement was published.
+The [follow-up review](FOLLOWUP-2026-10-22.md) and local text-only packet retain
+the new events and frozen identities. External submission remains pending.
+The original investigation below describes evidence at its collection time.
+
 The preceding native evaluation could not restart its headless engine after
 Defender quarantined the test executable. The same condition remains relevant
 to desktop publication and new live-game validation. Offline model/code work
@@ -7,8 +14,8 @@ does not establish that the behavioral detection has been resolved.
 
 Read-only investigation identifies the exact sample, an unsigned 24,252,416-byte
 build with SHA-256 `a99d229af90a32e21425a43b8b5c353a90b914437c462b15f629bf6b2cd4060a`.
-The original build output remains present and matches the pre-detection frozen
-hash; the quarantined test copy remains absent. Defender events identify
+At collection, the original build output was present and matched the pre-detection
+frozen hash; the quarantined test copy was absent. Defender events identify
 `Behavior:Win32/DefenseEvasion.A!ml`, threat ID 2147738096, and `python.exe` as the
 initiating process. They do not identify the precise underlying behavior that
 caused the classification. Neither a keyword search nor our source inspection
@@ -37,7 +44,7 @@ above was a separate, explicit on-demand scan of one generated artifact.
 
 Microsoft's documented developer-review route requires submitting the file to
 its analysis service. That external submission is prepared but not authorized
-or performed. The current desktop preview is preserved and progress remains
+or performed. The current desktop preview is quarantined and progress remains
 **35%**. The full goal is still unfulfilled; resolving native validation remains
 necessary before claiming new verified gameplay controls or generalization.
 

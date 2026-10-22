@@ -525,6 +525,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
         },
     };
     test.origin.as_mut().unwrap().play_context = Some(reversebolt_core::play_context::Context {
+        basis: Default::default(),
         source: reversebolt_core::play_context::Source {
             investigation_id: test.investigation.clone(),
             batch: 1,
@@ -565,6 +566,26 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
         .observation
         .consistent_visible_change = false;
     assert!(uncertain.validate_plan().is_err());
+    let context = uncertain
+        .origin
+        .as_mut()
+        .unwrap()
+        .play_context
+        .as_mut()
+        .unwrap();
+    context.basis = reversebolt_core::play_context::Basis::MeasuredContrastV1;
+    uncertain.validate_plan().unwrap();
+    assert!(
+        !uncertain
+            .origin
+            .as_ref()
+            .unwrap()
+            .play_context
+            .as_ref()
+            .unwrap()
+            .observation
+            .consistent_visible_change
+    );
     let mut store = Store::open(directory.clone()).unwrap();
     store.record(test.clone()).unwrap();
     drop(store);
