@@ -60,7 +60,7 @@ fn median(values: impl Iterator<Item = f64>) -> Option<f64> {
     Some((values[(values.len() - 1) / 2] + values[values.len() / 2]) / 2.)
 }
 pub fn analyze(frames: &[FrameRef], measurements: Vec<Measurement>) -> Result<Evidence> {
-    if !(2..=20).contains(&frames.len())
+    if !(2..=crate::live::MAX_SAMPLES).contains(&frames.len())
         || measurements.len() + 1 != frames.len()
         || frames.windows(2).any(|f| f[0].number >= f[1].number)
         || frames.iter().map(|f| &f.id).collect::<BTreeSet<_>>().len() != frames.len()
@@ -70,7 +70,7 @@ pub fn analyze(frames: &[FrameRef], measurements: Vec<Measurement>) -> Result<Ev
                 || (m.difference.is_some() == m.error.is_some())
         })
     {
-        return Err("Supply 2–20 ordered distinct frames with one valid measurement or failure per interval.".into());
+        return Err("Supply 2–36 ordered distinct frames with one valid measurement or failure per interval.".into());
     }
     let intervals: Vec<_> = frames
         .windows(2)

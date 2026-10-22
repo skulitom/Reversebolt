@@ -49,7 +49,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("The report file changed".into());
     }
     let inventory = runtime_inventory::build(&report)?;
-    if inventory.report_sha256 != old.report_sha256 || !(2..=20).contains(&live.frames.len()) {
+    if inventory.report_sha256 != old.report_sha256
+        || !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&live.frames.len())
+    {
         return Err("Invalid retained scope".into());
     }
     let mut images = vec![];

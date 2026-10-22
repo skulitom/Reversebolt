@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Mixed automatic observation (2026-10-22): **35% unchanged**.
+Initial attachment for targets without a supported runtime now gathers fifteen
+image/input-only moments at 100 ms delays before the existing sixteen full
+captures. Exact memory-sample numbers let numeric fitting and reference learning
+exclude deliberate Play captures while retaining failed memory reads as gaps.
+The independent limits are 36 total moments, 20 memory attempts and 512 MiB.
+Automatic fitting still gets twelve full samples followed by four fresh checks.
+Both phases share one durable job; MCP exposes the same sequence, both budgets
+include queued work, and older job plans survive the increased step capacity.
+
+All 385 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. Tests cover mixed capture/fitting/reference/prediction behavior,
+missing reads, both budgets, scheduler execution, old-journal restart rules and
+36-image activity preparation without increasing regional matching budgets.
+The first added image test failed only its canonical-path cleanup assertion;
+the corrected guard passes. These are software integration results, not capture
+throughput or real-game generalization. Desktop checking still reports the
+quarantined preview unavailable. Security artifacts remain local.
+[Implementation, verification and limits](../research/mixed-observation-phases/README.md).
+
 Browser activity eligibility replay (2026-10-22): **35% unchanged**.
 The unchanged product replayed all 64 original images from four retained 2048
 and Tetris runs. Of 60 intervals, 54 first failed on mixed controls, two exceeded

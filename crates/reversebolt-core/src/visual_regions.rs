@@ -75,7 +75,7 @@ pub fn select(
 ) -> Result<Selection> {
     if investigation.is_empty()
         || investigation.len() > 64
-        || !(2..=20).contains(&frames.len())
+        || !(2..=crate::live::MAX_SAMPLES).contains(&frames.len())
         || tracks.len() > visual::MAX_TRACKS
         || tracks.iter().map(|t| t.id).collect::<BTreeSet<_>>().len() != tracks.len()
         || frames.iter().map(|f| &f.id).collect::<BTreeSet<_>>().len() != frames.len()

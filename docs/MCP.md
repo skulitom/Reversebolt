@@ -28,6 +28,27 @@ input without OCR or memory reads. Supported-runtime automatic attach collects
 fifteen such moments before discovery. `start_runtime_job` can request the same
 initial sequence with `observe_play: true` for one discovery operation. Delays
 are after completion; capture slots and stop/pause rules still apply.
+Other targets now begin initial automatic attachment with fifteen Play captures
+at 100 ms delays, followed by the existing sixteen full captures at 1,000 ms
+delays. This phase does not repeat for later memory-search batches or prediction
+rechecks. `start_observation_job` exposes the same sequence with
+`observe_play: true` and `mode: "full"`; `count` still counts only subsequent
+full captures. A configured model runs after play capture 2 in the background
+and after the final full capture. Delays do not guarantee useful input separation.
+
+Each batch permits at most 36 total captures, 20 attempts at memory sampling and
+512 MiB retained memory. Both budgets include queued jobs. Status exposes
+`memory_sample_numbers`, the exact one-based capture numbers that attempted
+memory sampling, including failed reads. Play captures remain on the image/input
+timeline but are excluded explicitly from numeric fitting and reference learning.
+Missing reads in full/visual captures still break complete memory trajectories.
+Fitting requires twelve memory samples, followed by at least four available
+future full samples for automatic frozen checks. Frozen basis images retain
+their original capture numbers. Historical records without the new field count
+all captures conservatively for budgeting. Existing saved job plans survive the
+larger 32-step capacity; opening a journal still interrupts pending work and
+revokes its connection. Other limit changes or shrinking capacity are rejected.
+
 With `observe_play: true` and a pinned `local_model`, capture 2 starts one background
 appearance observation pass. The remaining captures continue; runtime inspection
 waits for that same job's worker before archiving play evidence. There is no second
@@ -35,7 +56,7 @@ visual pass. Missing input images, model rejection and obsolete image geometry
 produce unavailable-evidence notices; storage failures and replaced scope still
 fail. Appearance observations remain provisional and supply no write authority.
 
-`read_play_evidence` takes the exact `investigation_id`, `batch` and 2–20 ordered
+`read_play_evidence` takes the exact `investigation_id`, `batch` and 2–36 ordered
 `frame_ids`. It reads retained, hash-checked images and input metadata, returning
 rendered differences, key episodes, quiet medians and explicit unknown intervals.
 When the existing activity-selection policy finds two eligible intervals,
@@ -633,12 +654,13 @@ Old job plans without a remaining-capture count do not start automatic checks.
 `mode: "visual"`. Full mode includes text recognition. Visual mode keeps the
 window image and bounded memory but skips OCR, leaves number readings missing,
 and performs no automatic later recognition. Existing image/temporal submissions
-remain usable; the default connection flow continues to use full mode.
+remain usable; the default connection flow includes the initial Play phase
+described above before full memory observations.
 
 Visual jobs allow `interval_ms: 50` and start the first capture immediately.
 Full jobs require at least 250 ms; both allow up to 60,000 ms and 1–16 steps.
 Intervals are delays **after each completed capture**, not frame-rate promises.
-Both modes share the batch's 20 moments, 512 MiB retained-memory ceiling and
+Both modes share the batch's 20 memory samples, 36 total moments, 512 MiB retained-memory ceiling and
 existing image/read budgets. `compare:true` is rejected with visual mode;
 submit any interpretations and compare separately when there is enough evidence.
 The mode is part of the immutable job plan, so a retry cannot switch modes.
@@ -1055,7 +1077,7 @@ The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused
 fixture, not a rollback strategy for a real game. Observation process handles
 request query/read access only; explicit trial operations temporarily request
-write access and use the guards described above. Each batch retains up to 20 moments and
+write access and use the guards described above. Each batch retains up to 36 moments, 20 memory samples and
 512 MiB of raw memory; images remain in the data directory. The optional attach
 budget is 1–32 MiB per moment. The desktop uses 16 MiB.
 

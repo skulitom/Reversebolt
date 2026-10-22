@@ -206,7 +206,7 @@ impl Default for Limits {
             clients: 8,
             receipts_per_client: 8,
             events: 128,
-            steps: 16,
+            steps: 32,
             payload_bytes: 256,
             result_per_step: 1024,
             result_per_job: 4096,

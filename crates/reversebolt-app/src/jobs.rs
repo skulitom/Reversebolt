@@ -637,6 +637,13 @@ impl Controller {
         } else {
             state.observer_model.clone()
         };
+        let observe_play = runtime
+            || (!recheck
+                && !changing
+                && state
+                    .live
+                    .as_ref()
+                    .is_some_and(|live| live.sample_count == 0 && live.coverage.batch == 1));
         drop(state);
         let client = if source == "desktop" {
             "desktop"
@@ -652,7 +659,7 @@ impl Controller {
             .into(),
             source: source.clone(),
             args: json!({"count":if runtime {1} else if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
-                "local_model":model,"task":{"operation":"discover"},"observe_play":runtime,
+                "local_model":model,"task":{"operation":"discover"},"observe_play":observe_play,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
         };
@@ -1108,7 +1115,7 @@ impl Controller {
                     return Err("No supported runtime is available.".into());
                 }
                 live.runtime.paths(&task)?;
-                if observe_play && live.sample_count + 15 > 20 {
+                if observe_play && live.sample_count + 15 > reversebolt_core::live::MAX_SAMPLES {
                     return Err(
                         "The initial play observation needs fifteen available capture slots."
                             .into(),
@@ -1178,6 +1185,16 @@ impl Controller {
                 .transpose()
                 .map_err(|_| "Choose capture mode full, visual or play.")?
                 .unwrap_or_default();
+            let observe_play = command
+                .args
+                .get("observe_play")
+                .map(|v| v.as_bool().ok_or("observe_play must be true or false."))
+                .transpose()?
+                .unwrap_or(false);
+            if observe_play && !mode.is_full() {
+                return Err("An initial play phase must be followed by full captures.".into());
+            }
+            let play_count = if observe_play { 15 } else { 0 };
             let count = command.args["count"].as_u64().unwrap_or(12) as usize;
             let local_model = command
                 .args
@@ -1255,15 +1272,16 @@ impl Controller {
                         })
                     })
                     .count();
-                if live.sample_count + count + reserved > 20
-                    || live.retained_bytes
-                        + (reserved_memory
-                            + if mode == reversebolt_core::live::CaptureMode::Play {
-                                0
-                            } else {
-                                count
-                            })
-                            * live.planned_bytes
+                let memory_count = if mode == reversebolt_core::live::CaptureMode::Play {
+                    0
+                } else {
+                    count
+                };
+                if live.sample_count + count + play_count + reserved
+                    > reversebolt_core::live::MAX_SAMPLES
+                    || live.memory_sample_count() + memory_count + reserved_memory
+                        > reversebolt_core::live::MAX_MEMORY_SAMPLES
+                    || live.retained_bytes + (reserved_memory + memory_count) * live.planned_bytes
                         > 512 * 1024 * 1024
                 {
                     return Err("The requested captures exceed this batch's remaining retention budget, including queued jobs.".into());
@@ -1273,6 +1291,24 @@ impl Controller {
             let compare = command.args["compare"].as_bool().unwrap_or(false);
             if compare && !mode.is_full() {
                 return Err("Visual sampling skips text recognition; compare separately when enough evidence exists.".into());
+            }
+            for index in 0..play_count {
+                steps.push(job::Step {
+                    kind: job::Kind::Observe,
+                    payload: serde_json::to_string(&CaptureStep {
+                        runtime: None,
+                        scope: scope.clone(),
+                        delay_ms: if index == 0 { 0 } else { 100 },
+                        source: command.source.clone(),
+                        compare: false,
+                        remaining: 0,
+                        mode: reversebolt_core::live::CaptureMode::Play,
+                        local_model: (index == 1).then(|| local_model.clone()).flatten(),
+                        background_model: index == 1 && local_model.is_some(),
+                        change: None,
+                    })
+                    .map_err(|e| e.to_string())?,
+                });
             }
             for index in 0..count {
                 steps.push(job::Step {
@@ -1289,9 +1325,12 @@ impl Controller {
                         compare,
                         remaining: if compare { count - index - 1 } else { 0 },
                         mode,
-                        background_model: local_model.is_some() && index == 1 && index != count - 1,
+                        background_model: !observe_play
+                            && local_model.is_some()
+                            && index == 1
+                            && index != count - 1,
                         change: None,
-                        local_model: if index == 1 || index == count - 1 {
+                        local_model: if (!observe_play && index == 1) || index == count - 1 {
                             local_model.clone()
                         } else {
                             None
@@ -1438,6 +1477,7 @@ mod tests {
     pub(super) fn initial_view() -> EngineView {
         EngineView {
             live: Some(reversebolt_core::live::LiveView {
+                memory_sample_numbers: None,
                 runtime: Default::default(),
                 change_searches: vec![],
                 value_searches: vec![],
@@ -2034,6 +2074,9 @@ mod tests {
                 sent.send(command.clone()).unwrap();
                 if matches!(command.action.as_str(), "attach_process" | "search_number") {
                     *view = initial_view();
+                    if command.action == "search_number" {
+                        view.live.as_mut().unwrap().coverage.batch = 2;
+                    }
                 }
                 json!({"ok":true,"state":view})
             });
@@ -2067,7 +2110,8 @@ mod tests {
                 .as_u64()
                 .unwrap();
             let job = &c.jobs.snapshot().jobs[&id];
-            assert_eq!(job.steps.len(), 16);
+            let initial = action == "attach_process";
+            assert_eq!(job.steps.len(), if initial { 31 } else { 16 });
             assert_eq!(
                 job.creator.role,
                 if source == "desktop" {
@@ -2077,7 +2121,15 @@ mod tests {
                 }
             );
             let first: CaptureStep = serde_json::from_str(&job.steps[0].payload).unwrap();
-            assert!(first.compare);
+            assert_eq!(first.compare, !initial);
+            assert_eq!(
+                first.mode,
+                if initial {
+                    reversebolt_core::live::CaptureMode::Play
+                } else {
+                    reversebolt_core::live::CaptureMode::Full
+                }
+            );
             assert_eq!(first.delay_ms, 0);
             c.finish_manual();
             assert_eq!(c.jobs.snapshot().jobs.len(), 1);
@@ -2086,7 +2138,7 @@ mod tests {
             }
             let capture = received.recv_timeout(Duration::from_secs(2)).unwrap();
             assert_eq!(capture.action, "capture");
-            assert_eq!(capture.args["compare"], true);
+            assert_eq!(capture.args["compare"], !initial);
             assert_eq!(
                 capture.args["scope"]["investigation_id"],
                 "fixture-investigation"
@@ -2548,6 +2600,129 @@ mod tests {
     }
 
     #[test]
+    fn mixed_observation_reserves_both_budgets_and_keeps_each_phase_explicit() {
+        let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No work started"));
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":16,"interval_ms":1000,"observe_play":true,"compare":true}),
+        );
+        let receipt = c.job_command(&command).unwrap();
+        let id = receipt["ack"]["job"].as_u64().unwrap();
+        let plans: Vec<CaptureStep> = c.jobs.snapshot().jobs[&id]
+            .steps
+            .iter()
+            .map(|s| serde_json::from_str(&s.payload).unwrap())
+            .collect();
+        assert_eq!(plans.len(), 31);
+        for (i, step) in plans.iter().enumerate() {
+            assert_eq!(
+                step.mode,
+                if i < 15 {
+                    reversebolt_core::live::CaptureMode::Play
+                } else {
+                    reversebolt_core::live::CaptureMode::Full
+                }
+            );
+            assert_eq!(step.compare, i >= 15);
+            assert_eq!(step.remaining, if i >= 15 { 30 - i } else { 0 });
+            assert_eq!(
+                step.delay_ms,
+                if i == 0 || i == 15 {
+                    0
+                } else if i < 15 {
+                    100
+                } else {
+                    1000
+                }
+            );
+        }
+        assert_eq!(c.job_command(&command).unwrap()["duplicate"], true);
+        // Six more images exceed the total bound; five more memory samples
+        // exceed the independent memory bound, even though their image count fits.
+        let images = request(
+            &c,
+            "start_observation_job",
+            json!({"count":6,"mode":"play","interval_ms":50}),
+        );
+        assert!(c.job_command(&images).is_err());
+        let memory = request(
+            &c,
+            "start_observation_job",
+            json!({"count":5,"interval_ms":250}),
+        );
+        assert!(c.job_command(&memory).is_err());
+        let fitting = request(
+            &c,
+            "start_observation_job",
+            json!({"count":4,"interval_ms":250}),
+        );
+        assert!(c.job_command(&fitting).is_ok());
+        for args in [
+            json!({"observe_play":"yes"}),
+            json!({"observe_play":true,"mode":"play"}),
+        ] {
+            let bad = request(&c, "start_observation_job", args);
+            assert!(c.job_command(&bad).is_err());
+        }
+    }
+
+    #[test]
+    fn automatic_mixed_job_executes_all_phases_with_the_shared_owner() {
+        let (sent, received) = mpsc::channel();
+        let mut view = initial_view();
+        view.live.as_mut().unwrap().memory_sample_numbers = Some(vec![]);
+        let engine = EngineHandle::test_worker(view, move |command, view| {
+            assert_eq!(command.action, "capture");
+            sent.send(command.clone()).unwrap();
+            let live = view.live.as_mut().unwrap();
+            live.sample_count += 1;
+            if command.args["mode"] != "play" {
+                live.memory_sample_numbers
+                    .as_mut()
+                    .unwrap()
+                    .push(live.sample_count);
+            }
+            json!({"ok":true,"state":view})
+        });
+        let mut c = controller(engine);
+        let receipt = c.start_automatic_observation("desktop".into()).unwrap();
+        let id = receipt["ack"]["job"].as_u64().unwrap();
+        for _ in 0..1500 {
+            drive_change(&mut c);
+            if c.jobs.snapshot().jobs[&id].phase.terminal() {
+                break;
+            }
+        }
+        assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Completed);
+        let commands: Vec<_> = received.try_iter().collect();
+        assert_eq!(commands.len(), 31);
+        assert_eq!(
+            commands.iter().filter(|c| c.args["mode"] == "play").count(),
+            15
+        );
+        assert_eq!(
+            commands
+                .iter()
+                .filter(|c| c.args["compare"] == true)
+                .count(),
+            16
+        );
+        assert_eq!(
+            c.engine
+                .view
+                .read()
+                .unwrap()
+                .live
+                .as_ref()
+                .unwrap()
+                .memory_sample_numbers,
+            Some((16..=31).collect())
+        );
+    }
+
+    #[test]
     fn automatic_jobs_select_the_configured_model_and_legacy_plans_do_not() {
         let engine = EngineHandle::test_worker(initial_view(), |_, _| panic!("No work started"));
         let mut c = controller(engine);
@@ -2565,7 +2740,7 @@ mod tests {
             .collect();
         assert_eq!(
             models,
-            vec![(1, "chosen:local".into()), (15, "chosen:local".into())]
+            vec![(1, "chosen:local".into()), (30, "chosen:local".into())]
         );
         let background: Vec<_> = c.jobs.snapshot().jobs[&id]
             .steps

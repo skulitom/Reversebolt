@@ -260,9 +260,9 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
         return Err("The observation batch changed.".into());
     }
     let ids: Vec<String> = serde_json::from_value(args["frame_ids"].clone())
-        .map_err(|_| "Supply 2–20 frame identities in chronological order.")?;
-    if !(2..=20).contains(&ids.len()) {
-        return Err("Choose 2–20 captures.".into());
+        .map_err(|_| "Supply 2–36 frame identities in chronological order.")?;
+    if !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&ids.len()) {
+        return Err("Choose 2–36 captures.".into());
     }
     let region: Option<Region> = args
         .get("region")
@@ -484,11 +484,19 @@ pub(crate) mod tests {
         (session, directory)
     }
     fn generated_activity_session(local: bool) -> (LiveSession, PathBuf) {
+        generated_activity_session_length(local, 8)
+    }
+    fn generated_activity_session_length(local: bool, count: usize) -> (LiveSession, PathBuf) {
         use reversebolt_core::inputs::{Focus, Poll, Window};
         let (mut session, directory) = saved_observations();
         session.view.visual_tracks.clear();
         session.view.frames.clear();
-        for (i, shift) in [0, 0, 8, 8, 0, 0, 8, 8].into_iter().enumerate() {
+        for (i, shift) in [0, 0, 8, 8, 0, 0, 8, 8]
+            .into_iter()
+            .cycle()
+            .take(count)
+            .enumerate()
+        {
             let n = i + 1;
             let image = image::GrayImage::from_fn(256, 144, |x, y| {
                 let mut v = ((x + 256 - shift) % 256 + y * 256 + 17)
@@ -551,9 +559,46 @@ pub(crate) mod tests {
                 "capture_interval":{"clock_id":session.view.investigation_id,"begin_us":begin,"end_us":begin+1000}
             })).unwrap());
         }
-        session.view.sample_count = 8;
+        session.view.sample_count = count;
         session.view.coverage.batch = 1;
         (session, directory)
+    }
+
+    #[test]
+    fn extended_image_batch_keeps_activity_preparation_within_region_budgets() {
+        let (session, directory) =
+            generated_activity_session_length(true, reversebolt_core::live::MAX_SAMPLES);
+        let mut args = json!({"investigation_id":session.view.investigation_id,"batch":1,
+            "frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()});
+        let result = read(&session, &args).unwrap();
+        assert_eq!(
+            result["evidence"]["intervals"].as_array().unwrap().len(),
+            35
+        );
+        assert!(result["activity_source"].is_object());
+        let search = &result["automatic_region_motion"]["regional_activity_search"];
+        assert!(search["attempts"].as_array().unwrap().len() <= 4);
+        assert_eq!(search["maximum_template_checks"], 80);
+        crate::runtime_naming_bridge::prepare_activity(&session, &directory)
+            .unwrap()
+            .unwrap()
+            .validate()
+            .unwrap();
+        args["frame_ids"]
+            .as_array_mut()
+            .unwrap()
+            .push(json!("excess-image"));
+        assert!(read(&session, &args).is_err());
+        drop(session);
+        assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .starts_with("reversebolt-regions-")
+        );
+        std::fs::remove_dir_all(directory).unwrap();
     }
 
     #[test]

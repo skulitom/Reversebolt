@@ -6,6 +6,31 @@ fn human() -> Actor {
         role: Role::Human,
     }
 }
+
+#[test]
+fn expanding_step_capacity_preserves_old_plans_and_restart_revocation() {
+    let old = Limits {
+        steps: 16,
+        ..Limits::default()
+    };
+    let (mut jobs, journal, _) = setup(old.clone());
+    let id = submit(&mut jobs, vec![step(Kind::Observe, "old plan"); 16]);
+    let plans = jobs.snapshot().jobs[&id].steps.clone();
+    let mut reopened = Jobs::open(journal.clone(), "session-test", Limits::default()).unwrap();
+    assert_eq!(reopened.snapshot().limits.steps, 32);
+    assert_eq!(reopened.snapshot().jobs[&id].steps, plans);
+    assert_eq!(reopened.snapshot().jobs[&id].phase, Phase::Interrupted);
+    assert!(reopened.snapshot().current.is_none());
+    assert!(Jobs::open(journal.clone(), "session-test", old).is_err());
+    let changed = Limits {
+        jobs: 23,
+        ..Limits::default()
+    };
+    assert!(Jobs::open(journal, "session-test", changed).is_err());
+    reopened.bind(Some("fresh target")).unwrap();
+    let next = submit(&mut reopened, vec![step(Kind::Observe, "new plan"); 31]);
+    assert_eq!(reopened.snapshot().jobs[&next].steps.len(), 31);
+}
 fn agent() -> Actor {
     Actor {
         client: "mcp-agent".into(),

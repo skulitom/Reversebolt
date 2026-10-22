@@ -63,8 +63,24 @@ impl<J: Journal> Jobs<J> {
             .load()
             .unwrap_or_else(|| Snapshot::empty(session, limits.clone()));
         state.validate()?;
-        if state.session != session || state.limits != limits {
+        limits.validate()?;
+        let mut expanded = state.limits.clone();
+        expanded.steps = limits.steps;
+        if state.session != session || expanded != limits || limits.steps < state.limits.steps {
             return Err("session/limits mismatch; do not overwrite existing history".into());
+        }
+        // A larger step ceiling adds capacity without rewriting old plans or
+        // resuming them. All other limits must still match the saved journal.
+        if state.limits.steps != limits.steps {
+            state.limits = limits;
+            state.event(
+                None,
+                None,
+                None,
+                "StepLimitExpanded",
+                None,
+                "expanded job capacity; historical plans and restart rules preserved",
+            );
         }
         state.boot += 1;
         state.current = None;

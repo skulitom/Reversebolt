@@ -81,7 +81,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         return Err("Manifest exceeds budget".into());
     }
     let case: Case = serde_json::from_slice(&bytes)?;
-    if !(3..=20).contains(&case.frames.len())
+    if !(3..=reversebolt_core::live::MAX_SAMPLES).contains(&case.frames.len())
         || case
             .frames
             .iter()

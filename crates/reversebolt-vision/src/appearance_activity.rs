@@ -9,7 +9,9 @@ use reversebolt_core::{
 pub(crate) fn validate_source(source: &Source, frames: &[FrameRef]) -> Result<usize> {
     source.validate()?;
     let hash = visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
-    if !(2..=20).contains(&frames.len()) || source.frame_metadata_sha256 != hash {
+    if !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&frames.len())
+        || source.frame_metadata_sha256 != hash
+    {
         return Err("Activity frame metadata changed.".into());
     }
     for reference in source.frames() {

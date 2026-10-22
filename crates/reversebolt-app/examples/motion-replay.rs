@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut results = vec![];
     for case in cases {
-        if !(2..=20).contains(&case.frames.len())
+        if !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&case.frames.len())
             || case.expected_differences.len() + 1 != case.frames.len()
         {
             return Err("Invalid case frame count".into());

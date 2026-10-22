@@ -27,8 +27,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let (status, status_hash) = document(Path::new(&args[0]))?;
     let live: LiveView = serde_json::from_value(status["state"]["live"].clone())?;
-    if !(2..=20).contains(&live.frames.len()) {
-        return Err("Replay requires 2-20 retained frames".into());
+    if !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&live.frames.len()) {
+        return Err("Replay requires 2-36 retained frames".into());
     }
     let (raw_receipt, receipt_hash) = document(Path::new(&args[2]))?;
     let receipt: reversebolt_observer::runtime_naming::Receipt =

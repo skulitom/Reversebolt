@@ -15,7 +15,9 @@ use std::{
     time::{Instant, SystemTime, UNIX_EPOCH},
 };
 
-const MAX_SAMPLES: usize = 20;
+/// Images/input may precede memory discovery without consuming its sample budget.
+pub const MAX_SAMPLES: usize = 36;
+pub const MAX_MEMORY_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
 mod change_search;
@@ -271,11 +273,23 @@ pub struct LiveView {
     pub eligible_bytes: u64,
     pub planned_bytes: usize,
     pub sample_count: usize,
+    /// One-based capture numbers where memory sampling was attempted, including
+    /// failed reads. None is a legacy record, conservatively counted as all captures.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory_sample_numbers: Option<Vec<usize>>,
     pub retained_bytes: usize,
     pub latest: Option<CaptureSummary>,
     pub tracks: Vec<NumberTrack>,
     pub phase: String,
     pub connected: bool,
+}
+
+impl LiveView {
+    pub fn memory_sample_count(&self) -> usize {
+        self.memory_sample_numbers
+            .as_ref()
+            .map_or(self.sample_count, Vec::len)
+    }
 }
 
 pub struct LiveSession {
@@ -939,6 +953,7 @@ impl LiveSession {
             eligible_bytes,
             planned_bytes,
             sample_count: 0,
+            memory_sample_numbers: Some(vec![]),
             retained_bytes: 0,
             latest: None,
             tracks: vec![],
@@ -1092,6 +1107,7 @@ impl LiveSession {
             );
         }
         if self.snapshots.len() >= MAX_SAMPLES
+            || (mode != CaptureMode::Play && self.view.memory_sample_count() >= MAX_MEMORY_SAMPLES)
             || self.view.retained_bytes
                 + if mode == CaptureMode::Play {
                     0
@@ -1241,6 +1257,12 @@ impl LiveSession {
         };
         self.snapshots.push(snapshot);
         self.receipts.push(receipts.clone());
+        if mode != CaptureMode::Play {
+            self.view
+                .memory_sample_numbers
+                .get_or_insert_with(|| (1..number).collect())
+                .push(number);
+        }
         self.update_complete_coverage();
         if let Ok(frame) = &screen {
             let size = (frame.width, frame.height);
@@ -1377,15 +1399,12 @@ impl LiveSession {
     /// several OCR findings before any fresh evidence is available.
     pub fn capture_for_discovery(&mut self, remaining: usize) -> Result<()> {
         self.capture()?;
-        if self.view.sample_count >= 12 && self.view.prediction_checks.is_empty() {
+        if self.view.memory_sample_count() >= 12 && self.view.prediction_checks.is_empty() {
             if let Err(reason) = self.correlate() {
                 self.view.phase = format!("Observations collected; no comparison yet. {reason}");
                 return Ok(());
             }
-            let available = MAX_SAMPLES
-                .min(RETAINED_MEMORY_BUDGET / self.view.planned_bytes.max(1))
-                .saturating_sub(self.view.sample_count)
-                .min(remaining);
+            let available = self.remaining_memory_samples().min(remaining);
             if let Some(selection) = crate::investigation::select(&self.view.tracks, available) {
                 for track in selection.planned_tracks.clone() {
                     if let Err(reason) = self.freeze_prediction_check(
@@ -1407,18 +1426,37 @@ impl LiveSession {
         Ok(())
     }
 
+    fn memory_indices(&self) -> Vec<usize> {
+        self.view.memory_sample_numbers.as_ref().map_or_else(
+            || (0..self.snapshots.len()).collect(),
+            |numbers| numbers.iter().map(|n| n - 1).collect(),
+        )
+    }
+
+    fn remaining_memory_samples(&self) -> usize {
+        MAX_SAMPLES
+            .saturating_sub(self.snapshots.len())
+            .min(MAX_MEMORY_SAMPLES.saturating_sub(self.view.memory_sample_count()))
+            .min(
+                RETAINED_MEMORY_BUDGET.saturating_sub(self.view.retained_bytes)
+                    / self.view.planned_bytes.max(1),
+            )
+    }
+
     fn complete_chunks(&self) -> Vec<&Chunk> {
-        if self.snapshots.len() < 12 {
+        let indices = self.memory_indices();
+        if indices.len() < 12 {
             return vec![];
         }
         self.plan
             .iter()
             .filter(|c| {
                 !self.invalid_chunks.contains(&c.address)
-                    && self
-                        .snapshots
-                        .iter()
-                        .all(|s| s.get(&c.address).is_some_and(|b| b.len() == c.length))
+                    && indices.iter().all(|i| {
+                        self.snapshots[*i]
+                            .get(&c.address)
+                            .is_some_and(|b| b.len() == c.length)
+                    })
             })
             .collect()
     }
@@ -1512,7 +1550,7 @@ impl LiveSession {
             .ok_or("The observed image is unavailable.")?;
         let max_windows =
             value_search::MAX_WINDOWS.min(self.budget_bytes / value_search::WINDOW_BYTES);
-        let reserve = (max_windows * value_search::WINDOW_BYTES * MAX_SAMPLES) as u64;
+        let reserve = (max_windows * value_search::WINDOW_BYTES * MAX_MEMORY_SAMPLES) as u64;
         let remaining = coverage::MAX_READ_BYTES.saturating_sub(self.view.coverage.attempted_bytes);
         let budget = remaining
             .saturating_sub(reserve)
@@ -1622,7 +1660,7 @@ impl LiveSession {
             check.batch = batch + 1;
             check.epoch = self.image_epoch + 1;
             check.after_frame = 0;
-            check.last_frame = MAX_SAMPLES;
+            check.last_frame = MAX_MEMORY_SAMPLES;
             check.invalidated = None;
             let originals = std::mem::take(&mut check.candidates);
             for (original_index, mut candidate) in originals.into_iter().enumerate() {
@@ -1898,6 +1936,7 @@ impl LiveSession {
         self.receipts.clear();
         self.invalid_chunks.clear();
         self.view.sample_count = 0;
+        self.view.memory_sample_numbers = Some(vec![]);
         self.view.retained_bytes = 0;
         self.view.latest = None;
         self.view.frames.clear();
@@ -2169,8 +2208,10 @@ impl LiveSession {
         {
             return Err("Freeze additional series before collecting fresh captures. Changed or interrupted checks need a new memory batch.".into());
         }
-        let last_frame = MAX_SAMPLES.min(RETAINED_MEMORY_BUDGET / self.view.planned_bytes.max(1));
-        if after_frame < 12 || last_frame.saturating_sub(after_frame) < prediction::MIN_FRESH {
+        let last_frame = self.view.sample_count + self.remaining_memory_samples();
+        if self.view.memory_sample_count() < 12
+            || last_frame.saturating_sub(after_frame) < prediction::MIN_FRESH
+        {
             return Err("A prediction check needs at least four captures remaining after comparison. Compare after 12 moments in a fresh batch.".into());
         }
         let (label, matches) = match source {
@@ -2235,8 +2276,10 @@ impl LiveSession {
                 )
             })
             .collect();
+        let memory_indices = self.memory_indices();
+        let snapshots: Vec<_> = memory_indices.iter().map(|i| &self.snapshots[*i]).collect();
         let references =
-            crate::references::learn(&self.complete_chunks(), &self.snapshots, &locations);
+            crate::references::learn_borrowed(&self.complete_chunks(), &snapshots, &locations);
         for (candidate, learned) in candidates.iter_mut().zip(references) {
             candidate.references = learned;
         }
@@ -2253,7 +2296,13 @@ impl LiveSession {
             after_frame,
             last_frame,
             tolerance: prediction::TOLERANCE,
-            basis: self.view.frames.clone(),
+            basis: self
+                .view
+                .frames
+                .iter()
+                .filter(|f| memory_indices.contains(&(f.number - 1)))
+                .cloned()
+                .collect(),
             invalidated: None,
             candidates,
         };
@@ -2427,8 +2476,11 @@ impl LiveSession {
         if self.refresh_connection() || !self.view.connected {
             return Err("The selected process has exited.".into());
         }
-        if self.snapshots.len() < 12 {
-            return Err("Capture at least 12 moments with changing observations first.".into());
+        let memory_indices = self.memory_indices();
+        if memory_indices.len() < 12 {
+            return Err(
+                "Capture at least 12 memory samples with changing observations first.".into(),
+            );
         }
         let mut varying: Vec<(bool, usize, Vec<Option<f64>>)> = self
             .view
@@ -2439,8 +2491,13 @@ impl LiveSession {
                 let values: Vec<f64> = t.samples.iter().flatten().copied().collect();
                 let lo = values.iter().copied().fold(f64::INFINITY, f64::min);
                 let hi = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-                (t.active && values.len() >= 10 && hi - lo > 2.2)
-                    .then(|| (false, i, t.samples.clone()))
+                (t.active && values.len() >= 10 && hi - lo > 2.2).then(|| {
+                    (
+                        false,
+                        i,
+                        memory_indices.iter().map(|n| t.samples[*n]).collect(),
+                    )
+                })
             })
             .take(16)
             .collect();
@@ -2450,7 +2507,11 @@ impl LiveSession {
             let lo = values.iter().copied().fold(f64::INFINITY, f64::min);
             let hi = values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
             if track.active && values.len() >= 10 && hi - lo > 2.2 {
-                varying.push((true, i, samples));
+                varying.push((
+                    true,
+                    i,
+                    memory_indices.iter().map(|n| samples[*n]).collect(),
+                ));
             }
         }
         // Each source is separately bounded; external interpretations do not
@@ -2470,10 +2531,9 @@ impl LiveSession {
             if self.invalid_chunks.contains(&base) {
                 continue;
             }
-            let Some(trajectory) = self
-                .snapshots
+            let Some(trajectory) = memory_indices
                 .iter()
-                .map(|s| s.get(&base).cloned())
+                .map(|i| self.snapshots[*i].get(&base).cloned())
                 .collect::<Option<Vec<_>>>()
             else {
                 continue;
@@ -2502,7 +2562,7 @@ impl LiveSession {
         }
         self.view.coverage.analyzed_current_bytes = analyzed;
         self.view.phase = format!(
-            "Compared {} changing tracks across {:.1} MiB present in every frame. {} hypotheses; none causally verified.",
+            "Compared {} changing tracks across {:.1} MiB present in every memory sample. {} hypotheses; none causally verified.",
             varying.len(),
             analyzed as f64 / (1024.0 * 1024.0),
             self.view

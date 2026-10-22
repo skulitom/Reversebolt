@@ -65,6 +65,14 @@ pub fn learn(
     snapshots: &[BTreeMap<u64, Vec<u8>>],
     candidates: &[(u64, usize)],
 ) -> Vec<Learned> {
+    learn_borrowed(chunks, &snapshots.iter().collect::<Vec<_>>(), candidates)
+}
+
+pub(crate) fn learn_borrowed(
+    chunks: &[&Chunk],
+    snapshots: &[&BTreeMap<u64, Vec<u8>>],
+    candidates: &[(u64, usize)],
+) -> Vec<Learned> {
     let mut result = vec![Learned::default(); candidates.len()];
     if snapshots.len() < 12 {
         return result;

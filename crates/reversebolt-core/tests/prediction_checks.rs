@@ -23,6 +23,8 @@ struct Flags {
     missing_prefix: Cell<bool>,
     multiple: Cell<bool>,
     secondary_mismatch: Cell<bool>,
+    reads: Cell<usize>,
+    pointer: Cell<bool>,
 }
 struct Target {
     info: ProcessInfo,
@@ -96,11 +98,15 @@ impl NativeTarget for Target {
         })
     }
     fn read(&self, address: u64, length: usize) -> Result<Vec<u8>> {
+        self.flags.reads.set(self.flags.reads.get() + 1);
         if self.flags.missing.get() || (self.flags.missing_prefix.get() && length <= 8) {
             return Err("injected incomplete read".into());
         }
         let frame = self.flags.frame.get();
         let mut bytes = [0; 128];
+        if self.flags.pointer.get() {
+            bytes[..8].copy_from_slice(&0x10000u64.to_le_bytes());
+        }
         // Two observationally indistinguishable copies, plus a time confound.
         for offset in [32, 48] {
             bytes[offset..offset + 4]
@@ -147,6 +153,119 @@ fn fresh() -> (LiveSession, Rc<Flags>, PathBuf) {
     };
     let session = LiveSession::attach(Box::new(target), 1, root.clone()).unwrap();
     (session, flags, root)
+}
+
+#[test]
+fn play_prefix_preserves_memory_fitting_references_and_fresh_checks() {
+    let (mut session, flags, root) = fresh();
+    flags.pointer.set(true);
+    for _ in 0..15 {
+        capture(&mut session, &flags, CaptureMode::Play);
+    }
+    assert_eq!(flags.reads.get(), 0);
+    assert_eq!(session.view.memory_sample_count(), 0);
+    assert_eq!(session.view.retained_bytes, 0);
+    assert!(session.correlate().is_err());
+    for n in 1..=12 {
+        flags.frame.set(n);
+        session.capture_for_discovery(16 - n).unwrap();
+        if n < 12 {
+            assert!(session.view.prediction_checks.is_empty());
+        }
+    }
+    let frozen = session.view.prediction_checks.first().unwrap().clone();
+    assert_eq!(frozen.after_frame, 27);
+    assert_eq!(frozen.last_frame, 35);
+    assert_eq!(
+        frozen.basis.iter().map(|f| f.number).collect::<Vec<_>>(),
+        (16..=27).collect::<Vec<_>>()
+    );
+    assert_eq!(
+        session.view.memory_sample_numbers,
+        Some((16..=27).collect())
+    );
+    assert_eq!(session.view.coverage.complete_trajectory_bytes, 128);
+    assert!(
+        frozen.candidates.iter().any(|c| c
+            .references
+            .routes
+            .iter()
+            .any(|r| r.learned_captures == 12))
+    );
+    assert_eq!(
+        frozen
+            .automatic_selection
+            .as_ref()
+            .unwrap()
+            .scheduled_fresh_captures,
+        4
+    );
+    for n in 13..=16 {
+        flags.frame.set(n);
+        session.capture_for_discovery(16 - n).unwrap();
+    }
+    let check = &session.view.prediction_checks[0];
+    assert_eq!(check.id, frozen.id);
+    assert_eq!(
+        check.candidates[0]
+            .samples
+            .iter()
+            .map(|s| s.frame)
+            .collect::<Vec<_>>(),
+        vec![28, 29, 30, 31]
+    );
+    assert!(
+        check
+            .candidates
+            .iter()
+            .any(|c| c.assessment(check) == Assessment::ConsistentInObservedScope)
+    );
+    assert!(
+        check
+            .candidates
+            .iter()
+            .any(|c| c.assessment(check) == Assessment::Contradicted)
+    );
+    for _ in 0..4 {
+        capture(&mut session, &flags, CaptureMode::Full);
+    }
+    assert_eq!(session.view.memory_sample_count(), 20);
+    let before = flags.reads.get();
+    assert!(session.capture().is_err());
+    assert_eq!(flags.reads.get(), before);
+    session.capture_mode(CaptureMode::Play).unwrap();
+    assert_eq!(session.view.sample_count, MAX_SAMPLES);
+    assert!(session.capture_mode(CaptureMode::Play).is_err());
+    assert_eq!(flags.reads.get(), before);
+    assert!(root.starts_with(std::env::temp_dir()));
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn play_exclusion_never_drops_failed_memory_reads_from_fitting() {
+    let (mut session, flags, root) = fresh();
+    for _ in 0..15 {
+        capture(&mut session, &flags, CaptureMode::Play);
+    }
+    for n in 1..=12 {
+        flags.frame.set(n);
+        flags.missing.set(n == 6);
+        session.capture_for_discovery(16 - n).unwrap();
+    }
+    assert_eq!(session.view.memory_sample_count(), 12);
+    assert!(
+        session
+            .view
+            .memory_sample_numbers
+            .as_ref()
+            .unwrap()
+            .contains(&21)
+    );
+    assert_eq!(session.view.coverage.complete_trajectory_bytes, 0);
+    assert!(session.view.tracks.iter().all(|t| t.matches.is_empty()));
+    assert!(session.view.prediction_checks.is_empty());
+    assert!(root.starts_with(std::env::temp_dir()));
+    std::fs::remove_dir_all(root).unwrap();
 }
 
 #[test]
