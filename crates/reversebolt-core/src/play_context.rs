@@ -213,10 +213,19 @@ impl Basis {
     }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InterpretationSource {
+    pub review_id: String,
+    /// Recorded producer of the image interpretation, independent of later hypothesis authors.
+    pub model: String,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Context {
     /// Legacy positive interpretations retain their original serialized shape.
     #[serde(default, skip_serializing_if = "Basis::is_interpreted")]
     pub basis: Basis,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub interpretation_source: Option<InterpretationSource>,
     pub source: Source,
     pub observation: Observation,
 }
@@ -229,6 +238,7 @@ impl Context {
         };
         let context = Self {
             basis,
+            interpretation_source: None,
             source,
             observation,
         };
@@ -236,9 +246,30 @@ impl Context {
         Ok(context)
     }
 
+    pub fn bind_interpretation(mut self, review_id: &str, model: &str) -> Result<Self> {
+        if self.interpretation_source.is_some() {
+            return Err("The image interpretation already has a recorded source.".into());
+        }
+        self.interpretation_source = Some(InterpretationSource {
+            review_id: review_id.into(),
+            model: model.into(),
+        });
+        self.validate()?;
+        Ok(self)
+    }
+
     pub fn validate(&self) -> Result<()> {
         self.source.validate()?;
         self.observation.validate()?;
+        if let Some(source) = &self.interpretation_source
+            && (!uuid::Uuid::parse_str(&source.review_id)
+                .is_ok_and(|id| id.to_string() == source.review_id)
+                || source.model.trim().is_empty()
+                || source.model.len() > 128
+                || source.model.chars().any(char::is_control))
+        {
+            return Err("Invalid image interpretation source.".into());
+        }
         if (self.basis == Basis::Interpreted) != self.observation.consistent_visible_change {
             return Err("The activity basis disagrees with the retained interpretation.".into());
         }

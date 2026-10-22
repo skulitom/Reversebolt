@@ -1,0 +1,49 @@
+{
+  "artifact_audit_passed": true,
+  "attempts": [
+    {
+      "version": "v1",
+      "exit_code": 1,
+      "frozen_manifest_sha256": "edcd1e46529f8c97560a8a11d09ea230b996ce76ac90aeec340fa262b92b0280",
+      "binary_bytes_reverified": false
+    },
+    {
+      "version": "v2",
+      "exit_code": 1,
+      "frozen_manifest_sha256": "627e3669a9fa3eb1ec1e73df99dd9298686f57a34cdf332cfea3431d5f000726",
+      "binary_bytes_reverified": true
+    },
+    {
+      "version": "v3",
+      "exit_code": 0,
+      "frozen_manifest_sha256": "a9aff621e036781ccf3ebf3d5caf92887fe1c3478908e12c9f0a28695cf5915a",
+      "binary_bytes_reverified": true
+    }
+  ],
+  "image_inputs_rehashed": 15,
+  "hypotheses_reused": 2,
+  "comparison_choices": 1,
+  "observed_hold_ms": [
+    198,
+    198,
+    198,
+    198
+  ],
+  "original_interpretation_preserved": true,
+  "original_source_preserved": true,
+  "stale_context_discarded": true,
+  "numeric_roundtrip_fixed_without_tolerance": true,
+  "workspace_tests_passed": 299,
+  "test_log_sha256": "50320e0be6108f80cc82f2331d727ea901695de96dd49d43056b4571765e2a1d",
+  "new_model_calls": 0,
+  "target_access": false,
+  "field_edits": 0,
+  "limitations": [
+    "Saved development evidence, not a new native run or independent-game acceptance.",
+    "The agent proposals are replayed existing questions, not new inference.",
+    "The proposed comparison is unexecuted and its gameplay meaning unverified.",
+    "V1 binary bytes are unavailable; frozen source, hash and failure remain.",
+    "Other historical JSON identities were not exhaustively audited.",
+    "The desktop remains quarantined; no replacement build was published."
+  ]
+}

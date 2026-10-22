@@ -271,6 +271,7 @@ mod tests {
         .unwrap();
         let context = Context {
             basis: Default::default(),
+            interpretation_source: None,
             source: crate::play_context::select(&frames, &evidence, "clock", 1)
                 .unwrap()
                 .unwrap(),
@@ -357,6 +358,121 @@ mod tests {
             serde_json::from_value::<Context>(serde_json::to_value(&positive).unwrap()).unwrap(),
             positive
         );
+    }
+    #[test]
+    fn saved_activity_measurements_roundtrip_without_changing_their_bits() {
+        let (mut context, _, _) = observed();
+        context.source.pairs[0].difference = 12.996399059532505;
+        context.source.quiet_difference = 0.6401399287801315;
+        let encoded = serde_json::to_vec(&context).unwrap();
+        let restored: Context = serde_json::from_slice(&encoded).unwrap();
+        assert_eq!(restored, context);
+        assert_eq!(
+            restored.source.pairs[0].difference.to_bits(),
+            context.source.pairs[0].difference.to_bits()
+        );
+        assert_eq!(serde_json::to_vec(&restored).unwrap(), encoded);
+    }
+    #[test]
+    fn agent_handoff_preserves_ambiguous_activity_and_original_attribution() {
+        let (context, frames, evidence) = observed();
+        let mut observation = context.observation;
+        observation.consistent_visible_change = false;
+        let context = Context::from_observation(context.source, observation).unwrap();
+        let source_id = uuid::Uuid::new_v4().to_string();
+        let report = "a".repeat(64);
+        let mut review = Review {
+            question_source: Default::default(),
+            question_policy: None,
+            play_context: Some(context.clone()),
+            evidence_id: source_id.clone(),
+            report_sha256: report.clone(),
+            model: "original-image-model".into(),
+            status: "complete".into(),
+            error: None,
+            batch: Some(h::Batch {
+                report_sha256: report.clone(),
+                selected_types: vec![],
+                considered_samples: 0,
+                omitted_samples: 0,
+                accepted: vec![],
+                rejected: vec![],
+                limitation: h::LIMITATION.into(),
+            }),
+        };
+        let transfer =
+            |r: Option<&Review>, f: &[FrameRef]| h::transfer_activity(r, &report, "clock", 1, f);
+        let (retained, result) = transfer(Some(&review), &frames);
+        assert!(result.retained);
+        assert_eq!(result.from_review_id, Some(source_id.clone()));
+        let retained = retained.unwrap();
+        assert_eq!(retained.source, context.source);
+        assert_eq!(retained.observation, context.observation);
+        assert_eq!(
+            actions(&retained, &frames, &evidence)
+                .unwrap()
+                .actions
+                .len(),
+            4
+        );
+        let producer = retained.interpretation_source.as_ref().unwrap();
+        assert_eq!(producer.review_id, source_id);
+        assert_eq!(producer.model, "original-image-model");
+        assert!(
+            retained
+                .clone()
+                .bind_interpretation(&source_id, "replacement")
+                .is_err()
+        );
+        // A second agent may replace the questions, but cannot become the image's producer.
+        review.play_context = Some(retained.clone());
+        review.evidence_id = uuid::Uuid::new_v4().to_string();
+        review.model = "agent:second".into();
+        let (again, _) = transfer(Some(&review), &frames);
+        assert_eq!(again.unwrap(), retained);
+        let saved = serde_json::to_vec(&review).unwrap();
+        let restored: Review = serde_json::from_slice(&saved).unwrap();
+        assert_eq!(transfer(Some(&restored), &frames).0, Some(retained));
+
+        let mut changed = frames.clone();
+        changed[1].sha256 = "b".repeat(64);
+        assert!(!transfer(Some(&review), &changed).1.retained);
+        changed = frames.clone();
+        changed[2].input_context = None;
+        assert!(!transfer(Some(&review), &changed).1.retained);
+        for (inv, batch, hash) in [
+            ("other", 1, report.clone()),
+            ("clock", 2, report.clone()),
+            ("clock", 1, "b".repeat(64)),
+        ] {
+            assert!(
+                h::transfer_activity(Some(&review), &hash, inv, batch, &frames)
+                    .0
+                    .is_none()
+            );
+        }
+        for state in ["pending", "failed", "cancelled"] {
+            let mut invalid = review.clone();
+            invalid.status = state.into();
+            assert!(!transfer(Some(&invalid), &frames).1.retained);
+        }
+        let mut invalid = review.clone();
+        invalid.error = Some("inference failed".into());
+        assert!(!transfer(Some(&invalid), &frames).1.retained);
+        invalid = review.clone();
+        invalid
+            .play_context
+            .as_mut()
+            .unwrap()
+            .interpretation_source
+            .as_mut()
+            .unwrap()
+            .review_id = "invented".into();
+        assert!(!transfer(Some(&invalid), &frames).1.retained);
+        invalid = review;
+        invalid.play_context = None;
+        assert!(!transfer(Some(&invalid), &frames).1.retained);
+        assert!(!transfer(None, &frames).1.retained);
     }
     #[test]
     fn questions_round_robin_types_without_counting_aliases_as_competitors() {

@@ -35,6 +35,71 @@ pub struct Review {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct ActivityTransfer {
+    pub retained: bool,
+    pub from_review_id: Option<String>,
+    pub reason: String,
+}
+
+/// Keep current observation evidence when an agent replaces metadata questions.
+/// No capture, interpretation, target access or semantic promotion occurs here.
+pub fn transfer_activity(
+    previous: Option<&Review>,
+    report_sha256: &str,
+    investigation: &str,
+    batch: usize,
+    frames: &[crate::visual::FrameRef],
+) -> (Option<crate::play_context::Context>, ActivityTransfer) {
+    let transfer = || -> Result<crate::play_context::Context> {
+        let previous = previous.ok_or("There is no previous review with activity evidence.")?;
+        if previous.status != "complete"
+            || previous.error.is_some()
+            || previous.report_sha256 != report_sha256
+            || previous
+                .batch
+                .as_ref()
+                .is_none_or(|b| b.report_sha256 != report_sha256)
+        {
+            return Err(
+                "The previous review is incomplete or belongs to another discovery report.".into(),
+            );
+        }
+        let context = previous
+            .play_context
+            .as_ref()
+            .ok_or("The previous review has no activity context.")?;
+        context.validate()?;
+        let frame_hash =
+            crate::visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
+        if context.source.investigation_id != investigation
+            || context.source.batch != batch
+            || context.source.frame_metadata_sha256 != frame_hash
+        {
+            return Err(
+                "The observed images, sampled input or investigation batch changed.".into(),
+            );
+        }
+        if context.interpretation_source.is_some() {
+            Ok(context.clone())
+        } else {
+            context
+                .clone()
+                .bind_interpretation(&previous.evidence_id, &previous.model)
+        }
+    };
+    let (context, reason) = match transfer() {
+        Ok(context) => (Some(context), "Retained unchanged activity evidence and its original interpretation source; this does not validate the new hypotheses.".into()),
+        Err(reason) => (None, reason),
+    };
+    let outcome = ActivityTransfer {
+        retained: context.is_some(),
+        from_review_id: previous.map(|r| r.evidence_id.clone()),
+        reason,
+    };
+    (context, outcome)
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Row {
     pub id: usize,
     pub type_id: usize,

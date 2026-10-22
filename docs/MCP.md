@@ -824,6 +824,21 @@ timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Explicit runtime response comparisons
 
+`submit_runtime_hypotheses` preserves eligible activity context from the previous
+completed review when the discovery report, investigation, batch and complete
+frame/input metadata hash still match. Its response and durable receipt include
+`activity_transfer` (`retained`, `from_review_id`, `reason`). Changed observations
+do not prevent submitting new questions, but their older activity is discarded.
+Replayed requests return the original transfer outcome without republishing.
+
+`play_context.interpretation_source` records the original image interpretation's
+`review_id` and `model`, separately from the current hypothesis author's
+`review.model`. It survives further agent handoffs and comparison-origin storage.
+Legacy contexts can omit it; transfer binds them to their original completed
+review. The image verdict, uncertainty and measured basis are unchanged. This
+does not grant semantic confirmation or write authority. See
+[handoff and persistence verification](../research/activity-handoff/README.md).
+
 Comparison plans now include `activity_context` and `activity_limitation`.
 A context with `basis: "measured_contrast_v1"` preserves the image model's
 `consistent_visible_change: false` verdict and uncertainty, while using the

@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Agent activity handoff and numeric persistence (2026-10-22): **35% unchanged**.
+Agent hypotheses now preserve matching activity evidence instead of dropping it.
+Original image-source attribution and uncertainty survive repeated handoffs,
+request replay and comparison-origin storage. Changed report, image/input or
+investigation metadata discards the older context. An app command/archive test
+passes without target access and retains old receipts after engine restart.
+
+Two frozen saved-case replay attempts stopped on an exact numeric mismatch. The
+second isolated JSON parsing that rounded a stored value by one binary64 step.
+Workspace JSON now preserves floating-point roundtrips; exact evidence comparisons
+remain in place. V3 rehashes fifteen images and retains the original two questions,
+one proposed comparison and four 198 ms holds. It runs no model, target, input or
+write. All 299 tests and strict Clippy pass. Other historical JSON identities have
+not been exhaustively audited. No native integration or new generalization was
+verified; the preview remains quarantined and no replacement was published.
+[Evidence, failures and limitations](../research/activity-handoff/README.md).
+
 File-based runtime compatibility checks (2026-10-22): **35% unchanged**.
 Runtime detection and helper entry-point lookup no longer map DLLs locally using
 the discouraged DONT_RESOLVE_DLL_REFERENCES flag. A bounded PE parser reads the

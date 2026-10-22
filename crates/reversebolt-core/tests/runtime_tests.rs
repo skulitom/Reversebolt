@@ -526,6 +526,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     };
     test.origin.as_mut().unwrap().play_context = Some(reversebolt_core::play_context::Context {
         basis: Default::default(),
+        interpretation_source: None,
         source: reversebolt_core::play_context::Source {
             investigation_id: test.investigation.clone(),
             batch: 1,
@@ -546,6 +547,16 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
             uncertainty: "No physical quantity or field relationship is known.".into(),
         },
     });
+    test.validate_plan().unwrap();
+    let origin = test.origin.as_mut().unwrap();
+    origin.play_context = Some(
+        origin
+            .play_context
+            .take()
+            .unwrap()
+            .bind_interpretation(&origin.reference.review_id, "original-image-model")
+            .unwrap(),
+    );
     test.validate_plan().unwrap();
     let mut legacy = serde_json::to_value(&test.origin).unwrap();
     legacy.as_object_mut().unwrap().remove("play_context");

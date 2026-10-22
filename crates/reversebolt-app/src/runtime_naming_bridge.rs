@@ -1,4 +1,7 @@
 //! Optional metadata review owned by the existing discovery job.
+#[cfg(test)]
+#[path = "runtime_naming_handoff_tests.rs"]
+mod handoff_tests;
 use crate::service::OperationOwner;
 use reversebolt_core::{
     Result,
@@ -101,15 +104,17 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
                 return Err("This review identity belongs to a different submission.".into());
             }
             let receipt = read_archive(&dir.join("receipt.json"))?;
-            return Ok(json!({"review":receipt["review"],"replayed":true,"published":false}));
+            return Ok(
+                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"replayed":true,"published":false}),
+            );
         }
     }
-    let view = &mut engine
+    let live = &mut engine
         .live
         .as_mut()
         .ok_or("Connect an application first.")?
-        .view
-        .runtime;
+        .view;
+    let view = &mut live.runtime;
     if c.args["catalog_id"] != view.catalog_id || view.catalog_id.is_empty() {
         return Err("The runtime catalogue changed.".into());
     }
@@ -152,10 +157,17 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             hypotheses: p.hypotheses,
         },
     )?;
+    let (play_context, activity_transfer) = h::transfer_activity(
+        view.naming.as_ref(),
+        &inventory.report_sha256,
+        &live.investigation_id,
+        live.coverage.batch,
+        &live.frames,
+    );
     let review = Review {
         question_source: Default::default(),
         question_policy: None,
-        play_context: None,
+        play_context,
         evidence_id: p.review_id.clone(),
         report_sha256: inventory.report_sha256.clone(),
         model: format!("agent:{}", c.source),
@@ -170,10 +182,12 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     save_new(&dir.join("inventory.json"), &json!(inventory))?;
     save_new(
         &dir.join("receipt.json"),
-        &json!({"schema":1,"selection":selection,"review":review,"limitation":h::LIMITATION}),
+        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"limitation":h::LIMITATION}),
     )?;
     publish(view, &p.catalog_id, review.clone(), false)?;
-    Ok(json!({"review":review,"replayed":false,"published":true}))
+    Ok(
+        json!({"review":review,"activity_transfer":activity_transfer,"replayed":false,"published":true}),
+    )
 }
 
 fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Value> {
@@ -350,7 +364,12 @@ fn review_inner(
                         .await,
                 )
             })?;
-        state.play_context = receipt.activity.as_ref().and_then(|a| a.context());
+        state.play_context = receipt
+            .activity
+            .as_ref()
+            .and_then(|a| a.context())
+            .map(|context| context.bind_interpretation(&state.evidence_id, model))
+            .transpose()?;
         state.question_source = receipt.question_source();
         state.question_policy = receipt.question_policy().map(str::to_owned);
         state.batch = receipt.batch.clone();
