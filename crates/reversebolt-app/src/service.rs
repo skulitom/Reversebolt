@@ -20,6 +20,10 @@ use std::{
     },
 };
 
+#[cfg(test)]
+#[path = "service/memory_evidence_tests.rs"]
+mod memory_evidence_tests;
+
 #[derive(Clone)]
 pub(crate) struct OperationOwner {
     pub job: u64,
@@ -169,6 +173,7 @@ impl EngineHandle {
                             | "start_change_search"
                             | "finish_change_search"
                             | "detach_process"
+                            | "export_memory_evidence"
                             | "read_capture"
                             | "submit_observation"
                             | "read_sequence"
@@ -233,6 +238,7 @@ impl EngineHandle {
                         if matches!(
                             command.action.as_str(),
                             "read_capture"
+                                | "export_memory_evidence"
                                 | "list_memory_processes"
                                 | "capture"
                                 | "submit_observation"
@@ -728,6 +734,37 @@ pub(crate) fn native_command(
                 engine.event(&command.source, format!("Recorded provisional temporal evidence for {label}. No continuous identity or control was verified."));
             }
             return Ok(json!({"recorded": changed, "duplicate": !changed}));
+        }
+        "export_memory_evidence" => {
+            if command.args.as_object().is_none_or(|m| {
+                m.keys()
+                    .any(|k| !matches!(k.as_str(), "investigation_id" | "batch" | "after_sample"))
+            }) {
+                return Err(
+                    "Memory export accepts the current investigation, batch and sample count only."
+                        .into(),
+                );
+            }
+            let session = engine
+                .live
+                .as_ref()
+                .ok_or("Collect memory observations before exporting evidence.")?;
+            let investigation = command.args["investigation_id"]
+                .as_str()
+                .ok_or("Supply investigation_id")?;
+            let batch = usize::try_from(command.args["batch"].as_u64().ok_or("Supply batch")?)
+                .map_err(|_| "Batch is out of range")?;
+            let after_sample = usize::try_from(
+                command.args["after_sample"]
+                    .as_u64()
+                    .ok_or("Supply after_sample")?,
+            )
+            .map_err(|_| "Sample count is out of range")?;
+            return Ok(json!(session.export_memory_evidence(
+                investigation,
+                batch,
+                after_sample
+            )?));
         }
         "read_capture" => {
             let session = engine

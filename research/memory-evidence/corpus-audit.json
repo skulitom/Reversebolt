@@ -1,0 +1,316 @@
+{
+  "method": "saved_capture_schema_audit_v1",
+  "scope": "Original exposed recordings; JSON metadata only. Browser-profile files, game oracles and target source are not read.",
+  "finding": "Known capture schemas retain read receipts, not broad memory bytes. A retained-byte count cannot reconstruct its payload. Candidate-only witness archives would also be selected evidence, not a blind memory corpus.",
+  "native_process_access": false,
+  "runs": [
+    {
+      "run": "2048-1",
+      "status_sha256": "1515f3d290607797e8e18403909136f659c77b7e220a3a551c978f7e1bc57210",
+      "captures": 16,
+      "read_receipts": 12336,
+      "bytes_counted_as_retained_in_receipts": 221732864,
+      "bytes_counted_as_retained_in_status": 221732864,
+      "investigation_clock_read_intervals": 12336,
+      "broad_memory_export_paths": [],
+      "candidate_witness_archive_paths": [],
+      "frame_receipts": [
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-001.json",
+          "sha256": "8fc13f567501e33656a0826130ca1b02daae041e0b3a753e09ecdd1debd651e4"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-002.json",
+          "sha256": "439703796721823c4db96bd5dbc517a7089a8928dba6cb5721c5ef3e77ede1ed"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-003.json",
+          "sha256": "003ba5020cd8bd891392e9d2a01fb468043c9352318a9d3340d19ed33bbbc1e9"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-004.json",
+          "sha256": "93dd274f6af0417e7208c633830ec31015cc32e5f35c44afbea0a47b29694b47"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-005.json",
+          "sha256": "caedb7b8eec4e18d46d4d24fad22314c867ed291e148ec5cde9b3f058b79d7d0"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-006.json",
+          "sha256": "1fcc68488169f0858ae8eeb57ce82fc9023352792008e06225f6dceb687937e7"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-007.json",
+          "sha256": "7bab13ead3cfdfcf96b53f7f8b167145af2add0c01bc934aed75ecd867d3c764"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-008.json",
+          "sha256": "34cd94bf1687f04e67b4fcb49a2927eb1dbed83e9fa6436664d50348cec1a8eb"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-009.json",
+          "sha256": "cd9c2980bb9495c26585d0b7016dd410e03622820e5f2da3343fc8e7dce86b16"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-010.json",
+          "sha256": "bd6adf1450a43936e258dc353219201aa00ab6397cc2f2ab6ae9cda39d2658df"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-011.json",
+          "sha256": "bdb8429bbf7e7c3557a6d85d36bfbb94f7597a227afae8d4d8024726512b5bef"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-012.json",
+          "sha256": "7cd0b051928189c2eeab4490aa92e8f0ff9778e003a4e275d03a01b43b8c9531"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-013.json",
+          "sha256": "03fe317b62d0635fdca12814c1edda8d59d281270c28d3600e0956140f18c172"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-014.json",
+          "sha256": "260e48fba3bb351ddebf7362d94ba1cbb6a1c25b287d0ebca22af4842c118c0f"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-015.json",
+          "sha256": "8c4819927373ad0eea5e12be4c99061faa77a42d6897714d20bb04ee9e1433ea"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-1-attempt-01/engine/captures/07563d41-3cd0-4ec4-9b1b-f438d94ac278/frame-016.json",
+          "sha256": "d659557f7b72b494c46cee386e9fd777488da5b49273d8bc5f9771db0d70b16c"
+        }
+      ]
+    },
+    {
+      "run": "2048-2",
+      "status_sha256": "a56c1cfc471daee2962f2f4411c437549c67d9e30fd65306ad61078450d85bf8",
+      "captures": 16,
+      "read_receipts": 12256,
+      "bytes_counted_as_retained_in_receipts": 221622272,
+      "bytes_counted_as_retained_in_status": 221622272,
+      "investigation_clock_read_intervals": 12256,
+      "broad_memory_export_paths": [],
+      "candidate_witness_archive_paths": [],
+      "frame_receipts": [
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-001.json",
+          "sha256": "dc58a1b8bdc30da021e8cec6c757f4b6e6c78918e54310fd5058036b977149d1"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-002.json",
+          "sha256": "98cb35e1d408aa7b15c1ca97511a65738135febadcf3b19148c6443386a974d3"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-003.json",
+          "sha256": "dcfa88bb66216532472b56c0ef2461924d6db103943522081c3723e99d333030"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-004.json",
+          "sha256": "e44d8ad3766a91b5eb34458039f26eec4cc1a1af635933b100112afd0122e83c"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-005.json",
+          "sha256": "31e35d10a0f316695d5b49fe36622b787b149e0cafe418fabe6510286d8a0cee"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-006.json",
+          "sha256": "15e07cb7726b795dbf273f305d4178c7baa07908f10ac24a0277316b9e370537"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-007.json",
+          "sha256": "000b0388d5c0d3e3d2424acef74bb78a9fb2666ab8367eda12b4b94f6ae2dd03"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-008.json",
+          "sha256": "c58f3efb88c66921a12bc7976a68a5251b6633ebf6f50964e1994907b9e248df"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-009.json",
+          "sha256": "e3985bdabe2b5ed64ff78d6906901c12a1f726c837635d715b5d05614cd0f24c"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-010.json",
+          "sha256": "5611e5c7f7f1a7b6a48611db4f6da31c7de0d7e26ec2df2f1476dfb132cfd662"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-011.json",
+          "sha256": "45232ed60511216db938ae47e1ba27f5959552978ecadf1e6feed31ac73a9de0"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-012.json",
+          "sha256": "588b36d75b3d0c4f9ca2a196dce6163fc63adca4c489fe0ad99d01c4e0f51810"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-013.json",
+          "sha256": "11f3ec946340332a3c0c20fdc0ce7fc86443ac72fdcbc27a8fe59fc0dac27f79"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-014.json",
+          "sha256": "5dd3f6623d801232cf7b40dbc5eeb43328f3d1f0e0e28d5a17f8dfed3a284746"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-015.json",
+          "sha256": "a40f4f64bb75d2d36350c286b8b0526253674cff58626e98fc239c18ca6ced08"
+        },
+        {
+          "path": "test-results/independent-games-v1/2048-2-attempt-01/engine/captures/4eae1e89-7097-4684-9003-04a3ea30e689/frame-016.json",
+          "sha256": "fc43a43e53e1429b3b8f969eb3d2063bf4bca61818040e8a640b7ae9bb60a8b1"
+        }
+      ]
+    },
+    {
+      "run": "tetris-1",
+      "status_sha256": "7700d1fe9ac112c959fb97e5a7866599a419afe2959e866d2f0871dfa575ff28",
+      "captures": 16,
+      "read_receipts": 12640,
+      "bytes_counted_as_retained_in_receipts": 222806016,
+      "bytes_counted_as_retained_in_status": 222806016,
+      "investigation_clock_read_intervals": 12640,
+      "broad_memory_export_paths": [],
+      "candidate_witness_archive_paths": [],
+      "frame_receipts": [
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-001.json",
+          "sha256": "672b755edaff2a0599ceb856eeb98400b27e19a266bb888d2c6e0facd6183154"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-002.json",
+          "sha256": "e5cf284b9441962e246d39fed07aa522b4949317fd0f51f55d61821e6e9eda9e"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-003.json",
+          "sha256": "7d90549cda7119620ae7c4ba649d8be4301ee251a13d1e5c85b58d4967c0cba5"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-004.json",
+          "sha256": "8562f3d0b431814797b9277118f854e72ef576f9765f9dee8231553795d39f1a"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-005.json",
+          "sha256": "a13f8ddb90f7be4634f26951a9b57e1d64eba7ae68ff30679f823b78eb7b2e8d"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-006.json",
+          "sha256": "29a2e17b3241b5c5417993a8770c4a4ab80025ef2aa0f9ff8581d411079f2c99"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-007.json",
+          "sha256": "a57301d14021170b9cb0b947563b596425286444db26e1275a305bab9fe9dc3b"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-008.json",
+          "sha256": "3f0c6c97af2c9253564220a3a26504155e0cdc2121c675c896383352a591121e"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-009.json",
+          "sha256": "6209a1c1e301a552e81a0fef23fe8a9705b6b00f7b477ec187b8f6de62dc727a"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-010.json",
+          "sha256": "959e977b985c68d41e874f84f0b12232735ad0408eb779e7d0952acf72f1b38c"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-011.json",
+          "sha256": "076a03a0e4721a3e6dcfb595103447cc4b9137b7d5ca9cf719f6ac6d8d364a6d"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-012.json",
+          "sha256": "3ba4bdc49e2bb7331b5375e6449f82d5b79ef3808b5c3c608d7a94bd43e74c9b"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-013.json",
+          "sha256": "060d13faf105ee8bf4ec0962628ad7ba26be6e2e6bb59079a0f37e7af0f882d3"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-014.json",
+          "sha256": "2c6242b1b3a40f3dcf9afde1bfadb923735033c77988cbe9583004c86cfd4755"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-015.json",
+          "sha256": "11955821908354b551bd6b82ebd8c3362fadeeb223e045de482b88f57d775afb"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-1-attempt-01/engine/captures/7cc9691a-7a12-4f34-bb04-5db1c88efba7/frame-016.json",
+          "sha256": "a409131c1175cdf3947639465b2fbd0b5e7f034663aa6de14c537053f1c90137"
+        }
+      ]
+    },
+    {
+      "run": "tetris-2",
+      "status_sha256": "29000f38ec171c9245d761f18e8847c91fb8a161cda38e13806372537bdd791e",
+      "captures": 16,
+      "read_receipts": 12128,
+      "bytes_counted_as_retained_in_receipts": 221925376,
+      "bytes_counted_as_retained_in_status": 221925376,
+      "investigation_clock_read_intervals": 12128,
+      "broad_memory_export_paths": [],
+      "candidate_witness_archive_paths": [],
+      "frame_receipts": [
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-001.json",
+          "sha256": "43712c15a58bf45b01e3aa4a9e27f2d7ae3877ce085f7243529659d2516944b1"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-002.json",
+          "sha256": "c57f94ad7ca0951ca7817fd64c9d84b6595cd0d4c194a9f4591240ba5b95c4d3"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-003.json",
+          "sha256": "0979ad0f7c439caf653fe84d89106c3b253228c2bf413feb425cf8952f223a42"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-004.json",
+          "sha256": "8091a7dd2489d2de3b15876321fa40a84c6dcb844ea0cab665f7dd1b3b80ae1e"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-005.json",
+          "sha256": "71118ae5eebcef5a4d9c787146b5f3672cdd336980f4b9f03f67733b3b6fafce"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-006.json",
+          "sha256": "2ed01de9f5392f7d536ef1134ce0d269118b07ac4fa98d5c34b0b213410af0c4"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-007.json",
+          "sha256": "2056130a5a0edf94bf87bee16662002f067166e151ac0c34fa0322e0fb01595a"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-008.json",
+          "sha256": "6a36653154238dab08c2129b0a183c21d01cccd25ab083ab0997488e00c40a76"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-009.json",
+          "sha256": "33c0e0eac9f6a5ffaf3728a5f31dd19646d2c84880cd6a2ef2dd7b83978b2bfe"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-010.json",
+          "sha256": "b84bd994b0c0541c53246ce8fe3a6e64d30231a41f6f42e0b96de9b8d3be9d01"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-011.json",
+          "sha256": "81bef8952809a5b03ee99d23a625962999f8081c527325ee530fee5dd918f716"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-012.json",
+          "sha256": "e89c1d887fe6ad9c7c83e482f26a69e2b9ae684b559b4a1df6f408ab3f837d27"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-013.json",
+          "sha256": "facb1e22a3d939d612a62db44b9270fc8bcc3b2e8f459e4c87b54fc97c3d53a9"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-014.json",
+          "sha256": "e6ee76e404a4cfb6316221f8cbbc0691b52b2d43dbc7daeb3472171ea8d8a611"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-015.json",
+          "sha256": "42b74da65e7817c0b9c4978c9157cd698145fedf3d83cfa64019658117d9cb4d"
+        },
+        {
+          "path": "test-results/independent-games-v1/tetris-2-attempt-01/engine/captures/1875cfaf-aa8f-4ab6-9742-bb019f744299/frame-016.json",
+          "sha256": "ddd40ffe96ef97a1af34600c066d7ae35b45e2c3eda3ed15d45bd62570d0ab7e"
+        }
+      ]
+    }
+  ]
+}

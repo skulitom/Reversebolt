@@ -13,6 +13,9 @@ const MIB: usize = 1024 * 1024;
 const BASE: u64 = 0x10000;
 const FIELD: u64 = BASE + MIB as u64 + 128;
 
+#[path = "support/memory_evidence.rs"]
+mod memory_evidence;
+
 struct Fixture {
     info: ProcessInfo,
     frame: Cell<usize>,

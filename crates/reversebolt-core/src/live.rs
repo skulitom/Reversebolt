@@ -21,6 +21,7 @@ pub const MAX_MEMORY_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
 mod change_search;
+mod memory_evidence;
 
 struct Recheck {
     checks: Vec<PredictionCheck>,

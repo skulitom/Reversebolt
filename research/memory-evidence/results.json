@@ -1,0 +1,106 @@
+{
+  "method": "local_memory_evidence_export_v1",
+  "goal_percent": 35,
+  "scope": "Saved JSON audit and generated NativeTarget fixtures only. No game, native input worker, live model, production app or upload.",
+  "base_commit": "3736dd1e407250bd540b2aaeeeca8ca54ea28ccc",
+  "workspace_test_executions": 409,
+  "targeted_tests_after_test_type_cleanup": 5,
+  "strict_clippy": "passed after replacing a complex test-only callback type with function pointers",
+  "formatting": "passed",
+  "verified": {
+    "export_and_replay_no_target_contact": true,
+    "complete_live_view_preserved": true,
+    "broad_unmatched_bytes_preserved": true,
+    "image_only_sample_has_no_memory": true,
+    "missing_reads_never_zero_filled": true,
+    "mapping_return_does_not_recover_invalid_trajectory": true,
+    "separate_image_memory_clock_intervals": true,
+    "historical_read_after_batch_advance_and_session_drop": true,
+    "payload_corruption_after_open_detected": true,
+    "manifest_scope_layout_corruption_rejected": true,
+    "exact_replay": true,
+    "later_sample_count_cannot_overwrite": true,
+    "interrupted_export_reservation_retained": true,
+    "budget_exhaustion_refuses_complete_export": true,
+    "shared_service_command_tested": true,
+    "custom_export_path_rejected": true,
+    "editing_authority": false
+  },
+  "fixture": {
+    "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/batch-tests\\3c6db2a0-a4b7-43ff-b49b-0243d6f309b7\\memory-evidence\\batch-002",
+    "manifest_sha256": "2cc2643a544dc477daeee2a7b2ef21c6ea6d670262097521987616d7c2312d89",
+    "payload_bytes": 4063232,
+    "captures": 5,
+    "memory_samples": 4,
+    "replayed": false,
+    "historical": true,
+    "source_directory": "C:\\DEV\\Reversebolt\\target\\batch-tests\\3c6db2a0-a4b7-43ff-b49b-0243d6f309b7\\memory-evidence\\batch-002",
+    "frozen_directory": "test-results/memory-evidence-v1/fixtures/memory-evidence/batch-002"
+  },
+  "checks": [
+    {
+      "path": "test-results/memory-evidence-check-first.log",
+      "sha256": "48f0172a2d23839e9c1ee5e60d98164d01acd4a332a700b4deb20c994e4fc15c"
+    },
+    {
+      "path": "test-results/memory-evidence-clippy-final.log",
+      "sha256": "d1158224f04aec5b81187413abf1d3f4f61bf8d62471187e42cac052656be3ed"
+    },
+    {
+      "path": "test-results/memory-evidence-clippy-first.log",
+      "sha256": "0fffed80ee8fd525fc3c79f9a943de9fcf55cbf2039c21fa4f105f4585d91b19"
+    },
+    {
+      "path": "test-results/memory-evidence-fixture-audit-build.log",
+      "sha256": "bf170f6141ece0bfc3f59f2b4580079497ec59a23280d7ec1470062eeaf40e70"
+    },
+    {
+      "path": "test-results/memory-evidence-fixture-audit.json",
+      "sha256": "5c06b491b01f2dbd8af07cc13b30c2240247759010c13633af0d572ac2b034d0"
+    },
+    {
+      "path": "test-results/memory-evidence-format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-evidence-format-first.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-evidence-preview-check.json",
+      "sha256": "7c357e0398be81f8c9ee7c940925c5cc68bc6aa22e5798bbc4a8e21e64c6bc9d"
+    },
+    {
+      "path": "test-results/memory-evidence-targeted-final.log",
+      "sha256": "446793bb3aaf130740d88c2e79bce5a0ba364c937c255385df3c7f68841fa11f"
+    },
+    {
+      "path": "test-results/memory-evidence-targeted-first.log",
+      "sha256": "3dccc8b38a626ba2386295231c8ca0e94db0425488fd08d362a568da801ca02c"
+    },
+    {
+      "path": "test-results/memory-evidence-workspace-first.log",
+      "sha256": "b68cbe7e30749e25a3d85c4586d093a29e0fca10f07fe98409abebacbcb32041"
+    }
+  ],
+  "frozen_directory": "test-results/memory-evidence-v1",
+  "frozen_files": 207,
+  "manifest_sha256": "dec678de8ba4d922d2a6152adcb155299deae99d16c9c276f7a2edbc783a79a7",
+  "changed": [],
+  "preceding_frozen_snapshot_changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "limitations": [
+    "No memory-first candidate producer implemented or evaluated.",
+    "Old capture receipts cannot reconstruct memory bytes.",
+    "Sampling selection can already depend on visible numbers.",
+    "Mapping metadata and clock identity do not prove allocation lifetime, atomicity or input coverage during reads.",
+    "Independent-game generalization and native validation remain unverified."
+  ]
+}

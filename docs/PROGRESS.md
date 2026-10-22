@@ -4,6 +4,27 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Local memory evidence export (2026-10-22): **35% unchanged**.
+The shared engine/MCP can now freeze all already-retained memory chunks from a
+batch for offline research, with sampling/search provenance, per-read timing,
+missing reads and image-only moments preserved. Export and replay perform no new
+target access. Hash-checked historical reading survives batch changes and session
+closure. A separate 512 MiB disk budget includes incomplete attempts, and frozen
+exports cannot be silently extended or replaced. No desktop report or unnamed
+control is added.
+
+An audit of the original four exposed 2048/Tetris runs found 49,360 read receipts
+counting 888,086,528 bytes, but no broad-memory payloads in the known capture
+formats. Older candidate-only witnesses were already selected through visible
+numbers and are unsuitable for a fair memory-first discovery evaluation.
+The new five-moment generated fixture verifies 4,063,232 retained bytes, two missing
+reads and zero target contact during export. All **409 workspace tests** pass;
+strict Clippy and formatting pass after simplifying a test-only type. The offline
+audit example verifies the archive. No game, live model or production app ran.
+This enables future research; it does not earn causal-discovery or generalization
+credit. The desktop remains unavailable and all artifacts stay local.
+[Implementation, verification and limits](../research/memory-evidence/README.md).
+
 Automatic response-to-question handoff (2026-10-22): **35% unchanged**.
 Input experiments now pin eligible existing metadata questions at submission and
 associate their final response evidence automatically. The resulting review keeps

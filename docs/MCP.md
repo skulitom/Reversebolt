@@ -23,6 +23,54 @@ stdio framing. The desktop owns a single serialized engine worker, so desktop
 actions and agent actions cannot interleave memory experiments. The MCP server
 never creates a private simulator or duplicate session.
 
+### Local memory evidence for offline research
+
+`reversebolt_export_memory_evidence` freezes the current batch's already-retained
+memory and provenance to local files. Supply the exact `investigation_id`,
+`coverage.batch` and `sample_count` from `status.state.live`:
+
+```json
+{"investigation_id":"<current investigation>","batch":1,"after_sample":16}
+```
+
+Wait until the observation job has finished. The command writes local files and
+uses normal controller ownership and human-hold checks. It performs no process
+access, capture, input, model call or upload. It returns a local `directory`,
+`manifest_sha256`, `payload_bytes`, `captures`, `memory_samples`, `replayed` and
+`historical: true`. There is no new desktop report or value card.
+
+An investigation can freeze one export per memory batch. Exact replay verifies
+and returns the original archive; collecting more moments does not extend or
+overwrite it. The immutable export remains readable after advancing the batch or
+ending the session. Existing recordings cannot acquire bytes already discarded.
+
+Each archive has `manifest.json`, `bytes.bin` and a `reservation.json` marker. The
+manifest preserves the complete live view, sampling plan, invalidated chunks,
+memory-sample membership, and every read's outcome and interval. Successful reads
+point to contiguous, individually hashed byte segments. Failed reads have no
+segment; image-only moments have no memory reads. No image files are copied.
+
+The separate local evidence budget is **512 MiB per investigation** for payloads
+and manifests, with at most 24 reservation markers of at most 4 KiB each. A manifest
+is limited to 32 MiB. Capacity is reserved before writing and remains charged for
+interrupted attempts; an incomplete export is never silently replaced. Exports
+that do not fit are refused in full, without selecting or truncating witnesses.
+
+The core `memory_evidence::Archive` reader requires the expected manifest hash,
+validates the layout and file length, and verifies returned byte segments.
+`verify()` checks all segments with bounded temporary storage; `sample(number)`
+returns one historical sample as an address-to-bytes map with missing reads absent.
+`memory-evidence-audit` is an offline core example that verifies an export and
+prints its counts and limitations without attaching to a process.
+
+These are the bytes retained under the original sampling plan, not complete
+process memory. Searches may have selected ranges using screen values; inspect
+the saved `value_searches` and `change_searches` provenance. Image/input sampling
+and memory reads are separate operations: shared clock IDs do not imply that input
+coverage extends through a read. Matching mapping metadata proves neither an
+allocation's lifetime nor an atomic snapshot. Historical addresses, labels and
+correlations confer no current binding, semantic certainty or editing authority.
+
 `capture` and `start_observation_job` support `mode: "play"`: images and sampled
 input without OCR or memory reads. Supported-runtime automatic attach collects
 fifteen such moments before discovery. `start_runtime_job` can request the same
