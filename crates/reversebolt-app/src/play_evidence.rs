@@ -1,4 +1,5 @@
 //! Read-only interpretation of retained, hash-checked images and input windows.
+use reversebolt_core::visual_regions;
 use reversebolt_core::{
     Result,
     live::LiveSession,
@@ -51,6 +52,18 @@ pub(crate) fn region_evidence(
         "source_sha256":reversebolt_core::visual::digest(&serde_json::to_vec(&source).map_err(|e|e.to_string())?),
         "intervals":intervals,"limitation":region_motion::LIMITATION}),
     )
+}
+
+pub(crate) fn automatic_interval(
+    selection: &visual_regions::Selection,
+    before: &reversebolt_core::visual::FrameRef,
+    after: &reversebolt_core::visual::FrameRef,
+    a: &[u8],
+    b: &[u8],
+) -> Vec<Value> {
+    selection.regions.iter().filter(|p|p.before_id==before.id && p.after_id==after.id).map(|p|
+        json!({"source_sha256":p.source_sha256,"result":measure_region_pair(before,after,a,b,p.region)})
+    ).collect()
 }
 
 pub(crate) fn measure_pair(
@@ -115,6 +128,34 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     if let Some(region) = region {
         region.validate_shape()?;
     }
+    let auto_regions = match args.get("auto_regions") {
+        None => true,
+        Some(value) => value
+            .as_bool()
+            .ok_or("auto_regions must be true or false.")?,
+    };
+    let automatic = if auto_regions {
+        let references = ids
+            .iter()
+            .map(|id| {
+                session
+                    .view
+                    .frames
+                    .iter()
+                    .find(|f| &f.id == id)
+                    .cloned()
+                    .ok_or("Choose retained image identities.".to_string())
+            })
+            .collect::<Result<Vec<_>>>()?;
+        Some(visual_regions::select(
+            investigation,
+            &references,
+            &session.view.visual_tracks,
+        ))
+    } else {
+        None
+    };
+    let mut automatic_measurements = vec![];
     let mut frames = vec![];
     let mut measurements = vec![];
     let mut patch_motion = vec![];
@@ -136,6 +177,15 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
                     region,
                 ));
             }
+            if let Some(Ok(selection)) = &automatic {
+                automatic_measurements.extend(automatic_interval(
+                    selection,
+                    frames.last().unwrap(),
+                    &frame,
+                    prior,
+                    &image,
+                ));
+            }
         }
         frames.push(frame);
         previous = Some(image);
@@ -151,12 +201,162 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     if let Some(region) = region {
         result["region_motion"] = region_evidence(&frames, region, region_intervals)?;
     }
+    if let Some(automatic) = automatic {
+        result["automatic_region_motion"] = match automatic {
+            Ok(selection) => {
+                json!({"selection":selection,"measurements":automatic_measurements,"error":null})
+            }
+            Err(error) => json!({"selection":null,"measurements":[],"error":error}),
+        };
+    }
     Ok(result)
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
+    use reversebolt_core::{
+        live::{NativeTarget, ProcessInfo, Screen},
+        visual,
+    };
+    use std::path::{Path, PathBuf};
+
+    struct NoTargetAccess(ProcessInfo);
+    impl NativeTarget for NoTargetAccess {
+        fn info(&self) -> &ProcessInfo {
+            &self.0
+        }
+        fn regions(&self) -> Result<Vec<reversebolt_core::live::Region>> {
+            Ok(vec![reversebolt_core::live::Region {
+                base: 0x1000,
+                length: 4096,
+                ..Default::default()
+            }])
+        }
+        fn read(&self, _: u64, _: usize) -> Result<Vec<u8>> {
+            panic!("saved evidence must not read a target")
+        }
+        fn screen(&self, _: &Path) -> Result<Screen> {
+            panic!("saved evidence must not capture")
+        }
+        fn alive(&self) -> bool {
+            true
+        }
+    }
+    pub(crate) fn saved_observations() -> (LiveSession, PathBuf) {
+        let directory = std::env::temp_dir()
+            .canonicalize()
+            .unwrap()
+            .join(format!("reversebolt-regions-{}", uuid::Uuid::new_v4()));
+        let mut session = LiveSession::attach(
+            Box::new(NoTargetAccess(ProcessInfo::default())),
+            1,
+            directory.clone(),
+        )
+        .unwrap();
+        let mut encoded = std::io::Cursor::new(vec![]);
+        image::GrayImage::from_pixel(256, 144, image::Luma([80]))
+            .write_to(&mut encoded, image::ImageFormat::Png)
+            .unwrap();
+        let bytes = encoded.into_inner();
+        session.view.frames = (1..=3)
+            .map(|n| {
+                std::fs::write(directory.join(format!("frame-{n:03}.png")), &bytes).unwrap();
+                serde_json::from_value(
+                    json!({"id":format!("frame-{n}"),"number":n,"sha256":visual::digest(&bytes),
+                "width":256,"height":144,"epoch":0,"started_unix_ms":n}),
+                )
+                .unwrap()
+            })
+            .collect();
+        session.view.sample_count = 3;
+        for index in [0, 2] {
+            let frame = &session.view.frames[index];
+            visual::record(
+                &mut session.view.visual_tracks,
+                visual::ObservationInput {
+                    investigation_id: session.view.investigation_id.clone(),
+                    frame_id: frame.id.clone(),
+                    image_sha256: frame.sha256.clone(),
+                    observer: "fixture".into(),
+                    key: format!("object-{index}"),
+                    label: "Unverified object".into(),
+                    unit: String::new(),
+                    value: Some(visual::VisualValue::Text("visible".into())),
+                    quality: visual::Quality::Provisional,
+                    bounds: Some([16., 16., 128., 72.]),
+                    explanation: "A fixture image region with no gameplay meaning.".into(),
+                },
+                frame,
+                "fixture-observer",
+                3,
+            )
+            .unwrap();
+        }
+        (session, directory)
+    }
+    #[test]
+    fn saved_reader_automatically_measures_exact_observations_without_changing_base_evidence() {
+        let (mut session, directory) = saved_observations();
+        let mut args = json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,
+            "frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()});
+        let enabled = read(&session, &args).unwrap();
+        let automatic = &enabled["automatic_region_motion"];
+        assert!(automatic["error"].is_null());
+        assert_eq!(
+            automatic["selection"]["regions"].as_array().unwrap().len(),
+            1
+        );
+        assert_eq!(
+            automatic["selection"]["omitted_observations"]["no_following_image"],
+            1
+        );
+        assert_eq!(automatic["measurements"].as_array().unwrap().len(), 1);
+        let measured = &automatic["measurements"][0];
+        assert_eq!(
+            measured["source_sha256"],
+            automatic["selection"]["regions"][0]["source_sha256"]
+        );
+        assert!(measured["result"]["error"].is_null());
+        assert_eq!(measured["result"]["before"], "frame-1");
+        assert_eq!(measured["result"]["after"], "frame-2");
+        args["auto_regions"] = json!(false);
+        let disabled = read(&session, &args).unwrap();
+        assert!(disabled.get("automatic_region_motion").is_none());
+        for key in ["evidence", "patch_motion", "frame_metadata_sha256"] {
+            assert_eq!(enabled[key], disabled[key]);
+        }
+        args["auto_regions"] = json!("true");
+        assert!(read(&session, &args).unwrap_err().contains("auto_regions"));
+        args["auto_regions"] = json!(true);
+        session.view.visual_tracks[0].observations[0]
+            .as_mut()
+            .unwrap()
+            .input
+            .image_sha256 = "0".repeat(64);
+        let invalid = read(&session, &args).unwrap();
+        assert_eq!(
+            invalid["automatic_region_motion"]["selection"]["omitted_observations"]["invalid_source_binding"],
+            1
+        );
+        assert!(
+            invalid["automatic_region_motion"]["measurements"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(enabled["evidence"], invalid["evidence"]);
+        // The existing whole-request saved-pixel check still fails closed.
+        let corrupt = image::GrayImage::from_pixel(256, 144, image::Luma([90]));
+        corrupt.save(directory.join("frame-002.png")).unwrap();
+        assert!(
+            read(&session, &args)
+                .unwrap_err()
+                .contains("saved image has changed")
+        );
+        drop(session);
+        std::fs::remove_dir_all(directory).unwrap();
+    }
     #[test]
     fn region_measurements_bind_pixels_geometry_epoch_and_region_coordinates() {
         let mut encoded = std::io::Cursor::new(vec![]);

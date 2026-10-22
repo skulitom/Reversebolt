@@ -117,6 +117,12 @@ agents receive the same timed samples with recorded frames. Pausing, stopping,
 completion and disconnect stop sampling. These samples do not tell us which
 inputs the game accepted or what they mean. See [input scope and evidence](docs/research/INPUT_CONTEXT.md).
 
+The shared evidence reader also chooses up to four image regions from retained
+visual observations and measures them against their next consecutive capture.
+It needs no manually supplied coordinates and skips missing or uncertain sources.
+Automatic discovery archives these measurements; region labels remain unverified
+and motion results do not enable edits. See [the saved-observation regression](research/observed-regions/README.md).
+
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,
 and changes without detected keys. Agents receive the same evidence and suggested

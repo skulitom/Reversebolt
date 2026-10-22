@@ -31,6 +31,7 @@ pub mod runtime_type_index;
 pub mod temporal;
 pub mod value_search;
 pub mod visual;
+pub mod visual_regions;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;

@@ -2,39 +2,11 @@
 use crate::{patch_motion, response};
 use image::imageops::{self, FilterType};
 use reversebolt_core::Result;
-use serde::{Deserialize, Serialize};
+pub use reversebolt_core::visual_regions::Region;
+use serde::Serialize;
 
 pub const POLICY: &str = "fixed_region_patch_motion_v1";
 pub const LIMITATION: &str = "Both images use the same fixed rectangle in original image pixels. Patches are measured in a 256x144 normalization of that rectangle, not of the whole screen. Displacement multiplied by displacement_to_source_scale approximates displacement in source pixels. This is not an object identity, tracked crop, actor movement, physical speed or gameplay effect. Objects can enter or leave the rectangle. Resizing, occlusion, weak texture and large motion can remain unresolved. No missing match or zero displacement proves no movement.";
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Region {
-    pub x: u32,
-    pub y: u32,
-    pub width: u32,
-    pub height: u32,
-}
-impl Region {
-    pub fn validate_shape(self) -> Result<()> {
-        if self.width < 32
-            || self.height < 32
-            || u64::from(self.width) * u64::from(self.height) > 4_000_000
-            || self.x.checked_add(self.width).is_none()
-            || self.y.checked_add(self.height).is_none()
-        {
-            return Err("Choose an image region at least 32 pixels wide and high, within the four-million-pixel budget.".into());
-        }
-        Ok(())
-    }
-    fn validate(self, dimensions: [u32; 2]) -> Result<()> {
-        self.validate_shape()?;
-        if self.x + self.width > dimensions[0] || self.y + self.height > dimensions[1] {
-            return Err("The fixed region lies outside the captured image.".into());
-        }
-        Ok(())
-    }
-}
 
 #[derive(Debug, Serialize)]
 pub struct Report {

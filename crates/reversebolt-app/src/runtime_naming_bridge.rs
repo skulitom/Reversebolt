@@ -490,6 +490,28 @@ fn prepare_activity(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn automatic_discovery_archives_region_evidence_without_an_activity_claim() {
+        let (session, directory) = crate::play_evidence::tests::saved_observations();
+        assert!(prepare_activity(&session, &directory).unwrap().is_none());
+        let saved: Value =
+            serde_json::from_slice(&std::fs::read(directory.join("play-source.json")).unwrap())
+                .unwrap();
+        assert!(saved["selected"].is_null());
+        let automatic = &saved["evidence"]["automatic_region_motion"];
+        assert_eq!(
+            automatic["selection"]["regions"].as_array().unwrap().len(),
+            1
+        );
+        assert_eq!(automatic["measurements"].as_array().unwrap().len(), 1);
+        assert_eq!(
+            automatic["selection"]["omitted_observations"]["no_following_image"],
+            1
+        );
+        assert!(automatic["measurements"][0]["result"]["error"].is_null());
+        drop(session);
+        std::fs::remove_dir_all(directory).unwrap();
+    }
     fn inventory() -> reversebolt_core::runtime_inventory::Inventory {
         use reversebolt_core::{
             runtime::{FieldRef, TextHint, TypeKey},

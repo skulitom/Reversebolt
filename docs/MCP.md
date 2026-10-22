@@ -64,6 +64,27 @@ This measurement is not ready to validate movement. Existing play-context select
 comparison assessment, names and edit authority remain unchanged.
 See [measurement evidence and limits](../research/feature-motion/README.md).
 
+By default `automatic_region_motion` also measures up to four fixed rectangles
+from already retained provisional visual observations. No coordinates are needed.
+Each observation must cite the exact earlier image and its investigation, epoch,
+track metadata and recorded transport. Bounds round outward with no padding;
+regions below 32 pixels in either dimension are skipped. Only the next requested
+capture with a consecutive capture number and matching geometry/epoch is used.
+Missing, uncertain, invalid and last-capture observations have explicit omission
+counts; a missing intermediate capture is never bridged.
+
+The `selection` retains original claims and their hashes, the frame metadata hash,
+candidate/duplicate/omitted counts and selected regions. Equal rectangles in one
+pair share a measurement and retain all source observations. Smaller regions come
+first within each pair; chronological rounds share the four-region budget across
+pairs. Each measurement cites its selection's `source_sha256`, which binds policy,
+investigation, both full frame references, rectangle and source observations.
+Names remain unverified observer claims. These are fixed areas, not tracked objects.
+`auto_regions: false` skips this extra work. Absent observations yield an empty
+selection, with no guessed regions. Automatic activity discovery archives these
+results, but does not feed them to its interpreter or change comparison gates.
+See [saved-observation evidence and limits](../research/observed-regions/README.md).
+
 Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
 `region_motion`. Coordinates are integers in the original image, with width and
 height at least 32 pixels and area at most four million pixels. The same fixed
@@ -78,9 +99,10 @@ directly compared with whole-screen normalized displacements. Each report gives
 `displacement_to_source_scale` for approximate source-pixel displacement, full
 source dimensions and the exact region. `source_sha256` binds the policy, metric,
 rectangle and complete frame metadata, including input/timing context. This is
-an explicit agent query; the automatic activity review still uses the full image.
-There is no automatic region selection, object tracking, new card or semantic
-promotion. Omit `region` to avoid its extra processing. [Evidence and limitations](../research/region-motion/README.md).
+an explicit agent query independent of the automatic selection described above;
+the automatic activity interpreter still uses the full image. There is no object
+tracking, new card or semantic promotion. Omit `region` to skip this explicit
+query's extra processing. [Evidence and limitations](../research/region-motion/README.md).
 
 Automatic activity interpretation now also receives compact correspondence
 measurements for its two selected image pairs. The resulting optional

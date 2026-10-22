@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic observed-region follow-up (2026-10-22): **35% unchanged**.
+The shared reader/MCP now selects up to four regions from existing provisional
+visual observations and measures their next consecutive capture without manual
+coordinates. Exact image/claim/transport/epoch bindings, conservative bounds,
+duplicate citations, budgeting across chronological pairs and explicit omissions are retained.
+Automatic discovery archives the results; its image interpretation and edit gates
+remain unchanged. This is fixed-area analysis, not object tracking.
+
+The frozen saved-Tetris replay selects the three capture-2 regions and skips all
+four final-capture observations. Removing capture 3 yields no regions; removing
+the observations also yields none. Only five of 21 selected patches match, all in
+one region, with no consensus in any region; motion accuracy is unknown. All 18
+input files remain unchanged. The 338 workspace test executions and strict Clippy
+pass, including actual reader and automatic archive checks. No game, capture,
+model, input or field write ran. Native publication remains unavailable after
+quarantine. [Policy, results and limitations](../research/observed-regions/README.md).
+
 Fixed-region motion query (2026-10-22): **35% unchanged**.
 The shared observation/MCP reader can now measure one specified image rectangle
 at higher spatial detail, with exact image/region/timing bindings and source-pixel

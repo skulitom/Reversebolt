@@ -1,0 +1,94 @@
+{
+  "source_manifest_sha256": "770bd5229f91ecb8fd939383a06663a5f64406fd1f75acf0f2e582966ad4f9ed",
+  "result_sha256": "6676ef46c11da78b87e016338730193dd6597ea07f3bc2d1103d5e48cd1a358d",
+  "unchanged_input_files": 18,
+  "frozen_sources": 143,
+  "process": {
+    "exit_code": 0,
+    "seconds": 0.15599999998812564,
+    "stdout": "{\"cases\":3,\"target_access\":false}\n",
+    "stderr": ""
+  },
+  "selection_assertions_passed": true,
+  "motion_accuracy": "unknown",
+  "new_gameplay": false,
+  "selection": {
+    "original_regions": 3,
+    "original_omissions": {
+      "no_following_image": 4
+    },
+    "no_observations_regions": 0,
+    "omitted_capture_regions": 0,
+    "omitted_capture_omissions": {
+      "omitted_capture": 3,
+      "no_following_image": 4
+    }
+  },
+  "measurements": [
+    {
+      "observer_claims": [
+        "Orange L-shaped block piece"
+      ],
+      "region": {
+        "height": 66,
+        "width": 44,
+        "x": 418,
+        "y": 191
+      },
+      "error": null,
+      "selected": 5,
+      "matched": 5,
+      "matched_cells": 4,
+      "zero": 5,
+      "nonzero": 0,
+      "statuses": {
+        "matched": 5
+      },
+      "consensus": null
+    },
+    {
+      "observer_claims": [
+        "green tetromino piece"
+      ],
+      "region": {
+        "height": 65,
+        "width": 45,
+        "x": 572,
+        "y": 209
+      },
+      "error": null,
+      "selected": 10,
+      "matched": 0,
+      "matched_cells": 0,
+      "zero": 0,
+      "nonzero": 0,
+      "statuses": {
+        "search_boundary": 3,
+        "poor_match": 7
+      },
+      "consensus": null
+    },
+    {
+      "observer_claims": [
+        "Game Board"
+      ],
+      "region": {
+        "height": 406,
+        "width": 202,
+        "x": 533,
+        "y": 131
+      },
+      "error": null,
+      "selected": 6,
+      "matched": 0,
+      "matched_cells": 0,
+      "zero": 0,
+      "nonzero": 0,
+      "statuses": {
+        "poor_match": 2,
+        "search_boundary": 4
+      },
+      "consensus": null
+    }
+  ]
+}
