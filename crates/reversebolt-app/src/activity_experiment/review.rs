@@ -88,6 +88,21 @@ pub(super) fn run_with(
     }
     let directory = location(base, &step.activity)?;
     let ids = completed_frames(engine, &plan, &directory, owner.job, &step.activity)?;
+    let scope_frames: Vec<_> = ids
+        .iter()
+        .map(|id| {
+            engine
+                .live
+                .as_ref()
+                .unwrap()
+                .view
+                .frames
+                .iter()
+                .find(|f| &f.id == id)
+                .unwrap()
+                .clone()
+        })
+        .collect();
     // A repeated call returns the already-published result, never another model call.
     if engine
         .live
@@ -160,7 +175,10 @@ pub(super) fn run_with(
                         } else {
                             summary.context = result
                                 .context()
-                                .map(|c| c.bind_interpretation(&review_id, model))
+                                .map(|c| {
+                                    c.bind_frames(&scope_frames)?
+                                        .bind_interpretation(&review_id, model)
+                                })
                                 .transpose()?;
                             if summary.context.is_none() {
                                 summary.error = Some(

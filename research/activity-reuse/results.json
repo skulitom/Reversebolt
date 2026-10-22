@@ -1,0 +1,97 @@
+{
+  "method": "saved_activity_reuse_generated_integration_v1",
+  "scope": "Generated capture/input fixtures, synthetic runtime metadata and mocked inference; no game, native input worker or live model invocation.",
+  "goal_percent": 35,
+  "workspace_test_executions": 399,
+  "final_targeted_integration_passed": 1,
+  "final_verification": "Complete workspace suite passed before the final image-binding error fallback change; the strengthened integration test then passed, followed by strict workspace/all-target Clippy and formatting. MCP description-only changes also passed targeted strict Clippy and final formatting.",
+  "reuse_verification": {
+    "interpretations": [
+      "positive",
+      "negative"
+    ],
+    "new_image_model_calls": 0,
+    "independent_metadata_callbacks_per_pass": 1,
+    "source_images": 10,
+    "session_images": 11,
+    "memory_samples": 0,
+    "old_all_session_scope_reproduces_failure": true,
+    "real_agent_submission_and_comparison_commands_pass": true,
+    "planned_actions": 4,
+    "proposed_choices": 1,
+    "edit_authority": false
+  },
+  "failure_handling": [
+    "cancelled metadata inference",
+    "failed metadata inference",
+    "altered published interpretation",
+    "changed sampled-input metadata",
+    "cancelled latest experiment",
+    "fresh image-context binding error preserves metadata",
+    "invalid saved interpretation preserves independent agent metadata",
+    "missing/duplicate/reordered source references",
+    "changed image digest or capture number",
+    "changed current capture epoch"
+  ],
+  "checks": [
+    {
+      "path": "test-results/activity-reuse-check-first.log",
+      "sha256": "ac59a9b215b5b67ed17e6f5342e41db94d2abbd4d5106ac0b69f32f73241dc17"
+    },
+    {
+      "path": "test-results/activity-reuse-check-second.log",
+      "sha256": "ad7df2b8116cda29114ae608a471312ef341c49c7d40b2f155949f40dfe2bd73"
+    },
+    {
+      "path": "test-results/activity-reuse-clippy-final.log",
+      "sha256": "090f8be28d02f473286f31435ff5d0187dbf4f41b157def25e346c3af9576f25"
+    },
+    {
+      "path": "test-results/activity-reuse-format-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-reuse-format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-reuse-integration-final.log",
+      "sha256": "38959f2f88f42e5f01fa975a124b20121259a1b12ff80cf5bf55e0df7ebdaca7"
+    },
+    {
+      "path": "test-results/activity-reuse-integration-first.log",
+      "sha256": "36767b0ecc29aaf2761a5ea369d1ea875a7df837baeefc0558d73400ce26fdb2"
+    },
+    {
+      "path": "test-results/activity-reuse-mcp-description-clippy.log",
+      "sha256": "a6f7a98a2a546f3b8cfa2aea371446ba09bf87145972ddfe8e6bf7dfcb2d9015"
+    },
+    {
+      "path": "test-results/activity-reuse-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/activity-reuse-scoped-test.log",
+      "sha256": "81ca2e414b3f3a58b907381cb4f4f50706101c620616bda210e3afdd3e36b37d"
+    },
+    {
+      "path": "test-results/activity-reuse-workspace-first.log",
+      "sha256": "b8d109422f04ce1d5f77acfeb9fb86d10c943e9bb0be20d3631d6b9491babe86"
+    }
+  ],
+  "frozen_directory": "test-results/activity-reuse-v1",
+  "frozen_files": 190,
+  "manifest_sha256": "6eb50762a300a3c7981b461dfb3ca8a021ae2dfc0149f21033f7382dcd38016f",
+  "changed": [],
+  "preceding_frozen_snapshot_changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "security_submission": "local only; no upload",
+  "generalization_claim": false
+}

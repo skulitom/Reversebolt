@@ -69,12 +69,8 @@ pub fn transfer_activity(
             .as_ref()
             .ok_or("The previous review has no activity context.")?;
         context.validate()?;
-        let frame_hash =
-            crate::visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
-        if context.source.investigation_id != investigation
-            || context.source.batch != batch
-            || context.source.frame_metadata_sha256 != frame_hash
-        {
+        context.resolve_frames(frames)?;
+        if context.source.investigation_id != investigation || context.source.batch != batch {
             return Err(
                 "The observed images, sampled input or investigation batch changed.".into(),
             );

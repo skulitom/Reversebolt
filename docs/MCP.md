@@ -111,9 +111,14 @@ Older sessions default to an empty result list and old ten-step job plans retain
 their previous behavior.
 
 Later metadata discovery prefers the latest measured experiment's exact images
-for its activity input. It still performs its normal independent metadata pass
-and activity interpretation; this change does not automatically run metadata
-discovery or reuse the earlier model reply in that later pass. No input receipt,
+for its activity input. When its saved interpretation and evidence pass validation,
+the independent metadata pass reuses that original interpretation with no new
+image-model call. Agent hypothesis submissions use the same checked handoff.
+`activity_reuse` records the experiment, receipt hash, original interpretation
+source and `new_image_model_calls: 0`. Invalid or incomplete image evidence is
+reported there and omitted from context; it does not reject independently valid
+metadata questions, silently retry image inference, or revive an older positive
+interpretation. This does not automatically start metadata discovery. No input receipt,
 image difference or model interpretation supplies a verified semantic name,
 numeric range, causal conclusion or memory-edit authority, and no editable card
 is created by this analysis. Independent game validation remains outstanding;
@@ -1253,12 +1258,26 @@ Status publication performs no image/input-file reads or matching. A snapshot
 describes the earlier review, not fresh evidence about the files or running game.
 A command that fails before producing a review does not refresh its timestamp.
 
-`submit_runtime_hypotheses` preserves eligible activity context from the previous
-completed review when the discovery report, investigation, batch and complete
-frame/input metadata hash still match. Its response and durable receipt include
-`activity_transfer` (`retained`, `from_review_id`, `reason`). Changed observations
-do not prevent submitting new questions, but their older activity is discarded.
-Replayed requests return the original transfer outcome without republishing.
+`submit_runtime_hypotheses` first checks the latest input experiment's saved
+interpretation. Its result and image hashes, exact frame/input metadata,
+investigation, batch and published context must agree. It preserves both positive
+and negative interpretations. A newer unavailable or cancelled experiment prevents
+fallback to an older interpretation. Without an input experiment, eligible
+activity can still transfer from the previous completed review when its discovery
+report and observation scope match. The response and durable receipt include
+`activity_transfer` (`retained`, `from_review_id`, `reason`) and optional
+`activity_reuse`. Invalid activity does not prevent submitting independent new
+questions. Replayed requests return the original outcome without republishing.
+
+`play_context.evidence_frame_ids` binds new contexts to the exact ordered image
+sequence, including quiet intervals. Comparison planning and handoffs resolve
+that sequence rather than all session images. Its complete frame metadata hash
+covers capture/input timing and geometry. Missing, changed, duplicate or reordered
+source references are rejected, as is a different current capture epoch or size.
+Unrelated later images with unchanged geometry do not invalidate historical
+evidence. Legacy contexts omit this field and remain bound to the complete
+supplied image list. Valid legacy experiment records can acquire an explicit
+binding from their saved exact image list; their archive is not rewritten.
 
 `play_context.interpretation_source` records the original image interpretation's
 `review_id` and `model`, separately from the current hypothesis author's
@@ -1266,7 +1285,8 @@ Replayed requests return the original transfer outcome without republishing.
 Legacy contexts can omit it; transfer binds them to their original completed
 review. The image verdict, uncertainty and measured basis are unchanged. This
 does not grant semantic confirmation or write authority. See
-[handoff and persistence verification](../research/activity-handoff/README.md).
+[handoff and persistence verification](../research/activity-handoff/README.md) and
+[experiment reuse verification](../research/activity-reuse/README.md).
 
 Comparison plans now include `activity_context` and `activity_limitation`.
 A context with `basis: "measured_contrast_v1"` preserves the image model's

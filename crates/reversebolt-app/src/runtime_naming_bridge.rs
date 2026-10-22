@@ -1,4 +1,5 @@
 //! Optional metadata review owned by the existing discovery job.
+pub(crate) mod activity;
 #[cfg(test)]
 #[path = "runtime_naming_handoff_tests.rs"]
 mod handoff_tests;
@@ -141,11 +142,42 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             }
             let receipt = read_archive(&dir.join("receipt.json"))?;
             return Ok(
-                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"activity_motion_comparison":receipt["activity_motion_comparison"],"card_publication":receipt["card_publication"],"replayed":true,"published":false}),
+                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"activity_reuse":receipt["activity_reuse"],"activity_motion_comparison":receipt["activity_motion_comparison"],"card_publication":receipt["card_publication"],"replayed":true,"published":false}),
             );
         }
     }
+    let (input_activity, input_activity_error) = if submission.is_some() {
+        match activity::latest(engine, base) {
+            Ok(Some(retained)) => (Some(retained), None),
+            Ok(None)
+                if engine
+                    .live
+                    .as_ref()
+                    .is_some_and(|s| !s.view.input_experiments.is_empty()) =>
+            {
+                (
+                    None,
+                    Some(
+                        "The latest input experiment has no completed interpretation to reuse"
+                            .to_owned(),
+                    ),
+                )
+            }
+            Ok(None) => (None, None),
+            Err(error) => (None, Some(error)),
+        }
+    } else {
+        (None, None)
+    };
     let protected = protected_cards(engine);
+    let activity_reuse = input_activity
+        .as_ref()
+        .map(|r| r.provenance.clone())
+        .or_else(|| {
+            input_activity_error
+                .as_ref()
+                .map(|error| json!({"reused":false,"error":error,"new_image_model_calls":0}))
+        });
     let live = &mut engine
         .live
         .as_mut()
@@ -194,13 +226,38 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             hypotheses: p.hypotheses,
         },
     )?;
-    let (play_context, activity_transfer) = h::transfer_activity(
-        view.naming.as_ref(),
-        &inventory.report_sha256,
-        &live.investigation_id,
-        live.coverage.batch,
-        &live.frames,
-    );
+    let (play_context, activity_transfer) = if let Some(retained) = input_activity {
+        let transfer = h::ActivityTransfer {
+            retained: true,
+            from_review_id: retained
+                .context
+                .interpretation_source
+                .as_ref()
+                .map(|s| s.review_id.clone()),
+            reason: format!(
+                "Retained checked input experiment {} and its original interpretation; this does not validate these hypotheses.",
+                retained.provenance["experiment"].as_str().unwrap_or("")
+            ),
+        };
+        (Some(retained.context), transfer)
+    } else if let Some(error) = input_activity_error {
+        (
+            None,
+            h::ActivityTransfer {
+                retained: false,
+                from_review_id: None,
+                reason: error,
+            },
+        )
+    } else {
+        h::transfer_activity(
+            view.naming.as_ref(),
+            &inventory.report_sha256,
+            &live.investigation_id,
+            live.coverage.batch,
+            &live.frames,
+        )
+    };
     let review = Review {
         question_source: Default::default(),
         question_policy: None,
@@ -234,11 +291,11 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     save_new(&dir.join("inventory.json"), &json!(inventory))?;
     save_new(
         &dir.join("receipt.json"),
-        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"limitation":h::LIMITATION}),
+        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"activity_reuse":activity_reuse,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"limitation":h::LIMITATION}),
     )?;
     *view = staged;
     Ok(
-        json!({"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"replayed":false,"published":true}),
+        json!({"review":review,"activity_transfer":activity_transfer,"activity_reuse":activity_reuse,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"replayed":false,"published":true}),
     )
 }
 
@@ -260,14 +317,15 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
         .play_context
         .as_ref()
         .ok_or("No bounded measured activity is available for a comparison plan.")?;
+    let frames = context.resolve_frames(&session.view.frames)?;
     let response = crate::play_evidence::read(
         session,
-        &json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()}),
+        &json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":frames.iter().map(|f|&f.id).collect::<Vec<_>>()}),
     )?;
     let evidence =
         serde_json::from_value(response["evidence"].clone()).map_err(|e| e.to_string())?;
     crate::play_evidence::check_activity_context(context, &response)?;
-    let actions = p::actions(context, &session.view.frames, &evidence)?;
+    let actions = p::actions(context, &frames, &evidence)?;
     let inventory =
         reversebolt_core::runtime_inventory::build(&crate::runtime_bridge::catalog_report(rt)?)?;
     let mut choices = p::choices(
@@ -423,35 +481,30 @@ fn review_inner(
     let inference = (|| -> Result<Value> {
         let inventory = reversebolt_core::runtime_inventory::build(&report)?;
         save_new(&directory.join("inventory.json"), &json!(inventory))?;
-        let activity = prepare_activity(engine.live.as_ref().unwrap(), &directory)?;
+        let prepared = activity::prepare(engine, base, &directory)?;
         if owner.cancel.load(Ordering::SeqCst) {
             return Ok(json!({"cancelled":true}));
         }
-        let receipt = tokio::runtime::Runtime::new()
-            .map_err(|e| e.to_string())?
-            .block_on(async {
+        let runtime = tokio::runtime::Runtime::new().map_err(|e| e.to_string())?;
+        let outcome = prepared.infer(&state.evidence_id, model, &owner.cancel, |input| {
+            runtime.block_on(async {
                 let observer = reversebolt_observer::Observer::connect(model).await?;
                 Ok::<_, String>(
                     observer
-                        .runtime_hypotheses_with_activity(
-                            &inventory,
-                            activity.as_ref(),
-                            &owner.cancel,
-                        )
+                        .runtime_hypotheses_with_activity(&inventory, input, &owner.cancel)
                         .await,
                 )
-            })?;
-        state.play_context = receipt
-            .activity
-            .as_ref()
-            .and_then(|a| a.context())
-            .map(|context| context.bind_interpretation(&state.evidence_id, model))
-            .transpose()?;
+            })
+        })?;
+        let receipt = &outcome.receipt;
+        state.play_context = outcome.context;
         state.question_source = receipt.question_source();
         state.question_policy = receipt.question_policy().map(str::to_owned);
         state.batch = receipt.batch.clone();
         state.error = receipt.error.clone();
-        Ok(json!(receipt))
+        let mut saved = json!(receipt);
+        saved["activity_reuse"] = outcome.reuse;
+        Ok(saved)
     })();
     let result = match inference {
         Ok(value) => value,

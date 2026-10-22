@@ -295,6 +295,10 @@ pub struct InterpretationSource {
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Context {
+    /// Exact observation sequence (including quiet intervals). Empty legacy
+    /// contexts remain bound to the complete supplied frame list.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub evidence_frame_ids: Vec<String>,
     /// Legacy positive interpretations retain their original serialized shape.
     #[serde(default, skip_serializing_if = "Basis::is_interpreted")]
     pub basis: Basis,
@@ -313,6 +317,53 @@ pub struct Context {
     pub observation: Observation,
 }
 impl Context {
+    pub fn bind_frames(mut self, frames: &[FrameRef]) -> Result<Self> {
+        let ids: Vec<_> = frames.iter().map(|f| f.id.clone()).collect();
+        if !self.evidence_frame_ids.is_empty() && self.evidence_frame_ids != ids {
+            return Err("The interpretation already names another image sequence".into());
+        }
+        self.evidence_frame_ids = ids;
+        self.resolve_frames(frames)?;
+        Ok(self)
+    }
+    pub fn resolve_frames(&self, available: &[FrameRef]) -> Result<Vec<FrameRef>> {
+        self.validate()?;
+        let frames = if self.evidence_frame_ids.is_empty() {
+            available.to_vec()
+        } else {
+            self.evidence_frame_ids
+                .iter()
+                .map(|id| {
+                    let mut found = available.iter().filter(|f| &f.id == id);
+                    let frame = found.next().ok_or("An activity source image is missing")?;
+                    if found.next().is_some() {
+                        return Err("Activity image identity is ambiguous".into());
+                    }
+                    Ok(frame.clone())
+                })
+                .collect::<Result<Vec<_>>>()?
+        };
+        let last = available.last().ok_or("No activity images remain")?;
+        if !(4..=crate::live::MAX_SAMPLES).contains(&frames.len())
+            || frames.windows(2).any(|f| f[0].number >= f[1].number)
+            || frames
+                .iter()
+                .any(|f| f.epoch != last.epoch || f.width != last.width || f.height != last.height)
+            || visual::digest(&serde_json::to_vec(&frames).map_err(|e| e.to_string())?)
+                != self.source.frame_metadata_sha256
+        {
+            return Err("The activity images, sampling or geometry changed".into());
+        }
+        for citation in self.source.frames() {
+            if !frames
+                .iter()
+                .any(|f| Frame::from(f).as_ref().ok() == Some(citation))
+            {
+                return Err("An activity pair differs from its retained image".into());
+            }
+        }
+        Ok(frames)
+    }
     pub fn motion_comparison(&self) -> Result<Option<crate::motion_comparison::Comparison>> {
         self.validate()?;
         self.motion
@@ -336,6 +387,7 @@ impl Context {
             Basis::MeasuredContrastV1
         };
         let context = Self {
+            evidence_frame_ids: vec![],
             basis,
             interpretation_source: None,
             motion: None,
@@ -361,6 +413,26 @@ impl Context {
     }
 
     pub fn validate(&self) -> Result<()> {
+        if !self.evidence_frame_ids.is_empty()
+            && (!(4..=crate::live::MAX_SAMPLES).contains(&self.evidence_frame_ids.len())
+                || self
+                    .evidence_frame_ids
+                    .iter()
+                    .any(|s| s.is_empty() || s.len() > 128)
+                || self
+                    .evidence_frame_ids
+                    .iter()
+                    .collect::<std::collections::BTreeSet<_>>()
+                    .len()
+                    != self.evidence_frame_ids.len()
+                || self
+                    .source
+                    .frames()
+                    .iter()
+                    .any(|f| !self.evidence_frame_ids.contains(&f.id)))
+        {
+            return Err("Invalid activity observation sequence".into());
+        }
         self.source.validate_activity(self.regions.as_ref())?;
         self.observation.validate()?;
         if let Some(motion) = &self.motion {

@@ -4,6 +4,10 @@ Implemented 2026-10-22 after the initial input-only investigation. Full-goal
 progress remains **35%**. This change closes a manual handoff in the shared
 engine; generated tests do not establish useful game discovery.
 
+Subsequent work adds [checked interpretation reuse and exact image-scope
+handoffs](../activity-reuse/README.md). The results and frozen snapshot below
+describe this earlier review implementation and remain unchanged.
+
 ## Behavior
 
 An input experiment now has ten capture steps and one final analysis step under

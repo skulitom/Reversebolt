@@ -1,4 +1,6 @@
 use super::*;
+#[path = "reuse_tests.rs"]
+mod reuse;
 use reversebolt_core::{
     inputs::{Buffer, Focus, Poll},
     live::{LiveSession, NativeTarget, ProcessInfo, Region, Screen},
@@ -481,6 +483,9 @@ fn activity_review_preserves_negative_interpretation_errors_and_stop_without_con
         assert_eq!(live.memory_sample_count(), 0);
         let saved = super::review::read_result(&engine, &reference, &root.join("runtime")).unwrap();
         assert_eq!(saved["review"], *summary);
+        if matches!(behavior, "positive" | "negative") {
+            reuse::check(&mut engine, &root, &saved);
+        }
         // Losing the publication checkpoint must not cause another inference.
         engine.live.as_mut().unwrap().view.input_experiments.clear();
         owner.cancel.store(false, Ordering::SeqCst);

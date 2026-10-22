@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Saved interpretation reuse and exact image scope (2026-10-22): **35% unchanged**.
+Later local metadata review and agent hypothesis submission now reuse a checked
+input experiment interpretation without another image-model call. The original
+producer, positive or negative verdict and uncertainty survive. Invalid evidence
+remains explicit and does not veto independently valid metadata questions or
+silently retry inference. New contexts retain the full ordered image sequence,
+including quiet intervals. This fixes a handoff mismatch where the ten experiment
+images were incorrectly compared with every image in the session.
+
+Generated integration tests reproduce that old failure and exercise the real
+agent submission and comparison-planning commands successfully with the exact
+ten-image scope. Tests also cover cancellation, changed evidence, legacy context
+behavior and metadata continuation after an image-context error. All 399 workspace
+tests pass; the final strengthened integration test, strict Clippy and formatting
+also pass. No game, live model or native input ran. The desktop remains unavailable
+and security materials stay local. The fixed total remains **35/100**; automatic
+selection, causal discovery and independent-game validation are still required.
+[Implementation, verification and limits](../research/activity-reuse/README.md).
+
 Automatic input-response review (2026-10-22): **35% unchanged**.
 An eleventh owned job step now validates and analyses exactly the experiment's
 ten response images. A configured local model may interpret two eligible pairs;

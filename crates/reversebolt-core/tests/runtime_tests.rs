@@ -877,6 +877,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
         },
     };
     test.origin.as_mut().unwrap().play_context = Some(reversebolt_core::play_context::Context {
+        evidence_frame_ids: vec![],
         basis: Default::default(),
         interpretation_source: None,
         motion: None,

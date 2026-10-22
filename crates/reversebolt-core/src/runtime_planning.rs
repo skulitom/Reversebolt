@@ -326,6 +326,7 @@ mod tests {
         )
         .unwrap();
         let context = Context {
+            evidence_frame_ids: vec![],
             basis: Default::default(),
             interpretation_source: None,
             motion: None,
@@ -379,6 +380,77 @@ mod tests {
         let mut incomplete = evidence;
         incomplete.episodes.retain(|e| e.first_interval < 7);
         assert!(actions(&context, &frames, &incomplete).is_err());
+    }
+
+    #[test]
+    fn scoped_activity_survives_unrelated_frames_but_rejects_changed_source_evidence() {
+        let (legacy, frames, evidence) = observed();
+        assert!(
+            serde_json::to_value(&legacy)
+                .unwrap()
+                .get("evidence_frame_ids")
+                .is_none()
+        );
+        let context = legacy.clone().bind_frames(&frames).unwrap();
+        let mut available = frames.clone();
+        let mut extra = frames.last().unwrap().clone();
+        extra.id = "later-unrelated".into();
+        extra.number += 1;
+        available.push(extra);
+        assert!(legacy.resolve_frames(&available).is_err());
+        let resolved = context.resolve_frames(&available).unwrap();
+        assert_eq!(
+            actions(&context, &resolved, &evidence)
+                .unwrap()
+                .actions
+                .len(),
+            4
+        );
+        let report = "c".repeat(64);
+        let review = Review {
+            question_source: Default::default(),
+            question_policy: None,
+            play_context: Some(context.clone()),
+            evidence_id: uuid::Uuid::new_v4().to_string(),
+            report_sha256: report.clone(),
+            model: "image-model".into(),
+            status: "complete".into(),
+            error: None,
+            batch: Some(h::Batch {
+                report_sha256: report.clone(),
+                selected_types: vec![],
+                considered_samples: 0,
+                omitted_samples: 0,
+                accepted: vec![],
+                rejected: vec![],
+                limitation: h::LIMITATION.into(),
+            }),
+        };
+        assert!(
+            h::transfer_activity(Some(&review), &report, "clock", 1, &available)
+                .1
+                .retained
+        );
+        for change in ["input", "hash", "missing", "duplicate", "geometry", "order"] {
+            let mut changed = available.clone();
+            match change {
+                "input" => changed[2].input_context = None,
+                "hash" => changed[2].sha256 = "d".repeat(64),
+                "missing" => {
+                    changed.remove(2);
+                }
+                "duplicate" => changed.push(changed[2].clone()),
+                "geometry" => changed.last_mut().unwrap().epoch += 1,
+                _ => changed[2].number = 999,
+            }
+            assert!(context.resolve_frames(&changed).is_err(), "{change}");
+        }
+        let mut changed = context.clone();
+        changed.evidence_frame_ids.swap(0, 1);
+        assert!(changed.resolve_frames(&available).is_err());
+        changed = context;
+        changed.evidence_frame_ids[0] = changed.evidence_frame_ids[1].clone();
+        assert!(changed.validate().is_err());
     }
     #[test]
     fn measured_contrast_keeps_model_ambiguity_and_all_timing_guards() {
