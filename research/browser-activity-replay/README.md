@@ -17,7 +17,7 @@ These are the classifier's first rejection reasons, not necessarily mutually
 exclusive underlying problems. The two timing failures exceeded its four-second
 bound. Each interval spans from the preceding image operation's start through
 the following image operation's end. Across these recordings, that span ranges
-from 2.828482 to 4.383975 seconds. Multiple 350 ms input pulses could fall between
+from 2.828482 to 4.383975 seconds. Multiple 80 ms presses, repeated every 350 ms, could fall between
 images. The four single-key intervals lack neighboring quiet intervals; they do
 not establish the isolated, repeated response required by source selection.
 

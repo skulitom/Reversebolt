@@ -1450,6 +1450,14 @@ updates on evidence-save failure. See [the contract](research/CONDITIONAL_PREDIC
 `live.action_patterns` separately contains automatic descriptive input/value
 contrasts for active `ocr` and `external` series. Intervals reference exact frame
 IDs and retain endpoint values, elapsed-time ranges and exclusion reasons.
+The classifier checks sampled input during both image operations as well as
+between them. A pressed key overlapping either capture is ambiguous: it cannot
+be assigned before/after the image or treated as a no-key interval. Unavailable,
+malformed, interrupted or foreground-lost capture input also remains unknown;
+the capture-edge sampling-gap bound is 100 ms. This does not establish absence
+of unsampled short taps or precise presentation timing. The same classification
+feeds passive play evidence and regional activity selection; active comparison
+input witnesses retain their separate, stricter bracket/settling checks.
 Episodes merge contiguous sampled exposures; a bounded key episode needs
 no-key-detected observations on both sides. Pattern indices refer to the containing
 evidence's episodes, and episode interval indices refer to its intervals.

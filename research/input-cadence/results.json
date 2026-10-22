@@ -1,0 +1,418 @@
+{
+  "method": "input_cadence_sensitivity_v1",
+  "parent_commit": "2e67cf759af68a5b029026e06d8cffee67f9ef9a",
+  "phases": [
+    {
+      "phase": "before",
+      "original": [
+        {
+          "name": "2048-1",
+          "retained_unique_polls": 3122,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 364957,
+            "median_upper": 199102,
+            "min": 187851
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Invalid, overlapping or widely separated capture timing": 1,
+              "Several controls sampled; individual effects are ambiguous": 14
+            }
+          }
+        },
+        {
+          "name": "tetris-1",
+          "retained_unique_polls": 2765,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 335324,
+            "median_upper": 211074,
+            "min": 186057
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [
+              0,
+              7
+            ],
+            "counts": {
+              "key": 2,
+              "unknown": 13
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Several controls sampled; individual effects are ambiguous": 13
+            }
+          }
+        },
+        {
+          "name": "2048-2",
+          "retained_unique_polls": 3107,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 240959,
+            "median_upper": 200796,
+            "min": 190740
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Invalid, overlapping or widely separated capture timing": 1,
+              "Several controls sampled; individual effects are ambiguous": 14
+            }
+          }
+        },
+        {
+          "name": "tetris-2",
+          "retained_unique_polls": 2744,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 258613,
+            "median_upper": 207167,
+            "min": 185943
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [
+              0,
+              7
+            ],
+            "counts": {
+              "key": 2,
+              "unknown": 13
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Several controls sampled; individual effects are ambiguous": 13
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "cost_ms": 100,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 30,
+          "accepted_capture_overlap_intervals": 617,
+          "unknown_intervals": 84
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 56,
+          "accepted_capture_overlap_intervals": 639,
+          "unknown_intervals": 62
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 307,
+          "unknown_intervals": 64
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 414,
+          "unknown_intervals": 297
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 22,
+          "accepted_capture_overlap_intervals": 717,
+          "unknown_intervals": 67
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 628,
+          "unknown_intervals": 69
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 717,
+          "unknown_intervals": 67
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 410,
+          "unknown_intervals": 318
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 40,
+          "accepted_capture_overlap_intervals": 723,
+          "unknown_intervals": 61
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 50,
+          "accepted_capture_overlap_intervals": 716,
+          "unknown_intervals": 68
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 708,
+          "unknown_intervals": 76
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 478,
+          "unknown_intervals": 306
+        }
+      ],
+      "frozen_file_count": 171,
+      "changed_during_run": [],
+      "results_sha256": "87db16bbcc6a2573ece58b2348ceb6a8386ba4d9b75196167098f1f8636d2128",
+      "summary_sha256": "ba94c231050d7bf507502e673f1efc7cfa8dd02f1179752e25a2141129499eef",
+      "frozen_manifest_sha256": "107ce99755b0d809b3f61e19984803977a233fdb94cadadf169a15d2cd703be8"
+    },
+    {
+      "phase": "after",
+      "original": [
+        {
+          "name": "2048-1",
+          "retained_unique_polls": 3122,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 364957,
+            "median_upper": 199102,
+            "min": 187851
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Input overlaps an image capture; effect timing is ambiguous": 13,
+              "Invalid, overlapping or widely separated capture timing": 1,
+              "Several controls sampled; individual effects are ambiguous": 1
+            }
+          }
+        },
+        {
+          "name": "tetris-1",
+          "retained_unique_polls": 2765,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 335324,
+            "median_upper": 211074,
+            "min": 186057
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Input overlaps an image capture; effect timing is ambiguous": 15
+            }
+          }
+        },
+        {
+          "name": "2048-2",
+          "retained_unique_polls": 3107,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 240959,
+            "median_upper": 200796,
+            "min": 190740
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Input overlaps an image capture; effect timing is ambiguous": 14,
+              "Invalid, overlapping or widely separated capture timing": 1
+            }
+          }
+        },
+        {
+          "name": "tetris-2",
+          "retained_unique_polls": 2744,
+          "original_omitted_polls": 0,
+          "original_capture_us": {
+            "max": 258613,
+            "median_upper": 207167,
+            "min": 185943
+          },
+          "classification": {
+            "accepted_capture_overlap_intervals": [],
+            "counts": {
+              "unknown": 15
+            },
+            "timing_only_opportunities": {},
+            "timing_only_repeated_keys": [],
+            "unknown_reasons": {
+              "Input overlaps an image capture; effect timing is ambiguous": 14,
+              "Several controls sampled; individual effects are ambiguous": 1
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "cost_ms": 100,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 701
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 701
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 371
+        },
+        {
+          "cost_ms": 100,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 711
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 697
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        },
+        {
+          "cost_ms": 200,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 728
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 50,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 100,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 250,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        },
+        {
+          "cost_ms": 400,
+          "delay_ms": 500,
+          "scenarios": 56,
+          "timing_only_repeated_key_scenarios": 0,
+          "accepted_capture_overlap_intervals": 0,
+          "unknown_intervals": 784
+        }
+      ],
+      "frozen_file_count": 171,
+      "changed_during_run": [],
+      "results_sha256": "7f2122346817cb49280f2689b1a9276d8df6ea0186c223aa33ad5ead26e3398e",
+      "summary_sha256": "857025b10fc1565f7d82f50f2cafaa5abd84aa90c279f0ce549ae3da0afbea97",
+      "frozen_manifest_sha256": "894ee357ea9548cca6b9efaa9bd9ddbadc27651df0dfb07f550cc968d69f0c90"
+    }
+  ],
+  "verification": {
+    "workspace_test_executions": 386,
+    "workspace_all_target_clippy": "passed",
+    "format": "passed",
+    "logs_sha256": {
+      "tests.log": "0bc9a661ff3966c127ca681bee929d55ad03450c75dea0989bf6c7de676d93a7",
+      "clippy.log": "af6f25f773c995da594d025c604ee69b33100b3b12ce6e048b2af7c386e488da",
+      "format.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "progress_percent": 35,
+  "real_game_validation": false,
+  "new_model_calls": 0,
+  "native_target_access": false
+}

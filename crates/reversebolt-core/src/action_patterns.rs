@@ -113,6 +113,55 @@ pub struct Evidence {
     pub limitation: String,
 }
 
+/// A capture can select pixels from anywhere in its operation bounds. Inputs
+/// sampled inside those bounds cannot be assigned before or after that image.
+fn capture_input(
+    window: &inputs::Window,
+    capture: &crate::visual::CaptureInterval,
+) -> std::result::Result<(), &'static str> {
+    if window.requested_begin_us > capture.begin_us
+        || window.requested_end_us != capture.end_us
+        || window.monitor_started_us > capture.begin_us
+        || window.retained_from_us > capture.begin_us
+        || window.omitted_polls != 0
+        || window.polls.len() > inputs::MAX_WINDOW_POLLS
+    {
+        return Err("Input coverage during image capture is unavailable");
+    }
+    let mut order = window.requested_begin_us;
+    let mut cursor = capture.begin_us;
+    for poll in &window.polls {
+        if poll.begin_us < order
+            || poll.end_us < poll.begin_us
+            || poll.end_us > window.requested_end_us
+            || poll.down.windows(2).any(|k| k[0] >= k[1])
+            || poll.down.iter().any(|k| *k == 0 || *k == 255)
+        {
+            return Err("Invalid input sample order or keys");
+        }
+        order = poll.end_us;
+        if poll.end_us < capture.begin_us || poll.begin_us > capture.end_us {
+            continue;
+        }
+        if poll.focus != Focus::SelectedForeground {
+            return Err("Selected window was not foreground during image capture");
+        }
+        if !poll.down.is_empty() {
+            return Err("Input overlaps an image capture; effect timing is ambiguous");
+        }
+        if poll.begin_us.saturating_sub(cursor) > MAX_GAP_US
+            || poll.end_us - poll.begin_us > MAX_GAP_US
+        {
+            return Err("Input sampling gap during image capture");
+        }
+        cursor = poll.end_us.min(capture.end_us);
+    }
+    if capture.end_us - cursor > MAX_GAP_US {
+        return Err("Input sampling gap during image capture");
+    }
+    Ok(())
+}
+
 /// Classify one consecutive, bounded input interval without assigning key meaning.
 pub fn exposure(a: &FrameRef, b: &FrameRef) -> std::result::Result<Exposure, &'static str> {
     if a.number.checked_add(1) != Some(b.number)
@@ -156,11 +205,13 @@ pub fn exposure(a: &FrameRef, b: &FrameRef) -> std::result::Result<Exposure, &'s
     {
         return Err("Input collection restarted or part of the interval is unavailable");
     }
+    capture_input(previous, ta)?;
+    capture_input(window, tb)?;
     let mut cursor = ta.end_us;
     let mut count = 0;
     let mut pressed = 0;
     let mut keys = BTreeSet::new();
-    // Do not include keys first sampled during or after the ending image operation.
+    // Both image operations have separately passed their sampled-input checks.
     for poll in &window.polls {
         if poll.begin_us < window.requested_begin_us
             || poll.end_us < poll.begin_us
@@ -593,7 +644,74 @@ pub(crate) mod tests {
         }
     }
     #[test]
-    fn keys_during_ending_capture_do_not_get_credit_and_new_scope_retires_old_patterns() {
+    fn both_capture_operations_require_available_quiet_sampled_input() {
+        for index in [0, 1] {
+            for mode in 0..5 {
+                let (mut frames, _) = fixture(&[0], &[0.]);
+                let capture = frames[index].capture_interval.as_mut().unwrap();
+                // Use a longer operation with real interior coverage so removing
+                // samples cannot be mistaken for an observed quiet image.
+                capture.end_us = capture.begin_us + 200_000;
+                let mut buffer = Buffer::new("clock".into(), "owner".into(), 0);
+                let prior = if index == 0 {
+                    0
+                } else {
+                    frames[0].capture_interval.as_ref().unwrap().end_us
+                };
+                let capture = frames[index].capture_interval.as_ref().unwrap();
+                for t in (prior + 10..capture.end_us).step_by(16_000) {
+                    buffer
+                        .push(Poll {
+                            begin_us: t,
+                            end_us: t + 1,
+                            focus: Focus::SelectedForeground,
+                            down: vec![],
+                        })
+                        .unwrap();
+                }
+                frames[index].input_context = buffer.window(prior, capture.end_us);
+                // Match the following window to the modified first image end.
+                if index == 0 {
+                    let mut next = Buffer::new("clock".into(), "owner".into(), 0);
+                    for t in (200_010..1_001_000).step_by(16_000) {
+                        next.push(Poll {
+                            begin_us: t,
+                            end_us: t + 1,
+                            focus: Focus::SelectedForeground,
+                            down: vec![],
+                        })
+                        .unwrap();
+                    }
+                    frames[1].input_context = next.window(200_000, 1_001_000);
+                }
+                assert_eq!(
+                    exposure(&frames[0], &frames[1]),
+                    Ok(Exposure::NoKeysDetected)
+                );
+                let begin = frames[index].capture_interval.as_ref().unwrap().begin_us;
+                let window = frames[index].input_context.as_mut().unwrap();
+                let interior = window
+                    .polls
+                    .iter_mut()
+                    .find(|p| p.begin_us > begin)
+                    .unwrap();
+                match mode {
+                    0 => interior.down = vec![68],
+                    1 => interior.focus = Focus::OutsideSelected,
+                    2 => window.polls.retain(|p| p.end_us < begin),
+                    3 => window.retained_from_us = begin + 1,
+                    _ => window.polls.last_mut().unwrap().end_us += 500_000,
+                }
+                assert!(
+                    exposure(&frames[0], &frames[1]).is_err(),
+                    "image {index}, case {mode}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn keys_during_ending_capture_are_ambiguous_and_new_scope_retires_old_patterns() {
         let (mut f, v) = fixture(&[0, 68, 0, 68, 0, 68, 0], &[0., -1., 0., -1., 0., -1., 0.]);
         let begin = f[2].capture_interval.as_ref().unwrap().begin_us;
         let w = f[2].input_context.as_mut().unwrap();
@@ -606,7 +724,7 @@ pub(crate) mod tests {
             focus: Focus::SelectedForeground,
             down: vec![68],
         });
-        assert_eq!(exposure(&f[1], &f[2]).unwrap(), Exposure::NoKeysDetected);
+        assert!(exposure(&f[1], &f[2]).is_err());
         f.last_mut()
             .unwrap()
             .input_context

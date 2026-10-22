@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Capture/input ambiguity corrected (2026-10-22): **35% unchanged**.
+A timing study found that passive classification ignored input sampled during
+image acquisition and could call that interval quiet. Both endpoint captures
+now require sampled-input coverage; pressed keys during capture, focus loss,
+missing coverage and malformed samples make the interval unknown. The original
+between-image classifier and stricter active-comparison witnesses remain intact.
+
+The regression failed before the fix and now passes. All 386 workspace test
+executions, strict workspace/all-target Clippy and format checks pass. The frozen
+study reuses four original input traces plus 672 hypothetical timing scenarios.
+Accepted intervals containing capture-time key samples fall from 4 to 0 in the
+original recordings and 7,074 to 0 in the hypothetical grid. All 171 frozen files
+per version pass audit. The corrected grid has no repeated isolated same-key
+timing opportunities; a shorter delay alone does not resolve these dense traces.
+No image response, gameplay discovery or throughput is inferred from synthetic
+timestamps. Better selected-image timing or mixed-input inference needs research.
+No game, model or native target operation ran; preview availability and local-only
+security-review handling remain unchanged.
+[Method, results and limits](../research/input-cadence/README.md).
+
 Mixed automatic observation (2026-10-22): **35% unchanged**.
 Initial attachment for targets without a supported runtime now gathers fifteen
 image/input-only moments at 100 ms delays before the existing sixteen full
