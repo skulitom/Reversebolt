@@ -1,0 +1,593 @@
+{
+  "source_manifest_sha256": "34118015fe83bba8cb44f60487453444162df1f3b3141ac8ac831765fa5db839",
+  "result_sha256": "d1cf43456a9cbd71a0667086a85fa31be84729ed9ab5d83711622eff7f574500",
+  "frozen_sources": 146,
+  "unchanged_inputs": 31,
+  "original_three_cases_unchanged": true,
+  "analytic_passed": 5,
+  "analytic_total": 5,
+  "analytic": [
+    {
+      "truth": {
+        "description": "Far translation with brightness",
+        "expected_displacement": [
+          160.0,
+          64.0
+        ],
+        "name": "case-0"
+      },
+      "passed": true,
+      "result": {
+        "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+        "status": "matched",
+        "source_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "measurement_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "source_pixel_scale": [
+          1.0,
+          1.0
+        ],
+        "requirements": {
+          "excluded_basin_radius": 2,
+          "maximum_template_area": 16384,
+          "minimum_margin": 0.06,
+          "minimum_ncc": 0.92,
+          "minimum_std": 8.0,
+          "minimum_template_side": 8,
+          "reverse_tolerance_pixels": 1
+        },
+        "matched_region": [
+          224.0,
+          144.0,
+          64.0,
+          64.0
+        ],
+        "displacement": [
+          160.0,
+          64.0
+        ],
+        "forward": {
+          "best_at": [
+            224,
+            144
+          ],
+          "best_ncc": 1.0,
+          "dense_ncc": 1.0,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 0.1922004557747218,
+          "source_std": 40.60539622408145,
+          "status": "matched",
+          "textured_positions": 15968
+        },
+        "reverse": {
+          "best_at": [
+            64,
+            80
+          ],
+          "best_ncc": 1.0,
+          "dense_ncc": 1.0,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 0.1922004557747218,
+          "source_std": 40.60539622408145,
+          "status": "matched",
+          "textured_positions": 15968
+        }
+      }
+    },
+    {
+      "truth": {
+        "description": "Stationary appearance",
+        "expected_displacement": [
+          0.0,
+          0.0
+        ],
+        "name": "case-1"
+      },
+      "passed": true,
+      "result": {
+        "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+        "status": "matched",
+        "source_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "measurement_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "source_pixel_scale": [
+          1.0,
+          1.0
+        ],
+        "requirements": {
+          "excluded_basin_radius": 2,
+          "maximum_template_area": 16384,
+          "minimum_margin": 0.06,
+          "minimum_ncc": 0.92,
+          "minimum_std": 8.0,
+          "minimum_template_side": 8,
+          "reverse_tolerance_pixels": 1
+        },
+        "matched_region": [
+          64.0,
+          80.0,
+          64.0,
+          64.0
+        ],
+        "displacement": [
+          0.0,
+          0.0
+        ],
+        "forward": {
+          "best_at": [
+            64,
+            80
+          ],
+          "best_ncc": 1.0,
+          "dense_ncc": 1.0,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 0.1922004557747218,
+          "source_std": 40.60539622408145,
+          "status": "matched",
+          "textured_positions": 15968
+        },
+        "reverse": {
+          "best_at": [
+            64,
+            80
+          ],
+          "best_ncc": 1.0,
+          "dense_ncc": 1.0,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 0.1922004557747218,
+          "source_std": 40.60539622408145,
+          "status": "matched",
+          "textured_positions": 15968
+        }
+      }
+    },
+    {
+      "truth": {
+        "description": "Repeated appearance",
+        "expected_displacement": null,
+        "name": "case-2"
+      },
+      "passed": true,
+      "result": {
+        "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+        "status": "ambiguous",
+        "source_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "measurement_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "source_pixel_scale": [
+          1.0,
+          1.0
+        ],
+        "requirements": {
+          "excluded_basin_radius": 2,
+          "maximum_template_area": 16384,
+          "minimum_margin": 0.06,
+          "minimum_ncc": 0.92,
+          "minimum_std": 8.0,
+          "minimum_template_side": 8,
+          "reverse_tolerance_pixels": 1
+        },
+        "matched_region": null,
+        "displacement": null,
+        "forward": {
+          "best_at": [
+            352,
+            48
+          ],
+          "best_ncc": 1.0,
+          "dense_ncc": null,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 1.0,
+          "source_std": 40.60539622408145,
+          "status": "ambiguous",
+          "textured_positions": 30119
+        },
+        "reverse": null
+      }
+    },
+    {
+      "truth": {
+        "description": "Flat appearance",
+        "expected_displacement": null,
+        "name": "case-3"
+      },
+      "passed": true,
+      "result": {
+        "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+        "status": "low_texture",
+        "source_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "measurement_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "source_pixel_scale": [
+          1.0,
+          1.0
+        ],
+        "requirements": {
+          "excluded_basin_radius": 2,
+          "maximum_template_area": 16384,
+          "minimum_margin": 0.06,
+          "minimum_ncc": 0.92,
+          "minimum_std": 8.0,
+          "minimum_template_side": 8,
+          "reverse_tolerance_pixels": 1
+        },
+        "matched_region": null,
+        "displacement": null,
+        "forward": {
+          "best_at": null,
+          "best_ncc": null,
+          "dense_ncc": null,
+          "positions": 0,
+          "samples": 256,
+          "second_basin_ncc": null,
+          "source_std": 0.0,
+          "status": "low_texture",
+          "textured_positions": 0
+        },
+        "reverse": null
+      }
+    },
+    {
+      "truth": {
+        "description": "Replaced appearance",
+        "expected_displacement": null,
+        "name": "case-4"
+      },
+      "passed": true,
+      "result": {
+        "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+        "status": "poor_match",
+        "source_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "measurement_region": {
+          "height": 64,
+          "width": 64,
+          "x": 64,
+          "y": 80
+        },
+        "source_pixel_scale": [
+          1.0,
+          1.0
+        ],
+        "requirements": {
+          "excluded_basin_radius": 2,
+          "maximum_template_area": 16384,
+          "minimum_margin": 0.06,
+          "minimum_ncc": 0.92,
+          "minimum_std": 8.0,
+          "minimum_template_side": 8,
+          "reverse_tolerance_pixels": 1
+        },
+        "matched_region": null,
+        "displacement": null,
+        "forward": {
+          "best_at": [
+            262,
+            131
+          ],
+          "best_ncc": 0.35507006450179845,
+          "dense_ncc": null,
+          "positions": 101025,
+          "samples": 256,
+          "second_basin_ncc": 0.3398534964460969,
+          "source_std": 40.60539622408145,
+          "status": "poor_match",
+          "textured_positions": 15988
+        },
+        "reverse": null
+      }
+    }
+  ],
+  "game": [
+    {
+      "name": "Retained Tetris observations",
+      "selection": {
+        "no_following_image": 4
+      },
+      "measurements": [
+        {
+          "observer_claims": [
+            "Orange L-shaped block piece"
+          ],
+          "source_sha256": "3f030c424bca426be1f0c96d7901e78f12350acc6be22ae20232740a07dce6b7",
+          "result": {
+            "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+            "status": "matched",
+            "source_region": {
+              "height": 66,
+              "width": 44,
+              "x": 418,
+              "y": 191
+            },
+            "measurement_region": {
+              "height": 31,
+              "width": 22,
+              "x": 193,
+              "y": 85
+            },
+            "source_pixel_scale": [
+              2.15625,
+              2.2291666666666665
+            ],
+            "requirements": {
+              "excluded_basin_radius": 2,
+              "maximum_template_area": 16384,
+              "minimum_margin": 0.06,
+              "minimum_ncc": 0.92,
+              "minimum_std": 8.0,
+              "minimum_template_side": 8,
+              "reverse_tolerance_pixels": 1
+            },
+            "matched_region": [
+              416.15625,
+              189.47916666666666,
+              47.4375,
+              69.10416666666666
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "forward": {
+              "best_at": [
+                193,
+                85
+              ],
+              "best_ncc": 1.0,
+              "dense_ncc": 1.0,
+              "positions": 126678,
+              "samples": 256,
+              "second_basin_ncc": 0.7146680647840485,
+              "source_std": 40.10576056677704,
+              "status": "matched",
+              "textured_positions": 57580
+            },
+            "reverse": {
+              "best_at": [
+                193,
+                85
+              ],
+              "best_ncc": 1.0,
+              "dense_ncc": 1.0,
+              "positions": 126678,
+              "samples": 256,
+              "second_basin_ncc": 0.7146680647840485,
+              "source_std": 40.10576056677704,
+              "status": "matched",
+              "textured_positions": 57445
+            }
+          }
+        },
+        {
+          "observer_claims": [
+            "green tetromino piece"
+          ],
+          "source_sha256": "406fc56cdb7e1a0c45db18dde8f1b0a70cc390a086d9d2078cd8f83490868cd2",
+          "result": {
+            "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+            "status": "matched",
+            "source_region": {
+              "height": 65,
+              "width": 45,
+              "x": 572,
+              "y": 209
+            },
+            "measurement_region": {
+              "height": 30,
+              "width": 22,
+              "x": 265,
+              "y": 93
+            },
+            "source_pixel_scale": [
+              2.15625,
+              2.2291666666666665
+            ],
+            "requirements": {
+              "excluded_basin_radius": 2,
+              "maximum_template_area": 16384,
+              "minimum_margin": 0.06,
+              "minimum_ncc": 0.92,
+              "minimum_std": 8.0,
+              "minimum_template_side": 8,
+              "reverse_tolerance_pixels": 1
+            },
+            "matched_region": [
+              590.8125,
+              327.6875,
+              47.4375,
+              66.875
+            ],
+            "displacement": [
+              19.40625,
+              120.37499999999999
+            ],
+            "forward": {
+              "best_at": [
+                274,
+                147
+              ],
+              "best_ncc": 0.9840016983553733,
+              "dense_ncc": 0.9841878900532516,
+              "positions": 127169,
+              "samples": 256,
+              "second_basin_ncc": 0.7673106874290657,
+              "source_std": 72.64810427708153,
+              "status": "matched",
+              "textured_positions": 57064
+            },
+            "reverse": {
+              "best_at": [
+                265,
+                93
+              ],
+              "best_ncc": 0.9840016983553733,
+              "dense_ncc": 0.9841878900532516,
+              "positions": 127169,
+              "samples": 256,
+              "second_basin_ncc": 0.7510205695491483,
+              "source_std": 67.9927264418704,
+              "status": "matched",
+              "textured_positions": 56933
+            }
+          }
+        },
+        {
+          "observer_claims": [
+            "Game Board"
+          ],
+          "source_sha256": "85089ed879b019aff02b5a2b17a5c54d415db86d758a4425b7d1411dc269a90e",
+          "result": {
+            "policy": "rgb601-triangle512x288-region-ncc16-dense-reverse-v1",
+            "status": "unsupported_size",
+            "source_region": {
+              "height": 406,
+              "width": 202,
+              "x": 533,
+              "y": 131
+            },
+            "measurement_region": {
+              "height": 183,
+              "width": 94,
+              "x": 247,
+              "y": 58
+            },
+            "source_pixel_scale": [
+              2.15625,
+              2.2291666666666665
+            ],
+            "requirements": {
+              "excluded_basin_radius": 2,
+              "maximum_template_area": 16384,
+              "minimum_margin": 0.06,
+              "minimum_ncc": 0.92,
+              "minimum_std": 8.0,
+              "minimum_template_side": 8,
+              "reverse_tolerance_pixels": 1
+            },
+            "matched_region": null,
+            "displacement": null,
+            "forward": null,
+            "reverse": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "No retained observations (ablation)",
+      "selection": {},
+      "measurements": []
+    },
+    {
+      "name": "Capture 3 omitted (ablation)",
+      "selection": {
+        "no_following_image": 4,
+        "omitted_capture": 3
+      },
+      "measurements": []
+    }
+  ],
+  "game_motion_accuracy": "unknown",
+  "process": {
+    "exit_code": 0,
+    "seconds": 0.6559999999881256,
+    "stdout": "{\"cases\":8,\"target_access\":false}\n",
+    "stderr": ""
+  },
+  "exploratory_geometry": {
+    "result_sha256": "3915d078d1e9c0beab196831df8186194af524b626c5a612f05ad0bd65380b51",
+    "scope": "Post-hoc known-case geometry check, not predeclared acceptance, persistent identity or unseen-game accuracy.",
+    "comparisons": [
+      {
+        "source_sha256": "3f030c424bca426be1f0c96d7901e78f12350acc6be22ae20232740a07dce6b7",
+        "scorable": true,
+        "oracle_slot": "next",
+        "source_iou": 0.8077709611451943,
+        "expected_displacement": [
+          0.0,
+          0.0
+        ],
+        "status": "matched",
+        "measured_displacement": [
+          0.0,
+          0.0
+        ],
+        "absolute_error": [
+          0.0,
+          0.0
+        ],
+        "destination_iou": 0.7321249617195403
+      },
+      {
+        "source_sha256": "406fc56cdb7e1a0c45db18dde8f1b0a70cc390a086d9d2078cd8f83490868cd2",
+        "scorable": true,
+        "oracle_slot": "current",
+        "source_iou": 0.8205128205128205,
+        "expected_displacement": [
+          20.0,
+          120.0
+        ],
+        "status": "matched",
+        "measured_displacement": [
+          19.40625,
+          120.37499999999999
+        ],
+        "absolute_error": [
+          0.59375,
+          0.3749999999999858
+        ],
+        "destination_iou": 0.7565291271101917
+      },
+      {
+        "source_sha256": "85089ed879b019aff02b5a2b17a5c54d415db86d758a4425b7d1411dc269a90e",
+        "scorable": false,
+        "reason": "no source overlap at IoU 0.5"
+      }
+    ],
+    "inputs_sha256": "d10191a3a91f6b90c2d4eae4878e3d2d0a6214ccba89de1c62de94dcc55288ec"
+  }
+}

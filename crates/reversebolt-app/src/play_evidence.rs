@@ -8,6 +8,46 @@ use reversebolt_core::{
 use reversebolt_vision::region_motion::{self, Region};
 use serde_json::{Value, json};
 
+fn check_pair(
+    before: &reversebolt_core::visual::FrameRef,
+    after: &reversebolt_core::visual::FrameRef,
+    a: &[u8],
+    b: &[u8],
+) -> Result<()> {
+    if before.width != after.width || before.height != after.height || before.epoch != after.epoch {
+        return Err("Image geometry or scene epoch changed.".into());
+    }
+    if reversebolt_core::visual::digest(a) != before.sha256
+        || reversebolt_core::visual::digest(b) != after.sha256
+    {
+        return Err("Image checksum changed.".into());
+    }
+    Ok(())
+}
+
+pub(crate) fn measure_appearance_pair(
+    before: &reversebolt_core::visual::FrameRef,
+    after: &reversebolt_core::visual::FrameRef,
+    a: &[u8],
+    b: &[u8],
+    region: Region,
+) -> Value {
+    let measured = (|| -> Result<_> {
+        check_pair(before, after, a, b)?;
+        let report = reversebolt_vision::region_appearance::measure(a, b, region)?;
+        if report.source_dimensions != [before.width, before.height] {
+            return Err("PNG dimensions differ from the retained image metadata.".into());
+        }
+        Ok(report)
+    })();
+    let (measurement, error) = match measured {
+        Ok(report) => (Some(report), None),
+        Err(error) => (None, Some(error)),
+    };
+    json!({"before":before.id,"after":after.id,"before_sha256":before.sha256,"after_sha256":after.sha256,
+        "measurement":measurement,"error":error})
+}
+
 pub(crate) fn measure_region_pair(
     before: &reversebolt_core::visual::FrameRef,
     after: &reversebolt_core::visual::FrameRef,
@@ -16,17 +56,7 @@ pub(crate) fn measure_region_pair(
     region: Region,
 ) -> Value {
     let measured = (|| -> Result<_> {
-        if before.width != after.width
-            || before.height != after.height
-            || before.epoch != after.epoch
-        {
-            return Err("Image geometry or scene epoch changed.".into());
-        }
-        if reversebolt_core::visual::digest(a) != before.sha256
-            || reversebolt_core::visual::digest(b) != after.sha256
-        {
-            return Err("Image checksum changed.".into());
-        }
+        check_pair(before, after, a, b)?;
         let report = region_motion::measure(a, b, region)?;
         if report.source_dimensions != [before.width, before.height] {
             return Err("PNG dimensions differ from the retained image metadata.".into());
@@ -62,7 +92,8 @@ pub(crate) fn automatic_interval(
     b: &[u8],
 ) -> Vec<Value> {
     selection.regions.iter().filter(|p|p.before_id==before.id && p.after_id==after.id).map(|p|
-        json!({"source_sha256":p.source_sha256,"result":measure_region_pair(before,after,a,b,p.region)})
+        json!({"source_sha256":p.source_sha256,"result":measure_region_pair(before,after,a,b,p.region),
+            "appearance_match":measure_appearance_pair(before,after,a,b,p.region)})
     ).collect()
 }
 
@@ -320,6 +351,15 @@ pub(crate) mod tests {
         assert!(measured["result"]["error"].is_null());
         assert_eq!(measured["result"]["before"], "frame-1");
         assert_eq!(measured["result"]["after"], "frame-2");
+        assert_eq!(
+            measured["appearance_match"]["measurement"]["status"],
+            "unsupported_size"
+        );
+        assert!(measured["appearance_match"]["measurement"]["displacement"].is_null());
+        assert_eq!(
+            measured["appearance_match"]["before_sha256"],
+            measured["result"]["before_sha256"]
+        );
         args["auto_regions"] = json!(false);
         let disabled = read(&session, &args).unwrap();
         assert!(disabled.get("automatic_region_motion").is_none());
@@ -407,6 +447,9 @@ pub(crate) mod tests {
             let refused = measure_region_pair(&a, &b, &bytes, &bytes, region);
             assert!(refused["measurement"].is_null());
             assert!(refused["error"].is_string());
+            let appearance = measure_appearance_pair(&a, &b, &bytes, &bytes, region);
+            assert!(appearance["measurement"].is_null());
+            assert_eq!(appearance["error"], refused["error"]);
         }
         let invalid =
             measure_region_pair(&before, &after, &bytes, &bytes, Region { x: 250, ..region });

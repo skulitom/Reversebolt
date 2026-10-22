@@ -509,6 +509,10 @@ mod tests {
             1
         );
         assert!(automatic["measurements"][0]["result"]["error"].is_null());
+        assert_eq!(
+            automatic["measurements"][0]["appearance_match"]["measurement"]["status"],
+            "unsupported_size"
+        );
         drop(session);
         std::fs::remove_dir_all(directory).unwrap();
     }

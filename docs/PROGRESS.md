@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Appearance correspondence beyond a fixed rectangle (2026-10-22): **35% unchanged**.
+Automatically selected regions now receive a bounded full-image template search,
+dense winner verification and an unambiguous reverse check. Explicit unresolved
+statuses preserve missing/ambiguous appearances. No persistent identity, semantic
+promotion, trial decision or edit authority follows from a match.
+
+All five frozen analytic cases pass. On the saved Tetris pair, two appearances
+match and the large board region exceeds the declared size limit. A separate
+post-hoc oracle/pixel check supports both small-region displacements: stationary
+preview and falling-piece movement of (20,120) source pixels, estimated as
+(19.40625,120.375). This one exposed pair is not withheld-game acceptance. The
+original three cases' selection/fixed-region results and all 31 inputs are
+unchanged. All 105 test executions across affected packages and strict Clippy
+pass. No new game, input, capture or model call ran. The desktop remains unavailable
+after the prior quarantine. [Method and evidence](../research/region-appearance/README.md).
+
 Automatic observed-region follow-up (2026-10-22): **35% unchanged**.
 The shared reader/MCP now selects up to four regions from existing provisional
 visual observations and measures their next consecutive capture without manual

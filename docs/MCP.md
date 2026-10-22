@@ -85,6 +85,30 @@ selection, with no guessed regions. Automatic activity discovery archives these
 results, but does not feed them to its interpreter or change comparison gates.
 See [saved-observation evidence and limits](../research/observed-regions/README.md).
 
+Each automatic region measurement additionally includes `appearance_match`, a
+separate two-image template search. It can find a similar rectangle outside the
+original area. Images normalize to 512×288; templates must have sides of at least
+eight normalized pixels and area no greater than 16,384. Every fitting position
+is searched with at most 16×16 samples. The winning rectangle is checked using all
+its normalized pixels, and an independent backward search must return to the
+source. `requirements` gives the contrast, correlation, uniqueness and reverse
+tolerance thresholds. `forward` and `reverse` retain scores and search counts.
+
+Only `status: matched` has `matched_region` and `displacement`, in approximate
+original-image pixels. `best_at` is a diagnostic normalized-image candidate, even
+when unresolved; do not treat it as a correspondence. Other statuses are
+`unsupported_size`, `low_texture`, `poor_match`, `ambiguous`, `image_boundary` and
+`inconsistent_reverse`. Unresolved matches have null locations/displacements.
+The source selection, exact image hashes and epoch checks are shared with the
+fixed-region measurement. The two results remain independent.
+
+This assumes stable appearance and size. It does not fit rotation, deformation,
+scale changes or occlusion, and visually identical objects can mislead it. A match
+does not establish identity, physical speed or gameplay meaning. It is never
+propagated to a third frame or used to authorize an edit. No new image/model call
+is needed. `auto_regions: false` skips both automatic measurements.
+See [controlled and saved-game correspondence checks](../research/region-appearance/README.md).
+
 Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
 `region_motion`. Coordinates are integers in the original image, with width and
 height at least 32 pixels and area at most four million pixels. The same fixed

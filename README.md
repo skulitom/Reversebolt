@@ -122,6 +122,10 @@ visual observations and measures them against their next consecutive capture.
 It needs no manually supplied coordinates and skips missing or uncertain sources.
 Automatic discovery archives these measurements; region labels remain unverified
 and motion results do not enable edits. See [the saved-observation regression](research/observed-regions/README.md).
+Selected regions also receive a bounded appearance search in the next image,
+with duplicate-match rejection and a reverse check. This can follow a translated
+appearance beyond its original rectangle; identity and gameplay meaning remain
+unverified. See [controlled and saved-game checks](research/region-appearance/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,
