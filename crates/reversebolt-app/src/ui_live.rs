@@ -90,7 +90,8 @@ fn runtime_name(name: &str) -> String {
     }
 }
 fn identified_name(name: &str) -> bool {
-    let name = name.trim();
+    let readable = runtime_name(name);
+    let name = readable.trim();
     let lower = name.to_lowercase();
     let words: Vec<_> = lower
         .split(|c: char| !c.is_alphabetic())
@@ -173,9 +174,47 @@ fn observation_description(text: &str) -> Option<String> {
     }
     Some(brief_description(text))
 }
-fn runtime_owner(name: &str) -> String {
-    let plain = name.split([',', '`', '[']).next().unwrap_or("");
-    runtime_name(plain.rsplit(['.', '+']).next().unwrap_or(plain))
+fn runtime_presentation(
+    view: &reversebolt_core::runtime::View,
+    candidate: &reversebolt_core::runtime::Candidate,
+) -> Option<(String, String)> {
+    // A readable field name alone does not explain what changing it does. Use
+    // only the current review's exact primary path, never a nearby alternative.
+    // This is provisional presentation; it grants no new editing authority.
+    let review = view.naming.as_ref()?;
+    let source = view.catalog_source.as_ref()?;
+    let batch = review.batch.as_ref()?;
+    if review.status != "complete"
+        || review.error.is_some()
+        || review.report_sha256 != source.document_sha256
+        || batch.report_sha256 != source.document_sha256
+        || candidate.id != candidate.locator.id()
+    {
+        return None;
+    }
+    let reversebolt_core::runtime::Member::Field { field } =
+        &candidate.locator.steps.last()?.member
+    else {
+        return None;
+    };
+    let hypothesis = batch.accepted.iter().find(|h| {
+        h.candidate.path_id == candidate.id
+            && h.candidate.field_name == candidate.name
+            && h.candidate.type_name == field.declaring.type_name
+            && h.candidate.field_id == field.field_id
+    })?;
+    let name = hypothesis.proposal.name.trim();
+    if !identified_name(name) {
+        return None;
+    }
+    let explanation = observation_description(&hypothesis.proposal.explanation)?;
+    if explanation
+        .trim_end_matches(['.', '?'])
+        .eq_ignore_ascii_case(name)
+    {
+        return None;
+    }
+    Some((name.into(), format!("Possible effect: {explanation}")))
 }
 fn brief_description(text: &str) -> String {
     let sentence = text.split(". ").next().unwrap_or(text);
@@ -431,6 +470,24 @@ impl LivePane {
         ui.horizontal_wrapped(|ui| {
             ui.heading("Controls");
             ui.label(RichText::new(&live.process.title).color(MUTED));
+            let frozen: Vec<_> = state.freezes.iter().filter(|f| f.active()).collect();
+            if !frozen.is_empty()
+                && ui
+                    .button(format!("Unfreeze all ({})", frozen.len()))
+                    .on_hover_text(
+                        "Let these values change again. Their last values are left in place.",
+                    )
+                    .clicked()
+            {
+                // Remains reachable if a new review hides a previously named
+                // card. Stop requests use the existing queue even while busy.
+                for freeze in frozen {
+                    handle.submit(
+                        "set_runtime_freeze",
+                        json!({"freeze_id":freeze.id,"enabled":false}),
+                    );
+                }
+            }
             if ui
                 .add_enabled(!busy, egui::Button::new("Change app"))
                 .clicked()
@@ -466,12 +523,11 @@ impl LivePane {
                     });
                     if let Some(page)=&live.runtime.search {
                         ui.label(RichText::new(format!("{} matches from discovery.",page.matches)).size(12.).color(MUTED));
-                        for candidate in page.candidates.iter().filter(|c| identified_name(&runtime_name(&c.name))) {
+                        for candidate in &page.candidates {
+                            let Some((title, description)) = runtime_presentation(&live.runtime, candidate) else { continue; };
                             ui.horizontal_wrapped(|ui|{
-                                ui.label(runtime_name(&candidate.name));
-                                if let Some(hint)=candidate.context.first() {
-                                    ui.label(RichText::new(format!("First seen with “{}”",hint.text.chars().take(64).collect::<String>())).color(MUTED));
-                                }
+                                ui.label(title);
+                                ui.label(RichText::new(brief_description(&description)).color(MUTED));
                                 if ui.add_enabled(!busy,egui::Button::new("Show card")).clicked() {
                                     handle.submit("show_runtime_values",json!({"catalog_id":live.runtime.catalog_id,"after_revision":live.runtime.revision,"ids":[candidate.id]}));
                                 }
@@ -505,16 +561,9 @@ impl LivePane {
         let mut cards: Vec<FindingCard> = vec![];
         for (index, card) in live.runtime.cards.iter().enumerate() {
             let candidate = &card.candidate;
-            let title = runtime_name(&candidate.name);
-            if !identified_name(&title) {
+            let Some((title, description)) = runtime_presentation(&live.runtime, candidate) else {
                 continue;
-            }
-            let context = candidate
-                .locator
-                .steps
-                .last()
-                .map(|s| s.owner.type_name.split(',').next().unwrap_or("Object"))
-                .unwrap_or("Object");
+            };
             let value = if card.status != "read" {
                 "—".into()
             } else if let Some(s) = card.value.as_str() {
@@ -527,12 +576,9 @@ impl LivePane {
             cards.push((
                 CardSource::Runtime,
                 index,
-                title.clone(),
+                title,
                 value,
-                brief_description(&format!(
-                    "{title} in {}; gameplay effect is still being checked.",
-                    runtime_owner(context)
-                )),
+                description,
                 card.status == "read",
                 Some(observation_age(card.observed_unix_ms, now)),
             ));
@@ -1558,6 +1604,143 @@ mod card_copy_tests {
     use super::*;
 
     #[test]
+    fn runtime_cards_need_an_explained_name_bound_to_the_current_primary_path() {
+        use reversebolt_core::{runtime as r, runtime_hypotheses as h};
+        let owner = r::TypeKey {
+            image: "Example.dll".into(),
+            type_name: "Example.CharacterBase".into(),
+            layout_sha256: "a".repeat(64),
+        };
+        let field = r::FieldRef {
+            declaring: owner.clone(),
+            field_id: 1,
+        };
+        let locator = r::Locator {
+            scope: r::Scope {
+                pid: 1,
+                created: "0000000000000001".into(),
+                session: 1,
+            },
+            root: field.clone(),
+            steps: vec![r::Step {
+                // Inherited fields are described by their declaring type,
+                // which can differ from the current object's type.
+                owner: r::TypeKey {
+                    type_name: "Example.Character".into(),
+                    ..owner.clone()
+                },
+                member: r::Member::Field { field },
+            }],
+        };
+        let mut candidate = r::Candidate {
+            id: locator.id(),
+            name: "walkSpeed".into(),
+            description: "Runtime value; gameplay effect unverified.".into(),
+            locator,
+            value: json!("3"),
+            bytes: 3i32.to_le_bytes().to_vec(),
+            type_code: 8,
+            snapshot_id: 0,
+            node_id: 0,
+            edit_authority: false,
+            context: vec![],
+        };
+        let mut view = r::View {
+            catalog_source: Some(r::CatalogSource {
+                path: "unused.json".into(),
+                document_sha256: "b".repeat(64),
+                observed_unix_ms: 1,
+            }),
+            ..Default::default()
+        };
+        // A friendly field name and boilerplate do not make an explained card.
+        assert!(runtime_presentation(&view, &candidate).is_none());
+        let selection = h::Selection {
+            report_sha256: "b".repeat(64),
+            selected_types: vec![0],
+            omitted_samples: 0,
+            rows: vec![h::Row {
+                id: 0,
+                type_id: 0,
+                field_id: 1,
+                path_id: candidate.id.clone(),
+                type_name: owner.type_name,
+                field_name: candidate.name.clone(),
+                value: candidate.value.clone(),
+                object_text: vec![],
+            }],
+        };
+        let proposal = h::Proposal {
+            candidate: 0,
+            name: "Walk speed".into(),
+            explanation: "May change how quickly the character walks.".into(),
+            citations: vec![h::Citation {
+                source: "field_name".into(),
+                index: None,
+                quote: candidate.name.clone(),
+            }],
+            alternatives: vec![],
+            question: "Does this change walking speed?".into(),
+        };
+        let batch = h::validate(
+            &selection,
+            h::Proposals {
+                hypotheses: vec![proposal],
+            },
+        )
+        .unwrap();
+        assert_eq!(batch.accepted.len(), 1);
+        view.naming = Some(h::Review {
+            question_policy: None,
+            question_source: h::QuestionSource::Declared,
+            play_context: None,
+            evidence_id: uuid::Uuid::new_v4().to_string(),
+            report_sha256: selection.report_sha256,
+            model: "fixture".into(),
+            status: "complete".into(),
+            batch: Some(batch),
+            error: None,
+        });
+        let expected = Some((
+            "Walk speed".into(),
+            "Possible effect: May change how quickly the character walks.".into(),
+        ));
+        assert_eq!(runtime_presentation(&view, &candidate), expected);
+        // A refreshed reading is still the same role, but presentation must
+        // never alter its bytes, bounds or authority.
+        candidate.value = json!("4");
+        assert_eq!(runtime_presentation(&view, &candidate), expected);
+        assert!(!candidate.edit_authority);
+        for defect in 0..10 {
+            let mut stale = view.clone();
+            let review = stale.naming.as_mut().unwrap();
+            let batch = review.batch.as_mut().unwrap();
+            let hypothesis = &mut batch.accepted[0];
+            match defect {
+                0 => review.status = "cancelled".into(),
+                1 => review.error = Some("Unavailable".into()),
+                2 => review.report_sha256 = "c".repeat(64),
+                3 => batch.report_sha256 = "c".repeat(64),
+                4 => hypothesis.candidate.field_name = "runSpeed".into(),
+                5 => hypothesis.candidate.type_name = "Example.Other".into(),
+                6 => hypothesis.proposal.name = "Unidentified value".into(),
+                7 => hypothesis.proposal.explanation = "Unknown effect.".into(),
+                8 => hypothesis.candidate.field_id = 2,
+                _ => {
+                    hypothesis.alternatives.push(hypothesis.candidate.clone());
+                    hypothesis.candidate.path_id = "c".repeat(64);
+                }
+            }
+            assert!(
+                runtime_presentation(&stale, &candidate).is_none(),
+                "defect {defect}"
+            );
+        }
+        candidate.locator.scope.created = "0000000000000002".into();
+        assert!(runtime_presentation(&view, &candidate).is_none());
+    }
+
+    #[test]
     fn placeholders_stay_hidden_but_short_names_and_meaningful_counts_survive() {
         for name in [
             "Unidentified 4",
@@ -1587,7 +1770,7 @@ mod card_copy_tests {
             "F0123456789abcdef",
             "ffffffffffffffff",
         ] {
-            assert!(!identified_name(&runtime_name(name)), "{name}");
+            assert!(!identified_name(name), "{name}");
         }
         for name in [
             "HP",
@@ -1600,7 +1783,7 @@ mod card_copy_tests {
             "MemoryCapacity",
             "PlayerState",
         ] {
-            assert!(identified_name(&runtime_name(name)), "{name}");
+            assert!(identified_name(name), "{name}");
         }
     }
 

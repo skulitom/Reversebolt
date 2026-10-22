@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Explained runtime cards (2026-10-22): **35% unchanged**.
+The controls board and Add controls results no longer manufacture descriptions
+by repeating a raw field name and its owning type. A runtime card needs a named,
+explained primary hypothesis from the current completed review, bound to the
+retained catalogue hash and exact path, declaring type, field and process identity.
+Alternative paths do not inherit its label. The description explicitly begins
+“Possible effect”; this presentation does not verify meaning or grant edit
+authority. A missing/incomplete review leaves these values out of the board.
+Existing direct number entry, +/- and keyboard steps, known-small-range sliders
+and per-card Freeze remain. Unfreeze all stays available if a later review hides
+a frozen card, including while other work is busy.
+
+All 85 app tests, including 13 UI checks, pass; strict app/all-target Clippy,
+formatting and diff checks pass. The new regression covers inherited fields,
+changed readings, stale/incomplete reviews, changed source/path/field/type,
+unexplained names and alternative-path confusion. No game, screenshot, model call
+or target memory operation ran for this UI change. The launcher CheckOnly still
+reports the quarantined preview unavailable; no replacement was published.
+
 Appearance choice before editing (2026-10-22): **35% unchanged**.
 The shared command/MCP can lock a region after six baseline captures and before
 any linked runtime edit record exists. Its immutable saved plan binds the full

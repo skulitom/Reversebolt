@@ -172,7 +172,8 @@ pub struct View {
     pub search: Option<SearchPage>,
     #[serde(default)]
     pub card_generation: u64,
-    /// Questions for investigation, kept separate from editable card labels.
+    /// Naming hypotheses for investigation. The UI may use explicitly tentative
+    /// copy for an existing exact-path card; this grants no bounds or edit authority.
     #[serde(default)]
     pub naming: Option<crate::runtime_hypotheses::Review>,
 }
