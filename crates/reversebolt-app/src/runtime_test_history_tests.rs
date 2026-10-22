@@ -1938,6 +1938,7 @@ fn historical_read_compares_origin_activity_without_changing_the_trial_outcome()
     };
     test.origin = Some(h::TestOrigin {
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         play_context: Some(context),
         reference: h::Reference {

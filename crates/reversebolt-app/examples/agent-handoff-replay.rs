@@ -116,6 +116,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         error: None,
         report_sha256: old.report_sha256.clone(),
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         play_context: None,
         batch: Some(h::validate(&selection, proposals)?),

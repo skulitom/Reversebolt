@@ -3,6 +3,7 @@ pub(crate) mod activity;
 #[cfg(test)]
 #[path = "runtime_naming_handoff_tests.rs"]
 mod handoff_tests;
+pub(crate) mod link_activity;
 use crate::service::OperationOwner;
 use reversebolt_core::{
     Result,
@@ -260,6 +261,7 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     };
     let review = Review {
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         play_context,
         evidence_id: p.review_id.clone(),
@@ -363,6 +365,12 @@ pub(crate) fn publish(
     report: Option<&Value>,
     protected: &BTreeSet<String>,
 ) -> Result<Option<reversebolt_core::runtime_cards::Publication>> {
+    if let Some(origin) = &review.question_origin {
+        origin.validate()?;
+        if origin.model != review.model {
+            return Err("Retained questions changed their original author".into());
+        }
+    }
     if view.catalog_id != catalog
         || view
             .catalog_source
@@ -460,6 +468,7 @@ fn review_inner(
     )?;
     let mut state = Review {
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         play_context: None,
         evidence_id: id,
@@ -809,6 +818,7 @@ mod tests {
     fn review() -> Review {
         Review {
             question_source: Default::default(),
+            question_origin: None,
             question_policy: None,
             play_context: None,
             evidence_id: "review".into(),

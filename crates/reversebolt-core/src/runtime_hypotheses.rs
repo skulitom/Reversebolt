@@ -21,6 +21,8 @@ impl QuestionSource {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Review {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub question_origin: Option<QuestionOrigin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub question_policy: Option<String>,
     #[serde(default, skip_serializing_if = "QuestionSource::is_declared")]
     pub question_source: QuestionSource,
@@ -32,6 +34,22 @@ pub struct Review {
     pub status: String,
     pub batch: Option<Batch>,
     pub error: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct QuestionOrigin {
+    pub review_id: String,
+    pub model: String,
+}
+impl QuestionOrigin {
+    pub fn validate(&self) -> Result<()> {
+        if !uuid::Uuid::parse_str(&self.review_id).is_ok_and(|id| id.to_string() == self.review_id)
+            || !text(&self.model, 256)
+        {
+            return Err("Invalid original metadata question source".into());
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -235,6 +253,8 @@ pub struct Reference {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TestOrigin {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub question_origin: Option<QuestionOrigin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub question_policy: Option<String>,
     #[serde(default, skip_serializing_if = "QuestionSource::is_declared")]
     pub question_source: QuestionSource,
@@ -246,6 +266,9 @@ pub struct TestOrigin {
 }
 impl TestOrigin {
     pub fn selected(&self) -> Result<&Row> {
+        if let Some(origin) = &self.question_origin {
+            origin.validate()?;
+        }
         if self.question_source == QuestionSource::ObjectText {
             if self.question_policy.as_deref() != Some(crate::runtime_object_questions::POLICY) {
                 return Err("The object-text question policy is unsupported.".into());
@@ -345,6 +368,7 @@ pub fn resolve(
         return Err("The question no longer follows the recorded object-label policy.".into());
     }
     let origin = TestOrigin {
+        question_origin: review.question_origin.clone(),
         question_policy: review.question_policy.clone(),
         question_source: review.question_source,
         play_context: review.play_context.clone(),

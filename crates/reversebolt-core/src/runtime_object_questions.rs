@@ -242,6 +242,7 @@ mod tests {
             selected_path_id: hypothesis.alternatives[1].path_id.clone(),
         };
         let review = h::Review {
+            question_origin: None,
             question_policy: Some(POLICY.into()),
             question_source: h::QuestionSource::ObjectText,
             play_context: None,

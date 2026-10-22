@@ -113,9 +113,11 @@ pub(super) fn run_with(
         .iter()
         .any(|r| r.experiment == step.activity)
     {
+        let archived = read_result(engine, &step.activity, base)?;
         return Ok(
-            json!({"success":true,"experiment":step.activity,"index":step.index,
-            "effect":"NotApplicable","replayed":true,"review":read_result(engine,&step.activity,base)?["review"]}),
+            json!({"success":archived["review"]["status"] != "cancelled","experiment":step.activity,"index":step.index,
+            "effect":"NotApplicable","replayed":true,"review":archived["review"],
+            "metadata_handoff":archived["metadata_handoff"],"metadata_handoff_error":archived["metadata_handoff_error"]}),
         );
     }
     let review_dir = directory.join("review");
@@ -127,6 +129,7 @@ pub(super) fn run_with(
         "frame_ids":ids,"model":plan.observer_model}),
     )?;
     let mut summary = Review {
+        metadata_handoff_sha256: None,
         experiment: step.activity.clone(),
         job: owner.job,
         frame_ids: ids.clone(),
@@ -217,6 +220,23 @@ pub(super) fn run_with(
         live.input_experiments.remove(0);
     }
     live.input_experiments.push(summary.clone());
+    let metadata_handoff = crate::runtime_naming_bridge::link_activity::finish(
+        engine,
+        &plan,
+        &step.activity,
+        owner,
+        base,
+    )?;
+    let summary = engine
+        .live
+        .as_ref()
+        .unwrap()
+        .view
+        .input_experiments
+        .last()
+        .unwrap()
+        .clone();
+    let cancelled = cancelled || owner.cancel.load(Ordering::SeqCst);
     engine.event(
         "input-experiment",
         format!(
@@ -226,7 +246,7 @@ pub(super) fn run_with(
     );
     Ok(
         json!({"success":!cancelled,"experiment":step.activity,"index":step.index,
-        "effect":"NotApplicable","review":summary,"error":if cancelled {Some("Input review stopped")} else {None}}),
+        "effect":"NotApplicable","review":summary,"metadata_handoff":metadata_handoff,"error":if cancelled {Some("Input review stopped")} else {None}}),
     )
 }
 
@@ -267,5 +287,12 @@ pub fn read_result(engine: &Engine, reference: &str, base: &Path) -> Result<Valu
             .unwrap()
             .read_frame(&live.investigation_id, id)?;
     }
-    Ok(json!({"review":summary,"result":result,"historical":true}))
+    let (metadata_handoff, metadata_handoff_error) =
+        match crate::runtime_naming_bridge::link_activity::read(base, summary) {
+            Ok(value) => (value, None),
+            Err(error) => (Value::Null, Some(error)),
+        };
+    Ok(
+        json!({"review":summary,"result":result,"metadata_handoff":metadata_handoff,"metadata_handoff_error":metadata_handoff_error,"historical":true}),
+    )
 }

@@ -409,6 +409,7 @@ mod tests {
         let report = "c".repeat(64);
         let review = Review {
             question_source: Default::default(),
+            question_origin: None,
             question_policy: None,
             play_context: Some(context.clone()),
             evidence_id: uuid::Uuid::new_v4().to_string(),
@@ -514,6 +515,7 @@ mod tests {
         let report = "a".repeat(64);
         let mut review = Review {
             question_source: Default::default(),
+            question_origin: None,
             question_policy: None,
             play_context: Some(context.clone()),
             evidence_id: source_id.clone(),
@@ -643,6 +645,7 @@ mod tests {
         let (context, frames, evidence) = observed();
         let review = Review {
             question_source: Default::default(),
+            question_origin: None,
             question_policy: None,
             play_context: Some(context.clone()),
             evidence_id: uuid::Uuid::new_v4().to_string(),

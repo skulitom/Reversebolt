@@ -848,6 +848,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     test.hypothesis = proposal.question.clone();
     test.origin = Some(h::TestOrigin {
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         play_context: None,
         reference: h::Reference {

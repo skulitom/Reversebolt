@@ -50,7 +50,7 @@ fn save(path: &Path, value: &impl Serialize) -> Result<()> {
         .and_then(|()| file.sync_all())
         .map_err(|e| e.to_string())
 }
-fn location(base: &Path, reference: &str) -> Result<PathBuf> {
+pub(crate) fn location(base: &Path, reference: &str) -> Result<PathBuf> {
     if reference.len() != 64 || !reference.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err("Invalid input experiment reference".into());
     }

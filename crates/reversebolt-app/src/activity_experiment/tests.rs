@@ -1,4 +1,6 @@
 use super::*;
+#[path = "handoff_tests.rs"]
+mod handoff;
 #[path = "reuse_tests.rs"]
 mod reuse;
 use reversebolt_core::{

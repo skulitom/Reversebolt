@@ -1707,6 +1707,7 @@ mod card_copy_tests {
         .unwrap();
         assert_eq!(batch.accepted.len(), 1);
         view.naming = Some(h::Review {
+            question_origin: None,
             question_policy: None,
             question_source: h::QuestionSource::Declared,
             play_context: None,

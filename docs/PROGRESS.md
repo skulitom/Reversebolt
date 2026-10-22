@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic response-to-question handoff (2026-10-22): **35% unchanged**.
+Input experiments now pin eligible existing metadata questions at submission and
+associate their final response evidence automatically. The resulting review keeps
+the original questions and author, preserves positive or negative image verdicts,
+and can reach comparison planning without resubmitting hypotheses or another
+model call. Separate question/image origins survive into comparison records.
+Changed metadata or cancellation prevents replacement; unavailable image evidence
+leaves retained questions without activity. Selected control values are preserved.
+
+A generated five-case integration exercises the ten captures, final review,
+automatic association, real comparison planner, provenance roundtrip and saved
+checkpoint. It verifies replay, changed questions/report bindings, zero additional
+model calls or memory samples, and independent handling of a damaged association
+archive. All **403 workspace tests**, strict Clippy and formatting pass. No game,
+native input worker or live model ran. No causal or generalization credit is added;
+the fixed weights remain **35/100**. The desktop remains unavailable and all
+artifacts stay local. Native validation and a broader investigation scheduler
+remain outstanding.
+[Implementation, verification and limits](../research/automatic-handoff/README.md).
+
 Automatic input selection (2026-10-22): **35% unchanged**.
 The desktop now has one **Explore next** action. It chooses an observed key under
 a versioned sampling policy and pins that choice in the experiment plan. Agents

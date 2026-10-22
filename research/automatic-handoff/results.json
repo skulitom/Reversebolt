@@ -1,0 +1,73 @@
+{
+  "method": "automatic_response_question_handoff_v1",
+  "goal_percent": 35,
+  "scope": "Generated input/image fixtures, synthetic metadata and mock interpretation; no game, native input worker, live model or production app launch.",
+  "workspace_test_executions": 403,
+  "cases": [
+    "positive interpretation",
+    "negative interpretation",
+    "image model failure",
+    "cancellation during interpretation",
+    "metadata changed during experiment"
+  ],
+  "verified": {
+    "image_callback_per_case": 1,
+    "additional_model_calls": 0,
+    "captured_images_including_source": 11,
+    "target_memory_samples": 0,
+    "successful_comparison_planning_actions": 4,
+    "prior_selected_display_value_preserved": "999",
+    "old_report_value_not_refreshed": "8",
+    "edit_authority": false,
+    "questions_and_author_unchanged": true,
+    "original_question_and_image_sources_preserved": true,
+    "comparison_origin_roundtrip": true,
+    "production_replay_wrapper_checkpoint": true,
+    "changed_question_without_revision_rejected": true,
+    "changed_report_binding_rejected": true,
+    "replay_does_not_publish_again": true,
+    "duplicate_handoff_intent_rejected": true,
+    "damaged_handoff_does_not_invalidate_independent_image_evidence": true
+  },
+  "checks": [
+    {
+      "path": "test-results/automatic-handoff-check-first.log",
+      "sha256": "d626702a534994302d21e6ddc379fa00bbee8c1ed0bff681e8b353d3d86ad335"
+    },
+    {
+      "path": "test-results/automatic-handoff-clippy-first.log",
+      "sha256": "cec5edaeef2ed8f030f3ad1b30fbea661f0fc568d2c5309b2aee9a8f5bd70687"
+    },
+    {
+      "path": "test-results/automatic-handoff-format-first.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/automatic-handoff-integration-first.log",
+      "sha256": "dfe8f7f8554183b3720a19bea959a2e4443ed3ed58b40b83bc8869e1f0476756"
+    },
+    {
+      "path": "test-results/automatic-handoff-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/automatic-handoff-workspace-first.log",
+      "sha256": "c4197c37e4726c973686644ad8a090e8e3a06e5ab8d3d12e7e1b900dfab5b237"
+    }
+  ],
+  "frozen_directory": "test-results/automatic-handoff-v1",
+  "frozen_files": 192,
+  "manifest_sha256": "0be431500ba61ca7b9b5dffc614038db0ccffd208d4bb683b946e1abe9c1078d",
+  "changed": [],
+  "preceding_frozen_snapshot_changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "security_submission": "local only; no upload",
+  "generalization_claim": false
+}

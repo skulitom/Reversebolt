@@ -152,6 +152,7 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
         report_sha256: inventory.report_sha256.clone(),
         play_context: Some(context.clone()),
         question_source: Default::default(),
+        question_origin: None,
         question_policy: None,
         batch: Some(h::validate(&selection, h::Proposals { hypotheses: vec![] }).unwrap()),
         error: None,

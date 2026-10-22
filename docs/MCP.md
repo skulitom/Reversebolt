@@ -135,6 +135,31 @@ Changing the batch clears its live summaries; original archives remain on disk.
 Older sessions default to an empty result list and old ten-step job plans retain
 their previous behavior.
 
+When completed metadata questions exist at submission, the input plan also pins
+their catalogue, revision, report hash and complete review hash. After response
+analysis, the same owned step automatically associates the retained questions
+with the new image context. This creates a new metadata review ID with the same
+questions, alternatives, names and original author. Both positive and negative
+image interpretations are preserved. It makes no additional model call, capture,
+runtime inspection, value refresh or memory edit. Read current status for the new
+review ID before planning comparisons.
+
+If the latest interpretation is unavailable, the questions remain but the new
+review has no activity context; an older interpretation is not revived. Changed
+metadata or cancellation prevents replacement of the current review. When no
+eligible questions were pinned, the handoff is `skipped`. The step does not start
+fresh metadata discovery. Existing selected, refreshed and edited controls use
+the normal preservation rules and gain no write authority.
+
+`read_activity_experiment` returns this historical `metadata_handoff` alongside
+the image result. `live.input_experiments[].metadata_handoff_sha256` binds its
+archive, which in turn cites the original input-result hash. A damaged handoff
+returns `metadata_handoff_error` and no trusted handoff, while the independent
+image result remains readable after its own checks. An immutable handoff intent
+prevents another derived review after interruption; replay returns its saved
+outcome without publishing again. The shared checkpoint retains the input summary
+and current review together. Restart still disconnects the old target.
+
 Later metadata discovery prefers the latest measured experiment's exact images
 for its activity input. When its saved interpretation and evidence pass validation,
 the independent metadata pass reuses that original interpretation with no new
@@ -1312,6 +1337,14 @@ review. The image verdict, uncertainty and measured basis are unchanged. This
 does not grant semantic confirmation or write authority. See
 [handoff and persistence verification](../research/activity-handoff/README.md) and
 [experiment reuse verification](../research/activity-reuse/README.md).
+
+Automatically associated reviews also retain `question_origin` (`review_id`,
+`model`) for the original question producer. It follows the questions into test
+origins, separately from `play_context.interpretation_source`. New questions reset
+this optional origin; legacy reviews omit it. Association only makes the two
+independent bodies of evidence available for investigation. It does not verify
+that a candidate controls the observed response. See
+[automatic handoff verification](../research/automatic-handoff/README.md).
 
 Comparison plans now include `activity_context` and `activity_limitation`.
 A context with `basis: "measured_contrast_v1"` preserves the image model's

@@ -126,6 +126,7 @@ impl Controller {
         let mut plan = Plan::new(live, key, format!("{boot}:{}:{request}", actor.client))?;
         plan.observer_model = view.observer_model.clone();
         plan.selection = selection;
+        plan.metadata = activity::metadata::Binding::capture(&live.runtime)?;
         plan.check(live, 0)?;
         if plan.binding() != binding.target {
             return Err("Application binding changed".into());

@@ -7,6 +7,7 @@ use crate::{
     visual::{self, FrameRef},
 };
 use serde::{Deserialize, Serialize};
+pub mod metadata;
 pub mod selection;
 
 pub const STEPS: usize = 10;
@@ -16,6 +17,8 @@ pub const LIMITATION: &str = "Four repetitions of a previously sampled key, sepa
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Review {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata_handoff_sha256: Option<String>,
     pub experiment: String,
     pub job: u64,
     pub frame_ids: Vec<String>,
@@ -122,6 +125,8 @@ pub struct Plan {
     pub observer_model: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selection: Option<selection::Suggestion>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<metadata::Binding>,
 }
 impl Plan {
     pub fn new(live: &LiveView, key: u8, request: String) -> Result<Self> {
@@ -137,6 +142,7 @@ impl Plan {
             request,
             observer_model: None,
             selection: None,
+            metadata: None,
         };
         plan.check(live, 0)?;
         if live.sample_count + STEPS > crate::live::MAX_SAMPLES
