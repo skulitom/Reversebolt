@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Browser activity eligibility replay (2026-10-22): **35% unchanged**.
+The unchanged product replayed all 64 original images from four retained 2048
+and Tetris runs. Of 60 intervals, 54 first failed on mixed controls, two exceeded
+the timing bound and four had a single key. None had quiet-bracketed episodes,
+so no regional source was selected and no regional matching was attempted.
+All image measurements succeeded. This identifies a sampling/input separation
+limit, not a negative regional-match result or absence of gameplay activity.
+
+All 242 frozen files passed audit; base evidence remained identical. No model,
+new capture, input or native target operation ran. These are exposed development
+recordings. Source inspection found that the automatic faster Play phase is
+currently limited to supported runtimes; other targets use full observations.
+The old recordings do not measure current Play cadence. Production source was
+unchanged; no test-suite rerun or capability credit is claimed. Desktop checking
+still reports the quarantined executable unavailable; review materials stay local.
+[Protocol, results and next experiment](../research/browser-activity-replay/README.md).
+
 Small local activity enters discovery (2026-10-22): **35% unchanged**.
 Discovery previously rejected small subject motion before regional measurement.
 When whole-image selection finds no source, the shared reader now checks at most

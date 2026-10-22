@@ -1,0 +1,415 @@
+{
+  "product_commit": "24f5e89",
+  "cases": [
+    {
+      "name": "2048-1",
+      "frames": 16,
+      "exposures": {
+        "unknown": 15
+      },
+      "unknown_reasons": {
+        "Several controls sampled; individual effects are ambiguous": 14,
+        "Invalid, overlapping or widely separated capture timing": 1
+      },
+      "interval_spans_us": [
+        3008073,
+        3436781,
+        3670830,
+        3983114,
+        4341079,
+        3522571,
+        3668268,
+        3403426,
+        3774246,
+        3423909,
+        3420478,
+        3574985,
+        3565323,
+        3914421,
+        3921622
+      ],
+      "elapsed_bounds_us": [
+        [
+          2577432,
+          3008073
+        ],
+        [
+          3042543,
+          3436781
+        ],
+        [
+          3161974,
+          3670830
+        ],
+        [
+          3311894,
+          3983114
+        ],
+        [
+          3726570,
+          4341079
+        ],
+        [
+          3074844,
+          3522571
+        ],
+        [
+          3280707,
+          3668268
+        ],
+        [
+          3012990,
+          3403426
+        ],
+        [
+          3328933,
+          3774246
+        ],
+        [
+          2986210,
+          3423909
+        ],
+        [
+          3032925,
+          3420478
+        ],
+        [
+          3193017,
+          3574985
+        ],
+        [
+          3178370,
+          3565323
+        ],
+        [
+          3520336,
+          3914421
+        ],
+        [
+          3530230,
+          3921622
+        ]
+      ],
+      "image_measurement_errors": [],
+      "difference_range": [
+        1.6094149470416361,
+        6.573285701241782
+      ],
+      "bounded_key_episodes": 0,
+      "activity_source": null,
+      "regional_attempts": 0,
+      "base_evidence_unchanged": true,
+      "new_model_calls": 0,
+      "visual_track_count": 0,
+      "result_sha256": "0756d8608c56639b247875a51370fca3ada3553c35e98ce1711e3fb85e01a059"
+    },
+    {
+      "name": "tetris-1",
+      "frames": 16,
+      "exposures": {
+        "key": 2,
+        "unknown": 13
+      },
+      "unknown_reasons": {
+        "Several controls sampled; individual effects are ambiguous": 13
+      },
+      "interval_spans_us": [
+        2986641,
+        3205657,
+        3189185,
+        3228134,
+        3176779,
+        3223646,
+        3140787,
+        3182437,
+        3211944,
+        3221762,
+        3237948,
+        3376563,
+        3370918,
+        3359538,
+        3433796
+      ],
+      "elapsed_bounds_us": [
+        [
+          2459932,
+          2986641
+        ],
+        [
+          2812510,
+          3205657
+        ],
+        [
+          2786958,
+          3189185
+        ],
+        [
+          2837238,
+          3228134
+        ],
+        [
+          2774993,
+          3176779
+        ],
+        [
+          2826234,
+          3223646
+        ],
+        [
+          2758160,
+          3140787
+        ],
+        [
+          2774793,
+          3182437
+        ],
+        [
+          2783478,
+          3211944
+        ],
+        [
+          2807398,
+          3221762
+        ],
+        [
+          2800720,
+          3237948
+        ],
+        [
+          2941550,
+          3376563
+        ],
+        [
+          2930885,
+          3370918
+        ],
+        [
+          2891652,
+          3359538
+        ],
+        [
+          2989203,
+          3433796
+        ]
+      ],
+      "image_measurement_errors": [],
+      "difference_range": [
+        0.6241325785244705,
+        2.275474799123448
+      ],
+      "bounded_key_episodes": 0,
+      "activity_source": null,
+      "regional_attempts": 0,
+      "base_evidence_unchanged": true,
+      "new_model_calls": 0,
+      "visual_track_count": 0,
+      "result_sha256": "8421579d74de6ab668e8286ea78d3d5f1e410a64bb1014314b115f6ffacc38c7"
+    },
+    {
+      "name": "2048-2",
+      "frames": 16,
+      "exposures": {
+        "unknown": 15
+      },
+      "unknown_reasons": {
+        "Several controls sampled; individual effects are ambiguous": 14,
+        "Invalid, overlapping or widely separated capture timing": 1
+      },
+      "interval_spans_us": [
+        2828482,
+        3405328,
+        3482628,
+        3490099,
+        3384911,
+        3450991,
+        3778291,
+        3430730,
+        3778428,
+        3452339,
+        3427768,
+        3892738,
+        3899149,
+        3998109,
+        4383975
+      ],
+      "elapsed_bounds_us": [
+        [
+          2396783,
+          2828482
+        ],
+        [
+          3020898,
+          3405328
+        ],
+        [
+          3073682,
+          3482628
+        ],
+        [
+          3052930,
+          3490099
+        ],
+        [
+          2968217,
+          3384911
+        ],
+        [
+          3056858,
+          3450991
+        ],
+        [
+          3375674,
+          3778291
+        ],
+        [
+          3020939,
+          3430730
+        ],
+        [
+          3380413,
+          3778428
+        ],
+        [
+          3057876,
+          3452339
+        ],
+        [
+          3029519,
+          3427768
+        ],
+        [
+          3496667,
+          3892738
+        ],
+        [
+          3500133,
+          3899149
+        ],
+        [
+          3601452,
+          3998109
+        ],
+        [
+          3967907,
+          4383975
+        ]
+      ],
+      "image_measurement_errors": [],
+      "difference_range": [
+        1.1031033144631117,
+        6.250856008035062
+      ],
+      "bounded_key_episodes": 0,
+      "activity_source": null,
+      "regional_attempts": 0,
+      "base_evidence_unchanged": true,
+      "new_model_calls": 0,
+      "visual_track_count": 0,
+      "result_sha256": "75dd2566671b377c9530e18f73c8c131712b814587a6aeee14b4d05ed5ec8d08"
+    },
+    {
+      "name": "tetris-2",
+      "frames": 16,
+      "exposures": {
+        "key": 2,
+        "unknown": 13
+      },
+      "unknown_reasons": {
+        "Several controls sampled; individual effects are ambiguous": 13
+      },
+      "interval_spans_us": [
+        2975782,
+        3190712,
+        3174085,
+        3221697,
+        3268252,
+        3163300,
+        3148643,
+        3170997,
+        3199834,
+        3265367,
+        3165605,
+        3342213,
+        3321915,
+        3290008,
+        3276786
+      ],
+      "elapsed_bounds_us": [
+        [
+          2493202,
+          2975782
+        ],
+        [
+          2748504,
+          3190712
+        ],
+        [
+          2777258,
+          3174085
+        ],
+        [
+          2822850,
+          3221697
+        ],
+        [
+          2851649,
+          3268252
+        ],
+        [
+          2759991,
+          3163300
+        ],
+        [
+          2766807,
+          3148643
+        ],
+        [
+          2778280,
+          3170997
+        ],
+        [
+          2734447,
+          3199834
+        ],
+        [
+          2811564,
+          3265367
+        ],
+        [
+          2780298,
+          3165605
+        ],
+        [
+          2936988,
+          3342213
+        ],
+        [
+          2888350,
+          3321915
+        ],
+        [
+          2884843,
+          3290008
+        ],
+        [
+          2894985,
+          3276786
+        ]
+      ],
+      "image_measurement_errors": [],
+      "difference_range": [
+        0.42026570489408327,
+        2.1767028853177504
+      ],
+      "bounded_key_episodes": 0,
+      "activity_source": null,
+      "regional_attempts": 0,
+      "base_evidence_unchanged": true,
+      "new_model_calls": 0,
+      "visual_track_count": 0,
+      "result_sha256": "dca78c0337ac7bfd398d99a42c6c1f624d477becc70155e2553c2fa6b876c17d"
+    }
+  ],
+  "frozen_file_count": 242,
+  "changed": []
+}
