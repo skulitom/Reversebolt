@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Runtime appearance integration (2026-10-22): **35% unchanged**.
+Automatic runtime discovery now starts one existing background image-observation
+pass after capture 2, and settles it before runtime inspection/naming archives
+play evidence. This supplies original regions to the recently added appearance
+sequence reader. Missing preparation images and late resize produce durable
+unavailable evidence without cancelling independent metadata work; target/owner,
+cancellation and storage protections remain.
+
+All 82 app tests and strict app Clippy pass. Two frozen, file-only replays of the
+saved Hyperbolica and Manifold Garden runs made 11 completed local image-model
+calls, publishing four and five provisional appearances. One selected region per
+case yielded six accepted steps, including opposing x displacements alongside
+sampled D/A inputs. Other selected regions stopped unresolved. Base play evidence
+and all 36 inputs remained unchanged. Accuracy, gameplay meaning and causal
+control are unknown; these are exposed cases, not new native game evidence.
+No game, new capture, input or field write ran. Desktop publication remains
+unavailable after quarantine. [Method and results](../research/runtime-appearances/README.md).
+
 Direct control consistency (2026-10-22): **35% unchanged**.
 Expanded placeholder filtering excludes labels such as “Not yet identified” and
 “Health (unidentified)” from cards and add-controls results, plus additional

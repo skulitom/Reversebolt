@@ -212,7 +212,7 @@ pub struct Completed {
 impl Completed {
     pub fn publish(self, session: &mut LiveSession, cancel: &AtomicBool) -> Result<Value> {
         let cancelled = self.pass.cancelled || cancel.load(Ordering::SeqCst);
-        let warning = if cancelled { None } else { self.pass.error };
+        let mut warning = if cancelled { None } else { self.pass.error };
         let count = if cancelled {
             0
         } else {
@@ -225,6 +225,13 @@ impl Completed {
                 return Err(
                     "Local observation belongs to a replaced investigation or memory batch.".into(),
                 );
+            }
+            if session.view.frames.last().map(|f| f.epoch)
+                != self.prepared.sequence.frames.last().map(|f| f.epoch)
+            {
+                // A resize invalidates this optional appearance evidence, not
+                // the job's independent metadata discovery. Never rebind it.
+                warning = Some("The image geometry changed before review finished; no appearance was published.".into());
             }
             if warning.is_some() {
                 // The immutable failure receipt has already been saved. A model
@@ -470,6 +477,177 @@ mod tests {
     }
 
     #[test]
+    fn runtime_step_settles_early_appearance_and_archives_its_followups() {
+        use crate::{observation_pipeline::Pipeline, service::OperationOwner};
+        use reversebolt_core::engine::{Engine, View};
+        use std::sync::RwLock;
+        let (mut session, directory, _) = session();
+        let owner = OperationOwner {
+            job: 21,
+            cancel: Arc::new(AtomicBool::new(false)),
+        };
+        let (started_tx, started_rx) = mpsc::channel();
+        let (release_tx, release_rx) = mpsc::channel();
+        let worker = Worker::start_with(
+            Prepared::from_session(&session).unwrap(),
+            "fixture".into(),
+            owner.job,
+            owner.cancel.clone(),
+            directory.clone(),
+            move |_, frames, _, pass| {
+                started_tx.send(()).unwrap();
+                release_rx.recv().unwrap();
+                successful_pass(frames, pass);
+                // An eligible 39x39 source rectangle in this 128x96 fixture.
+                pass.proposal
+                    .as_mut()
+                    .unwrap()
+                    .interpretation
+                    .as_mut()
+                    .unwrap()
+                    .entities[0]
+                    .localizations[0]
+                    .bounds = [100., 200., 400., 600.];
+                Ok(())
+            },
+        )
+        .unwrap();
+        started_rx.recv_timeout(Duration::from_secs(2)).unwrap();
+        for _ in 2..15 {
+            session
+                .capture_mode(reversebolt_core::live::CaptureMode::Play)
+                .unwrap();
+        }
+        assert!(session.view.visual_tracks.is_empty());
+        let source = session.view.frames[1].clone();
+        let mut engine = Engine::load(directory.join("session.json")).unwrap();
+        engine.view.analysis = Some(worker.status.clone());
+        engine.live = Some(session);
+        let published = Arc::new(RwLock::new(View::default()));
+        let mut pipeline = Pipeline::test_active(worker);
+        let task_ref = crate::runtime_bridge::store_task(
+            &directory.join("runtime"),
+            &reversebolt_core::runtime::Task::Discover,
+        )
+        .unwrap();
+        let command = reversebolt_core::Command {
+            action: "inspect_runtime".into(),
+            args: json!({"task_ref":task_ref}),
+            source: "fixture".into(),
+        };
+        release_tx.send(()).unwrap();
+        let result = crate::service::native_command(
+            &mut engine,
+            &command,
+            &directory.join("captures"),
+            Some(&owner),
+            &mut pipeline,
+            &published,
+            &mut crate::runtime_test_bridge::Session::new(Arc::new(AtomicBool::new(false))),
+        );
+        // This fixture has no runtime: the real command must settle visual
+        // publication BEFORE reaching that native-inspection precondition.
+        assert!(result.unwrap_err().contains("No supported runtime"));
+        assert!(!pipeline.busy());
+        assert!(engine.view.analysis.is_none());
+        assert!(!owner.cancel.load(Ordering::SeqCst));
+        let session = engine.live.as_ref().unwrap();
+        assert_eq!(session.view.visual_tracks.len(), 1);
+        let observation = session.view.visual_tracks[0].observations[1]
+            .as_ref()
+            .unwrap();
+        assert_eq!(observation.input.frame_id, source.id);
+        assert_eq!(observation.input.image_sha256, source.sha256);
+        assert!(
+            session.view.visual_tracks[0].observations[2..]
+                .iter()
+                .all(Option::is_none)
+        );
+        assert!(
+            crate::runtime_naming_bridge::prepare_activity(session, &directory)
+                .unwrap()
+                .is_none()
+        );
+        let archive: Value =
+            serde_json::from_slice(&std::fs::read(directory.join("play-source.json")).unwrap())
+                .unwrap();
+        let evidence = &archive["evidence"]["automatic_region_motion"];
+        assert_eq!(
+            evidence["selection"]["regions"].as_array().unwrap().len(),
+            1
+        );
+        assert_eq!(evidence["measurements"].as_array().unwrap().len(), 1);
+        assert_eq!(
+            evidence["appearance_sequences"]["report"]["attempted_pairs"],
+            1
+        );
+        assert_eq!(
+            evidence["appearance_sequences"]["report"]["series"][0]["steps"][0]["before_id"],
+            source.id
+        );
+    }
+
+    #[test]
+    fn unavailable_image_pair_is_archived_without_starting_or_cancelling_a_worker() {
+        use crate::{observation_pipeline::Pipeline, service::OperationOwner};
+        use reversebolt_core::engine::{Engine, View};
+        use std::sync::RwLock;
+        let (mut session, directory, _) = session();
+        session.view.frames[1].capture_interval = None;
+        let mut engine = Engine::load(directory.join("session.json")).unwrap();
+        engine.live = Some(session);
+        let published = Arc::new(RwLock::new(View::default()));
+        let owner = OperationOwner {
+            job: 22,
+            cancel: Arc::new(AtomicBool::new(false)),
+        };
+        let mut pipeline = Pipeline::default();
+        let result = pipeline
+            .start(
+                &mut engine,
+                "no-model-is-contacted",
+                &owner,
+                &directory,
+                &published,
+            )
+            .unwrap();
+        assert_eq!(result["started"], false);
+        assert_eq!(result["recorded"], 0);
+        assert!(!pipeline.busy());
+        assert!(!owner.cancel.load(Ordering::SeqCst));
+        assert!(engine.view.error.is_none());
+        assert_eq!(
+            pipeline.drain(&mut engine, &owner, &published).unwrap(),
+            result
+        );
+        let id = result["evidence_id"].as_str().unwrap();
+        let receipt: Value = serde_json::from_slice(
+            &std::fs::read(
+                directory
+                    .join("model-observations")
+                    .join(format!("{id}.json")),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(receipt["kind"], "preparation_unavailable");
+        assert_eq!(receipt["model_calls"], 0);
+        assert_eq!(receipt["proposed_observations"], json!([]));
+        assert_eq!(receipt["frames"].as_array().unwrap().len(), 2);
+        assert_eq!(
+            published
+                .read()
+                .unwrap()
+                .live
+                .as_ref()
+                .unwrap()
+                .local_observation_warnings[0]
+                .evidence_id,
+            id
+        );
+    }
+
+    #[test]
     fn late_review_cannot_publish_after_stop_replacement_or_resize() {
         for failure in ["cancel", "scope", "geometry"] {
             let (mut session, directory, size) = session();
@@ -498,6 +676,15 @@ mod tests {
             let result = completed.publish(&mut session, &cancel);
             if failure == "cancel" {
                 assert_eq!(result.unwrap()["recorded"], 0);
+            } else if failure == "geometry" {
+                let result = result.unwrap();
+                assert_eq!(result["recorded"], 0);
+                assert!(
+                    result["warning"]
+                        .as_str()
+                        .unwrap()
+                        .contains("geometry changed")
+                );
             } else {
                 assert!(result.is_err());
             }

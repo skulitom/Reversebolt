@@ -420,7 +420,7 @@ fn review_inner(
     )
 }
 
-fn prepare_activity(
+pub(crate) fn prepare_activity(
     session: &reversebolt_core::live::LiveSession,
     directory: &Path,
 ) -> Result<Option<reversebolt_observer::runtime_activity::Input>> {

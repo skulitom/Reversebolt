@@ -28,6 +28,12 @@ input without OCR or memory reads. Supported-runtime automatic attach collects
 fifteen such moments before discovery. `start_runtime_job` can request the same
 initial sequence with `observe_play: true` for one discovery operation. Delays
 are after completion; capture slots and stop/pause rules still apply.
+With `observe_play: true` and a pinned `local_model`, capture 2 starts one background
+appearance observation pass. The remaining captures continue; runtime inspection
+waits for that same job's worker before archiving play evidence. There is no second
+visual pass. Missing input images, model rejection and obsolete image geometry
+produce unavailable-evidence notices; storage failures and replaced scope still
+fail. Appearance observations remain provisional and supply no write authority.
 
 `read_play_evidence` takes the exact `investigation_id`, `batch` and 2–20 ordered
 `frame_ids`. It reads retained, hash-checked images and input metadata, returning
@@ -489,7 +495,7 @@ the job does not silently adapt after another selection changes its catalogue.
 Discovery also accepts optional `local_model` (an installed model name, at most
 128 characters). Automatic attachment uses the configured observer model.
 The setting is pinned into the immutable task document; refresh jobs reject it.
-Raw cards publish first, then up to two local calls retain provisional metadata
+Raw cards publish first, then a bounded local review retains provisional metadata
 questions in `state.live.runtime.naming`. Its status is `pending`, `complete`,
 `unavailable`, `cancelled` or `failed`, with a report hash, evidence ID, optional
 batch and error. Accepted hypotheses contain exact candidate paths, quotations,

@@ -9,10 +9,39 @@ use reversebolt_core::{
 };
 use serde_json::{Value, json};
 use std::{
+    io::Write,
     path::Path,
     sync::{Arc, RwLock, atomic::Ordering},
     time::Duration,
 };
+
+fn record_warning(
+    engine: &mut Engine,
+    evidence_id: &str,
+    job: u64,
+    frame_ids: Vec<String>,
+    message: &str,
+) {
+    let notices = &mut engine
+        .live
+        .as_mut()
+        .unwrap()
+        .view
+        .local_observation_warnings;
+    if notices.len() >= 32 {
+        notices.remove(0);
+    }
+    notices.push(reversebolt_core::live::LocalObservationWarning {
+        evidence_id: evidence_id.into(),
+        job,
+        frame_ids,
+        message: message.into(),
+    });
+    engine.event(
+        "local-model",
+        format!("Local review {evidence_id} unavailable: {message} Other observation continues."),
+    );
+}
 
 #[derive(Default)]
 pub struct Pipeline {
@@ -74,12 +103,40 @@ impl Pipeline {
         if self.active.is_some() {
             return Err("Local observation already has an active worker.".into());
         }
-        let prepared = Prepared::from_session(
-            engine
-                .live
-                .as_ref()
-                .ok_or("Connect an application first.")?,
-        )?;
+        let session = engine
+            .live
+            .as_ref()
+            .ok_or("Connect an application first.")?;
+        let prepared = match Prepared::from_session(session) {
+            Ok(prepared) => prepared,
+            Err(error) => {
+                // Missing/changed images cannot supply an optional model input.
+                // Archive the attempt before continuing the other discovery work.
+                let id = uuid::Uuid::new_v4().to_string();
+                let frames: Vec<_> = session.view.frames.iter().rev().take(2).rev().collect();
+                let frame_ids = frames.iter().map(|f| f.id.clone()).collect();
+                let evidence = json!({"schema_version":1,"kind":"preparation_unavailable",
+                    "id":id,"job":owner.job,"model":model,"investigation_id":session.view.investigation_id,
+                    "batch":session.view.coverage.batch,"process":session.view.process,
+                    "frames":frames,"error":error,"model_calls":0,"proposed_observations":[]});
+                let folder = directory.join("model-observations");
+                std::fs::create_dir_all(&folder).map_err(|e| e.to_string())?;
+                let mut file = std::fs::OpenOptions::new()
+                    .create_new(true)
+                    .write(true)
+                    .open(folder.join(format!("{id}.json")))
+                    .map_err(|e| e.to_string())?;
+                file.write_all(&serde_json::to_vec_pretty(&evidence).map_err(|e| e.to_string())?)
+                    .and_then(|()| file.sync_all())
+                    .map_err(|e| e.to_string())?;
+                let result = json!({"evidence_id":id,"started":false,"recorded":0,
+                    "cancelled":false,"warning":error});
+                record_warning(engine, &id, owner.job, frame_ids, &error);
+                checkpoint(engine, published)?;
+                self.last = Some((owner.job, result.clone()));
+                return Ok(result);
+            }
+        };
         let worker = Worker::start(
             prepared,
             model.into(),
@@ -138,27 +195,12 @@ impl Pipeline {
                 if let Some(warning) = value["warning"].as_str() {
                     // Publish and persist the notice in the same serialized engine
                     // checkpoint as the result. This does not cancel the job.
-                    let notices = &mut engine
-                        .live
-                        .as_mut()
-                        .unwrap()
-                        .view
-                        .local_observation_warnings;
-                    if notices.len() >= 32 {
-                        notices.remove(0);
-                    }
-                    notices.push(reversebolt_core::live::LocalObservationWarning {
-                        evidence_id: worker.status.evidence_id.clone(),
-                        job: worker.status.job,
-                        frame_ids: worker.status.frame_ids.clone(),
-                        message: warning.into(),
-                    });
-                    engine.event(
-                        "local-model",
-                        format!(
-                            "Local review {} unavailable: {warning} Other observation continues.",
-                            worker.status.evidence_id
-                        ),
+                    record_warning(
+                        engine,
+                        &worker.status.evidence_id,
+                        worker.status.job,
+                        worker.status.frame_ids.clone(),
+                        warning,
                     );
                 } else {
                     engine.event(

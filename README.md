@@ -133,6 +133,12 @@ Bounded appearance sequences keep the original template fixed, retain signed
 movement with capture/input context, and stop on uncertainty or missing images.
 They do not reacquire an appearance after a failure or create verified controls.
 See [sequence evidence and limits](research/appearance-sequence/README.md).
+With a configured local model, runtime discovery now starts one background
+appearance pass after its second play capture, then settles that pass before
+assembling runtime evidence. Missing images, rejected model responses and obsolete
+geometry are retained as unavailable visual evidence. Metadata discovery remains
+independent of whether any appearance is found. See [integration and saved-game
+replays](research/runtime-appearances/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

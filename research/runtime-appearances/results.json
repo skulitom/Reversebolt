@@ -1,0 +1,128 @@
+{
+  "source_manifest_sha256": "3905054fcb6c08f6e64317c5ac4d5fff918ff167b8a058e95380fc8f72397252",
+  "inputs_manifest_sha256": "47f823ca5095ef75d7ca9b530eeeca1d961b975e90f880eaef18c3c55d9b2dd4",
+  "source_files": 149,
+  "input_files": 36,
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "result_sha256": "20031ab245315f28e1d617dfa86b6b135e8e00c404e72bb16efd30b3127ceb15",
+      "publication": {
+        "cancelled": false,
+        "evidence_id": "1b1a0f3d-d4f4-41aa-b9e0-61ccea4bf0f8",
+        "observed_frame": "a9834c3c-0511-4526-8b0f-77380f0be09e",
+        "provisional": true,
+        "recorded": 4,
+        "warning": null
+      },
+      "completed_model_receipts": 5,
+      "labels": [
+        "Turquoise robot figure",
+        "Desk and chair",
+        "Tree",
+        "Foreground red conical plants and rock"
+      ],
+      "regions": 4,
+      "omitted": {},
+      "attempted_pairs": 9,
+      "series": [
+        {
+          "accepted_steps": 6,
+          "stop": "step_limit",
+          "statuses": [
+            "matched",
+            "matched",
+            "matched",
+            "matched",
+            "matched",
+            "matched"
+          ]
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "poor_match"
+          ]
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "poor_match"
+          ]
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "ambiguous"
+          ]
+        }
+      ],
+      "base_evidence_unchanged": true,
+      "accuracy": "unknown"
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "result_sha256": "ba947a28fa03277a4021053aca9a9c6d18f1ce15acb2e6e4ebadc26ce7c2deb5",
+      "publication": {
+        "cancelled": false,
+        "evidence_id": "2268e4fb-80a6-4de9-9924-a12994312b02",
+        "observed_frame": "05adc5eb-51d1-4447-8b92-691a09964f9f",
+        "provisional": true,
+        "recorded": 5,
+        "warning": null
+      },
+      "completed_model_receipts": 6,
+      "labels": [
+        "Grid-patterned platform surface",
+        "Floor platform",
+        "White dot on staircase",
+        "Ceiling panel",
+        "Ceiling panels"
+      ],
+      "regions": 4,
+      "omitted": {},
+      "attempted_pairs": 9,
+      "series": [
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "poor_match"
+          ]
+        },
+        {
+          "accepted_steps": 6,
+          "stop": "step_limit",
+          "statuses": [
+            "matched",
+            "matched",
+            "matched",
+            "matched",
+            "matched",
+            "matched"
+          ]
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "ambiguous"
+          ]
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "statuses": [
+            "unsupported_size"
+          ]
+        }
+      ],
+      "base_evidence_unchanged": true,
+      "accuracy": "unknown"
+    }
+  ],
+  "limitation": "Previously exposed saved images; no new native game evidence or verified control."
+}

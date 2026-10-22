@@ -324,7 +324,7 @@ impl EngineHandle {
     }
 }
 
-fn native_command(
+pub(crate) fn native_command(
     engine: &mut Engine,
     command: &Command,
     directory: &std::path::Path,
@@ -436,10 +436,18 @@ fn native_command(
             );
         }
         "inspect_runtime" => {
+            // The early image worker owns immutable captures from this same
+            // job. Settle it before runtime naming archives their follow-ups.
+            let owner = owner.ok_or("Runtime inspection must belong to a managed job.")?;
+            analysis.check(owner)?;
+            analysis.drain(engine, owner, published)?;
+            if owner.cancel.load(Ordering::SeqCst) {
+                return Ok(json!({"runtime":{"cancelled":true}}));
+            }
             return crate::runtime_bridge::command(
                 engine,
                 command,
-                owner,
+                Some(owner),
                 &directory.parent().unwrap_or(directory).join("runtime"),
                 published,
             );

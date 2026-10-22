@@ -1128,8 +1128,10 @@ impl Controller {
                             compare: false,
                             remaining: 0,
                             mode: reversebolt_core::live::CaptureMode::Play,
-                            local_model: None,
-                            background_model: false,
+                            // One early appearance pass leaves later captures
+                            // available for correspondence, without pausing play.
+                            local_model: (index == 1).then(|| local_model.clone()).flatten(),
+                            background_model: index == 1 && local_model.is_some(),
                             change: None,
                         })
                         .map_err(|e| e.to_string())?,
@@ -2182,6 +2184,18 @@ mod tests {
         let response = c.start_automatic_observation("agent".into()).unwrap();
         let id = response["ack"]["job"].as_u64().unwrap();
         let snapshot = c.jobs.snapshot();
+        let steps = &snapshot.jobs[&id].steps;
+        assert_eq!(steps.len(), 16);
+        for (index, raw) in steps[..15].iter().enumerate() {
+            let step: CaptureStep = serde_json::from_str(&raw.payload).unwrap();
+            assert_eq!(step.mode, reversebolt_core::live::CaptureMode::Play);
+            assert_eq!(
+                step.local_model.as_deref(),
+                (index == 1).then_some("local-model")
+            );
+            assert_eq!(step.background_model, index == 1);
+            assert!(step.runtime.is_none());
+        }
         let step: CaptureStep =
             serde_json::from_str(&snapshot.jobs[&id].steps.last().unwrap().payload).unwrap();
         assert!(step.local_model.is_none());
