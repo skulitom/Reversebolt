@@ -1,0 +1,252 @@
+{
+  "method": "memory_order_trajectories_v2",
+  "goal_percent": 35,
+  "scope": "Generated memory arrays only. Background seeds change while planted layouts and sequences stay fixed. No game, native target, model, production app or upload.",
+  "base_commit": "52925af662a1fcf9b72448ba8f7cf4afb8bbecd9",
+  "workspace_test_executions": 417,
+  "targeted_tests_after_cleanup": 8,
+  "strict_clippy": "passed after fixture chunk-iteration cleanup",
+  "formatting": "passed",
+  "verified": {
+    "screen_labels_not_used": true,
+    "future_bytes_do_not_change_prefix_selection": true,
+    "final_mapping_flags_do_not_change_selection": true,
+    "chunk_order_independent": true,
+    "missing_reads_not_zero_filled": true,
+    "missing_values_do_not_bridge_monotonicity_checks": true,
+    "competing_numeric_types_preserved": true,
+    "omissions_reported": true,
+    "corruption_in_excluded_chunk_rejects_report": true,
+    "short_static_recordings_do_not_invent_candidates": true,
+    "editing_authority": false,
+    "desktop_or_new_mcp_discovery_integration": false
+  },
+  "policy_comparison": {
+    "manifest_sha256": "3e709f86683a9c191cb939798d98de4472c234a6a30ea1502087bda4a09e248d",
+    "initial": {
+      "policy": "memory_order_trajectories_v1",
+      "retained_members": 1014,
+      "assessments": {
+        "contradicted": 9,
+        "consistent": 2,
+        "not_predicted": 1003
+      },
+      "planted_f32_retained": false
+    },
+    "revised": {
+      "policy": "memory_order_trajectories_v2",
+      "retained_members": 523,
+      "assessments": {
+        "contradicted": 5,
+        "consistent": 3,
+        "not_predicted": 515
+      },
+      "planted_f32_retained": true
+    }
+  },
+  "planted_recovery": [
+    {
+      "offset": 0,
+      "kind": "I32",
+      "retained": 12,
+      "recordings": 12
+    },
+    {
+      "offset": 8,
+      "kind": "F32",
+      "retained": 12,
+      "recordings": 12
+    },
+    {
+      "offset": 16,
+      "kind": "F64",
+      "retained": 12,
+      "recordings": 12
+    },
+    {
+      "offset": 24,
+      "kind": "I32",
+      "retained": 12,
+      "recordings": 12
+    },
+    {
+      "offset": 32,
+      "kind": "I32",
+      "retained": 0,
+      "recordings": 12
+    },
+    {
+      "offset": 40,
+      "kind": "I32",
+      "retained": 12,
+      "recordings": 12
+    }
+  ],
+  "analysis_time_ms_range": [
+    7,
+    11
+  ],
+  "retained_members_range": [
+    518,
+    526
+  ],
+  "not_predicted_members_range": [
+    510,
+    517
+  ],
+  "consistent_members_per_seed": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "checks": [
+    {
+      "path": "test-results/memory-trajectories-check-first.log",
+      "sha256": "efde5e5d9be143c6d58c987537598898691dd73940ca12a3760a54e2a7c36e8f"
+    },
+    {
+      "path": "test-results/memory-trajectories-clippy-final.log",
+      "sha256": "8627f84763df78d311dfc85c6d5f53ef89e9e84aa77e037a89d8612fe7a045bc"
+    },
+    {
+      "path": "test-results/memory-trajectories-clippy-first.log",
+      "sha256": "76eed18d31ca6c0ef85d3ce993fde2cd65bc5e1064d5e9d0da9542e371736757"
+    },
+    {
+      "path": "test-results/memory-trajectories-example-build-v2.log",
+      "sha256": "903479b2602e78a069c102a443e8e881dd209f6eceb5ee7a73bcc4a26692c01f"
+    },
+    {
+      "path": "test-results/memory-trajectories-example-build.log",
+      "sha256": "e950b208f6f80a7d2e4078b97cf8122768200e59df4bdd64feb387db23354c42"
+    },
+    {
+      "path": "test-results/memory-trajectories-format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-trajectories-format-post-cleanup.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-trajectories-noise-report-v2.json",
+      "sha256": "49112d9a59b57be374c1369ff920a61d095559e711b63385ac19ce5a6bbca0b2"
+    },
+    {
+      "path": "test-results/memory-trajectories-noise-report.json",
+      "sha256": "d9d6322a8788f6a4dfeb6af63bde921246d45a0c275b543337a2cba47ed29006"
+    },
+    {
+      "path": "test-results/memory-trajectories-preview-check.json",
+      "sha256": "7c357e0398be81f8c9ee7c940925c5cc68bc6aa22e5798bbc4a8e21e64c6bc9d"
+    },
+    {
+      "path": "test-results/memory-trajectories-targeted-final.log",
+      "sha256": "bc120ca7a42e88559b285a80d2f0ceb199c30909977890bc182bfbb93fe37af8"
+    },
+    {
+      "path": "test-results/memory-trajectories-targeted-first.log",
+      "sha256": "80712b19681ba0ea5a674553f29d6d4201c73e74b133068f035a441e9ab39a41"
+    },
+    {
+      "path": "test-results/memory-trajectories-targeted-post-cleanup.log",
+      "sha256": "1ecea7ad948029cc982cf6eddb23a0106fd63b3ca61efde8d51508af40202580"
+    },
+    {
+      "path": "test-results/memory-trajectories-targeted-v2.log",
+      "sha256": "5175103e5be8e032168be1e71e2b56782964429e1f6c92589b49e9c1517b780e"
+    },
+    {
+      "path": "test-results/memory-trajectories-workspace-first.log",
+      "sha256": "dcdc86facd7b5ffbad335bdb5f1193e12d69dc6d94a7ad796f3827e91cdc0345"
+    }
+  ],
+  "frozen_directory": "test-results/memory-trajectories-v2",
+  "frozen_files": 258,
+  "manifest_sha256": "edda0f3ab875d9a0d4c639ba96246fab3c82721e28b2f815c1f7778d86c59415",
+  "frozen_fixtures": {
+    "seed-01": {
+      "manifest_sha256": "60b94529db03528daf78846b7629a3c5a721d65ab72a2ede9a996ba1dfe8052b",
+      "payload_bytes": 1572864
+    },
+    "seed-02": {
+      "manifest_sha256": "1a889c123fb994bd3c6c9584d0fd934b26b4cc6e1f16be329e5a89ebe3cd41c9",
+      "payload_bytes": 1572864
+    },
+    "seed-03": {
+      "manifest_sha256": "39380b48d3b02d3887e7525e4b1f806a719e47f777cdf3ee2ab7ef30739d08dd",
+      "payload_bytes": 1572864
+    },
+    "seed-04": {
+      "manifest_sha256": "6280f29898c74609d414446eada232315654ca5ad4f334054833f07c9a0b4563",
+      "payload_bytes": 1572864
+    },
+    "seed-05": {
+      "manifest_sha256": "68312cda298595f8a502ae4c3769123e0f071ff094ddd568d43e8e17a6775ad6",
+      "payload_bytes": 1572864
+    },
+    "seed-06": {
+      "manifest_sha256": "40f000ca1425b900f3546f95e6727b11228624b2e3f569e7c339d1f95530c73c",
+      "payload_bytes": 1572864
+    },
+    "seed-07": {
+      "manifest_sha256": "f255df739ea8b4c8e8b7531fce62d06eb267efaeb2c81e75867234ef0af19a24",
+      "payload_bytes": 1572864
+    },
+    "seed-08": {
+      "manifest_sha256": "e8ece8c7c103dd4b64f900f62589a0a7cbca3d41366842b5fa50ff7360016307",
+      "payload_bytes": 1572864
+    },
+    "seed-09": {
+      "manifest_sha256": "876c763031ca136388ca486ca411100a3c06ca4437b72d593e2e68bb57556142",
+      "payload_bytes": 1572864
+    },
+    "seed-10": {
+      "manifest_sha256": "a81e98879eab0bc1d248fa4a340163892d97a00a24361168935e081a224046b1",
+      "payload_bytes": 1572864
+    },
+    "seed-11": {
+      "manifest_sha256": "b52590ce1fcd7e0eaf4c63df9dfdc56632dbe153e47cc12e788b0e27fb4b8170",
+      "payload_bytes": 1572864
+    },
+    "seed-12": {
+      "manifest_sha256": "f49d688693d307966cb04270beddee6dc2c90b2c45793a6476034244522aaa9a",
+      "payload_bytes": 1572864
+    },
+    "basic": {
+      "manifest_sha256": "57535357b5dd1042c0b7bedc6cff77f25fd4a4f37d32f7530a78de2a45c0bbe9",
+      "payload_bytes": 1572864
+    },
+    "policy-comparison": {
+      "manifest_sha256": "3e709f86683a9c191cb939798d98de4472c234a6a30ea1502087bda4a09e248d",
+      "payload_bytes": 1572864
+    }
+  },
+  "preceding_frozen_snapshot_changed": [],
+  "initial_policy_changed": [],
+  "changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "limitations": [
+    "Synthetic development data, not independent-game generalization.",
+    "Planted I32 counter omitted in all twelve backgrounds.",
+    "Most retained sequences have no forecast; consistency is not gameplay relevance or causality.",
+    "Addresses, numeric encodings and allocation continuity remain unverified.",
+    "No automatic live discovery, semantic naming or edit authority is introduced."
+  ]
+}

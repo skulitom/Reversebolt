@@ -1,0 +1,818 @@
+[
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49087,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32248,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32771,
+      "retained_members": 523,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 11,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\2a809c03-908d-4b09-8f92-0a17546b37f7\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "60b94529db03528daf78846b7629a3c5a721d65ab72a2ede9a996ba1dfe8052b",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 515,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 1
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49079,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32257,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32779,
+      "retained_members": 522,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\7bf3b215-c116-4372-8df6-b70c87836068\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "1a889c123fb994bd3c6c9584d0fd934b26b4cc6e1f16be329e5a89ebe3cd41c9",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 514,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 2
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49086,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32251,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32772,
+      "retained_members": 521,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 8,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\085a0a0e-e7ee-4281-9b59-1c61aa49f57e\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "39380b48d3b02d3887e7525e4b1f806a719e47f777cdf3ee2ab7ef30739d08dd",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 513,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 3
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49084,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32249,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32774,
+      "retained_members": 525,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 8,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\6a0eebb1-9098-4449-a0fe-8faaf8d2077e\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "6280f29898c74609d414446eada232315654ca5ad4f334054833f07c9a0b4563",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 517,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 4
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49079,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32256,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32779,
+      "retained_members": 523,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\b12cb7b6-9a78-44b4-af47-fff223188671\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "68312cda298595f8a502ae4c3769123e0f071ff094ddd568d43e8e17a6775ad6",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 515,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 5
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49082,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32251,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32776,
+      "retained_members": 525,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\25d5da1a-a86f-4447-860a-c0f62707c5c7\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "40f000ca1425b900f3546f95e6727b11228624b2e3f569e7c339d1f95530c73c",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 517,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 6
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49089,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32248,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32769,
+      "retained_members": 521,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\a1ed9e4d-1cdc-4865-9162-a9f1b85dba5c\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "f255df739ea8b4c8e8b7531fce62d06eb267efaeb2c81e75867234ef0af19a24",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 513,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 7
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49080,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32252,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32778,
+      "retained_members": 526,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\60f764ec-7e65-45b5-ba1c-5d9a03604724\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "e8ece8c7c103dd4b64f900f62589a0a7cbca3d41366842b5fa50ff7360016307",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 517,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 8
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49085,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32252,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32773,
+      "retained_members": 521,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\8a0dcbba-c07d-4154-a38d-0ac2bda8b753\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "876c763031ca136388ca486ca411100a3c06ca4437b72d593e2e68bb57556142",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 513,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 9
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49084,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32256,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32774,
+      "retained_members": 518,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\47316c0f-92a7-451b-9631-642d9c2a8892\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "a81e98879eab0bc1d248fa4a340163892d97a00a24361168935e081a224046b1",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 510,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 10
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49088,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32250,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32770,
+      "retained_members": 520,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 8,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\a24b45b9-1420-4422-b12a-d3d5bb467865\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "b52590ce1fcd7e0eaf4c63df9dfdc56632dbe153e47cc12e788b0e27fb4b8170",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 512,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 11
+  },
+  {
+    "consistent_members": 3,
+    "contradicted_members": 5,
+    "coverage": {
+      "complete_prefix_bytes": 131072,
+      "distinct_groups": 362,
+      "fewer_than_two_changes": 0,
+      "invalid_numbers": 49093,
+      "missing_prefix_bytes": 0,
+      "omitted_candidates": 32247,
+      "omitted_groups": 234,
+      "planned_bytes": 131072,
+      "qualifying_candidates": 32765,
+      "retained_members": 518,
+      "typed_locations": 81920,
+      "unchanged_bytes_locations": 62
+    },
+    "elapsed_ms": 7,
+    "export": {
+      "captures": 13,
+      "directory": "C:\\DEV\\Reversebolt\\crates\\reversebolt-core\\../../target/memory-trajectory-tests\\21320f6d-f8ae-4ced-81d9-7f66f4353700\\memory-evidence\\batch-001",
+      "historical": true,
+      "manifest_sha256": "f49d688693d307966cb04270beddee6dc2c90b2c45793a6476034244522aaa9a",
+      "memory_samples": 12,
+      "payload_bytes": 1572864,
+      "replayed": false
+    },
+    "not_predicted_members": 510,
+    "planted": [
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 0,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "F32",
+        "offset": 8,
+        "retained": true
+      },
+      {
+        "assessment": "not_predicted",
+        "kind": "F64",
+        "offset": 16,
+        "retained": true
+      },
+      {
+        "assessment": "consistent",
+        "kind": "I32",
+        "offset": 24,
+        "retained": true
+      },
+      {
+        "assessment": null,
+        "kind": "I32",
+        "offset": 32,
+        "retained": false
+      },
+      {
+        "assessment": "contradicted",
+        "kind": "I32",
+        "offset": 40,
+        "retained": true
+      }
+    ],
+    "seed": 12
+  }
+]

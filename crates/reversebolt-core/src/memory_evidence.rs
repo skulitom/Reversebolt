@@ -176,9 +176,21 @@ impl Manifest {
 
 pub struct Archive {
     manifest: Manifest,
+    manifest_sha256: String,
     payload: PathBuf,
 }
+
+/// One planned chunk across memory captures, not including image-only moments.
+/// Missing reads remain absent. No allocation continuity is implied.
+pub struct ChunkHistory {
+    pub chunk: Chunk,
+    pub captures: Vec<usize>,
+    pub bytes: Vec<Option<Vec<u8>>>,
+}
 impl Archive {
+    pub fn manifest_sha256(&self) -> &str {
+        &self.manifest_sha256
+    }
     pub fn manifest(&self) -> &Manifest {
         &self.manifest
     }
@@ -191,6 +203,7 @@ impl Archive {
         manifest.validate()?;
         let archive = Self {
             manifest,
+            manifest_sha256: expected.into(),
             payload: directory.join("bytes.bin"),
         };
         archive.file()?;
@@ -220,6 +233,49 @@ impl Archive {
                 Self::bytes(&mut file, segment)?;
             }
         }
+        Ok(())
+    }
+    /// Stream verified histories with at most 20 x 64 KiB of payload in memory.
+    /// Every retained segment is checked, including chunks the visitor excludes.
+    /// A visitor must discard its partial result if this method returns an error.
+    pub fn visit_memory_chunks(
+        &self,
+        mut visit: impl FnMut(&ChunkHistory) -> Result<()>,
+    ) -> Result<()> {
+        let mut file = self.file()?;
+        let samples: Vec<_> = self
+            .manifest
+            .samples
+            .iter()
+            .filter(|s| s.memory_sample)
+            .collect();
+        let mut segments = BTreeMap::new();
+        for sample in &samples {
+            for read in &sample.reads {
+                if let Some(segment) = &read.segment {
+                    segments.insert((address(&read.receipt.address)?, sample.number), segment);
+                }
+            }
+        }
+        let captures: Vec<_> = samples.iter().map(|s| s.number).collect();
+        for chunk in &self.manifest.plan {
+            let bytes = captures
+                .iter()
+                .map(|number| {
+                    segments
+                        .get(&(chunk.address, *number))
+                        .map(|segment| Self::bytes(&mut file, segment))
+                        .transpose()
+                })
+                .collect::<Result<Vec<_>>>()?;
+            visit(&ChunkHistory {
+                chunk: chunk.clone(),
+                captures: captures.clone(),
+                bytes,
+            })?;
+        }
+        // Reject a concurrently truncated/extended payload before publishing a result.
+        self.file()?;
         Ok(())
     }
     /// One bounded historical sample. Missing reads are absent, never zero-filled.

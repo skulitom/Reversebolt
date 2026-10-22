@@ -71,6 +71,15 @@ coverage extends through a read. Matching mapping metadata proves neither an
 allocation's lifetime nor an atomic snapshot. Historical addresses, labels and
 correlations confer no current binding, semantic certainty or editing authority.
 
+The Rust core also has an experimental offline `memory-trajectories` example.
+It consumes this export and its manifest hash, selects temporal-order proposals
+from the first six memory samples, and assesses those patterns on later samples
+(at least twelve memory samples are required). It uses no visible numbers or
+semantic labels. Results retain type ambiguity, missing data and omission counts;
+they confer no editing authority and do not appear as desktop value cards. This
+research pass is not yet a separate MCP operation or an automatic discovery job.
+See [the policy and its limits](../research/memory-trajectories/README.md).
+
 `capture` and `start_observation_job` support `mode: "play"`: images and sampled
 input without OCR or memory reads. Supported-runtime automatic attach collects
 fifteen such moments before discovery. `start_runtime_job` can request the same

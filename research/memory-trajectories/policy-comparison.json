@@ -1,0 +1,23 @@
+{
+  "manifest_sha256": "3e709f86683a9c191cb939798d98de4472c234a6a30ea1502087bda4a09e248d",
+  "initial": {
+    "policy": "memory_order_trajectories_v1",
+    "retained_members": 1014,
+    "assessments": {
+      "contradicted": 9,
+      "consistent": 2,
+      "not_predicted": 1003
+    },
+    "planted_f32_retained": false
+  },
+  "revised": {
+    "policy": "memory_order_trajectories_v2",
+    "retained_members": 523,
+    "assessments": {
+      "contradicted": 5,
+      "consistent": 3,
+      "not_predicted": 515
+    },
+    "planted_f32_retained": true
+  }
+}

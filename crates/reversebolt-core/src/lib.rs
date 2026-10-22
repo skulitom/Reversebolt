@@ -16,6 +16,7 @@ pub mod intervention;
 pub mod investigation;
 pub mod live;
 pub mod memory_evidence;
+pub mod memory_trajectories;
 pub mod motion_comparison;
 pub mod play_context;
 pub mod play_evidence;

@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Memory-only trajectory proposals (2026-10-22): **35% unchanged**.
+A Rust-core offline producer now selects changing, typed memory sequences without
+visible numbers, names, images or inputs. It groups their temporal order using six
+selection samples and assesses simple patterns on later samples. Missing reads,
+numeric ambiguity, opposing copies, contradictions and omission counts remain
+explicit. Per-type sampling prevents abundant integer interpretations from
+erasing floating-point proposals. The archive reader streams verified chunks.
+
+In twelve generated noisy backgrounds, the producer retained five of six planted
+typed sequences every time, including the sequence that contradicted its prefix;
+it missed the planted I32 counter in all twelve. Most retained sequences had no
+forecast. Future bytes, labels and final mapping flags do not change selection.
+All **417 workspace tests**, strict Clippy and formatting pass. Initial-policy
+failure evidence and the revised replay use the exact same archive. No game,
+native target, live model or production app ran. This remains an offline research
+API/example, without automatic discovery integration or unidentified UI cards.
+Native validation, semantic identification and causal verification remain missing;
+the fixed weights remain **35/100** and all artifacts stay local.
+[Policy, measurements and limits](../research/memory-trajectories/README.md).
+
 Local memory evidence export (2026-10-22): **35% unchanged**.
 The shared engine/MCP can now freeze all already-retained memory chunks from a
 batch for offline research, with sampling/search provenance, per-read timing,
