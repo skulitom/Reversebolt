@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Comparison history across investigations (2026-10-22): **35% unchanged**.
+The former eight-record lifetime cap is now eight comparisons per investigation
+with 128 retained historical records. Existing results remain readable and old
+requests replay after restart; saved IDs cannot move between investigations.
+Planner responses expose capacity and stop proposing a next comparison when no
+record fits. A shared 512 MiB capture-evidence quota keeps retained images bounded.
+
+All 306 workspace tests and strict Clippy pass, including the actual command,
+checkpoint and engine-restart path. A frozen disposable-copy replay retains a
+completed Manifold Garden comparison alongside eight clearly synthetic history
+records. The original record and 90 source evidence files are unchanged; production
+readers verify eighteen image/input pairs and eighteen execution receipts after
+restart. No game, model, target access, input or field write ran. No new gameplay
+effect or generalization is established. This source change is unpublished and
+the preview remains unavailable. [Evidence and limits](../research/investigation-history/README.md).
+
 Distinct paths and retained alternatives (2026-10-22): **35% unchanged**.
 The comparison planner now includes eligible alternatives and keeps different
 paths to the same declared field available. Shared field names/types do not prove

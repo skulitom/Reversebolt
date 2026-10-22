@@ -1,0 +1,18 @@
+{
+  "frozen_manifest_sha256": "d1860ff760fb94b89d30d5aea681ad4d56a50767eaa07dc40a2288cbd9002114",
+  "result_sha256": "7aee43710e2512445bddc7c7e911fcfad8ed6e894931af7b9d3614b42b59c72f",
+  "original_record_sha256": "dc0b968f58977d8f4b34be6ac1f4110a1ee85e808036d1d32cab169b7a9fbbd6",
+  "original_evidence_files_unchanged": 90,
+  "retained_records": 9,
+  "synthetic_records": 8,
+  "images_and_inputs_verified": 18,
+  "execution_receipts_verified": 18,
+  "original_native_assessment_preserved": true,
+  "new_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "workspace_tests_passed": 306,
+  "test_log_sha256": "4f6188919f6d4625b0ba42d47295f73029733b6188b9341a70e179aa0d8c9a82",
+  "limitation": "Disposable-copy storage regression. Synthetic added records are not experiments; no new gameplay effect, native integration or security clearance was tested."
+}

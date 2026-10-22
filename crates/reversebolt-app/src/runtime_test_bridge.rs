@@ -301,17 +301,16 @@ impl Session {
             }
             return Ok(t.summary());
         }
-        if engine.runtime_tests.fault.is_some()
-            || engine.runtime_tests.records.len() >= runtime_tests::MAX_TESTS
-            || engine
-                .runtime_tests
-                .records
-                .iter()
-                .any(|t| t.active() || t.change_id == p.change_id)
+        engine.runtime_tests.ensure_room(&p.investigation_id)?;
+        if engine
+            .runtime_tests
+            .records
+            .iter()
+            .any(|t| t.active() || t.change_id == p.change_id)
             || engine.runtime_trials.get(&p.change_id).is_ok()
             || engine.view.freezes.iter().any(|f| f.active())
         {
-            return Err("Finish the active test/Freeze first, and use new identities within the eight-test evidence budget.".into());
+            return Err("Finish the active test/Freeze first, and use new comparison and change identities.".into());
         }
         let session = engine
             .live
@@ -654,3 +653,7 @@ pub fn check_patch(engine: &Engine, id: Option<&str>, patch: &Patch) -> Result<(
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "runtime_test_history_tests.rs"]
+mod history_tests;

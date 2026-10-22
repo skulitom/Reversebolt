@@ -29,8 +29,11 @@ changes, weak baseline and incomplete evidence prevent a successful comparison.
 Fresh reads after the changed/recovered conditions check bytes and references
 against the actual durable edit. The result describes rendered response only.
 
-One active test is allowed, with a 15-minute lifetime, at most eight retained
-tests per data directory, 512 KiB per record and 64 MiB of evidence per test.
+One active test is allowed, with a 15-minute lifetime, 512 KiB per record and
+64 MiB of evidence per test. The frozen evaluation below used the original
+eight-record lifetime limit. Current source separates eight records per
+investigation from 128 retained records and a shared 512 MiB capture-evidence
+budget; see [the history revision](../investigation-history/README.md).
 The storage budget reserves room for the next maximum image/input pair. There
 is no automatic retention pruning yet. Image/input read-back verifies hashes.
 Restart stops active comparisons; capture intents and occupied slots cannot be

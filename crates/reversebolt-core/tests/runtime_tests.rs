@@ -419,6 +419,139 @@ fn saved_capture_intent_is_not_replayed_after_restart_or_storage_failure() {
 }
 
 #[test]
+fn full_investigation_keeps_history_without_blocking_another_investigation() {
+    use reversebolt_core::{runtime_test_store::Store, runtime_tests::MAX_TESTS_PER_INVESTIGATION};
+    let directory = std::env::temp_dir().join(format!("reversebolt-history-{}", uuid()));
+    let mut store = Store::open(directory.clone()).unwrap();
+    let (mut template, _, _) = fixture();
+    template.stop("Finished fixture investigation.");
+    let mut originals = vec![];
+    for n in 0..MAX_TESTS_PER_INVESTIGATION {
+        let mut t = template.clone();
+        t.id = uuid();
+        t.change_id = uuid();
+        t.created_unix_ms += n as u128;
+        store.record(t.clone()).unwrap();
+        originals.push((
+            t.clone(),
+            std::fs::read(directory.join(format!("{}.json", t.id))).unwrap(),
+        ));
+    }
+    assert_eq!(
+        store
+            .capacity(&template.investigation)
+            .remaining_record_slots,
+        0
+    );
+    assert!(store.record(template.clone()).is_err());
+    assert!(store.fault.is_none()); // A full investigation is not a storage failure.
+    let next_investigation = uuid();
+    assert_eq!(
+        store.capacity(&next_investigation).remaining_record_slots,
+        8
+    );
+    let mut next = template.clone();
+    next.investigation = next_investigation.clone();
+    next.phase = Phase::Baseline;
+    store.record(next.clone()).unwrap();
+    assert_eq!(
+        store.capacity(&next_investigation).remaining_record_slots,
+        7
+    );
+    // A saved ID cannot be moved to evade its investigation's limit.
+    let mut moved = originals[0].0.clone();
+    moved.investigation = next_investigation.clone();
+    assert!(store.record(moved).is_err());
+    drop(store);
+    let mut store = Store::open(directory.clone()).unwrap();
+    assert_eq!(store.records.len(), 9);
+    assert_eq!(store.get(&next.id).unwrap().phase, Phase::Stopped);
+    assert_eq!(
+        store.capacity(&next_investigation).remaining_record_slots,
+        7
+    );
+    for (test, bytes) in originals {
+        assert_eq!(
+            serde_json::to_value(store.get(&test.id).unwrap()).unwrap(),
+            json!(test)
+        );
+        assert_eq!(
+            std::fs::read(directory.join(format!("{}.json", test.id))).unwrap(),
+            bytes
+        );
+    }
+    // More-than-eight history survives another stop/write/restart cycle.
+    let mut recovered = store.get(&next.id).unwrap().clone();
+    recovered.reason = "Retained after recovery.".into();
+    store.record(recovered).unwrap();
+    drop(store);
+    assert_eq!(Store::open(directory.clone()).unwrap().records.len(), 9);
+    let resolved = directory.canonicalize().unwrap();
+    assert_eq!(
+        resolved.parent().unwrap(),
+        std::env::temp_dir().canonicalize().unwrap()
+    );
+    assert!(
+        resolved
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-history-")
+    );
+    std::fs::remove_dir_all(resolved).unwrap();
+}
+
+#[test]
+fn retained_history_has_a_separate_limit_and_existing_records_remain_writable() {
+    use reversebolt_core::{
+        runtime_test_store::Store,
+        runtime_tests::{MAX_RETAINED_TESTS, MAX_TESTS_PER_INVESTIGATION},
+    };
+    let directory = std::env::temp_dir().join(format!("reversebolt-history-limit-{}", uuid()));
+    let mut store = Store::open(directory.clone()).unwrap();
+    let (mut template, _, _) = fixture();
+    template.stop("Synthetic closed comparison.");
+    for n in 0..MAX_RETAINED_TESTS {
+        if n % MAX_TESTS_PER_INVESTIGATION == 0 {
+            template.investigation = uuid();
+        }
+        template.id = uuid();
+        template.change_id = uuid();
+        template.created_unix_ms += 1;
+        store.record(template.clone()).unwrap();
+    }
+    let other = uuid();
+    let capacity = store.capacity(&other);
+    assert_eq!(capacity.investigation_records, 0);
+    assert_eq!(capacity.retained_records, MAX_RETAINED_TESTS);
+    assert_eq!(capacity.remaining_record_slots, 0);
+    assert!(capacity.reason.unwrap().contains("history is full"));
+    let (new, _, _) = fixture();
+    assert!(store.record(new).is_err());
+    assert!(store.fault.is_none());
+    template.reason = "Existing record can still settle at capacity.".into();
+    store.record(template.clone()).unwrap();
+    drop(store);
+    let reopened = Store::open(directory.clone()).unwrap();
+    assert_eq!(reopened.records.len(), MAX_RETAINED_TESTS);
+    assert_eq!(reopened.get(&template.id).unwrap().reason, template.reason);
+    drop(reopened);
+    let resolved = directory.canonicalize().unwrap();
+    assert_eq!(
+        resolved.parent().unwrap(),
+        std::env::temp_dir().canonicalize().unwrap()
+    );
+    assert!(
+        resolved
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-history-limit-")
+    );
+    std::fs::remove_dir_all(resolved).unwrap();
+}
+
+#[test]
 fn retained_evidence_paths_and_checksums_are_enforced() {
     use reversebolt_core::runtime_test_store::Store;
     let dir = std::env::temp_dir().join(format!("reversebolt-evidence-{}", uuid()));

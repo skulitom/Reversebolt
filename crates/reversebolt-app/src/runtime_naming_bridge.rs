@@ -228,7 +228,10 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     let busy = engine.runtime_trials.holds(&inventory.scope)
         || engine.runtime_tests.records.iter().any(|t| t.active())
         || engine.view.freezes.iter().any(|f| f.active());
-    let next = if busy {
+    let record_capacity = engine
+        .runtime_tests
+        .capacity(&session.view.investigation_id);
+    let next = if busy || record_capacity.remaining_record_slots == 0 {
         None
     } else {
         choices.iter().find(|v| v["status"] == "untried")
@@ -236,7 +239,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     Ok(
         json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
         "report_sha256":review.report_sha256,"activity_context":context,"activity_limitation":reversebolt_core::play_context::LIMITATION,
-        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"limitation":p::LIMITATION}),
+        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"limitation":p::LIMITATION}),
     )
 }
 

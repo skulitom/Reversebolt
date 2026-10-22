@@ -844,7 +844,11 @@ can be compared with zero, canonical true booleans with false.
 Prior results match the exact path, value, actions, investigation, catalogue,
 report and frame/input metadata hash. A stopped, inconclusive or completed result
 keeps its status without suppressing other paths. `next` is the first untried
-choice, or null while a test, edit or Freeze is active. Preparing and executing
+choice, or null while a test, edit or Freeze is active, the record budget is full,
+or comparison storage has faulted. `record_capacity` reports investigation and
+retained-record counts/limits, `remaining_record_slots` and an optional `reason`.
+It describes record capacity; image space is checked when reserving a capture.
+Preparing and executing
 the returned proposal still require the explicit comparison operations below.
 
 `submit_runtime_hypotheses` preserves eligible activity context from the previous
@@ -932,8 +936,19 @@ the linked trial is restored. Read returns the complete test; optional zero-base
 `condition` (0–2) and `frame` (0–5) return a checksum-checked native MCP image and
 its sampled input window. A stopped plan is immutable and cannot be resumed.
 
-Only one test can be active; the limit is eight retained tests, 15 minutes per
-active test and 64 MiB evidence per test. Human takeover, unrelated mutation,
+Only one test can be active; the limit is eight saved tests **per investigation**,
+128 retained records per data directory and 15 minutes per active test. Closed
+history is not evicted. Saved IDs cannot move to another investigation. A full
+record budget still permits an existing record to save its final state and old
+requests to return their saved results. Starting another investigation does not
+erase earlier outcomes or bypass the retained-history limit.
+
+Capture reservation enforces 64 MiB per comparison and a shared 512 MiB evidence
+budget, including previous/interrupted evidence and temporary records. It counts
+actual file sizes within the owned evidence directory with bounded traversal,
+reserving room for the next image, input and record updates. Unsupported links or
+nested directories stop reservation. Evidence reads remain available when budgets
+are full; there is no automatic pruning. Human takeover, unrelated mutation,
 disconnect and restart stop the comparison. Stop does not automatically Undo.
 Rendered-response suppression is provisional evidence, not a gameplay name or
 edit authority. See [integration and verification](../research/runtime-tests-live/README.md).

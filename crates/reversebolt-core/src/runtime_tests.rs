@@ -12,7 +12,8 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-pub const MAX_TESTS: usize = 8;
+pub const MAX_TESTS_PER_INVESTIGATION: usize = 8;
+pub const MAX_RETAINED_TESTS: usize = 128;
 pub const LIFETIME_MS: u128 = 15 * 60 * 1000;
 pub const FRAMES_PER_CONDITION: usize = 6;
 pub const MAX_GAP_US: u64 = 50_000;
