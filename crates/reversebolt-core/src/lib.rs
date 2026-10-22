@@ -1,4 +1,5 @@
 pub mod action_patterns;
+pub mod activity_motion;
 pub mod change_search;
 pub mod changes;
 pub mod coverage;

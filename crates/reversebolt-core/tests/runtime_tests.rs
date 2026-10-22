@@ -660,6 +660,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     test.origin.as_mut().unwrap().play_context = Some(reversebolt_core::play_context::Context {
         basis: Default::default(),
         interpretation_source: None,
+        motion: None,
         source: reversebolt_core::play_context::Source {
             investigation_id: test.investigation.clone(),
             batch: 1,
@@ -682,6 +683,32 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
     });
     test.validate_plan().unwrap();
     let origin = test.origin.as_mut().unwrap();
+    use reversebolt_core::activity_motion as motion;
+    let context = origin.play_context.as_mut().unwrap();
+    context.motion = Some(motion::Summary {
+        metric: motion::METRIC_V2.into(),
+        frame_metadata_sha256: context.source.frame_metadata_sha256.clone(),
+        measurement_dimensions: [256, 144],
+        maximum_selected: 48,
+        grid: [6, 4],
+        pairs: context.source.pairs.clone().map(|p| motion::Pair {
+            before_id: p.before.id,
+            before_sha256: p.before.sha256,
+            after_id: p.after.id,
+            after_sha256: p.after.sha256,
+            measurement: Some(motion::Measurement {
+                selected: 2,
+                matched_cells: 1,
+                unresolved: [("poor_match".into(), 1)].into(),
+                matches: vec![motion::Match {
+                    at: [20, 20],
+                    delta: [18, 0],
+                }],
+                consensus: None,
+            }),
+            error: None,
+        }),
+    });
     origin.play_context = Some(
         origin
             .play_context

@@ -1,0 +1,188 @@
+{
+  "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+  "frozen_v1_baseline_sha256": "da8a82d87bb3c3b26896f08bed66da54c6f8cead3cbddfbd10357e1b50b2761b",
+  "frozen_v1_revised_sha256": "201719fa5b09e884b4cf411ac975f55b20d517a0ee44a0543e092da04d128628",
+  "frozen_v2_sha256": "2a2836c8dec218077fdc4c25084910971eb5ef13c2fb2910e5789780cd56f768",
+  "results": [
+    {
+      "run": "v1",
+      "version": "baseline",
+      "case": "hyperbolica",
+      "contaminated_control": false,
+      "expected_consistency": null,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot on the right shifts slightly leftward and the foreground red conical plants on the left disappear. The camera angle appears to adjust slightly, revealing more of the right-side background in the 'after' frames.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera drift or animation rather than a specific control input. The disappearance of the red plants is consistent, but the robot's movement is slight and ambiguous."
+      },
+      "receipt_sha256": "685835a243142b3df1bec8d511b6823a2619d97a66de8f9301e3df38410961ba",
+      "seconds": 15.719000000011874
+    },
+    {
+      "run": "v1",
+      "version": "baseline",
+      "case": "manifold",
+      "contaminated_control": false,
+      "expected_consistency": null,
+      "observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the central trapezoidal floor area shifts slightly rightward and its left edge becomes more pronounced, while the right-side geometry appears to compress. The overall perspective of the room and ceiling elements remains stable.",
+        "uncertainty": "The shift is subtle and could be attributed to minor camera drift or rendering variance rather than a discrete control action. No other elements change consistently to confirm a specific input effect."
+      },
+      "receipt_sha256": "9b4739d90eb14007a3013e6140348b772ff68dfa6008fb54a7f02d8ed32c247c",
+      "seconds": 4.1560000000172295
+    },
+    {
+      "run": "v1",
+      "version": "baseline",
+      "case": "consistent",
+      "contaminated_control": true,
+      "expected_consistency": true,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the scene is static. The central table, background trees, and sky remain in identical positions. The only variation is the opacity of the white heart icons on the left, which appear slightly more transparent in the 'after' images (1 and 3) compared to the 'before' images (0 and 2).",
+        "uncertainty": "The change is limited to the opacity of the UI overlay (hearts). It is unclear if this represents a state change or a rendering artifact. The core scene geometry shows no movement or modification."
+      },
+      "receipt_sha256": "c1ba02dc8331bea6c31ababe8de319a5c45a9d03bd37bbcfc41b5ea3b5e66042",
+      "seconds": 2.2660000000032596
+    },
+    {
+      "run": "v1",
+      "version": "baseline",
+      "case": "opposed",
+      "contaminated_control": true,
+      "expected_consistency": false,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the white heart-shaped particle effect on the left side of the screen appears to shift slightly upward and to the right, or fade out. The rest of the scene, including the central table, the tree, and the UI element on the right, remains static.",
+        "uncertainty": "The change is subtle and could be attributed to the natural animation cycle of the particle effect rather than a specific input. It is difficult to distinguish between a controlled change and a passive visual update without further context."
+      },
+      "receipt_sha256": "ad241f4fc5823a2cdeabd8a87ba22116c77b88398d6cdbc16ab8c9532c91ffb9",
+      "seconds": 2.062000000005355
+    },
+    {
+      "run": "v2",
+      "version": "baseline",
+      "case": "consistent",
+      "contaminated_control": false,
+      "expected_consistency": true,
+      "classification_matches_expectation": false,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the scene is static. The central table, background trees, and sky remain in identical positions. The only variation is the opacity of the white heart icons on the left, which appear slightly more transparent in the 'after' images (1 and 3) compared to the 'before' images (0 and 2).",
+        "uncertainty": "The change is limited to the opacity of the UI overlay (hearts). It is unclear if this represents a state change or a rendering artifact. The core scene geometry shows no movement or modification."
+      },
+      "receipt_sha256": "81d284bcdf932d055eee1b58b0fff593401115bbaf6ed1fe894afb3f27a6e1d0",
+      "seconds": 12.76600000000326
+    },
+    {
+      "run": "v2",
+      "version": "baseline",
+      "case": "opposed",
+      "contaminated_control": false,
+      "expected_consistency": false,
+      "classification_matches_expectation": true,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the white heart-shaped particle effect on the left side of the screen appears to shift slightly upward and to the right, or fade out. The rest of the scene, including the central table, the tree, and the UI element on the right, remains static.",
+        "uncertainty": "The change is subtle and could be attributed to the natural animation cycle of the particle effect rather than a specific input. It is difficult to distinguish between a controlled change and a passive visual update without further context."
+      },
+      "receipt_sha256": "fb332e2b4d6a2549db159426d19a13a4d43d4db1aa1ded6acdbc6264b5f867b5",
+      "seconds": 2.0160000000032596
+    },
+    {
+      "run": "v1",
+      "version": "revised",
+      "case": "hyperbolica",
+      "contaminated_control": false,
+      "expected_consistency": null,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot shifts slightly left and the foreground red plants disappear. The camera angle appears to change slightly, altering the view of the horizon and background elements. The desk and chair remain central but their perspective shifts marginally.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera adjustments or rendering variations rather than a specific control action. The sparse and inconsistent match data makes it difficult to confirm a consistent, significant change driven by a single input."
+      },
+      "receipt_sha256": "125cb7bb5d27489c42d14879b358b295faa9e92a5121d4cc34bfa12d0afc4c3a",
+      "seconds": 4.187000000005355
+    },
+    {
+      "run": "v1",
+      "version": "revised",
+      "case": "manifold",
+      "contaminated_control": false,
+      "expected_consistency": null,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a static room with a central trapezoidal floor and a small staircase. The only apparent difference is a slight horizontal shift of the floor's internal line pattern and the staircase's position relative to the frame edges, suggesting a minor camera pan or rendering variance. No new objects, color changes, or structural alterations are visible.",
+        "uncertainty": "The measured displacements are small (2-11px) and sparse (3-4 matches out of 12 selected), with many unresolved matches. The changes are subtle and could be due to rendering artifacts, minor camera drift, or measurement noise rather than a deliberate scene change. The consistency between pairs is weak due to low match counts."
+      },
+      "receipt_sha256": "220f05acf5dce6e44e48e1d43ff7b8af6c7b7082f6aba41ac6afcc98e81c3bb9",
+      "seconds": 5.297000000020489
+    },
+    {
+      "run": "v1",
+      "version": "revised",
+      "case": "consistent",
+      "contaminated_control": true,
+      "expected_consistency": true,
+      "observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the entire scene shifts uniformly to the right by approximately 18 pixels. The table, chair, and background elements maintain their relative positions while moving horizontally across the screen.",
+        "uncertainty": "The change is consistent across both pairs and supported by 22 matching patches. However, the cause of this uniform horizontal shift (e.g., camera pan, world movement) cannot be determined from the visual evidence alone."
+      },
+      "receipt_sha256": "60fb76de1412880cc1e367496ead4dfc64f6ff53fa94b9d1648d98b2049a7b96",
+      "seconds": 2.5320000000065193
+    },
+    {
+      "run": "v1",
+      "version": "revised",
+      "case": "opposed",
+      "contaminated_control": true,
+      "expected_consistency": false,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "Pair 1 shows a uniform rightward shift of scene elements. Pair 2 shows a uniform leftward shift. The direction of the apparent screen-space displacement is opposite between the two intervals.",
+        "uncertainty": "The two pairs exhibit contradictory directional changes. Because the observed shifts are opposite, they do not support a single, consistent visible change attributable to the sampled control."
+      },
+      "receipt_sha256": "07288464998cc8eb9fa8f7c8116907a658c6ad69547df138214b9fd300752dd3",
+      "seconds": 2.172000000020489
+    },
+    {
+      "run": "v2",
+      "version": "revised",
+      "case": "consistent",
+      "contaminated_control": false,
+      "expected_consistency": true,
+      "classification_matches_expectation": true,
+      "observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the scene shifts horizontally to the right by 18 pixels. The table, tree, and background elements move leftward in the frame, while the white UI element on the right edge moves further right, partially exiting the view. The heart icons on the left also shift rightward.",
+        "uncertainty": "The change is consistent across both pairs and supported by 22 matched patches. However, the cause of the shift (camera pan, object movement, or screen scroll) is not determined. The uniformity of the delta suggests a global shift rather than individual object motion."
+      },
+      "receipt_sha256": "5d65513dc5574503b85c8dd7c7ea397330b7f21b0b6029d461c5ce6225a979b5",
+      "seconds": 3.109000000025844
+    },
+    {
+      "run": "v2",
+      "version": "revised",
+      "case": "opposed",
+      "contaminated_control": false,
+      "expected_consistency": false,
+      "classification_matches_expectation": true,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "Pair 1 shows a uniform rightward shift of scene elements. Pair 2 shows a uniform leftward shift. The directions are opposite. The heart icon also shifts differently between pairs. The changes are inconsistent in direction, indicating no single consistent visible change across both intervals.",
+        "uncertainty": "The opposite horizontal shifts in the two pairs contradict a consistent directional change. The heart icon's movement is also inconsistent. This suggests the observed changes are not caused by a single consistent input or effect, or that the measurements are capturing different underlying phenomena."
+      },
+      "receipt_sha256": "31149ec68e44d4857f2f3caff11eaff3fca2ebcfebb83fb5141ccc27696135b0",
+      "seconds": 2.9060000000172295
+    }
+  ],
+  "image_model_calls": 12,
+  "metadata_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "workspace_test_executions_passed": 316,
+  "test_log_sha256": "1ad7987f45f5b52950e5ebdeb666bd68d1c96a8270eace54dfe8630c8b5c1f4e",
+  "limitation": "V1 synthetic controls exposed expected-answer labels and are contaminated. V2 removes them using identical observer binaries and pixels. Its revised consistency flags match two expected answers, but the positive description contradicts its direction and some prose speculates about causes. Real-game truth remains unknown; none of these outputs establishes semantics, authority or general accuracy."
+}

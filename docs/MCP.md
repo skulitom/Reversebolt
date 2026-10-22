@@ -64,6 +64,24 @@ This measurement is not ready to validate movement. Existing play-context select
 comparison assessment, names and edit authority remain unchanged.
 See [measurement evidence and limits](../research/feature-motion/README.md).
 
+Automatic activity interpretation now also receives compact correspondence
+measurements for its two selected image pairs. The resulting optional
+`activity_context.motion` retains the exact numeric evidence supplied to that
+interpretation: metric, normalized dimensions, source metadata digest, image
+IDs/hashes, selected/matched-cell counts, unresolved reasons, matched `at`/`delta`
+vectors and any supported consensus. It is bounded to two pairs and 10 KiB.
+Missing measurements carry errors, not zero displacement. Legacy contexts omit
+this field. Changed bindings, inconsistent counts and unsupported consensus fail
+context validation. The summary survives agent handoffs, request replay and saved
+comparison origins with its original image interpretation.
+
+This does not feed activity meaning into metadata type/field selection or change
+edit eligibility. In a small paired replay, the augmented model's consistency
+answers matched two blinded image-shift controls, but its prose still included
+contradictory directions and unsupported causal suggestions. Treat the text as a
+provisional interpretation and inspect the numeric coverage. Neither a positive
+flag nor a plausible explanation verifies a control. [Evaluation and correction](../research/motion-interpretation/README.md).
+
 ## Direct edits
 
 Automatic metadata reviews may create literal internal questions after a valid

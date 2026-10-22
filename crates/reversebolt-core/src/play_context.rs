@@ -226,6 +226,9 @@ pub struct Context {
     pub basis: Basis,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub interpretation_source: Option<InterpretationSource>,
+    /// Correspondences actually supplied to this interpretation, never semantic proof.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub motion: Option<crate::activity_motion::Summary>,
     pub source: Source,
     pub observation: Observation,
 }
@@ -239,6 +242,7 @@ impl Context {
         let context = Self {
             basis,
             interpretation_source: None,
+            motion: None,
             source,
             observation,
         };
@@ -261,6 +265,9 @@ impl Context {
     pub fn validate(&self) -> Result<()> {
         self.source.validate()?;
         self.observation.validate()?;
+        if let Some(motion) = &self.motion {
+            motion.validate(&self.source)?;
+        }
         if let Some(source) = &self.interpretation_source
             && (!uuid::Uuid::parse_str(&source.review_id)
                 .is_ok_and(|id| id.to_string() == source.review_id)

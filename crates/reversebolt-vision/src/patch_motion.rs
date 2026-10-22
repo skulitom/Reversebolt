@@ -6,7 +6,7 @@ use image::{
 use reversebolt_core::Result;
 use serde::Serialize;
 
-pub const METRIC: &str = "rgb601-triangle256x144-corners48-pyramid2-patch9-zmssd-r16x3-fb1-v2";
+pub const METRIC: &str = reversebolt_core::activity_motion::METRIC_V2;
 pub const LIMITATION: &str = "Sparse integer displacement of source-selected image patches in a normalized 256x144 image, not physical speed, camera motion, an actor or input causality. Feature selection omits weak texture. Repeated patterns, large motion, occlusion and appearance changes may be unresolved. Zero displacement is not proof of no movement. Consensus covers only its stated patches/cells; thresholds are heuristics, not calibrated probabilities.";
 const SIZE: i32 = 9;
 const HALF: i32 = SIZE / 2;

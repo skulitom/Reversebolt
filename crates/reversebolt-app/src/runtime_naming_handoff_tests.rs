@@ -85,7 +85,7 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
             interval: f.capture_interval.clone().unwrap(),
         }
     };
-    let context = pc::Context::from_observation(
+    let mut context = pc::Context::from_observation(
         pc::Source {
             investigation_id: live.view.investigation_id.clone(),
             batch: 1,
@@ -118,6 +118,32 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
         },
     )
     .unwrap();
+    use reversebolt_core::activity_motion as motion;
+    context.motion = Some(motion::Summary {
+        metric: motion::METRIC_V2.into(),
+        frame_metadata_sha256: context.source.frame_metadata_sha256.clone(),
+        measurement_dimensions: [256, 144],
+        maximum_selected: 48,
+        grid: [6, 4],
+        pairs: context.source.pairs.clone().map(|p| motion::Pair {
+            before_id: p.before.id,
+            before_sha256: p.before.sha256,
+            after_id: p.after.id,
+            after_sha256: p.after.sha256,
+            measurement: Some(motion::Measurement {
+                selected: 2,
+                matched_cells: 1,
+                unresolved: [("poor_match".into(), 1)].into(),
+                matches: vec![motion::Match {
+                    at: [20, 20],
+                    delta: [18, 0],
+                }],
+                consensus: None,
+            }),
+            error: None,
+        }),
+    });
+    context.validate().unwrap();
     let original = Review {
         evidence_id: uuid::Uuid::new_v4().to_string(),
         model: "original-model".into(),
@@ -155,6 +181,7 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     assert_eq!(first["review"]["model"], "agent:fixture-agent");
     let first_context = &first["review"]["play_context"];
     assert_eq!(first_context["observation"], json!(context.observation));
+    assert_eq!(first_context["motion"], json!(context.motion));
     assert_eq!(
         first_context["interpretation_source"],
         json!({"review_id":original.evidence_id,"model":"original-model"})

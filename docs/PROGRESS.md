@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Motion evidence in automatic interpretation (2026-10-22): **35% unchanged**.
+The image interpreter now receives source-bound correspondence summaries, retained
+in shared activity contexts and comparison origins. Metadata discovery remains
+independent. Numeric evidence and uncertainty survive agent handoffs, request
+replay and restart; changed image bindings or malformed coverage are rejected.
+
+A paired local-model evaluation retained two real-game cases with unknown truth
+and two controlled image-shift cases. The first controls leaked expected answers
+through image IDs; their outputs remain archived as contaminated. Four additional
+calls remove those labels using identical observer binaries and pixels. The
+revised consistency flags then match both controlled answers, but prose still
+contradicts a known direction and speculates about causes. No semantics or edit
+authority is established. Twelve image calls and zero metadata calls ran; no game,
+new capture, manual image review, input or gameplay write was needed. All 316 test
+executions and strict Clippy pass, with focused persistence checks after fixture
+strengthening. The source remains unpublished and the preview unavailable.
+[Evidence, correction and failures](../research/motion-interpretation/README.md).
+
 Distributed features and larger image displacement (2026-10-22): **35% unchanged**.
 The shared motion measurement now selects textured points across the image and
 matches at two scales, with explicit selection/spatial coverage and rejection
