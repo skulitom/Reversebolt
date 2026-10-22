@@ -251,6 +251,9 @@ pub struct LiveView {
     /// while independent image, text and memory collection remains available.
     #[serde(default)]
     pub local_observation_warnings: Vec<LocalObservationWarning>,
+    /// Completed input-only reviews for this batch; never editable controls.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub input_experiments: Vec<crate::activity_experiment::Review>,
     #[serde(default)]
     pub rule_checks: Vec<crate::rule_checks::Check>,
     #[serde(default)]
@@ -951,6 +954,7 @@ impl LiveSession {
             memory_sources: vec![],
             memory_sources_error: None,
             local_observation_warnings: vec![],
+            input_experiments: vec![],
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
@@ -1110,6 +1114,14 @@ impl LiveSession {
     }
 
     pub fn capture_mode(&mut self, mode: CaptureMode) -> Result<()> {
+        self.capture_mode_inner(mode, false)
+    }
+    /// Begin a new image/input sequence without claiming continuity across
+    /// the user's return-to-game delay or a previous sampler's lifetime.
+    pub fn capture_play_seed(&mut self) -> Result<()> {
+        self.capture_mode_inner(CaptureMode::Play, true)
+    }
+    fn capture_mode_inner(&mut self, mode: CaptureMode, seed: bool) -> Result<()> {
         if self.collecting_change_search()
             && (self.view.sample_count >= crate::change_search::MOMENTS || !mode.is_full())
         {
@@ -1317,11 +1329,15 @@ impl LiveSession {
                 Ok(bytes) => self.view.frames.push(FrameRef {
                     sampling: frame.sampling.clone(),
                     input_context: self.target.input_window(
-                        self.view
-                            .frames
-                            .last()
-                            .and_then(|f| f.capture_interval.as_ref())
-                            .map_or(capture_begin_us, |t| t.end_us),
+                        if seed {
+                            capture_begin_us
+                        } else {
+                            self.view
+                                .frames
+                                .last()
+                                .and_then(|f| f.capture_interval.as_ref())
+                                .map_or(capture_begin_us, |t| t.end_us)
+                        },
                         capture_end_us,
                     ),
                     id: uuid::Uuid::new_v4().to_string(),
@@ -1965,6 +1981,7 @@ impl LiveSession {
         self.view.tracks.clear();
         self.view.visual_tracks.clear();
         self.view.local_observation_warnings.clear();
+        self.view.input_experiments.clear();
         self.view.temporal_tracks.clear();
         self.view.prediction_checks.clear();
         self.image_epoch += 1;

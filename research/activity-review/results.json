@@ -1,0 +1,89 @@
+{
+  "method": "automatic_input_review_generated_integration_v1",
+  "scope": "Generated capture/input fixtures and mock inference; no game, native input worker or live model invocation.",
+  "goal_percent": 35,
+  "sequence": {
+    "capture_steps": 10,
+    "analysis_steps": 1,
+    "generated_bounded_episodes": 4,
+    "return_delay_ms": 3000,
+    "memory_reads": 0
+  },
+  "interpretation_cases": [
+    "positive",
+    "negative",
+    "model_unavailable",
+    "cancel_during_inference",
+    "mismatched_source",
+    "unchanged_images_skip_inference"
+  ],
+  "workspace_test_executions": 398,
+  "checks": [
+    {
+      "path": "test-results/activity-review-check-first.log",
+      "sha256": "eced5cd250cc57963bb44938bb74d95de388f7ebd74e6afa35874efb52a55b11"
+    },
+    {
+      "path": "test-results/activity-review-clippy-final.log",
+      "sha256": "e6c0b061943621619a438cd0f12bc9bc2dd942838ca2a9965db1c8c0b8dae9b0"
+    },
+    {
+      "path": "test-results/activity-review-clippy-first.log",
+      "sha256": "4bf69e91afda0f89d0059d67ded2c95d3fdd74307455b1ae39b0b1720ce7418e"
+    },
+    {
+      "path": "test-results/activity-review-command-checkpoint-final.log",
+      "sha256": "9e0e420c70856d1e578e060c9df7eb64057b287291460c34af53b85816eefc8a"
+    },
+    {
+      "path": "test-results/activity-review-command-checkpoint.log",
+      "sha256": "ca4ec698601422bfc06c89e27c156d8c44b0236ccd46237c954d1fe29439cea8",
+      "failure": "Strengthened test incorrectly expected Engine::load to retain the live binding. It now checks the serialized summary and intentional startup disconnection separately."
+    },
+    {
+      "path": "test-results/activity-review-final-fixture-clippy.log",
+      "sha256": "26bbf592226a969b8fa29ea5c7992c27681357c62d22e8cb572b3b8f9bf72011"
+    },
+    {
+      "path": "test-results/activity-review-fmt-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-review-format-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-review-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/activity-review-tests-first.log",
+      "sha256": "164f8319a6c90ad6406d97f9185cfc785ee725fe9b7f5933afb752ee1ec0dd29",
+      "failure": "Test fixture initializer omitted the new optional input_experiments field; all LiveView fixture initializers were updated."
+    },
+    {
+      "path": "test-results/activity-review-tests-integration-fixed.log",
+      "sha256": "b10fc34550b0948358a331b037cee61b74b481d56db195160e76631d8a2ed041"
+    },
+    {
+      "path": "test-results/activity-review-tests-integration.log",
+      "sha256": "6fd99286db0bdccafa445c7f02f949f53d2a92c5ed932a6025c7e55c98e3c091",
+      "failure": "Test fixture initializer omitted the new optional input_experiments field; all LiveView fixture initializers were updated."
+    },
+    {
+      "path": "test-results/activity-review-workspace-final.log",
+      "sha256": "61cbe4b95736058354d1a3b45c580228c37354a0452cc678f1f1bd00efed0337",
+      "passed": 398,
+      "failed": 0
+    }
+  ],
+  "final_verification": "Strengthened real command/publication/checkpoint test passes after the complete workspace suite; targeted strict Clippy and format checks also pass.",
+  "frozen_directory": "test-results/activity-review-v1",
+  "frozen_files": 189,
+  "manifest_sha256": "abb7d95a36c0bd2945bda3194a2042fd83b222e9b4353b73783c239ac8e71ed5",
+  "changed": [],
+  "preceding_frozen_snapshot_changed": [],
+  "desktop_status": "unavailable; published executable missing; read-only check only",
+  "security_submission": "local only; no upload",
+  "generalization_claim": false
+}

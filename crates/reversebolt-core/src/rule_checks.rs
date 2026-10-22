@@ -553,6 +553,7 @@ mod tests {
             memory_sources: vec![],
             memory_sources_error: None,
             local_observation_warnings: vec![],
+            input_experiments: vec![],
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],

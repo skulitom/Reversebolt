@@ -52,7 +52,7 @@ fn protected_cards(engine: &Engine) -> BTreeSet<String> {
         .collect()
 }
 
-fn save_new(path: &Path, value: &Value) -> Result<()> {
+pub(crate) fn save_new(path: &Path, value: &Value) -> Result<()> {
     let bytes = serde_json::to_vec_pretty(value).map_err(|e| e.to_string())?;
     if bytes.len() > 12 * 1024 * 1024 {
         return Err("Metadata review exceeds its archive budget.".into());
@@ -66,7 +66,7 @@ fn save_new(path: &Path, value: &Value) -> Result<()> {
         .and_then(|()| f.sync_all())
         .map_err(|e| e.to_string())
 }
-fn read_archive(path: &Path) -> Result<Value> {
+pub(crate) fn read_archive(path: &Path) -> Result<Value> {
     use std::io::Read;
     let mut bytes = Vec::new();
     std::fs::File::open(path)
@@ -507,7 +507,22 @@ pub(crate) fn prepare_activity(
     session: &reversebolt_core::live::LiveSession,
     directory: &Path,
 ) -> Result<Option<reversebolt_observer::runtime_activity::Input>> {
-    let ids: Vec<_> = session.view.frames.iter().map(|f| f.id.clone()).collect();
+    let ids: Vec<_> = session
+        .view
+        .input_experiments
+        .iter()
+        .rev()
+        .find(|r| r.source.is_some() && r.status != "cancelled")
+        .map(|r| r.frame_ids.clone())
+        .unwrap_or_else(|| session.view.frames.iter().map(|f| f.id.clone()).collect());
+    prepare_activity_frames(session, directory, &ids)
+}
+
+pub(crate) fn prepare_activity_frames(
+    session: &reversebolt_core::live::LiveSession,
+    directory: &Path,
+    ids: &[String],
+) -> Result<Option<reversebolt_observer::runtime_activity::Input>> {
     let args = json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":ids});
     let prepared = (|| -> Result<_> {
         let evidence = crate::play_evidence::read(session, &args)?;
@@ -528,7 +543,7 @@ pub(crate) fn prepare_activity(
     };
     save_new(
         &directory.join("play-source.json"),
-        &json!({"request":args,"frames":session.view.frames,"evidence":evidence,"selected":source}),
+        &json!({"request":args,"frames":session.view.frames.iter().filter(|f| ids.contains(&f.id)).collect::<Vec<_>>(),"evidence":evidence,"selected":source}),
     )?;
     let Some(source) = source else {
         return Ok(None);

@@ -487,7 +487,7 @@ impl LivePane {
                         ui.label("Play briefly while Reversebolt observes a key first.");
                         return;
                     }
-                    ui.label("Repeat an observed key four times, with quiet intervals.");
+                    ui.label("Repeat an observed key four times, then analyse its response.");
                     ui.label("Return to the game within 3 seconds. This can change gameplay.");
                     for key in keys {
                         if ui

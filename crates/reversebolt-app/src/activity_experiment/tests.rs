@@ -204,7 +204,14 @@ fn activity_experiment_generates_four_bounded_responses_without_any_memory_field
             &step,
             &owner,
             &root.join("runtime"),
-            |_, _, i, _, _| execute(&state, i),
+            |_, _, i, _, _| {
+                // Returning to the game may exceed one bounded input window.
+                // Only the seed capture itself starts the new response sequence.
+                if i == 0 {
+                    std::thread::sleep(Duration::from_secs(3));
+                }
+                execute(&state, i)
+            },
         )
         .unwrap();
         assert_eq!(result["success"], true, "{result}");
@@ -226,6 +233,13 @@ fn activity_experiment_generates_four_bounded_responses_without_any_memory_field
         .filter(|f| f.number >= plan.first_number)
         .collect();
     assert_eq!(frames.len(), 10);
+    let seed = &frames[0];
+    assert_eq!(
+        seed.input_context.as_ref().unwrap().requested_begin_us,
+        seed.capture_interval.as_ref().unwrap().begin_us
+    );
+    assert_eq!(seed.input_context.as_ref().unwrap().omitted_polls, 0);
+    assert!(reversebolt_core::action_patterns::exposure(&plan.source, seed).is_err());
     let evidence = crate::play_evidence::read(
         session,
         &json!({"investigation_id":plan.investigation,"batch":plan.batch,
@@ -244,6 +258,101 @@ fn activity_experiment_generates_four_bounded_responses_without_any_memory_field
     assert!(evidence["activity_source"].is_object());
     let dir = location(&root.join("runtime"), &reference).unwrap();
     assert_eq!(fs::read_dir(dir).unwrap().count(), 21); // plan + ten intents/outcomes
+    let review_step = Step {
+        activity: reference.clone(),
+        index: activity::STEPS,
+        key: 65,
+    };
+    let last_outcome = location(&root.join("runtime"), &reference)
+        .unwrap()
+        .join("09.outcome.json");
+    let original = fs::read(&last_outcome).unwrap();
+    let mut invalid: Value = serde_json::from_slice(&original).unwrap();
+    invalid["frame_id"] = json!("other");
+    fs::write(&last_outcome, serde_json::to_vec(&invalid).unwrap()).unwrap();
+    assert!(
+        super::review::run_with(
+            &mut engine,
+            &review_step,
+            &owner,
+            &root.join("runtime"),
+            |_, _| panic!("Changed completion cannot start review")
+        )
+        .is_err()
+    );
+    fs::write(&last_outcome, original).unwrap();
+    let published = Arc::new(std::sync::RwLock::new(engine.view.clone()));
+    let review = crate::service::native_command(
+        &mut engine,
+        &reversebolt_core::Command {
+            action: "_review_activity".into(),
+            args: json!(review_step),
+            source: "input-experiment".into(),
+        },
+        &root.join("captures"),
+        Some(&owner),
+        &mut crate::observation_pipeline::Pipeline::default(),
+        &published,
+        &mut crate::runtime_test_bridge::Session::new(Arc::new(AtomicBool::new(false))),
+    )
+    .unwrap();
+    assert_eq!(
+        published
+            .read()
+            .unwrap()
+            .live
+            .as_ref()
+            .unwrap()
+            .input_experiments
+            .len(),
+        1
+    );
+    let persisted: reversebolt_core::engine::View =
+        serde_json::from_slice(&fs::read(root.join("engine.json")).unwrap()).unwrap();
+    assert_eq!(
+        persisted.live.as_ref().unwrap().input_experiments[0].experiment,
+        reference
+    );
+    let restored = Engine::load(root.join("engine.json")).unwrap();
+    assert!(restored.view.live.is_none()); // Restart never reattaches an old target.
+    assert_eq!(review["review"]["status"], "measured");
+    assert!(review["review"]["context"].is_null());
+    let archived = super::review::read_result(&engine, &reference, &root.join("runtime")).unwrap();
+    assert_eq!(
+        archived["result"]["measurement"]["frames"]
+            .as_array()
+            .unwrap()
+            .len(),
+        10
+    );
+    assert_eq!(engine.live.as_ref().unwrap().view.sample_count, 11);
+    assert_eq!(engine.live.as_ref().unwrap().view.memory_sample_count(), 0);
+    assert_eq!(
+        super::review::run_with(
+            &mut engine,
+            &review_step,
+            &owner,
+            &root.join("runtime"),
+            |_, _| panic!("No replayed review")
+        )
+        .unwrap()["replayed"],
+        true
+    );
+    let followup = root.join("followup");
+    fs::create_dir(&followup).unwrap();
+    crate::runtime_naming_bridge::prepare_activity(engine.live.as_ref().unwrap(), &followup)
+        .unwrap();
+    let prepared: Value =
+        serde_json::from_slice(&fs::read(followup.join("play-source.json")).unwrap()).unwrap();
+    assert_eq!(
+        prepared["request"]["frame_ids"],
+        review["review"]["frame_ids"]
+    );
+    let result_path = location(&root.join("runtime"), &reference)
+        .unwrap()
+        .join("review/result.json");
+    fs::write(&result_path, b"{}").unwrap();
+    assert!(super::review::read_result(&engine, &reference, &root.join("runtime")).is_err());
     let replay = run_with(
         &mut engine,
         &Step {
@@ -260,6 +369,134 @@ fn activity_experiment_generates_four_bounded_responses_without_any_memory_field
     assert_eq!(replay["effect"], "NotApplied");
     drop(engine);
     cleanup(root);
+}
+
+#[test]
+fn activity_review_preserves_negative_interpretation_errors_and_stop_without_controls() {
+    for behavior in [
+        "positive",
+        "negative",
+        "failure",
+        "cancel",
+        "wrong_source",
+        "quiet",
+    ] {
+        let (mut engine, state, root, owner, mut plan, _) = setup();
+        plan.observer_model = Some("fixture:model".into());
+        let reference = store(&root.join("runtime"), &plan).unwrap();
+        for index in 0..activity::STEPS {
+            let step = Step {
+                activity: reference.clone(),
+                index,
+                key: 65,
+            };
+            let result = run_with(
+                &mut engine,
+                &step,
+                &owner,
+                &root.join("runtime"),
+                |_, _, i, _, _| {
+                    execute(&state, i)?;
+                    if behavior == "quiet" {
+                        state.shift.store(0, Ordering::SeqCst);
+                    }
+                    Ok(())
+                },
+            )
+            .unwrap();
+            assert_eq!(result["success"], true, "{result}");
+        }
+        let step = Step {
+            activity: reference.clone(),
+            index: activity::STEPS,
+            key: 65,
+        };
+        let cancel = owner.cancel.clone();
+        let mut calls = 0;
+        let result = super::review::run_with(
+            &mut engine,
+            &step,
+            &owner,
+            &root.join("runtime"),
+            |model, input| {
+                calls += 1;
+                assert_eq!(model, "fixture:model");
+                if behavior == "failure" {
+                    return Err("fixture model unavailable".into());
+                }
+                if behavior == "cancel" {
+                    cancel.store(true, Ordering::SeqCst);
+                }
+                let mut source = input.source.clone();
+                if behavior == "wrong_source" {
+                    source.key = 66;
+                }
+                Ok(reversebolt_observer::runtime_activity::Receipt {
+                    source,
+                    motion: None,
+                    appearances: input.appearances.clone(),
+                    regions: input.regions.clone(),
+                    stage: None,
+                    observation: Some(reversebolt_core::play_context::Observation {
+                        consistent_visible_change: behavior == "positive",
+                        description:
+                            "The generated pairs do not establish a common semantic change.".into(),
+                        uncertainty: "Fixture model output, not a real game inference.".into(),
+                    }),
+                    error: None,
+                })
+            },
+        )
+        .unwrap();
+        assert_eq!(calls, usize::from(behavior != "quiet"));
+        let summary = &result["review"];
+        if matches!(behavior, "positive" | "negative") {
+            assert_eq!(summary["status"], "interpreted");
+            assert_eq!(
+                summary["context"]["observation"]["consistent_visible_change"],
+                behavior == "positive"
+            );
+            assert_eq!(
+                summary["context"]["interpretation_source"]["model"],
+                "fixture:model"
+            );
+        } else {
+            assert!(summary["context"].is_null());
+            assert_eq!(
+                summary["status"],
+                if behavior == "quiet" {
+                    "no_separated_response"
+                } else if behavior == "cancel" {
+                    "cancelled"
+                } else {
+                    "model_unavailable"
+                }
+            );
+        }
+        let live = &engine.live.as_ref().unwrap().view;
+        assert!(live.runtime.cards.is_empty());
+        assert!(live.visual_tracks.is_empty());
+        assert!(live.temporal_tracks.is_empty());
+        assert_eq!(live.sample_count, 11);
+        assert_eq!(live.memory_sample_count(), 0);
+        let saved = super::review::read_result(&engine, &reference, &root.join("runtime")).unwrap();
+        assert_eq!(saved["review"], *summary);
+        // Losing the publication checkpoint must not cause another inference.
+        engine.live.as_mut().unwrap().view.input_experiments.clear();
+        owner.cancel.store(false, Ordering::SeqCst);
+        assert!(
+            super::review::run_with(
+                &mut engine,
+                &step,
+                &owner,
+                &root.join("runtime"),
+                |_, _| panic!("Review intent is already durable")
+            )
+            .is_err()
+        );
+        drop(engine);
+        cleanup(root);
+    }
 }
 #[test]
 fn activity_experiment_rejects_lost_scope_budget_changed_plan_and_duplicate_intent_before_input() {

@@ -4,6 +4,31 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic input-response review (2026-10-22): **35% unchanged**.
+An eleventh owned job step now validates and analyses exactly the experiment's
+ten response images. A configured local model may interpret two eligible pairs;
+its name is pinned at submission. Results retain measurements, source references,
+uncertainty and errors in the shared session and a hash-checked MCP reader.
+Negative replies are preserved, Stop suppresses interpretation publication and
+durable intent prevents repeat inference. Later metadata discovery prefers these
+exact image IDs. No unnamed cards or edit authority are created.
+
+The first image now starts a fresh input window at capture time, avoiding the
+return-to-game wait overflowing its sample budget. Later intervals retain the
+existing continuity and quiet-bracket checks. A generated three-second-delay
+fixture exercises the real review command, durable checkpoint and subsequent
+activity preparation without additional captures or target-memory reads. Six
+mock interpretation cases cover positive, negative, failure, cancellation,
+wrong-source and unchanged-image outcomes. All 398 workspace tests, a strengthened
+final command/checkpoint test, strict Clippy and formatting pass. Initial test
+initializer and restart-expectation failures remain retained.
+
+No native game or live model trial ran; discovery/generalization credit remains
+unchanged. Total **35/100** with the prior fixed weights. The preview remains
+unavailable and all artifacts stay local. Next: native validation when available,
+then automatic selection and linking of responses to controlling internal state.
+[Implementation, evidence and limits](../research/activity-review/README.md).
+
 Input-only investigation implemented (2026-10-22): **35% unchanged**.
 The shared desktop/MCP engine can now collect response evidence before a gameplay
 field or isolated activity source exists. An explicit experiment repeats one

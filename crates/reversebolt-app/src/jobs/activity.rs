@@ -73,12 +73,13 @@ impl Controller {
         {
             return Err("Finish the current change search first.".into());
         }
-        let plan = Plan::new(live, key, format!("{boot}:{}:{request}", actor.client))?;
+        let mut plan = Plan::new(live, key, format!("{boot}:{}:{request}", actor.client))?;
+        plan.observer_model = view.observer_model.clone();
         if plan.binding() != binding.target {
             return Err("Application binding changed".into());
         }
         let reference = crate::activity_experiment::store(&self.runtime_directory, &plan)?;
-        let steps = (0..activity::STEPS)
+        let steps = (0..=activity::STEPS)
             .map(|index| {
                 Ok(job::Step {
                     kind: if activity::action(index, key).is_some() {
@@ -117,7 +118,7 @@ impl CaptureExecutor {
             })
         };
         if self.flight.is_some()
-            || step.index >= activity::STEPS
+            || step.index > activity::STEPS
             || effect != activity::action(step.index, step.key).is_some()
             || Scope::from_view(&self.engine.view.read().unwrap())
                 .map(|s| s.key())
@@ -141,7 +142,12 @@ impl CaptureExecutor {
         }
         let owner = self.owner.as_ref().unwrap().clone();
         let command = Command {
-            action: "_activity_step".into(),
+            action: if step.index == activity::STEPS {
+                "_review_activity"
+            } else {
+                "_activity_step"
+            }
+            .into(),
             args: json!(step),
             source: "input-experiment".into(),
         };

@@ -65,8 +65,11 @@ sampling and the current image geometry. A key sample establishes provenance,
 not its meaning or effect.
 
 The fixed sequence contains ten Play images: a seed, a quiet interval, then
-four 250 ms presses each followed by a quiet interval. It performs no memory
-read, OCR or model call. It reserves ten capture slots and ten worst-case image
+four 250 ms presses each followed by a quiet interval. Capture performs no memory
+read or OCR. The seed begins a fresh sampled-input window at image capture, so
+the return-to-game delay is not presented as continuous response evidence.
+An eleventh job step automatically analyses the ten images without another
+capture. The experiment reserves ten capture slots and ten worst-case image
 allowances; this fits after the usual 31-capture pass under the new 48-image cap.
 The independent 20-memory-sample and 512 MiB storage ceilings remain unchanged.
 
@@ -89,13 +92,32 @@ Accepted Windows input is not proof of a gameplay response. Capture and sampled
 hold checks retain the existing limits; a slow capture or scheduling gap can
 make an otherwise completed press unusable as evidence.
 
-Use job checkpoints and `live.frames` to obtain the ten new frame IDs, then
-`read_play_evidence` to measure their responses. Those images are available to
-the existing activity interpretation and naming workflow, but the experiment
-currently does not trigger a model review or publish controls automatically.
-No input receipt or image difference supplies a semantic name, numeric range,
-causal conclusion or memory-edit authority. Independent game validation remains
-outstanding; current verification uses generated images and sampled-input fixtures.
+The final step validates all ten successful capture receipts and their exact
+frames, then runs the shared image/region measurements. If they supply an eligible
+activity source and a local observer was selected when the job was submitted,
+one optional model interpretation examines two before/after pairs. The selected
+model name is immutable for this plan. A model failure preserves measurements;
+negative interpretations retain their original uncertainty. Stop suppresses
+interpretation publication, and a durable review intent prevents repeat inference
+after interruption. No further target access is needed for this analysis.
+
+`live.input_experiments` retains up to four compact results per observation batch.
+`read_activity_experiment` accepts its `experiment` reference and returns the saved
+measurements, optional raw interpretation and hash-checked source evidence.
+It makes no capture, input, memory access or model call. The result is historical;
+it does not read a current game value. Altered result/image files are rejected.
+Changing the batch clears its live summaries; original archives remain on disk.
+Older sessions default to an empty result list and old ten-step job plans retain
+their previous behavior.
+
+Later metadata discovery prefers the latest measured experiment's exact images
+for its activity input. It still performs its normal independent metadata pass
+and activity interpretation; this change does not automatically run metadata
+discovery or reuse the earlier model reply in that later pass. No input receipt,
+image difference or model interpretation supplies a verified semantic name,
+numeric range, causal conclusion or memory-edit authority, and no editable card
+is created by this analysis. Independent game validation remains outstanding;
+current verification uses generated images, sampled inputs and mock model replies.
 
 `read_play_evidence` takes the exact `investigation_id`, `batch` and 2–48 ordered
 `frame_ids`. It reads retained, hash-checked images and input metadata, returning

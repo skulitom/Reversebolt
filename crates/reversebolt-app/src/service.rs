@@ -139,6 +139,7 @@ impl EngineHandle {
                         | "read_capture"
                         | "read_sequence"
                         | "read_play_evidence"
+                        | "read_activity_experiment"
                         | "read_change_evidence"
                         | "read_runtime_test"
                         | "plan_runtime_comparisons"
@@ -172,6 +173,7 @@ impl EngineHandle {
                             | "submit_observation"
                             | "read_sequence"
                             | "read_play_evidence"
+                            | "read_activity_experiment"
                             | "read_change_evidence"
                             | "submit_temporal_observation"
                             | "set_observed_value"
@@ -185,6 +187,7 @@ impl EngineHandle {
                             | "set_runtime_freeze"
                             | "_tick_runtime_freeze"
                             | "_activity_step"
+                            | "_review_activity"
                             | "prepare_runtime_change"
                             | "apply_runtime_change"
                             | "restore_runtime_change"
@@ -235,6 +238,7 @@ impl EngineHandle {
                                 | "submit_observation"
                                 | "read_sequence"
                                 | "read_play_evidence"
+                                | "read_activity_experiment"
                                 | "read_change_evidence"
                                 | "submit_temporal_observation"
                                 | "set_observed_value"
@@ -248,6 +252,7 @@ impl EngineHandle {
                                 | "set_runtime_freeze"
                                 | "_tick_runtime_freeze"
                                 | "_activity_step"
+                                | "_review_activity"
                                 | "prepare_runtime_change"
                                 | "apply_runtime_change"
                                 | "restore_runtime_change"
@@ -384,6 +389,29 @@ pub(crate) fn native_command(
         }
     }
     match command.action.as_str() {
+        "read_activity_experiment" => {
+            let reference = command.args["experiment"]
+                .as_str()
+                .ok_or("Supply an experiment reference")?;
+            return crate::activity_experiment::review::read_result(
+                engine,
+                reference,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+            );
+        }
+        "_review_activity" => {
+            let owner = owner.ok_or("Input reviews require an owning job")?;
+            analysis.check(owner)?;
+            let step = serde_json::from_value(command.args.clone())
+                .map_err(|e| format!("Invalid input review: {e}"))?;
+            return crate::activity_experiment::review::run(
+                engine,
+                &step,
+                owner,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+                published,
+            );
+        }
         "_activity_step" => {
             let owner = owner.ok_or("Input experiments require an owning job")?;
             analysis.check(owner)?;

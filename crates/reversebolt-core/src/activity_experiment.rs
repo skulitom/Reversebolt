@@ -13,6 +13,19 @@ pub const HOLD_MS: u32 = 250;
 pub const POLICY: &str = "quiet_bracketed_observed_key_v1";
 pub const LIMITATION: &str = "Four repetitions of a previously sampled key, separated by quiet observations. Input can change the game. Samples and Windows delivery receipts do not establish key meaning, a gameplay property, world rollback or memory-edit authority.";
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Review {
+    pub experiment: String,
+    pub job: u64,
+    pub frame_ids: Vec<String>,
+    pub model: Option<String>,
+    pub status: String,
+    pub error: Option<String>,
+    pub source: Option<crate::play_context::Source>,
+    pub context: Option<crate::play_context::Context>,
+    pub receipt_sha256: String,
+}
+
 pub fn action(index: usize, key: u8) -> Option<Action> {
     (matches!(index, 2 | 4 | 6 | 8)).then_some(Action {
         keys: vec![key],
@@ -94,6 +107,8 @@ pub struct Plan {
     pub key: u8,
     pub source: FrameRef,
     pub request: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub observer_model: Option<String>,
 }
 impl Plan {
     pub fn new(live: &LiveView, key: u8, request: String) -> Result<Self> {
@@ -121,6 +136,7 @@ impl Plan {
             key,
             source: source.clone(),
             request,
+            observer_model: None,
         };
         plan.check(live, 0)?;
         if live.sample_count + STEPS > crate::live::MAX_SAMPLES
@@ -138,9 +154,17 @@ impl Plan {
         )
     }
     pub fn check(&self, live: &LiveView, index: usize) -> Result<()> {
+        if index >= STEPS {
+            return Err("Invalid input capture step".into());
+        }
+        self.check_next(live, index)
+    }
+    pub fn check_completed(&self, live: &LiveView) -> Result<()> {
+        self.check_next(live, STEPS)
+    }
+    fn check_next(&self, live: &LiveView, index: usize) -> Result<()> {
         if self.policy != POLICY
             || !allowed(self.key)
-            || index >= STEPS
             || self.first_number == 0
             || self.first_number.checked_add(index) != Some(live.sample_count + 1)
             || !live.connected
@@ -153,6 +177,13 @@ impl Plan {
             || self.process.window == 0
             || self.request.is_empty()
             || self.request.len() > 200
+            || self.observer_model.as_ref().is_some_and(|m| {
+                m.is_empty()
+                    || m.len() > 128
+                    || !m
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || "-_.:/".contains(c))
+            })
         {
             return Err("The input experiment's target, plan or next capture changed.".into());
         }

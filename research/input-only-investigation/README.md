@@ -1,5 +1,9 @@
 # Input-only investigation before named fields
 
+The later [automatic review](../activity-review/README.md) adds an eleventh
+analysis step and corrects the initial input window. This record describes the
+original ten-step implementation and its frozen verification snapshot.
+
 Implemented 2026-10-22. Full-goal progress remains **35%**. This is a software
 integration result using generated fixtures, not a successful game experiment.
 

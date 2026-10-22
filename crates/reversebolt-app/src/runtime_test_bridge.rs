@@ -375,6 +375,7 @@ impl Session {
                     | "read_capture"
                     | "read_sequence"
                     | "read_play_evidence"
+                    | "read_activity_experiment"
                     | "read_change_evidence"
             )
         {

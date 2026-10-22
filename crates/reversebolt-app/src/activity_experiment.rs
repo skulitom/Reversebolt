@@ -15,6 +15,7 @@ use std::{
     path::{Path, PathBuf},
     sync::atomic::Ordering,
 };
+pub(crate) mod review;
 #[cfg(test)]
 mod tests;
 
@@ -177,7 +178,11 @@ pub(crate) fn run_with(
         if owner.cancel.load(Ordering::SeqCst) {
             return Err("Input experiment stopped after input settled".into());
         }
-        session.capture_mode(CaptureMode::Play)?;
+        if step.index == 0 {
+            session.capture_play_seed()?;
+        } else {
+            session.capture_mode(CaptureMode::Play)?;
+        }
         let frame = session
             .view
             .frames

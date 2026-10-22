@@ -40,10 +40,17 @@ fn human(c: &mut Controller, operation: &str, id: u64) -> Value {
     .unwrap()
 }
 fn reply(command: &Command, view: &mut EngineView, unknown: bool) -> Value {
-    assert_eq!(command.action, "_activity_step");
     let step: Step = serde_json::from_value(command.args.clone()).unwrap();
+    assert_eq!(
+        command.action,
+        if step.index == activity::STEPS {
+            "_review_activity"
+        } else {
+            "_activity_step"
+        }
+    );
     let effect = activity::action(step.index, step.key).is_some();
-    if !unknown {
+    if !unknown && step.index < activity::STEPS {
         view.live.as_mut().unwrap().sample_count += 1;
     }
     json!({"ok":true,"error":null,"state":view,"data":{"success":!unknown,
@@ -70,11 +77,21 @@ fn activity_jobs_share_authorization_replay_and_capture_budgets() {
         reply(&command, view, false)
     });
     let mut c = controller(engine);
+    c.engine.view.write().unwrap().observer_model = Some("first:model".into());
     let command = request(&c, "start_activity_experiment", json!({"key":65}));
     let receipt = c.job_command(&command).unwrap();
     let id = receipt["ack"]["job"].as_u64().unwrap();
     let job = &c.jobs.snapshot().jobs[&id];
-    assert_eq!(job.steps.len(), 10);
+    assert_eq!(job.steps.len(), 11);
+    let first: Step = serde_json::from_str(&job.steps[0].payload).unwrap();
+    assert_eq!(
+        crate::activity_experiment::load(&c.runtime_directory, &first.activity)
+            .unwrap()
+            .observer_model
+            .as_deref(),
+        Some("first:model")
+    );
+    c.engine.view.write().unwrap().observer_model = Some("later:model".into());
     assert_eq!(
         job.steps
             .iter()
@@ -100,7 +117,8 @@ fn activity_jobs_share_authorization_replay_and_capture_budgets() {
     finish(&mut c, id);
     assert_eq!(c.jobs.snapshot().jobs[&id].phase, job::Phase::Completed);
     let commands: Vec<_> = received.try_iter().collect();
-    assert_eq!(commands.len(), 10);
+    assert_eq!(commands.len(), 11);
+    assert_eq!(commands.last().unwrap().action, "_review_activity");
     assert_eq!(
         c.engine
             .view

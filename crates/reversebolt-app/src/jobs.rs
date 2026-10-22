@@ -55,12 +55,12 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
             let watching = plan.as_ref().is_some_and(|s| s.change.is_some());
             let activity=job.steps.first().and_then(|s|serde_json::from_str::<crate::activity_experiment::Step>(&s.payload).ok());
-            let title = if activity.is_some() { "Testing an input" } else if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
+            let title = if activity.is_some() && job.next_step == reversebolt_core::activity_experiment::STEPS { "Understanding the response" } else if activity.is_some() { "Testing an input" } else if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.has_model());
             ui.horizontal_wrapped(|ui| {
                 if job.phase==job::Phase::Running { ui.spinner(); }
                 ui.label(RichText::new(if job.phase==job::Phase::Running {format!("{title}…")} else {phase.into()}).color(ACCENT))
-                    .on_hover_text(format!("{} / {} moments. Keys sampled while the selected window is active.{}",job.next_step,job.steps.len(),if model_step {" Reading images locally."} else {""}));
+                    .on_hover_text(format!("{} / {} {}. Keys sampled while the selected window is active.{}",job.next_step,job.steps.len(),if activity.is_some() {"steps"} else {"moments"},if model_step {" Reading images locally."} else {""}));
                 if activity.is_none() && job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
                 }else if activity.is_none() && matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish any active capture or model request, then pause.").clicked() {
@@ -133,6 +133,7 @@ fn read_only(action: &str) -> bool {
             | "read_capture"
             | "read_sequence"
             | "read_play_evidence"
+            | "read_activity_experiment"
             | "read_change_evidence"
             | "read_runtime_test"
             | "search_runtime_values"
@@ -500,8 +501,8 @@ impl job::Executor for CaptureExecutor {
                             job::Knowledge::NotApplicable
                         };
                         return job::Poll::Ready(job::Outcome {success:value["ok"]==true && value["data"]["success"]==true,
-                            effect:knowledge,data:serde_json::to_vec(&json!({"experiment":value["data"]["experiment"],"index":value["data"]["index"],"frame":value["data"]["frame_id"]})).unwrap_or_default(),
-                            note:value["error"].as_str().or(value["data"]["error"].as_str()).unwrap_or(if effect {"Input sent and response captured; gameplay effect remains unverified."} else {"Quiet response image captured; gameplay effect remains unverified."}).into()});
+                            effect:knowledge,data:serde_json::to_vec(&json!({"experiment":value["data"]["experiment"],"index":value["data"]["index"],"frame":value["data"]["frame_id"],"review_sha256":value["data"]["review"]["receipt_sha256"]})).unwrap_or_default(),
+                            note:value["error"].as_str().or(value["data"]["error"].as_str()).unwrap_or(if effect {"Input sent and response captured; gameplay effect remains unverified."} else if value["data"]["review"].is_object() {"Input experiment analyzed; interpretation remains provisional."} else {"Quiet response image captured; gameplay effect remains unverified."}).into()});
                     }
                     let live = &value["state"]["live"];
                     Self::outcome(
@@ -1538,6 +1539,7 @@ mod tests {
                 memory_sources: vec![],
                 memory_sources_error: None,
                 local_observation_warnings: vec![],
+                input_experiments: vec![],
                 rule_checks: vec![],
                 rule_error: None,
                 action_patterns: vec![],
