@@ -29,9 +29,10 @@ All **450 workspace tests**, strict all-target Clippy, formatting and the saved
 native artifact audit pass after the reporting fix.
 Preview `0.1.0-20261023-002433` (source `f979c64`) is published and its four
 binary hashes and launcher check pass. The running connected desktop editor is
-preserved. At this checkpoint Windows' administrator confirmation for the
-already-authorized exact-file allowance is pending; no allowance success receipt
-exists yet. Do not launch duplicate elevation helpers while that operation lives.
+preserved. Windows reported cancellation of the administrator confirmation for
+the new exact-file allowance; its helper never started and no success receipt
+exists. The elevation operation is terminal and was not retried. Publication
+does not establish that Windows has allowed this new executable.
 
 Fixed weights: foundation 4/10, native access 6/10, observation 5/15, discovery
 8/20, validation **5/15**, intent 1/10, agent collaboration 7/10, generalization

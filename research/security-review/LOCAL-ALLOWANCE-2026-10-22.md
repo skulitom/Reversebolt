@@ -81,11 +81,10 @@ All four manifest hashes and the launcher-availability check pass. The user's
 connected desktop process 98332 remains on the earlier `233909` release.
 
 The same exact-file allowance helper was prepared for `002433` under the
-standing authorization. At this documentation checkpoint its Windows
-administrator confirmation is pending, and
-`test-results/allow-desktop-20261023-002433.json` does not exist. Do not infer
-allowance from publication or restart the helper while the original operation
-is live. The pending-operation record is
+standing authorization. Windows subsequently reported "The operation was canceled
+by the user." The elevation operation is terminal; the helper never started and
+`test-results/allow-desktop-20261023-002433.json` does not exist. No allowance was
+applied or retried. Do not infer allowance from publication. The original
+pending-operation record, now marked `elevation_cancelled`, is
 `test-results/pending-allowance-20261023-002433.json`. No broader rule or upload
-was requested. Recheck the existing operation and its receipt before updating
-this status.
+was requested. The older connected desktop editor remains available.
