@@ -213,6 +213,15 @@ The immutable job binding supplies investigation/batch scope. Detailed results
 are read through the relevant evidence API. This keeps the full 31-capture
 automatic job within its existing 4 KiB result budget; limits are not increased.
 
+Runtime discovery checkpoints likewise retain catalog/revision/card counts and,
+when naming ran, its evidence ID, hypothesis count and cancellation flag.
+`runtime.naming.card_publication` in a job checkpoint contains counts for
+`shown`, `added`, `omitted` and `removed_preview`, plus revision/generation. Full
+path arrays remain in the archived naming `card-publication.json` and the full
+engine response. A job checkpoint is an evidence reference, not a copy of that
+response or new edit authority. This prevents successful naming from exhausting
+the cumulative job-result budget after the preceding image captures.
+
 The producer selects temporal-order proposals from the first six memory samples
 and assesses those patterns on later samples. It uses no visible numbers or
 semantic labels. Type ambiguity, missing data and omissions remain explicit;

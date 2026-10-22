@@ -64,3 +64,28 @@ are allowed while that earlier session remains in use; no folder, process-wide
 or threat-wide rule was introduced. The new release passed binary-hash and
 launcher-availability checks. Its revised discovery has been exercised against
 saved evidence, not yet in a new native game run.
+
+## Live validation and the next reporting update (23 October local time)
+
+The `235934` build subsequently ran discovery and five guarded comparisons in
+Viewfinder through Anode. All five original values were restored; 31 helper
+runs confirmed completion/unload. One measured response was suppressed and
+returned after restoration. Checked protections remained enabled and no new
+Reversebolt detection appeared in the interval. This still does not establish
+vendor clearance or explain the earlier detection.
+
+The resulting reporting fix, source `f979c64`, is published as
+`0.1.0-20261023-002433`, SHA-256
+`76b6feadbe2071f1998ba24f86e8ea5f22128b6e15ce1d982ea391ed59e36e84`.
+All four manifest hashes and the launcher-availability check pass. The user's
+connected desktop process 98332 remains on the earlier `233909` release.
+
+The same exact-file allowance helper was prepared for `002433` under the
+standing authorization. At this documentation checkpoint its Windows
+administrator confirmation is pending, and
+`test-results/allow-desktop-20261023-002433.json` does not exist. Do not infer
+allowance from publication or restart the helper while the original operation
+is live. The pending-operation record is
+`test-results/pending-allowance-20261023-002433.json`. No broader rule or upload
+was requested. Recheck the existing operation and its receipt before updating
+this status.
