@@ -2,6 +2,7 @@
 //! Model metadata and dictionary attribution are in NOTICE.md. Observations are
 //! provisional: neither a model score nor a stable region verifies meaning.
 pub mod activity_region_suggestions;
+pub mod activity_region_summary;
 pub mod appearance_activity;
 pub mod appearance_sequence;
 mod geometry;

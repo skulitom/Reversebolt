@@ -232,6 +232,9 @@ pub struct Context {
     /// Original-appearance evidence for these exact pairs; missing stays explicit.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub appearances: Option<crate::appearance_activity::Summary>,
+    /// Automatic regions checked independently on these exact action intervals.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub regions: Option<crate::activity_regions::Summary>,
     pub source: Source,
     pub observation: Observation,
 }
@@ -255,6 +258,7 @@ impl Context {
             interpretation_source: None,
             motion: None,
             appearances: None,
+            regions: None,
             source,
             observation,
         };
@@ -282,6 +286,9 @@ impl Context {
         }
         if let Some(appearances) = &self.appearances {
             appearances.validate(&self.source)?;
+        }
+        if let Some(regions) = &self.regions {
+            regions.validate(&self.source)?;
         }
         if let Some(source) = &self.interpretation_source
             && (!uuid::Uuid::parse_str(&source.review_id)

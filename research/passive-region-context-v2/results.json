@@ -1,0 +1,552 @@
+{
+  "manifest_sha256": "a61cecad0559145437ca58e8156d0380cca81ff167a4e52aeb53f701f634e55b",
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "proposal_equal": true,
+      "summary_repeat_equal": true,
+      "regions": [
+        {
+          "pairs": [
+            {
+              "after_region": [
+                122.4609375,
+                420.83333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                186.9140625,
+                414.58333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -64.453125,
+                6.25
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                122.4609375,
+                420.83333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                182.6171875,
+                414.58333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                6.25
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              186.9140625,
+              414.58333333333337,
+              38.671875,
+              35.41666666666667
+            ],
+            "before_region": [
+              186.9140625,
+              414.58333333333337,
+              38.671875,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 189,
+            "y": 416
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                214.84375,
+                404.1666666666667,
+                36.5234375,
+                35.41666666666667
+              ],
+              "before_region": [
+                275.0,
+                400.0,
+                36.5234375,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                4.166666666666686
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                214.84375,
+                404.1666666666667,
+                36.5234375,
+                35.41666666666667
+              ],
+              "before_region": [
+                270.703125,
+                400.0,
+                36.5234375,
+                35.41666666666667
+              ],
+              "displacement": [
+                -55.859375,
+                4.166666666666686
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              275.0,
+              400.0,
+              36.5234375,
+              35.41666666666667
+            ],
+            "before_region": [
+              275.0,
+              400.0,
+              36.5234375,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 275,
+            "y": 400
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                247.0703125,
+                385.4166666666667,
+                38.671875,
+                37.5
+              ],
+              "before_region": [
+                307.2265625,
+                381.25,
+                38.671875,
+                37.5
+              ],
+              "displacement": [
+                -60.15625,
+                4.166666666666686
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                247.0703125,
+                385.4166666666667,
+                38.671875,
+                37.5
+              ],
+              "before_region": [
+                302.9296875,
+                381.25,
+                38.671875,
+                37.5
+              ],
+              "displacement": [
+                -55.859375,
+                4.166666666666686
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              307.2265625,
+              381.25,
+              38.671875,
+              37.5
+            ],
+            "before_region": [
+              307.2265625,
+              381.25,
+              38.671875,
+              37.5
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 309,
+            "y": 383
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                105.2734375,
+                406.25000000000006,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                169.7265625,
+                400.0,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -64.453125,
+                6.250000000000057
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                105.2734375,
+                406.25000000000006,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                165.4296875,
+                400.0,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                6.250000000000057
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              169.7265625,
+              400.0,
+              38.671875,
+              35.41666666666667
+            ],
+            "before_region": [
+              169.7265625,
+              400.0,
+              38.671875,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 36,
+            "x": 171,
+            "y": 400
+          },
+          "root_status": "matched"
+        }
+      ],
+      "arms": {
+        "baseline": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the cyan robot on the right shifts leftward and slightly downward, and the central desk/chair shifts leftward. The left-side red conical plants and white clouds also shift leftward. The scene appears to pan right or the camera moves left.",
+            "uncertainty": "Measurements show sparse matches with many unresolved cells (poor_match, search_boundary). Displacements are consistent in direction (leftward) but magnitudes vary slightly between pairs. Camera motion vs. object motion cannot be distinguished."
+          },
+          "seconds": 15.14100000000326,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "done_reason": "stop",
+          "prompt_tokens": 5488,
+          "output_tokens": 117,
+          "prompt_bytes": 6973,
+          "summary_bytes": 0
+        },
+        "augmented": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the cyan robot on the right shifts leftward and slightly downward relative to the static desk and background. The robot's screen-space position changes consistently across the two intervals.",
+            "uncertainty": "The robot's movement could be due to camera panning rather than the robot moving. The sparse patch matches and lack of consensus in the numeric data introduce uncertainty about the exact magnitude and nature of the displacement."
+          },
+          "seconds": 2.3280000000086147,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "done_reason": "stop",
+          "prompt_tokens": 6916,
+          "output_tokens": 96,
+          "prompt_bytes": 9660,
+          "summary_bytes": 3738
+        }
+      }
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "proposal_equal": true,
+      "summary_repeat_equal": true,
+      "regions": [
+        {
+          "pairs": [
+            {
+              "after_region": [
+                675.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "before_region": [
+                640.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "displacement": [
+                35.0,
+                0.0
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                677.5,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "before_region": [
+                640.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "displacement": [
+                37.5,
+                0.0
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              640.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              640.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 640,
+            "y": 80
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "ambiguous"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              460.0,
+              520.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              460.0,
+              520.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 460,
+            "y": 520
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "inconsistent_reverse"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              760.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              760.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 760,
+            "y": 80
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 700,
+            "y": 520
+          },
+          "root_status": "ambiguous"
+        }
+      ],
+      "arms": {
+        "baseline": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the upper-right colored shapes (peach and pink) shift horizontally to the right relative to the static room geometry. The first pair shows a ~40px rightward displacement; the second shows a ~42px rightward displacement. The floor and walls remain fixed.",
+            "uncertainty": "Displacements are consistent in direction and magnitude across pairs, but sparse patch matching and low-texture regions limit precision. The shift could be camera panning or object movement; exact cause is unmeasured."
+          },
+          "seconds": 5.578000000008615,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "done_reason": "stop",
+          "prompt_tokens": 6295,
+          "output_tokens": 118,
+          "prompt_bytes": 6652,
+          "summary_bytes": 0
+        },
+        "augmented": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the upper-right colored shapes (peach and pink) shift horizontally to the right. The peach shape moves approximately 40 pixels right, and the pink shape moves approximately 35-37 pixels right. The rest of the scene (walls, floor, stairs) appears static.",
+            "uncertainty": "The horizontal shift is consistent across both pairs and supported by multiple matched points. However, the cause of this shift (camera pan, object movement, or rendering artifact) is not determined. The magnitude of the shift is slightly different between the two pairs (40px vs 42.5px for peach, 35px vs 37.5px for pink), suggesting minor measurement variance or non-uniform motion."
+          },
+          "seconds": 2.7189999999827705,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "done_reason": "stop",
+          "prompt_tokens": 6863,
+          "output_tokens": 167,
+          "prompt_bytes": 8523,
+          "summary_bytes": 2698
+        }
+      }
+    }
+  ],
+  "error": null,
+  "binaries": {
+    "activity-region-suggestions-replay": "9de3b16e9e48abb966fa70c6984f954e726b47a9885948fa8bb1b8fd95e099e7",
+    "activity-replay": "26087ad3bd2b1c4cad0fbe3d2ed1355c7a2b9a298f328d68b5ac6c5b44eea68e"
+  },
+  "interpretation_inputs_sha256": "cd250887613cc3a5a2eaa043fdb54748f5311f40c5e733ab02044af198153be2",
+  "audit": {
+    "source_count": 163,
+    "input_count": 24,
+    "generated_count": 21,
+    "changed": []
+  }
+}

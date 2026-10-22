@@ -7,6 +7,8 @@ struct ActivityManifest {
     frames: Vec<PathBuf>,
     #[serde(default)]
     appearances: Option<reversebolt_core::appearance_activity::Summary>,
+    #[serde(default)]
+    regions: Option<reversebolt_core::activity_regions::Summary>,
 }
 fn activity(
     path: &str,
@@ -42,6 +44,7 @@ fn activity(
         source: manifest.source,
         frames,
         appearances: manifest.appearances,
+        regions: manifest.regions,
     };
     input.validate()?;
     Ok(input)

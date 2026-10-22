@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Passive regions in automatic interpretation (2026-10-22): **35% unchanged**.
+Automatic discovery now carries the source-selected region outcomes into the
+four-image interpreter and shared durable context. A bounded summary retains
+root/quiet status, both independent action outcomes, original-pixel rectangles
+and displacements, and exact source/report/frame provenance. Failed checks remain
+missing evidence. A compact model-facing projection preserves numeric outcomes
+while full provenance stays in the receipt. No names, authority, comparison gates
+or assessments are changed, and old records retain their omitted-field shape.
+
+All 369 workspace test executions passed, followed by the affected observer test
+and strict workspace/all-target Clippy on the final prompt revision. Automated
+checks cover original-pixel conversion, malformed/source-rebound evidence, stops,
+legacy serialization, uncertainty, exact projection and no-target-access automatic
+delivery without observer labels. The first four-call frozen study exposed one
+context-limit truncation. The separate compact revision completes both augmented
+cases with unchanged model/options; Hyperbolica input falls from 8079 to 6916
+tokens. Full summaries survive both successful contexts. All proposals/summaries
+equal the earlier evidence and both baseline prompts are unchanged. All 163
+sources, 24 original inputs, 21 generated inputs and both binaries pass audit.
+Model prose still makes unverified, sometimes conflicting scene claims; no
+accuracy or generalization credit follows. No new capture, game input or target
+memory operation ran. Desktop publication remains unavailable after quarantine.
+[Method, retained failure and final results](../research/passive-region-context-v2/README.md).
+
 Stable texture region selection (2026-10-22): **35% unchanged**.
 Automatic passive suggestions now filter source texture, corner strength and
 quiet stability before the four-candidate/twenty-check matching budget. The

@@ -302,7 +302,20 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
                                     .map(|(_, bytes)| bytes)
                             },
                         ) {
-                            Ok(report) => json!({"report":report,"error":null}),
+                            Ok(report) => {
+                                let summary =
+                                    reversebolt_vision::activity_region_summary::summarize(
+                                        &report, source, &frames,
+                                    );
+                                match summary {
+                                    Ok(summary) => {
+                                        json!({"report":report,"summary":summary,"error":null})
+                                    }
+                                    Err(error) => {
+                                        json!({"report":report,"summary":null,"summary_error":error,"error":null})
+                                    }
+                                }
+                            }
                             Err(error) => json!({"report":null,"error":error}),
                         }
                     }
@@ -469,6 +482,16 @@ pub(crate) mod tests {
             reversebolt_vision::activity_region_suggestions::POLICY
         );
         assert_eq!(suggestions["report"]["origin_frame_id"], "frame-2");
+        assert!(suggestions["summary_error"].is_null());
+        assert_eq!(
+            suggestions["summary"]["policy"],
+            reversebolt_core::activity_regions::POLICY
+        );
+        let prepared = crate::runtime_naming_bridge::prepare_activity(&session, &directory)
+            .unwrap()
+            .unwrap();
+        assert_eq!(json!(prepared.regions), suggestions["summary"]);
+        prepared.validate().unwrap();
         assert!(suggestions["report"]["attempted_frames"].as_u64().unwrap() <= 20);
         assert_eq!(
             suggestions["report"]["checked_frames"]

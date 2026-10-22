@@ -31,6 +31,44 @@ pub struct Outcome {
     pub before_region: Option<[f64; 4]>,
     pub after_region: Option<[f64; 4]>,
 }
+impl Outcome {
+    pub(crate) fn validate(&self, dimensions: [u32; 2]) -> Result<()> {
+        if (self.status == Status::Matched) != self.displacement.is_some()
+            || (self.status == Status::Matched) != self.before_region.is_some()
+            || (self.status == Status::Matched) != self.after_region.is_some()
+        {
+            return Err("Unresolved or future appearances cannot supply displacement.".into());
+        }
+        if let Some(delta) = self.displacement
+            && (0..2).any(|i| !delta[i].is_finite() || delta[i].abs() > f64::from(dimensions[i]))
+        {
+            return Err("Invalid appearance displacement.".into());
+        }
+        for region in [self.before_region, self.after_region]
+            .into_iter()
+            .flatten()
+        {
+            if region.iter().any(|v| !v.is_finite())
+                || region[2] <= 0.
+                || region[3] <= 0.
+                || region[0] < -1e-6
+                || region[1] < -1e-6
+                || region[0] + region[2] > f64::from(dimensions[0]) + 1e-6
+                || region[1] + region[3] > f64::from(dimensions[1]) + 1e-6
+            {
+                return Err("Appearance rectangle lies outside its image.".into());
+            }
+        }
+        if let (Some(before), Some(after), Some(delta)) =
+            (self.before_region, self.after_region, self.displacement)
+            && ((0..2).any(|i| (after[i] - before[i] - delta[i]).abs() > 1e-6)
+                || before[2..] != after[2..])
+        {
+            return Err("Appearance rectangles disagree with their displacement.".into());
+        }
+        Ok(())
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Origin {
@@ -95,45 +133,11 @@ impl Summary {
             }
             origin.region.validate(origin.dimensions)?;
             for (outcome, pair) in appearance.pairs.iter().zip(&source.pairs) {
-                if (outcome.status == Status::Matched) != outcome.displacement.is_some()
-                    || (outcome.status == Status::Matched) != outcome.before_region.is_some()
-                    || (outcome.status == Status::Matched) != outcome.after_region.is_some()
-                    || (outcome.status != Status::NotMeasured && origin.number > pair.before.number)
-                {
+                outcome.validate(origin.dimensions)?;
+                if outcome.status != Status::NotMeasured && origin.number > pair.before.number {
                     return Err(
                         "Unresolved or future appearances cannot supply displacement.".into(),
                     );
-                }
-                if let Some(delta) = outcome.displacement
-                    && (0..2).any(|i| {
-                        !delta[i].is_finite() || delta[i].abs() > f64::from(origin.dimensions[i])
-                    })
-                {
-                    return Err("Invalid appearance displacement.".into());
-                }
-                for region in [outcome.before_region, outcome.after_region]
-                    .into_iter()
-                    .flatten()
-                {
-                    if region.iter().any(|v| !v.is_finite())
-                        || region[2] <= 0.
-                        || region[3] <= 0.
-                        || region[0] < -1e-6
-                        || region[1] < -1e-6
-                        || region[0] + region[2] > f64::from(origin.dimensions[0]) + 1e-6
-                        || region[1] + region[3] > f64::from(origin.dimensions[1]) + 1e-6
-                    {
-                        return Err("Appearance rectangle lies outside its image.".into());
-                    }
-                }
-                if let (Some(before), Some(after), Some(delta)) = (
-                    outcome.before_region,
-                    outcome.after_region,
-                    outcome.displacement,
-                ) && ((0..2).any(|i| (after[i] - before[i] - delta[i]).abs() > 1e-6)
-                    || before[2..] != after[2..])
-                {
-                    return Err("Appearance rectangles disagree with their displacement.".into());
                 }
                 for frame in [&pair.before, &pair.after] {
                     if (origin.frame_id == frame.id || origin.number == frame.number)

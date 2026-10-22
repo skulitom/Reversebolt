@@ -15,12 +15,16 @@ pub struct Input {
     pub source: Source,
     pub frames: Vec<Frame>,
     pub appearances: Option<reversebolt_core::appearance_activity::Summary>,
+    pub regions: Option<reversebolt_core::activity_regions::Summary>,
 }
 impl Input {
     pub fn validate(&self) -> Result<()> {
         self.source.validate()?;
         if let Some(appearances) = &self.appearances {
             appearances.validate(&self.source)?;
+        }
+        if let Some(regions) = &self.regions {
+            regions.validate(&self.source)?;
         }
         if self.frames.len() != 4 {
             return Err("Activity review needs exactly two image pairs.".into());
@@ -130,10 +134,27 @@ fn prompt(input: &Input, motion: &reversebolt_core::activity_motion::Summary) ->
         prompt.push_str("\nAdditional original-appearance evidence: each entry starts from one immutable observed rectangle, then compares later images independently to it. Its two outcomes refer ONLY to the same two selected image pairs above, in order. Displacement is the difference between accepted positions within that pair, in ORIGINAL image pixels (positive x right, positive y down), not normalized patch pixels. not_measured means the bounded trace did not cover that interval; all other unresolved statuses also mean missing displacement, never zero. One measured pair does not supply evidence for the other. before_region and after_region give approximate [x,y,width,height] rectangles in the two selected images. The original rectangle may precede the displayed images; use the pair rectangles for locating the measured area. No names, object identity, whole-scene motion, physical speed, button meaning or causal effects follow from these measurements. Data: ");
         prompt.push_str(&serde_json::to_string(appearances).map_err(|e| e.to_string())?);
     }
+    if let Some(regions) = &input.regions {
+        regions.validate(&input.source)?;
+        prompt.push_str("\nAutomatic passive regions (no labels): dimensions and all rectangles/deltas use ORIGINAL image pixels. Root is displayed image 0. origin is the requested [x,y,width,height] box; root is its self-check status. quiet is an earlier image NOT displayed, compared to the root. pairs refer independently to displayed 0->1 and 2->3; from/to are matched boxes, delta is to minus from (x right, y down). Selection used first-pair change and quiet/source texture only. Unresolved statuses have no coordinates; not_measured means an earlier check stopped the candidate, never zero. No intervening images were checked: no continuous identity, camera/actor distinction, physical speed, gameplay meaning or causal field follows. Same-key intervals may differ. Preserve contradictory/insufficient evidence and uncertainty; matches do not force a positive interpretation. Data: ");
+        prompt.push_str(
+            &serde_json::to_string(&region_prompt_data(regions)).map_err(|e| e.to_string())?,
+        );
+    }
     if prompt.len() > 24 * 1024 {
         return Err("Activity prompt exceeds its budget.".into());
     }
     Ok(prompt)
+}
+// The durable receipt keeps full provenance. Only useful geometry/status goes
+// into the model prompt; repeating hashes, clocks and frame IDs wastes context.
+fn region_prompt_data(summary: &reversebolt_core::activity_regions::Summary) -> serde_json::Value {
+    let pair = |p: &reversebolt_core::appearance_activity::Outcome| json!({"status":p.status,"from":p.before_region,"to":p.after_region,"delta":p.displacement});
+    json!({"dimensions":[summary.origin.width,summary.origin.height],"regions":summary.regions.iter().map(|r|
+        json!({"origin":[r.region.x,r.region.y,r.region.width,r.region.height],"root":r.root_status,
+            "quiet":{"status":r.quiet.status,"delta":r.quiet.displacement},
+            "pairs":r.pairs.iter().map(pair).collect::<Vec<_>>()})
+    ).collect::<Vec<_>>()})
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
@@ -142,6 +163,8 @@ pub struct Receipt {
     pub motion: Option<reversebolt_core::activity_motion::Summary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub appearances: Option<reversebolt_core::appearance_activity::Summary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub regions: Option<reversebolt_core::activity_regions::Summary>,
     pub stage: Option<Stage>,
     pub observation: Option<Observation>,
     pub error: Option<String>,
@@ -155,6 +178,7 @@ impl Receipt {
             Context::from_observation(self.source.clone(), self.observation.clone()?).ok()?;
         context.motion = self.motion.clone();
         context.appearances = self.appearances.clone();
+        context.regions = self.regions.clone();
         context.validate().ok()?;
         Some(context)
     }
@@ -165,6 +189,7 @@ impl Observer {
             source: input.source.clone(),
             motion: None,
             appearances: None,
+            regions: None,
             stage: None,
             observation: None,
             error: None,
@@ -175,6 +200,7 @@ impl Observer {
             let prompt=prompt(input,&motion)?;
             receipt.motion=Some(motion);
             receipt.appearances=input.appearances.clone();
+            receipt.regions=input.regions.clone();
             self.verify_model().await?;
             let schema=json!({"type":"object","additionalProperties":false,"required":["consistent_visible_change","description","uncertainty"],"properties":{
                 "consistent_visible_change":{"type":"boolean"},"description":{"type":"string","minLength":1,"maxLength":400},"uncertainty":{"type":"string","minLength":1,"maxLength":400}}});
@@ -241,6 +267,7 @@ mod tests {
             source,
             frames,
             appearances: None,
+            regions: None,
         }
     }
     #[test]
@@ -273,6 +300,7 @@ mod tests {
             source: input.source,
             motion: Some(motion.clone()),
             appearances: None,
+            regions: None,
             stage: None,
             error: None,
             observation: Some(Observation {
@@ -385,7 +413,96 @@ mod tests {
         let context = receipt.context().unwrap();
         assert!(context.motion.is_none());
         assert!(json!(context).get("motion").is_none());
+        assert!(json!(context).get("regions").is_none());
         assert!(!context.observation.consistent_visible_change);
+    }
+
+    #[test]
+    fn passive_regions_reach_prompt_and_round_trip_context_without_changing_uncertainty() {
+        use reversebolt_core::{
+            activity_regions as r,
+            appearance_activity::{Outcome, Status},
+            visual_regions::Region,
+        };
+        let mut input = fixture();
+        for pair in &mut input.source.pairs {
+            pair.before.number += 1;
+            pair.after.number += 1;
+        }
+        let mut quiet = input.source.pairs[0].before.clone();
+        quiet.id = "quiet".into();
+        quiet.number -= 1;
+        quiet.interval.begin_us = 0;
+        quiet.interval.end_us = 1000;
+        let region = Region {
+            x: 16,
+            y: 8,
+            width: 32,
+            height: 32,
+        };
+        let matched = Outcome {
+            status: Status::Matched,
+            displacement: Some([0., 0.]),
+            before_region: Some([16., 8., 32., 32.]),
+            after_region: Some([16., 8., 32., 32.]),
+        };
+        let summary = r::Summary {
+            policy: r::POLICY.into(),
+            selector_policy: r::SELECTOR_POLICY.into(),
+            matcher_policy: r::MATCHER_POLICY.into(),
+            frame_metadata_sha256: input.source.frame_metadata_sha256.clone(),
+            activity_source_sha256: digest(&serde_json::to_vec(&input.source).unwrap()),
+            proposal_report_sha256: "c".repeat(64),
+            origin: input.source.pairs[0].before.clone(),
+            quiet_frame: quiet,
+            quiet_input_sha256: "d".repeat(64),
+            regions: vec![r::Evidence {
+                region,
+                root_status: Status::Matched,
+                quiet: matched.clone(),
+                pairs: [
+                    matched,
+                    Outcome {
+                        status: Status::Ambiguous,
+                        displacement: None,
+                        before_region: None,
+                        after_region: None,
+                    },
+                ],
+            }],
+        };
+        input.regions = Some(summary.clone());
+        input.validate().unwrap();
+        let motion = measured_motion(&input).unwrap();
+        let text = prompt(&input, &motion).unwrap();
+        assert!(text.contains(&serde_json::to_string(&region_prompt_data(&summary)).unwrap()));
+        assert!(!text.contains(&summary.proposal_report_sha256));
+        assert!(text.contains("NOT displayed"));
+        assert!(text.contains("ORIGINAL image pixels"));
+        assert!(text.contains("No intervening images were checked"));
+        let mut receipt = Receipt {
+            source: input.source.clone(),
+            motion: Some(motion),
+            appearances: None,
+            regions: Some(summary),
+            stage: None,
+            error: None,
+            observation: Some(Observation {
+                consistent_visible_change: false,
+                description: "The change remains ambiguous.".into(),
+                uncertainty: "Image matches do not identify objects.".into(),
+            }),
+        };
+        let context = receipt.context().unwrap();
+        assert_eq!(context.regions, input.regions);
+        assert!(!context.observation.consistent_visible_change);
+        let restored: Context = serde_json::from_value(json!(context)).unwrap();
+        restored.validate().unwrap();
+        assert_eq!(restored, context);
+        receipt.regions.as_mut().unwrap().activity_source_sha256 = "f".repeat(64);
+        assert!(receipt.context().is_none());
+        input.regions.as_mut().unwrap().regions[0].pairs[1].displacement = Some([0., 0.]);
+        assert!(input.validate().is_err());
     }
 
     #[test]
@@ -441,6 +558,7 @@ mod tests {
             source: input.source.clone(),
             motion: Some(motion),
             appearances: Some(appearances.clone()),
+            regions: None,
             stage: None,
             error: None,
             observation: Some(Observation {

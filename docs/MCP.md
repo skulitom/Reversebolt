@@ -196,6 +196,29 @@ motion or identical appearances can pass. No visual track, named control, trial
 baseline, edit authority or locked appearance choice is created. Existing evidence,
 observer-derived sequences and assessment gates remain unchanged.
 
+`activity_region_suggestions.summary` projects all tried v2 candidates into
+`selected_passive_regions_v1`: root self-check, preceding quiet outcome and the
+two independent action outcomes. It contains requested origin rectangles and
+approximate matched before/after rectangles with their difference in **original
+image pixels**. An unresolved check preserves its status and has no coordinates
+or displacement; later intervals remain `not_measured` after a stop. Each summary
+binds the full proposal report, activity source, frame metadata, origin/quiet
+references and quiet input hash. It is bounded to four candidates and 6 KiB.
+It is distinct from the older observation-derived `appearances` trace summary.
+Summary conversion failures preserve the original report and add `summary_error`.
+
+Automatic discovery supplies this optional `regions` summary to the existing
+four-image activity interpreter, alongside its existing motion/appearance context.
+The prompt receives a compact projection of dimensions, candidate rectangles,
+root/quiet status and pair geometry/deltas; provenance hashes, frame identities
+and clock metadata remain in the full receipt rather than consuming model context.
+The prompt explains independent intervals, original-pixel units, the unshown
+quiet image, missing evidence and identity/causality limits. The exact summary
+passes through the interpretation receipt and shared `play_context`; legacy
+records omit the field. A positive match cannot override a negative or uncertain
+model interpretation, name a control, change comparison eligibility or grant
+write authority. Raw reports and derived summaries remain in the activity archive.
+
 Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
 `region_motion`. Coordinates are integers in the original image, with width and
 height at least 32 pixels and area at most four million pixels. The same fixed

@@ -291,6 +291,7 @@ mod tests {
             interpretation_source: None,
             motion: None,
             appearances: None,
+            regions: None,
             source: crate::play_context::select(&frames, &evidence, "clock", 1)
                 .unwrap()
                 .unwrap(),

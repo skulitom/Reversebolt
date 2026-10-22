@@ -13,7 +13,7 @@ use reversebolt_core::{
 use serde::Serialize;
 use serde_json::json;
 
-pub const POLICY: &str = "passive_activity_stable_texture_regions_v2";
+pub const POLICY: &str = reversebolt_core::activity_regions::SELECTOR_POLICY;
 pub const CHANGE_POLICY: &str = "passive_activity_region_suggestions_v1";
 pub const CHANGE_LIMITATION: &str = "Numeric proposals from two sampled-key intervals and the quiet interval immediately before the first. First-action change minus quiet change ranks fixed multiscale tiles. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
 pub const LIMITATION: &str = "Numeric proposals from two sampled-key intervals and preceding quiet evidence. First-action-minus-quiet change supplies fixed tiles; source texture, two-direction corner strength and quiet stability filter and rank them before matching. Quality scores are heuristics, not confidence. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
@@ -63,7 +63,7 @@ pub struct Report {
     pub limitation: &'static str,
 }
 
-fn selected(source: &Source, frames: &[FrameRef]) -> Result<[usize; 5]> {
+pub(crate) fn selected(source: &Source, frames: &[FrameRef]) -> Result<[usize; 5]> {
     let last = appearance_activity::validate_source(source, frames)?;
     let first = frames
         .iter()

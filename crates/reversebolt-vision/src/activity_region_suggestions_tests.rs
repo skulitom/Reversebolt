@@ -106,6 +106,74 @@ fn run(images: &[Vec<u8>], frames: &[FrameRef], source: &Source) -> Report {
 }
 
 #[test]
+fn passive_summary_uses_original_pixel_pairs_and_rejects_rebound_or_resumed_checks() {
+    use crate::activity_region_summary::summarize;
+    use reversebolt_core::appearance_activity::Status;
+    let (mut images, mut frames, _) = fixture(&[64, 64, 80, 80, 80, 80, 64, 64]);
+    for (image, frame) in images.iter_mut().zip(&mut frames) {
+        let gray = image::load_from_memory(image).unwrap().to_luma8();
+        let resized = imageops::resize(&gray, 1024, 576, imageops::FilterType::Triangle);
+        let mut png = std::io::Cursor::new(vec![]);
+        resized.write_to(&mut png, image::ImageFormat::Png).unwrap();
+        *image = png.into_inner();
+        frame.sha256 = visual::digest(image);
+        frame.width = 1024;
+        frame.height = 576;
+    }
+    let source = source(&frames);
+    let mut report = run(&images, &frames, &source);
+    let summary = summarize(&report, &source, &frames).unwrap();
+    summary.validate(&source).unwrap();
+    assert_eq!(
+        summary.proposal_report_sha256,
+        visual::digest(&serde_json::to_vec(&report).unwrap())
+    );
+    let best = &summary.regions[report.recommended.unwrap()];
+    assert_eq!(best.root_status, Status::Matched);
+    assert_eq!(best.quiet.displacement, Some([0., 0.]));
+    assert_eq!(best.pairs[0].displacement, Some([32., 0.]));
+    assert_eq!(best.pairs[1].displacement, Some([-32., 0.]));
+    for pair in &best.pairs {
+        let a = pair.before_region.unwrap();
+        let b = pair.after_region.unwrap();
+        assert_eq!([b[0] - a[0], b[1] - a[1]], pair.displacement.unwrap());
+    }
+    let restored: reversebolt_core::activity_regions::Summary =
+        serde_json::from_value(json!(summary)).unwrap();
+    assert_eq!(restored, summary);
+    let mut wrong = source.clone();
+    wrong.batch += 1;
+    assert!(summarize(&report, &wrong, &frames).is_err());
+    assert!(summary.validate(&wrong).is_err());
+    for case in 0..8 {
+        let mut invalid = summary.clone();
+        match case {
+            0 => invalid.origin.sha256 = "f".repeat(64),
+            1 => invalid.quiet_frame.number += 1,
+            2 => invalid.regions[0].pairs[0].displacement = Some([9999., 0.]),
+            3 => invalid.regions[0].pairs[0].before_region.as_mut().unwrap()[0] += 1.,
+            4 => invalid.regions[0].quiet.status = Status::Ambiguous,
+            5 => invalid.regions[0].root_status = Status::NotMeasured,
+            6 => invalid.regions.push(invalid.regions[0].clone()),
+            _ => invalid.selector_policy = "other".into(),
+        }
+        assert!(invalid.validate(&source).is_err(), "case {case}");
+    }
+    report.suggestions[0].frames[1].status = matcher::Status::PoorMatch;
+    assert!(summarize(&report, &source, &frames).is_err());
+    report.suggestions[0].frames.truncate(2);
+    report.attempted_frames = report.suggestions.iter().map(|s| s.frames.len()).sum();
+    let stopped = summarize(&report, &source, &frames).unwrap();
+    assert_eq!(stopped.regions[0].quiet.status, Status::PoorMatch);
+    assert!(
+        stopped.regions[0]
+            .pairs
+            .iter()
+            .all(|p| p.status == Status::NotMeasured && p.displacement.is_none())
+    );
+}
+
+#[test]
 fn stable_texture_selection_survives_large_untextured_changes_without_using_second_pair() {
     let (mut images, mut frames, _) = fixture(&[64, 64, 80, 80, 64, 64, 80, 80]);
     for i in [2, 6] {

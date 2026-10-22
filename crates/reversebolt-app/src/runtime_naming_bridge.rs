@@ -573,10 +573,21 @@ pub(crate) fn prepare_activity(
                 .map_err(|e| e.to_string())?,
         )
     };
+    let regions =
+        evidence["automatic_region_motion"]["activity_region_suggestions"]["summary"].clone();
+    let regions = if regions.is_null() {
+        None
+    } else {
+        Some(
+            serde_json::from_value::<reversebolt_core::activity_regions::Summary>(regions)
+                .map_err(|e| e.to_string())?,
+        )
+    };
     let input = reversebolt_observer::runtime_activity::Input {
         source,
         frames,
         appearances,
+        regions,
     };
     input.validate()?;
     Ok(Some(input))

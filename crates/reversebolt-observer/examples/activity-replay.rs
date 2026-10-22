@@ -10,6 +10,8 @@ struct Manifest {
     frames: Vec<PathBuf>,
     #[serde(default)]
     appearances: Option<reversebolt_core::appearance_activity::Summary>,
+    #[serde(default)]
+    regions: Option<reversebolt_core::activity_regions::Summary>,
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
@@ -47,6 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         source: manifest.source,
         frames,
         appearances: manifest.appearances,
+        regions: manifest.regions,
     };
     input.validate()?;
     let output = fs::OpenOptions::new()
@@ -57,8 +60,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let observer = Observer::connect(&args[2]).await?;
         Ok::<_, String>(observer.runtime_activity(&input).await)
     })?;
+    let context = receipt.context();
     let summary = serde_json::json!({"error":receipt.error,"observation":receipt.observation,
-        "image_model_calls":usize::from(receipt.stage.is_some()),"target_access":false});
+        "image_model_calls":usize::from(receipt.stage.is_some()),"target_access":false,
+        "context_retained":context.is_some(),"regions_retained":context.as_ref().and_then(|c|c.regions.as_ref())});
     serde_json::to_writer_pretty(output, &receipt)?;
     println!("{summary}");
     Ok(())

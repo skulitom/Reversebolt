@@ -1,0 +1,536 @@
+{
+  "manifest_sha256": "2ea6583c086603448b551c3cd6c45b28697dc8d1d2ce5154908d4cf477f30413",
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "proposal_equal": true,
+      "summary_repeat_equal": true,
+      "regions": [
+        {
+          "pairs": [
+            {
+              "after_region": [
+                122.4609375,
+                420.83333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                186.9140625,
+                414.58333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -64.453125,
+                6.25
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                122.4609375,
+                420.83333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                182.6171875,
+                414.58333333333337,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                6.25
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              186.9140625,
+              414.58333333333337,
+              38.671875,
+              35.41666666666667
+            ],
+            "before_region": [
+              186.9140625,
+              414.58333333333337,
+              38.671875,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 189,
+            "y": 416
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                214.84375,
+                404.1666666666667,
+                36.5234375,
+                35.41666666666667
+              ],
+              "before_region": [
+                275.0,
+                400.0,
+                36.5234375,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                4.166666666666686
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                214.84375,
+                404.1666666666667,
+                36.5234375,
+                35.41666666666667
+              ],
+              "before_region": [
+                270.703125,
+                400.0,
+                36.5234375,
+                35.41666666666667
+              ],
+              "displacement": [
+                -55.859375,
+                4.166666666666686
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              275.0,
+              400.0,
+              36.5234375,
+              35.41666666666667
+            ],
+            "before_region": [
+              275.0,
+              400.0,
+              36.5234375,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 275,
+            "y": 400
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                247.0703125,
+                385.4166666666667,
+                38.671875,
+                37.5
+              ],
+              "before_region": [
+                307.2265625,
+                381.25,
+                38.671875,
+                37.5
+              ],
+              "displacement": [
+                -60.15625,
+                4.166666666666686
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                247.0703125,
+                385.4166666666667,
+                38.671875,
+                37.5
+              ],
+              "before_region": [
+                302.9296875,
+                381.25,
+                38.671875,
+                37.5
+              ],
+              "displacement": [
+                -55.859375,
+                4.166666666666686
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              307.2265625,
+              381.25,
+              38.671875,
+              37.5
+            ],
+            "before_region": [
+              307.2265625,
+              381.25,
+              38.671875,
+              37.5
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 309,
+            "y": 383
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": [
+                105.2734375,
+                406.25000000000006,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                169.7265625,
+                400.0,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -64.453125,
+                6.250000000000057
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                105.2734375,
+                406.25000000000006,
+                38.671875,
+                35.41666666666667
+              ],
+              "before_region": [
+                165.4296875,
+                400.0,
+                38.671875,
+                35.41666666666667
+              ],
+              "displacement": [
+                -60.15625,
+                6.250000000000057
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              169.7265625,
+              400.0,
+              38.671875,
+              35.41666666666667
+            ],
+            "before_region": [
+              169.7265625,
+              400.0,
+              38.671875,
+              35.41666666666667
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 34,
+            "width": 36,
+            "x": 171,
+            "y": 400
+          },
+          "root_status": "matched"
+        }
+      ],
+      "arms": {
+        "baseline": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the cyan robot on the right shifts leftward and slightly downward, and the central desk/chair shifts leftward. The left-side red conical plants and white clouds also shift leftward. The scene appears to pan right or the camera moves left.",
+            "uncertainty": "Measurements show sparse matches with many unresolved cells (poor_match, search_boundary). Displacements are consistent in direction (leftward) but magnitudes vary slightly between pairs. Camera motion vs. object motion cannot be distinguished."
+          },
+          "seconds": 16.89100000000326,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "prompt_bytes": 6973,
+          "summary_bytes": 0
+        },
+        "augmented": {
+          "error": "The model did not finish a text-only observation.",
+          "observation": null,
+          "seconds": 2.9060000000172295,
+          "context_retained": false,
+          "exact_regions_retained": false,
+          "prompt_bytes": 11925,
+          "summary_bytes": 3738
+        }
+      }
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "proposal_equal": true,
+      "summary_repeat_equal": true,
+      "regions": [
+        {
+          "pairs": [
+            {
+              "after_region": [
+                675.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "before_region": [
+                640.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "displacement": [
+                35.0,
+                0.0
+              ],
+              "status": "matched"
+            },
+            {
+              "after_region": [
+                677.5,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "before_region": [
+                640.0,
+                80.0,
+                40.0,
+                40.0
+              ],
+              "displacement": [
+                37.5,
+                0.0
+              ],
+              "status": "matched"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              640.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              640.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 640,
+            "y": 80
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "ambiguous"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              460.0,
+              520.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              460.0,
+              520.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 460,
+            "y": 520
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "inconsistent_reverse"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": [
+              760.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "before_region": [
+              760.0,
+              80.0,
+              40.0,
+              40.0
+            ],
+            "displacement": [
+              0.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 760,
+            "y": 80
+          },
+          "root_status": "matched"
+        },
+        {
+          "pairs": [
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            },
+            {
+              "after_region": null,
+              "before_region": null,
+              "displacement": null,
+              "status": "not_measured"
+            }
+          ],
+          "quiet": {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 700,
+            "y": 520
+          },
+          "root_status": "ambiguous"
+        }
+      ],
+      "arms": {
+        "baseline": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the upper-right colored shapes (peach and pink) shift horizontally to the right relative to the static room geometry. The first pair shows a ~40px rightward displacement; the second shows a ~42px rightward displacement. The floor and walls remain fixed.",
+            "uncertainty": "Displacements are consistent in direction and magnitude across pairs, but sparse patch matching and low-texture regions limit precision. The shift could be camera panning or object movement; exact cause is unmeasured."
+          },
+          "seconds": 5.5789999999979045,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "prompt_bytes": 6652,
+          "summary_bytes": 0
+        },
+        "augmented": {
+          "error": null,
+          "observation": {
+            "consistent_visible_change": true,
+            "description": "In both pairs, the upper-right ceiling geometry (peach and pink panels) shifts horizontally to the right. The rest of the scene, including the central staircase and floor, remains static. This indicates a consistent lateral displacement of the top-right visual elements.",
+            "uncertainty": "The change is limited to the ceiling area. It is unclear if this represents a camera pan, a specific UI element movement, or a rendering artifact. The magnitude is consistent (~35-40px) but the cause is not visually determinable."
+          },
+          "seconds": 2.812000000005355,
+          "context_retained": true,
+          "exact_regions_retained": true,
+          "prompt_bytes": 10564,
+          "summary_bytes": 2698
+        }
+      }
+    }
+  ],
+  "error": null,
+  "binaries": {
+    "activity-region-suggestions-replay": "9de3b16e9e48abb966fa70c6984f954e726b47a9885948fa8bb1b8fd95e099e7",
+    "activity-replay": "d2e309dd2a210479cae09c5bcf60696f8a18fb58084035cc8f2d03bae7240b38"
+  },
+  "interpretation_inputs_sha256": "9e496afc6288d96b9d39c39989c90f6c2c4485241a23d28ed23598e5c834f45c",
+  "audit": {
+    "source_count": 163,
+    "input_count": 18,
+    "generated_count": 21,
+    "changed": []
+  }
+}
