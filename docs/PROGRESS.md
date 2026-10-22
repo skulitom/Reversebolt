@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Passive activity region proposals (2026-10-22): **35% unchanged**.
+The shared application/MCP evidence reader now proposes numeric regions without
+requiring observer labels, using the existing baseline tile ranking and matcher.
+It verifies a preceding quiet interval and two sampled-key intervals, reads five
+saved images, and caps analysis at four candidates/twenty template checks. These
+are independent interval correspondences, not continuous identity. No labels,
+cards, trial-baseline choices, authority or assessments are created or changed.
+
+All 364 workspace test executions pass, with final affected vision checks rerun;
+strict workspace/all-target Clippy and formatting pass. A no-target-access API
+test confirms default automatic analysis, opt-out and unchanged session/evidence.
+The frozen two-game replay abstains in both Hyperbolica and Manifold Garden:
+each tries four regions/six checks, with low-texture, ambiguous or poor matches.
+Two repeats are identical; only five PNGs per case are read. All 160 sources,
+14 original inputs, 12 generated inputs and the binary pass audit. No model call,
+new capture, game input or target memory operation ran. This identifies a ranking
+weakness rather than validated gameplay controls. The desktop remains unavailable
+after quarantine. [Method and results](../research/activity-region-suggestions/README.md).
+
 Automatic baseline region proposals (2026-10-22): **35% unchanged**.
 The shared read/final-baseline API now proposes appearance regions before a linked
 edit, using only the six baseline images and sampled inputs. First-action change

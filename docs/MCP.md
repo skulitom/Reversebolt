@@ -153,6 +153,35 @@ source, requested frame metadata, algorithm versions, limits and relevant prefix
 Original and target pixels are rehashed on each attempt under the existing image
 size limits. See [sequence checks and limitations](../research/appearance-sequence/README.md).
 
+`automatic_region_motion.activity_region_suggestions` independently proposes
+numeric regions without requiring observer labels. When the existing activity
+selector supplies two quiet-bounded, contrasting sampled-key intervals, the
+`passive_activity_region_suggestions_v1` policy ranks fixed 16/32/64-pixel tiles
+in normalized 512x288 images, at half-tile strides, by first-action absolute
+change minus the immediately preceding quiet change (clamped to zero per pixel).
+Mean residual must reach 8; ties prefer smaller tiles, then y/x. Original-pixel
+rectangles must satisfy the existing minimum size, without padding. Greedy
+selection excludes overlaps greater than one quarter of the smaller tile.
+
+At most four candidates each receive five original-template checks: first-action
+before image against itself, preceding quiet image, first-action after image,
+second-action before image and second-action after image. A candidate stops at
+its first unresolved match. The first ranked candidate with quiet displacement
+at most one and both action displacements at least two normalized pixels is
+recommended by index. Direction and magnitude need not agree between actions.
+The report binds the source, five exact frame references, quiet input hash and
+origin rectangle. Source metadata, capture continuity, epochs, geometry, sampled
+input generations, image hashes and actual dimensions are checked. Image/source
+failure returns a null report with an error; absent eligible activity returns
+`no_activity_source`. At most five PNGs are read again and twenty checks run.
+`auto_regions: false` also skips these proposals.
+
+These are **independent interval correspondences**, not continuous identity
+between the intervals: intervening pixels are not checked, and camera/background
+motion or identical appearances can pass. No visual track, named control, trial
+baseline, edit authority or locked appearance choice is created. Existing evidence,
+observer-derived sequences and assessment gates remain unchanged.
+
 Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
 `region_motion`. Coordinates are integers in the original image, with width and
 height at least 32 pixels and area at most four million pixels. The same fixed

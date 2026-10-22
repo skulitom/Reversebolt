@@ -1,0 +1,197 @@
+{
+  "manifest_sha256": "41a7bc8bcaeebae000ecb3988ded25ec203019a2aa3bf6a49b4a1c4655950d6f",
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "runs": [
+        {
+          "exit_code": 0,
+          "seconds": 0.34399999998277053,
+          "output": "case-0/result-0.json"
+        },
+        {
+          "exit_code": 0,
+          "seconds": 0.28100000001722947,
+          "output": "case-0/result-1.json"
+        }
+      ],
+      "status": "no_supported_region",
+      "attempted_frames": 6,
+      "ranked_regions": 835,
+      "recommended": null,
+      "images_read": [
+        "c6b17bd6-7b30-4ff1-909a-3b09f015fe4e",
+        "a9834c3c-0511-4526-8b0f-77380f0be09e",
+        "feeeafa7-a384-401d-9426-3729165808ef",
+        "3e02fc9d-ef40-430d-b904-0343b65a316b",
+        "13417e01-93b9-4511-8fb5-c504e6976868"
+      ],
+      "repeat_equal": true,
+      "suggestions": [
+        {
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 1031,
+            "y": 350
+          },
+          "action_minus_idle_change": 189.8984375,
+          "status": "unresolved_appearance",
+          "displacement": [
+            [
+              0,
+              0
+            ],
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 34,
+            "width": 36,
+            "x": 893,
+            "y": 350
+          },
+          "action_minus_idle_change": 175.5703125,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 34,
+            "width": 35,
+            "x": 928,
+            "y": 350
+          },
+          "action_minus_idle_change": 144.21484375,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 34,
+            "width": 36,
+            "x": 910,
+            "y": 333
+          },
+          "action_minus_idle_change": 140.25,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "runs": [
+        {
+          "exit_code": 0,
+          "seconds": 0.34400000001187436,
+          "output": "case-1/result-0.json"
+        },
+        {
+          "exit_code": 0,
+          "seconds": 0.34399999998277053,
+          "output": "case-1/result-1.json"
+        }
+      ],
+      "status": "no_supported_region",
+      "attempted_frames": 6,
+      "ranked_regions": 367,
+      "recommended": null,
+      "images_read": [
+        "067d1247-be58-496c-98a0-d124fdfb08fe",
+        "13d65f93-1f3e-4117-877f-7c20547503d6",
+        "fa99c51b-902e-4e1f-88fa-bb4bfcf5f9a6",
+        "d1564a56-7b08-44a7-9844-027ff6823a17",
+        "7b1d334a-b134-4a33-a6f8-0e4ad4d475c3"
+      ],
+      "repeat_equal": true,
+      "suggestions": [
+        {
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 660,
+            "y": 0
+          },
+          "action_minus_idle_change": 162.9921875,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 280,
+            "y": 500
+          },
+          "action_minus_idle_change": 149.78515625,
+          "status": "unresolved_appearance",
+          "displacement": [
+            [
+              0,
+              0
+            ],
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 320,
+            "y": 480
+          },
+          "action_minus_idle_change": 146.83984375,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "region": {
+            "height": 40,
+            "width": 40,
+            "x": 660,
+            "y": 40
+          },
+          "action_minus_idle_change": 144.46484375,
+          "status": "unresolved_appearance",
+          "displacement": [
+            null,
+            null,
+            null
+          ]
+        }
+      ]
+    }
+  ],
+  "error": null,
+  "binary_sha256": "28da9a5f9ffaa5d029ba514f026513d155d282e40878a617aadaeb919c4a39f8",
+  "audit": {
+    "source_count": 160,
+    "input_count": 14,
+    "generated_count": 12,
+    "changed": []
+  }
+}

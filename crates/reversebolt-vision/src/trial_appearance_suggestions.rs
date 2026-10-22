@@ -55,15 +55,15 @@ pub struct Report {
     pub limitation: &'static str,
 }
 
-fn resized(bytes: &[u8], dimensions: [u32; 2]) -> Result<GrayImage> {
+pub(crate) fn resized(bytes: &[u8], dimensions: [u32; 2]) -> Result<GrayImage> {
     let gray = response::grayscale(bytes)?;
     if [gray.width(), gray.height()] != dimensions {
-        return Err("PNG dimensions disagree with the baseline record.".into());
+        return Err("PNG dimensions disagree with the retained record.".into());
     }
     Ok(imageops::resize(&gray, WIDTH, HEIGHT, FilterType::Triangle))
 }
 
-fn overlap(a: Region, b: Region) -> bool {
+pub(crate) fn overlap(a: Region, b: Region) -> bool {
     let w = (a.x + a.width)
         .min(b.x + b.width)
         .saturating_sub(a.x.max(b.x));
@@ -73,7 +73,7 @@ fn overlap(a: Region, b: Region) -> bool {
     w * h * 4 > (a.width * a.height).min(b.width * b.height)
 }
 
-fn regions(images: &[GrayImage], dimensions: [u32; 2]) -> Vec<(f64, Region, Region)> {
+pub(crate) fn regions(images: &[GrayImage], dimensions: [u32; 2]) -> Vec<(f64, Region, Region)> {
     let mut integral = vec![0u32; ((WIDTH + 1) * (HEIGHT + 1)) as usize];
     let at = |x, y| (y * (WIDTH + 1) + x) as usize;
     for y in 0..HEIGHT {

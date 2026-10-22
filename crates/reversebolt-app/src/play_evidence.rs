@@ -291,10 +291,28 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
                     },
                     activity.as_ref().ok().and_then(Option::as_ref),
                 );
+                let suggestions = match &activity {
+                    Ok(Some(source)) => {
+                        match reversebolt_vision::activity_region_suggestions::analyze(
+                            source,
+                            &frames,
+                            |frame| {
+                                session
+                                    .read_frame(investigation, &frame.id)
+                                    .map(|(_, bytes)| bytes)
+                            },
+                        ) {
+                            Ok(report) => json!({"report":report,"error":null}),
+                            Err(error) => json!({"report":null,"error":error}),
+                        }
+                    }
+                    Ok(None) => json!({"report":null,"error":null,"status":"no_activity_source"}),
+                    Err(error) => json!({"report":null,"error":error}),
+                };
                 if let Err(error) = activity {
                     sequences["activity"] = json!({"summary":null,"error":error});
                 }
-                json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"error":null})
+                json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"activity_region_suggestions":suggestions,"error":null})
             }
             Err(error) => json!({"selection":null,"measurements":[],"error":error}),
         };
@@ -386,6 +404,105 @@ pub(crate) mod tests {
         (session, directory)
     }
     #[test]
+    fn passive_suggestions_need_no_observer_labels_and_leave_session_unchanged() {
+        use reversebolt_core::inputs::{Focus, Poll, Window};
+        let (mut session, directory) = saved_observations();
+        session.view.visual_tracks.clear();
+        session.view.frames.clear();
+        for (i, shift) in [0, 0, 8, 8, 0, 0, 8, 8].into_iter().enumerate() {
+            let n = i + 1;
+            let image = image::GrayImage::from_fn(256, 144, |x, y| {
+                let mut v = ((x + 256 - shift) % 256 + y * 256 + 17)
+                    .wrapping_mul(747796405)
+                    .wrapping_add(2891336453);
+                v = ((v >> ((v >> 28) + 4)) ^ v).wrapping_mul(277803737);
+                image::Luma([((v >> 22) ^ v) as u8])
+            });
+            let mut bytes = std::io::Cursor::new(vec![]);
+            image.write_to(&mut bytes, image::ImageFormat::Png).unwrap();
+            let bytes = bytes.into_inner();
+            std::fs::write(directory.join(format!("frame-{n:03}.png")), &bytes).unwrap();
+            let begin = n as u64 * 1_000_000;
+            let prior = i as u64 * 1_000_000 + 1000;
+            let input = Window {
+                clock_id: session.view.investigation_id.clone(),
+                generation: "sampler".into(),
+                requested_begin_us: prior,
+                requested_end_us: begin + 1000,
+                monitor_started_us: 0,
+                retained_from_us: 0,
+                omitted_polls: 0,
+                largest_unsampled_us: 20_000,
+                polls: (prior..begin)
+                    .step_by(20_000)
+                    .enumerate()
+                    .map(|(k, t)| Poll {
+                        begin_us: t,
+                        end_us: t + 100,
+                        focus: Focus::SelectedForeground,
+                        down: if [2, 6].contains(&i) && k < 10 {
+                            vec![68]
+                        } else {
+                            vec![]
+                        },
+                    })
+                    .collect(),
+                limitation: "Sampled input fixture.".into(),
+            };
+            session.view.frames.push(serde_json::from_value(json!({
+                "id":format!("frame-{n}"),"number":n,"sha256":visual::digest(&bytes),
+                "width":256,"height":144,"epoch":0,"started_unix_ms":n,"input_context":input,
+                "capture_interval":{"clock_id":session.view.investigation_id,"begin_us":begin,"end_us":begin+1000}
+            })).unwrap());
+        }
+        session.view.sample_count = 8;
+        session.view.coverage.batch = 1;
+        let before = json!(session.view);
+        let mut args = json!({"investigation_id":session.view.investigation_id,
+            "batch":session.view.coverage.batch,
+            "frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()});
+        let enabled = read(&session, &args).unwrap();
+        let suggestions = &enabled["automatic_region_motion"]["activity_region_suggestions"];
+        assert!(suggestions["error"].is_null());
+        assert_eq!(
+            suggestions["report"]["policy"],
+            reversebolt_vision::activity_region_suggestions::POLICY
+        );
+        assert_eq!(suggestions["report"]["origin_frame_id"], "frame-2");
+        assert!(suggestions["report"]["attempted_frames"].as_u64().unwrap() <= 20);
+        assert_eq!(
+            suggestions["report"]["checked_frames"]
+                .as_array()
+                .unwrap()
+                .len(),
+            5
+        );
+        assert!(
+            enabled["automatic_region_motion"]["selection"]["regions"]
+                .as_array()
+                .unwrap()
+                .is_empty()
+        );
+        args["auto_regions"] = json!(false);
+        let disabled = read(&session, &args).unwrap();
+        assert!(disabled.get("automatic_region_motion").is_none());
+        for key in ["evidence", "patch_motion", "frame_metadata_sha256"] {
+            assert_eq!(enabled[key], disabled[key]);
+        }
+        assert_eq!(json!(session.view), before);
+        drop(session);
+        assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+                .starts_with("reversebolt-regions-")
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+    #[test]
     fn saved_reader_automatically_measures_exact_observations_without_changing_base_evidence() {
         let (mut session, directory) = saved_observations();
         let mut args = json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,
@@ -427,6 +544,10 @@ pub(crate) mod tests {
             "unresolved_appearance"
         );
         assert_eq!(sequences["report"]["series"][0]["accepted_steps"], 0);
+        assert_eq!(
+            automatic["activity_region_suggestions"]["status"],
+            "no_activity_source"
+        );
         args["auto_regions"] = json!(false);
         let disabled = read(&session, &args).unwrap();
         assert!(disabled.get("automatic_region_motion").is_none());
