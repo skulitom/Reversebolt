@@ -1,6 +1,7 @@
 //! Numeric region proposals from two retained activity intervals, without labels.
 use crate::{
-    appearance_activity, region_appearance as matcher, trial_appearance_suggestions as tiles,
+    appearance_activity, region_appearance as matcher, stable_region_selection as stable,
+    trial_appearance_suggestions as tiles,
 };
 use reversebolt_core::{
     Result,
@@ -12,15 +13,25 @@ use reversebolt_core::{
 use serde::Serialize;
 use serde_json::json;
 
-pub const POLICY: &str = "passive_activity_region_suggestions_v1";
-pub const LIMITATION: &str = "Numeric proposals from two sampled-key intervals and the quiet interval immediately before the first. First-action change minus quiet change ranks fixed multiscale tiles. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
+pub const POLICY: &str = "passive_activity_stable_texture_regions_v2";
+pub const CHANGE_POLICY: &str = "passive_activity_region_suggestions_v1";
+pub const CHANGE_LIMITATION: &str = "Numeric proposals from two sampled-key intervals and the quiet interval immediately before the first. First-action change minus quiet change ranks fixed multiscale tiles. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
+pub const LIMITATION: &str = "Numeric proposals from two sampled-key intervals and preceding quiet evidence. First-action-minus-quiet change supplies fixed tiles; source texture, two-direction corner strength and quiet stability filter and rank them before matching. Quality scores are heuristics, not confidence. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
 const MAX_CANDIDATES: usize = 4;
+
+#[derive(Clone, Copy)]
+pub enum Ranking {
+    ChangeOnly,
+    StableTexture,
+}
 
 #[derive(Debug, Serialize)]
 pub struct Suggestion {
     /// Coordinates in the first action's before image, not a later trial baseline.
     pub region: Region,
     pub action_minus_idle_change: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selection_quality: Option<stable::Quality>,
     /// Root self-match, quiet image, first after, second before, second after.
     pub frames: Vec<matcher::Report>,
     /// Quiet interval, then the two independent activity intervals, normalized pixels.
@@ -41,6 +52,8 @@ pub struct Report {
     pub quiet_input_sha256: String,
     pub measurement_dimensions: [u32; 2],
     pub ranked_regions: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selection: Option<stable::Selection>,
     pub attempted_frames: usize,
     pub maximum_attempted_frames: usize,
     pub suggestions: Vec<Suggestion>,
@@ -109,8 +122,21 @@ fn selected(source: &Source, frames: &[FrameRef]) -> Result<[usize; 5]> {
 pub fn analyze(
     source: &Source,
     frames: &[FrameRef],
-    mut read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
+    read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
 ) -> Result<Report> {
+    analyze_with_ranking(source, frames, read_image, Ranking::StableTexture)
+}
+
+pub fn analyze_with_ranking(
+    source: &Source,
+    frames: &[FrameRef],
+    mut read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
+    ranking: Ranking,
+) -> Result<Report> {
+    let (policy, limitation) = match ranking {
+        Ranking::ChangeOnly => (CHANGE_POLICY, CHANGE_LIMITATION),
+        Ranking::StableTexture => (POLICY, LIMITATION),
+    };
     let indices = selected(source, frames)?;
     let root = &frames[indices[0]];
     let dimensions = [root.width, root.height];
@@ -118,12 +144,12 @@ pub fn analyze(
     let quiet_input_sha256 =
         visual::digest(&serde_json::to_vec(&root.input_context).map_err(|e| e.to_string())?);
     let source_sha256 = visual::digest(
-        &serde_json::to_vec(&json!({"policy":POLICY,"matcher":matcher::POLICY,
+        &serde_json::to_vec(&json!({"policy":policy,"matcher":matcher::POLICY,
             "source":source,"checked_frames":checked_frames,"quiet_input_sha256":quiet_input_sha256}))
         .map_err(|e| e.to_string())?,
     );
     let mut report = Report {
-        policy: POLICY,
+        policy,
         matcher_policy: matcher::POLICY,
         source: source.clone(),
         source_sha256,
@@ -133,12 +159,13 @@ pub fn analyze(
         quiet_input_sha256,
         measurement_dimensions: [512, 288],
         ranked_regions: 0,
+        selection: None,
         attempted_frames: 0,
         maximum_attempted_frames: 20,
         suggestions: vec![],
         recommended: None,
         status: "no_action_regions",
-        limitation: LIMITATION,
+        limitation,
     };
     // Rank in quiet/root/first-after order. Retain only five normalized images,
     // not all requested PNGs; failures never produce a partial recommendation.
@@ -152,16 +179,31 @@ pub fn analyze(
         images.push(tiles::resized(&bytes, dimensions)?);
     }
     let ranked = tiles::regions(&images, dimensions);
+    let ranked = match ranking {
+        Ranking::ChangeOnly => ranked.into_iter().map(stable::Candidate::from).collect(),
+        Ranking::StableTexture => {
+            let (ranked, selection) = stable::select(&images[0], &images[1], dimensions, ranked);
+            report.selection = Some(selection);
+            ranked
+        }
+    };
     report.ranked_regions = ranked.len();
     let mut used = vec![];
-    for (score, region, normalized) in ranked {
+    for stable::Candidate {
+        change,
+        region,
+        normalized,
+        quality,
+    } in ranked
+    {
         if used.iter().any(|&r| tiles::overlap(r, normalized)) {
             continue;
         }
         used.push(normalized);
         let mut suggestion = Suggestion {
             region,
-            action_minus_idle_change: score,
+            action_minus_idle_change: change,
+            selection_quality: quality,
             frames: vec![],
             displacement: [None; 3],
             status: "unresolved_appearance",
@@ -211,6 +253,12 @@ pub fn analyze(
         "suggestions_available"
     } else if report.ranked_regions > 0 {
         "no_supported_region"
+    } else if report
+        .selection
+        .as_ref()
+        .is_some_and(|s| s.input_regions > 0)
+    {
+        "no_stable_textured_region"
     } else {
         "no_action_regions"
     };

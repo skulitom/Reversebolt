@@ -9,6 +9,7 @@ pub mod patch_motion;
 pub mod region_appearance;
 pub mod region_motion;
 pub mod response;
+mod stable_region_selection;
 pub mod trial_appearance;
 pub mod trial_appearance_suggestions;
 mod trial_evidence;

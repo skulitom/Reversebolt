@@ -1,0 +1,636 @@
+{
+  "manifest_sha256": "694689b9ef53725d86e7c7ce4a59d57b07f6596e331bbc84da06db7328d6ece4",
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "methods": {
+        "change_only": {
+          "runs": [
+            {
+              "exit_code": 0,
+              "seconds": 0.34299999999348074,
+              "output": "case-0/change_only-0.json"
+            },
+            {
+              "exit_code": 0,
+              "seconds": 0.29699999999138527,
+              "output": "case-0/change_only-1.json"
+            }
+          ],
+          "status": "no_supported_region",
+          "attempted_frames": 6,
+          "ranked_regions": 835,
+          "selection": null,
+          "recommended": null,
+          "repeat_equal": true,
+          "prior_output_equal": true,
+          "suggestions": [
+            {
+              "region": {
+                "height": 34,
+                "width": 35,
+                "x": 1031,
+                "y": 350
+              },
+              "change": 189.8984375,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                null,
+                null
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "poor_match"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 36,
+                "x": 893,
+                "y": 350
+              },
+              "change": 175.5703125,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "low_texture"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 35,
+                "x": 928,
+                "y": 350
+              },
+              "change": 144.21484375,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "low_texture"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 36,
+                "x": 910,
+                "y": 333
+              },
+              "change": 140.25,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "low_texture"
+              ]
+            }
+          ]
+        },
+        "stable_texture": {
+          "runs": [
+            {
+              "exit_code": 0,
+              "seconds": 1.25,
+              "output": "case-0/stable_texture-0.json"
+            },
+            {
+              "exit_code": 0,
+              "seconds": 1.2190000000118744,
+              "output": "case-0/stable_texture-1.json"
+            }
+          ],
+          "status": "suggestions_available",
+          "attempted_frames": 20,
+          "ranked_regions": 240,
+          "selection": {
+            "corner_patch_side": 9,
+            "eligible_regions": 240,
+            "input_regions": 835,
+            "maximum_quiet_mean_absolute_difference": 4.0,
+            "minimum_corner_score": 16.0,
+            "minimum_source_std": 8.0,
+            "rejected_low_texture": 179,
+            "rejected_quiet_change": 19,
+            "rejected_weak_corner": 397
+          },
+          "recommended": 0,
+          "repeat_equal": true,
+          "prior_output_equal": null,
+          "suggestions": [
+            {
+              "region": {
+                "height": 34,
+                "width": 35,
+                "x": 189,
+                "y": 416
+              },
+              "change": 62.515625,
+              "quality": {
+                "corner_score": 1516.6914561160634,
+                "measurement_region": {
+                  "height": 17,
+                  "width": 18,
+                  "x": 87,
+                  "y": 199
+                },
+                "quiet_mean_absolute_difference": 0.0,
+                "rank_score": 1516.6914561160634,
+                "source_std": [
+                  70.20981390624817,
+                  69.3823196164857
+                ]
+              },
+              "status": "motion_in_both_pairs",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  -30,
+                  3
+                ],
+                [
+                  -28,
+                  3
+                ]
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "matched",
+                "matched",
+                "matched"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 35,
+                "x": 275,
+                "y": 400
+              },
+              "change": 86.48828125,
+              "quality": {
+                "corner_score": 935.2983276807036,
+                "measurement_region": {
+                  "height": 17,
+                  "width": 17,
+                  "x": 128,
+                  "y": 192
+                },
+                "quiet_mean_absolute_difference": 0.0,
+                "rank_score": 935.2983276807036,
+                "source_std": [
+                  77.63926568149343,
+                  77.07063720519979
+                ]
+              },
+              "status": "motion_in_both_pairs",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  -28,
+                  2
+                ],
+                [
+                  -26,
+                  2
+                ]
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "matched",
+                "matched",
+                "matched"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 35,
+                "x": 309,
+                "y": 383
+              },
+              "change": 72.79296875,
+              "quality": {
+                "corner_score": 772.8994813143338,
+                "measurement_region": {
+                  "height": 18,
+                  "width": 18,
+                  "x": 143,
+                  "y": 183
+                },
+                "quiet_mean_absolute_difference": 0.0,
+                "rank_score": 772.8994813143338,
+                "source_std": [
+                  80.72779668486422,
+                  80.84275107884842
+                ]
+              },
+              "status": "motion_in_both_pairs",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  -28,
+                  2
+                ],
+                [
+                  -26,
+                  2
+                ]
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "matched",
+                "matched",
+                "matched"
+              ]
+            },
+            {
+              "region": {
+                "height": 34,
+                "width": 36,
+                "x": 171,
+                "y": 400
+              },
+              "change": 62.42578125,
+              "quality": {
+                "corner_score": 745.2552948645205,
+                "measurement_region": {
+                  "height": 17,
+                  "width": 18,
+                  "x": 79,
+                  "y": 192
+                },
+                "quiet_mean_absolute_difference": 0.0,
+                "rank_score": 745.2552948645205,
+                "source_std": [
+                  69.48587079129126,
+                  69.68381260493825
+                ]
+              },
+              "status": "motion_in_both_pairs",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  -30,
+                  3
+                ],
+                [
+                  -28,
+                  3
+                ]
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "matched",
+                "matched",
+                "matched"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "methods": {
+        "change_only": {
+          "runs": [
+            {
+              "exit_code": 0,
+              "seconds": 0.34299999999348074,
+              "output": "case-1/change_only-0.json"
+            },
+            {
+              "exit_code": 0,
+              "seconds": 0.35999999998603016,
+              "output": "case-1/change_only-1.json"
+            }
+          ],
+          "status": "no_supported_region",
+          "attempted_frames": 6,
+          "ranked_regions": 367,
+          "selection": null,
+          "recommended": null,
+          "repeat_equal": true,
+          "prior_output_equal": true,
+          "suggestions": [
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 660,
+                "y": 0
+              },
+              "change": 162.9921875,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "low_texture"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 280,
+                "y": 500
+              },
+              "change": 149.78515625,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                null,
+                null
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "poor_match"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 320,
+                "y": 480
+              },
+              "change": 146.83984375,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "ambiguous"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 660,
+                "y": 40
+              },
+              "change": 144.46484375,
+              "quality": null,
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "low_texture"
+              ]
+            }
+          ]
+        },
+        "stable_texture": {
+          "runs": [
+            {
+              "exit_code": 0,
+              "seconds": 0.7970000000204891,
+              "output": "case-1/stable_texture-0.json"
+            },
+            {
+              "exit_code": 0,
+              "seconds": 0.7809999999881256,
+              "output": "case-1/stable_texture-1.json"
+            }
+          ],
+          "status": "suggestions_available",
+          "attempted_frames": 12,
+          "ranked_regions": 59,
+          "selection": {
+            "corner_patch_side": 9,
+            "eligible_regions": 59,
+            "input_regions": 367,
+            "maximum_quiet_mean_absolute_difference": 4.0,
+            "minimum_corner_score": 16.0,
+            "minimum_source_std": 8.0,
+            "rejected_low_texture": 105,
+            "rejected_quiet_change": 0,
+            "rejected_weak_corner": 203
+          },
+          "recommended": 0,
+          "repeat_equal": true,
+          "prior_output_equal": null,
+          "suggestions": [
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 640,
+                "y": 80
+              },
+              "change": 63.7421875,
+              "quality": {
+                "corner_score": 690.5580614972009,
+                "measurement_region": {
+                  "height": 16,
+                  "width": 16,
+                  "x": 256,
+                  "y": 32
+                },
+                "quiet_mean_absolute_difference": 0.12890625,
+                "rank_score": 611.7054108764132,
+                "source_std": [
+                  77.0241530547957,
+                  77.0241530547957
+                ]
+              },
+              "status": "motion_in_both_pairs",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  14,
+                  0
+                ],
+                [
+                  15,
+                  0
+                ]
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "matched",
+                "matched",
+                "matched"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 460,
+                "y": 520
+              },
+              "change": 8.81640625,
+              "quality": {
+                "corner_score": 318.6546515660356,
+                "measurement_region": {
+                  "height": 16,
+                  "width": 16,
+                  "x": 184,
+                  "y": 208
+                },
+                "quiet_mean_absolute_difference": 0.09765625,
+                "rank_score": 290.3045935975271,
+                "source_std": [
+                  66.5028175388125,
+                  66.5028175388125
+                ]
+              },
+              "status": "unresolved_appearance",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                null,
+                null
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "ambiguous"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 760,
+                "y": 80
+              },
+              "change": 13.5234375,
+              "quality": {
+                "corner_score": 227.35756339332409,
+                "measurement_region": {
+                  "height": 16,
+                  "width": 16,
+                  "x": 304,
+                  "y": 32
+                },
+                "quiet_mean_absolute_difference": 0.06640625,
+                "rank_score": 213.19976640546142,
+                "source_std": [
+                  70.36222156897189,
+                  70.36222156897189
+                ]
+              },
+              "status": "unresolved_appearance",
+              "displacement": [
+                [
+                  0,
+                  0
+                ],
+                null,
+                null
+              ],
+              "checks": [
+                "matched",
+                "matched",
+                "inconsistent_reverse"
+              ]
+            },
+            {
+              "region": {
+                "height": 40,
+                "width": 40,
+                "x": 700,
+                "y": 520
+              },
+              "change": 13.5859375,
+              "quality": {
+                "corner_score": 200.01243179794474,
+                "measurement_region": {
+                  "height": 16,
+                  "width": 16,
+                  "x": 280,
+                  "y": 208
+                },
+                "quiet_mean_absolute_difference": 0.1171875,
+                "rank_score": 179.03210678417432,
+                "source_std": [
+                  67.87757972606104,
+                  67.87757972606104
+                ]
+              },
+              "status": "unresolved_appearance",
+              "displacement": [
+                null,
+                null,
+                null
+              ],
+              "checks": [
+                "ambiguous"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "error": null,
+  "binary_sha256": "25a0f14ebbcdbacb1488c5b25eec41c6b63a478c174fa3b4f6eed8dc4b2e6e29",
+  "audit": {
+    "source_count": 161,
+    "input_count": 16,
+    "generated_count": 12,
+    "changed": []
+  }
+}

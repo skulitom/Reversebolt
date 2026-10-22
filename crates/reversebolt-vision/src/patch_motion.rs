@@ -18,6 +18,7 @@ const COLS: i32 = 6;
 const ROWS: i32 = 4;
 const MAX_PATCHES: usize = 48;
 const MIN_DISTANCE: i32 = 12;
+pub(crate) const MIN_CORNER: f64 = 16.;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -91,7 +92,7 @@ fn occupied<'a>(points: impl Iterator<Item = &'a [i32; 2]>) -> Vec<usize> {
     }
     counts
 }
-fn corner_score(image: &GrayImage, [x, y]: [i32; 2]) -> f64 {
+pub(crate) fn corner_score(image: &GrayImage, [x, y]: [i32; 2]) -> f64 {
     let (mut xx, mut yy, mut xy) = (0., 0., 0.);
     for dy in -HALF..=HALF {
         for dx in -HALF..=HALF {
@@ -114,7 +115,7 @@ fn select(image: &GrayImage) -> (Vec<(f64, [i32; 2])>, Selection) {
     for y in (12..HEIGHT - 12).step_by(2) {
         for x in (12..WIDTH - 12).step_by(2) {
             let score = corner_score(image, [x, y]);
-            if score >= 16. {
+            if score >= MIN_CORNER {
                 candidates.push((score, [x, y]));
             }
         }

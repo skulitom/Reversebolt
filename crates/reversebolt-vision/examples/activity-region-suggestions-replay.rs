@@ -23,9 +23,14 @@ struct Case {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 2 {
-        return Err("Use CASE_JSON NEW_OUTPUT_JSON.".into());
+    if !(2..=3).contains(&args.len()) {
+        return Err("Use CASE_JSON NEW_OUTPUT_JSON [change_only|stable_texture].".into());
     }
+    let ranking = match args.get(2).map(String::as_str).unwrap_or("stable_texture") {
+        "change_only" => reversebolt_vision::activity_region_suggestions::Ranking::ChangeOnly,
+        "stable_texture" => reversebolt_vision::activity_region_suggestions::Ranking::StableTexture,
+        _ => return Err("Unknown region ranking policy.".into()),
+    };
     let path = Path::new(&args[0]);
     let mut bytes = vec![];
     fs::File::open(path)?
@@ -41,8 +46,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .canonicalize()?;
     let frames: Vec<_> = case.frames.iter().map(|f| f.reference.clone()).collect();
     let mut images_read = vec![];
-    let result =
-        reversebolt_vision::activity_region_suggestions::analyze(&case.source, &frames, |frame| {
+    let result = reversebolt_vision::activity_region_suggestions::analyze_with_ranking(
+        &case.source,
+        &frames,
+        |frame| {
             let saved = case
                 .frames
                 .iter()
@@ -64,7 +71,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             images_read.push(frame.id.clone());
             visual::image_bytes(&file)
-        });
+        },
+        ranking,
+    );
     let (report, error) = match result {
         Ok(report) => (Some(report), None),
         Err(error) => (None, Some(error)),

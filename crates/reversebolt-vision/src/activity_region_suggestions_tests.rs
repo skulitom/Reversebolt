@@ -106,6 +106,68 @@ fn run(images: &[Vec<u8>], frames: &[FrameRef], source: &Source) -> Report {
 }
 
 #[test]
+fn stable_texture_selection_survives_large_untextured_changes_without_using_second_pair() {
+    let (mut images, mut frames, _) = fixture(&[64, 64, 80, 80, 64, 64, 80, 80]);
+    for i in [2, 6] {
+        let mut image = image::load_from_memory(&images[i]).unwrap().to_luma8();
+        for y in 0..288 {
+            for x in 256..512 {
+                image[(x, y)] = Luma([240]);
+            }
+        }
+        let mut bytes = std::io::Cursor::new(vec![]);
+        image.write_to(&mut bytes, image::ImageFormat::Png).unwrap();
+        images[i] = bytes.into_inner();
+        frames[i].sha256 = visual::digest(&images[i]);
+    }
+    let source = source(&frames);
+    let old = analyze_with_ranking(
+        &source,
+        &frames,
+        |f| Ok(images[f.number - 1].clone()),
+        Ranking::ChangeOnly,
+    )
+    .unwrap();
+    assert_eq!(old.status, "no_supported_region");
+    assert!(
+        old.suggestions
+            .iter()
+            .all(|s| s.frames[0].status == matcher::Status::LowTexture)
+    );
+    assert!(json!(old).get("selection").is_none());
+    let new = run(&images, &frames, &source);
+    assert_eq!(new.status, "suggestions_available");
+    assert!(new.selection.as_ref().unwrap().rejected_low_texture > 0);
+    let best = &new.suggestions[new.recommended.unwrap()];
+    assert_eq!(
+        best.displacement,
+        [Some([0, 0]), Some([16, 0]), Some([16, 0])]
+    );
+    assert_eq!(new.suggestions.len(), 4);
+    assert!(new.attempted_frames <= 20);
+    // Destroy both later-episode images while preserving valid hashes. Only
+    // correspondence outcomes may change; selection and candidate order may not.
+    images[5] = images[2].clone();
+    images[6] = images[0].clone();
+    for i in [5, 6] {
+        frames[i].sha256 = visual::digest(&images[i]);
+    }
+    let mut second_source = source.clone();
+    second_source.frame_metadata_sha256 = visual::digest(&serde_json::to_vec(&frames).unwrap());
+    second_source.pairs[1].before.sha256 = frames[5].sha256.clone();
+    second_source.pairs[1].after.sha256 = frames[6].sha256.clone();
+    let changed = run(&images, &frames, &second_source);
+    assert_eq!(json!(new.selection), json!(changed.selection));
+    let selection = |r: &Report| {
+        r.suggestions.iter().map(|s|
+        json!({"region":s.region,"change":s.action_minus_idle_change,"quality":s.selection_quality})
+    ).collect::<Vec<_>>()
+    };
+    assert_eq!(selection(&new), selection(&changed));
+    assert_ne!(new.source_sha256, changed.source_sha256);
+}
+
+#[test]
 fn proposals_bind_five_images_and_do_not_assume_equal_key_effects() {
     let (images, frames, source) = fixture(&[64, 64, 80, 80, 80, 80, 64, 64]);
     let mut reads = vec![];

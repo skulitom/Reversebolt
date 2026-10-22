@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Stable texture region selection (2026-10-22): **35% unchanged**.
+Automatic passive suggestions now filter source texture, corner strength and
+quiet stability before the four-candidate/twenty-check matching budget. The
+existing corner scorer, sparse/dense template statistics and matching thresholds
+are reused. Selection quality/exclusions are explicit; later-pair pixels and
+match outcomes cannot rerank candidates. Shared API/MCP reads use versioned v2;
+an explicit offline v1 path preserves its full serialized output exactly.
+
+All 367 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. A controlled flashing-distractor case now recovers the known motion,
+and metadata/error, quiet-stability, later-pair independence and default API tests
+pass. Frozen paired replay finds supported interval correspondences in 4/4 tried
+Hyperbolica regions and 1/4 Garden regions, versus 0/4 for both old selections.
+The old outputs equal the prior archive; both methods repeat identically. All
+161 sources, 16 original inputs, 12 generated inputs and the binary pass audit.
+These are known development recordings without motion ground truth; no verified
+gameplay control or generalization credit follows. No model call, fresh capture,
+game input or target operation ran. Desktop publication remains unavailable after
+quarantine. [Method and results](../research/stable-region-selection/README.md).
+
 Passive activity region proposals (2026-10-22): **35% unchanged**.
 The shared application/MCP evidence reader now proposes numeric regions without
 requiring observer labels, using the existing baseline tile ranking and matcher.

@@ -11,7 +11,7 @@ pub const POLICY: &str = "rgb601-triangle512x288-region-ncc16-dense-reverse-v1";
 pub const LIMITATION: &str = "A same-size image-template correspondence across two captures, not object identity, physical speed or gameplay meaning. Searches all fitting positions in normalized 512x288 images using at most 16x16 samples, verifies the winning rectangle densely and requires an unambiguous reverse match. No rotation, scaling, deformation or occlusion model is fitted. Matching background or visually identical objects can still mislead. Scores and thresholds are heuristics, not probabilities. No unresolved result or zero displacement proves no movement. No match is propagated to another capture.";
 const WIDTH: u32 = 512;
 const HEIGHT: u32 = 288;
-const MIN_STD: f64 = 8.;
+pub(crate) const MIN_STD: f64 = 8.;
 const MIN_NCC: f64 = 0.92;
 const MIN_MARGIN: f64 = 0.06;
 const BASIN: u32 = 2;
@@ -210,6 +210,29 @@ fn search(source: &GrayImage, target: &GrayImage, region: Region) -> Search {
     report
 }
 
+pub(crate) fn normalized_region(region: Region, dimensions: [u32; 2]) -> Region {
+    let left = u64::from(region.x) * u64::from(WIDTH) / u64::from(dimensions[0]);
+    let top = u64::from(region.y) * u64::from(HEIGHT) / u64::from(dimensions[1]);
+    let right =
+        (u64::from(region.x + region.width) * u64::from(WIDTH)).div_ceil(u64::from(dimensions[0]));
+    let bottom = (u64::from(region.y + region.height) * u64::from(HEIGHT))
+        .div_ceil(u64::from(dimensions[1]));
+    Region {
+        x: left as u32,
+        y: top as u32,
+        width: (right - left) as u32,
+        height: (bottom - top) as u32,
+    }
+}
+
+/// Caller provides a valid normalized rectangle; matches the search's samples.
+pub(crate) fn template_std(image: &GrayImage, region: Region) -> [f64; 2] {
+    [
+        Template::new(image, region, true).std(),
+        Template::new(image, region, false).std(),
+    ]
+}
+
 pub(crate) fn prepared(
     a: &GrayImage,
     b: &GrayImage,
@@ -220,18 +243,7 @@ pub(crate) fn prepared(
         f64::from(dimensions[0]) / f64::from(WIDTH),
         f64::from(dimensions[1]) / f64::from(HEIGHT),
     ];
-    let left = u64::from(region.x) * u64::from(WIDTH) / u64::from(dimensions[0]);
-    let top = u64::from(region.y) * u64::from(HEIGHT) / u64::from(dimensions[1]);
-    let right =
-        (u64::from(region.x + region.width) * u64::from(WIDTH)).div_ceil(u64::from(dimensions[0]));
-    let bottom = (u64::from(region.y + region.height) * u64::from(HEIGHT))
-        .div_ceil(u64::from(dimensions[1]));
-    let normalized = Region {
-        x: left as u32,
-        y: top as u32,
-        width: (right - left) as u32,
-        height: (bottom - top) as u32,
-    };
+    let normalized = normalized_region(region, dimensions);
     let mut report = Report {
         policy: POLICY,
         source_dimensions: dimensions,

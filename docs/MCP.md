@@ -156,12 +156,22 @@ size limits. See [sequence checks and limitations](../research/appearance-sequen
 `automatic_region_motion.activity_region_suggestions` independently proposes
 numeric regions without requiring observer labels. When the existing activity
 selector supplies two quiet-bounded, contrasting sampled-key intervals, the
-`passive_activity_region_suggestions_v1` policy ranks fixed 16/32/64-pixel tiles
+`passive_activity_stable_texture_regions_v2` policy first selects fixed 16/32/64-pixel tiles
 in normalized 512x288 images, at half-tile strides, by first-action absolute
 change minus the immediately preceding quiet change (clamped to zero per pixel).
-Mean residual must reach 8; ties prefer smaller tiles, then y/x. Original-pixel
-rectangles must satisfy the existing minimum size, without padding. Greedy
-selection excludes overlaps greater than one quarter of the smaller tile.
+Mean residual must reach 8. Original-pixel rectangles must satisfy the existing
+minimum size, without padding. Before spending any template-search budget, reject
+tiles with sparse or dense source standard deviation below 8, center 9x9 corner
+score below 16, or quiet mean absolute difference above 4. Statistics use the
+actual rounded normalized matcher rectangle. The corner score reuses the existing
+motion-analysis minimum-eigenvalue calculation for texture in two directions.
+Rank survivors by `corner_score / (1 + quiet_mean_absolute_difference)`, then
+change score descending and tile size/y/x ascending. Greedy selection excludes
+overlaps greater than one quarter of the smaller grid tile. `selection` records
+input/eligible counts, exclusive rejection reasons and requirements;
+`selection_quality` records each tried candidate's source measurements. These are
+heuristics, not probabilities. No second-interval image or match result influences
+the candidate order, and failed candidates are not replaced.
 
 At most four candidates each receive five original-template checks: first-action
 before image against itself, preceding quiet image, first-action after image,
@@ -174,6 +184,10 @@ origin rectangle. Source metadata, capture continuity, epochs, geometry, sampled
 input generations, image hashes and actual dimensions are checked. Image/source
 failure returns a null report with an error; absent eligible activity returns
 `no_activity_source`. At most five PNGs are read again and twenty checks run.
+If change tiles exist but all fail the quality checks, status is
+`no_stable_textured_region`. The offline library/replay retains `ChangeOnly` /
+`change_only` for the exact v1 method and serialized report; normal application
+reads use v2. Source hashes distinguish the versioned derivation.
 `auto_regions: false` also skips these proposals.
 
 These are **independent interval correspondences**, not continuous identity
