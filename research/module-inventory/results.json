@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "base_commit": "49c066c",
+  "scope": "Generated module enumeration tests; no native target or helper",
+  "workspace_tests": 445,
+  "focused_tests": 3,
+  "strict_all_target_clippy": "passed",
+  "progress_percent": 35,
+  "files": [
+    {
+      "path": "crates/reversebolt-runtime/src/win.rs",
+      "bytes": 7889,
+      "sha256": "b43e2d94a7ca3c774a234835eb9ec1f143494ef61c4239727242938703410cc6"
+    },
+    {
+      "path": "crates/reversebolt-runtime/src/bin/reversebolt-runtime-loader.rs",
+      "bytes": 15280,
+      "sha256": "2bf55a4946ffa0039584fe16fd83cf337d868ecc93e6e7d66269d41badcaf28e"
+    },
+    {
+      "path": "test-results/module-inventory-focused.log",
+      "bytes": 1650,
+      "sha256": "65bbb8bb51911c46e14da260c11635c9a31e09febe93809e93a86723336d20fb"
+    },
+    {
+      "path": "test-results/module-inventory-workspace.log",
+      "bytes": 69388,
+      "sha256": "8a4ea0fbe73eda9bfa77fed022bda5071f66cd63f63c65ed48591c366176681f"
+    },
+    {
+      "path": "test-results/module-inventory-clippy.log",
+      "bytes": 321,
+      "sha256": "babd54b9d9a7bbc0d734c56c6415af4008b4e5ea8de12233364ace78029d8abb"
+    }
+  ]
+}

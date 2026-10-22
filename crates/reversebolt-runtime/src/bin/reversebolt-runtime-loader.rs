@@ -128,9 +128,6 @@ fn run() -> Result<()> {
                 return Err("detection process identity mismatch".into());
             }
             let initial = modules(pid)?;
-            if initial.len() > 512 {
-                return Err("module count exceeds detection budget".into());
-            }
             let mut providers = 0;
             let mut unavailable = 0;
             let mut read_bytes = 0;
