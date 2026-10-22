@@ -217,6 +217,108 @@ fn ready(changed: f64) -> (Test, Trial) {
 }
 
 #[test]
+fn recorded_intervention_needs_preselection_exact_readbacks_and_ordered_receipts() {
+    use reversebolt_core::{runtime_tests::AppearanceSelection, visual_regions::Region};
+    let (mut test, write, restored) = fixture();
+    test.preparation = Some(reading(&write.patch, &write.patch.expected));
+    condition(&mut test, 6.);
+    test.lock_appearance(
+        AppearanceSelection {
+            baseline_sha256: "a".repeat(64),
+            region: Region {
+                x: 64,
+                y: 64,
+                width: 64,
+                height: 64,
+            },
+        },
+        test.revision,
+        15500,
+    )
+    .unwrap();
+    test.sync_trial(&write).unwrap();
+    condition(&mut test, 0.3);
+    test.conditions[1].runtime_evidence = Some(reading(&write.patch, &write.patch.replacement));
+    test.conditions[1].runtime_checked_unix_ms = Some(23000);
+    test.sync_trial(&restored).unwrap();
+    condition(&mut test, 6.);
+    test.conditions[2].runtime_evidence = Some(reading(&write.patch, &write.patch.expected));
+    test.conditions[2].runtime_checked_unix_ms = Some(31000);
+    test.complete(&restored, test.revision).unwrap();
+    test.check_recorded_intervention(&restored).unwrap();
+    assert_eq!(
+        test.assessment.as_ref().unwrap().status,
+        "suppression_observed"
+    );
+    let before = json!(test);
+    for variant in 0..17 {
+        let mut t = test.clone();
+        let mut trial = restored.clone();
+        match variant {
+            0 => t.phase = Phase::Stopped,
+            1 => t.pending_capture = true,
+            2 => trial.id = uuid(),
+            3 => {
+                t.conditions[1].runtime_evidence =
+                    Some(reading(&write.patch, &write.patch.expected))
+            }
+            4 => {
+                let mut wrong = write.patch.clone();
+                wrong.object_addresses[0] += 16;
+                t.conditions[1].runtime_evidence = Some(reading(&wrong, &wrong.replacement));
+            }
+            5 => t.conditions[1].runtime_checked_unix_ms = Some(17000),
+            6 => t.conditions[1].runtime_checked_unix_ms = Some(26000),
+            7 => {
+                trial
+                    .write
+                    .as_mut()
+                    .unwrap()
+                    .evidence
+                    .as_mut()
+                    .unwrap()
+                    .report_sha256 = "b".repeat(64)
+            }
+            8 => t.conditions[2].runtime_evidence = None,
+            9 => t.preparation = None,
+            10 => t.appearance.as_mut().unwrap().selected_unix_ms = 18000,
+            11 => trial.restoration.as_mut().unwrap().completed_ms = Some(26000),
+            12 => trial.write.as_mut().unwrap().started_ms = 17000,
+            13 => t.conditions[1].frames[2].input.held_us[0] *= 2,
+            14 => t.conditions[1].frames[2].input.generation = "another".into(),
+            15 => t.appearance = None,
+            _ => trial.restoration.as_mut().unwrap().error = Some("unresolved".into()),
+        }
+        assert!(
+            t.check_recorded_intervention(&trial).is_err(),
+            "variant {variant}"
+        );
+    }
+    assert_eq!(json!(test), before);
+    let mut no_restore_write = restored;
+    let restore = no_restore_write.restoration.as_mut().unwrap();
+    let p = &restore.patch;
+    restore.evidence = Some(Evidence::new("already-original.json".into(), json!({
+        "operation":"patch_runtime_path","scope":p.path.scope,"patch_id":p.id(),
+        "checks":[check(p,&p.replacement)],"patch":{"state":"refused","guard":"value_changed",
+        "attempted":false,"transferred":0,"observed_after":null}
+    })).unwrap());
+    restore.outcome = "already_original".into();
+    assert_eq!(
+        reversebolt_core::runtime_trials::classify_restoration(
+            p,
+            &restore.evidence.as_ref().unwrap().report
+        ),
+        "already_original"
+    );
+    assert!(
+        test.check_recorded_intervention(&no_restore_write)
+            .unwrap_err()
+            .contains("already-original")
+    );
+}
+
+#[test]
 fn appearance_choice_is_bound_before_edit_and_retained_through_recovery() {
     use reversebolt_core::{runtime_tests::AppearanceSelection, visual_regions::Region};
     let (mut t, write, restored) = fixture();

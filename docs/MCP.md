@@ -1281,6 +1281,31 @@ keeps the test metadata and exposes `trial_appearance_error` with a null compari
 This ordering concerns the linked Reversebolt edit; it cannot rule out external
 changes or remove bias from choosing a region after observing baseline behavior.
 
+`regional_intervention_assessment` joins that regional comparison to the linked
+durable runtime edit record. The final recovery observation returns the compact
+assessment automatically when an appearance plan exists; history reads return
+it alongside the full image measurements. No extra capture, input, target read
+or write is needed. Saved scalar assessments remain unchanged.
+
+Policy `recorded_regional_intervention_v1` requires a complete test and restored
+trial, the exact candidate/path/scope and planned value, original-value evidence
+before baseline, and a region saved before edit preparation. Both edit and
+restoration must have valid completed write receipts; `already_original` is not
+a restore write. Capture/selection/write/readback/recovery times must bracket
+the operations. Fresh checks after changed/recovered images must confirm the
+appropriate values at the same field and object chain. One input monitor must
+support all planned actions with comparable sampled hold durations. Image/input
+files are independently checked by the existing regional comparison.
+
+Statuses are `regional_change_and_return_observed`,
+`regional_change_not_observed`, or `inconclusive`. A missing/inconsistent edit
+record gives `intervention_error`; valid records with unresolved image evidence
+still yield `inconclusive`. The result binds typed test/trial/report digests and
+retains the original appearance status. A retrospective region without a saved
+pre-edit plan cannot pass. This is evidence about the recorded intervention and
+image response, not a verified gameplay label, identity, physical speed,
+exclusive causal explanation or complete world recovery. No control is promoted.
+
 For a trial without a saved choice, supply `appearance: {baseline_sha256, region: {x, y, width, height}}`
 to `read_runtime_test` for `trial_appearance_comparison`. The rectangle must refer
 to baseline condition 0 frame 0, with its exact SHA-256 and integer original-image

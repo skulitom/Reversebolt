@@ -36,6 +36,41 @@ fn appearance_suggestions(engine: &Engine, test: &Test, result: &mut Value) {
     }
 }
 
+fn compare_appearance(
+    engine: &Engine,
+    test: &Test,
+    selection: runtime_tests::AppearanceSelection,
+) -> Result<(
+    reversebolt_vision::trial_appearance::Report,
+    reversebolt_vision::trial_intervention::Assessment,
+)> {
+    let report = reversebolt_vision::trial_appearance::analyze(
+        test,
+        selection,
+        |condition, frame| engine.runtime_tests.read_image(test, condition, frame),
+        |condition, frame| engine.runtime_tests.read_input(test, condition, frame),
+    )?;
+    let trial = engine.runtime_trials.get(&test.change_id).ok();
+    let assessment = reversebolt_vision::trial_intervention::assess(test, trial.as_ref(), &report)?;
+    Ok((report, assessment))
+}
+
+fn completed_regional_assessment(engine: &Engine, test: &Test, result: &mut Value) {
+    if test.phase != Phase::Complete {
+        return;
+    }
+    let Some(plan) = &test.appearance else {
+        return;
+    };
+    match compare_appearance(engine, test, plan.selection.clone()) {
+        Ok((_, assessment)) => result["regional_intervention_assessment"] = json!(assessment),
+        Err(error) => {
+            result["regional_intervention_assessment"] = Value::Null;
+            result["trial_appearance_error"] = json!(error);
+        }
+    }
+}
+
 /// Called only after the engine has saved all six baseline images/input windows.
 /// This also serves target-free protocol tests of the real post-capture path.
 fn review_baseline(engine: &mut Engine, test: &mut Test, abort: &AtomicBool) -> Result<()> {
@@ -325,17 +360,14 @@ impl Session {
                 if requested.as_ref().is_some_and(|r| *r != selection) {
                     return Err("The requested appearance differs from the retained plan.".into());
                 }
-                match reversebolt_vision::trial_appearance::analyze(
-                    &test,
-                    selection,
-                    |condition, frame| engine.runtime_tests.read_image(&test, condition, frame),
-                    |condition, frame| engine.runtime_tests.read_input(&test, condition, frame),
-                ) {
-                    Ok(report) => {
+                match compare_appearance(engine, &test, selection) {
+                    Ok((report, assessment)) => {
+                        result["regional_intervention_assessment"] = json!(assessment);
                         result["trial_appearance_comparison"] =
                             serde_json::to_value(report).map_err(|e| e.to_string())?
                     }
                     Err(error) if test.appearance.is_some() => {
+                        result["regional_intervention_assessment"] = Value::Null;
                         result["trial_appearance_comparison"] = Value::Null;
                         result["trial_appearance_error"] = json!(error);
                     }
@@ -445,6 +477,7 @@ impl Session {
         if test.phase == Phase::ReadyToApply && test.appearance.is_none() {
             appearance_suggestions(engine, &test, &mut summary);
         }
+        completed_regional_assessment(engine, &test, &mut summary);
         Ok(summary)
     }
     fn prepare(

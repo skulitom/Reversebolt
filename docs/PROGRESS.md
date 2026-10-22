@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Regional intervention evidence (2026-10-22): **35% unchanged**.
+The final recovery response and shared history reader now join the preselected
+region's measured response to its exact recorded edit and restoration. The
+derived result requires original-value preparation, valid completed write
+receipts, ordered images/readbacks, the same reference chain and comparable
+sampled holds. An already-original restoration is not counted as a restore write.
+Test/trial/report digests bind the result. Supported regional change, no change
+and inconclusive evidence remain distinct; old scalar assessments and candidate
+authority stay unchanged.
+
+All 376 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. Generated PNG/input files and synthetic receipts exercise complete
+baseline/changed/recovered transitions, an inconclusive whole-screen result with
+a supported regional pattern, automatic completion delivery, shared reads and
+restart. Missing trials, wrong readbacks, corrupt images and unchanged motion
+retain negative or inconclusive results; core countercases reject inconsistent
+references, receipts, timing, sampled holds and choices. These are software
+integration checks, not native gameplay interventions. Fresh real-game evidence
+and semantic validation are still required. Desktop publication remains
+unavailable after quarantine.
+[Implementation and evidence limits](../research/regional-intervention/README.md).
+
 Regional baseline entry (2026-10-22): **35% unchanged**.
 The live comparison no longer stops a valid small local response solely because
 its whole-screen difference is weak. The final baseline observation now reviews

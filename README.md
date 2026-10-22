@@ -168,6 +168,10 @@ the region before any edit. Read-time proposals remain optional choices. See
 [baseline region selection and its limits](research/stable-baseline-regions/README.md).
 The [regional baseline flow](research/regional-baseline-flow/README.md) covers
 this integration and its automated regression checks.
+The completion response and shared history now also join the regional pattern
+to recorded edit/restoration receipts and fresh value checks. Missing evidence
+stays inconclusive; a supported image pattern still does not establish gameplay
+meaning. See [regional intervention assessment](research/regional-intervention/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

@@ -159,6 +159,28 @@ fn motion_fixture(local: bool) -> (std::path::PathBuf, std::path::PathBuf, Engin
     (directory, state_path, engine, test)
 }
 
+fn measured_saved_frame(engine: &Engine, complete: &Test, condition: usize, i: usize) -> Frame {
+    let mut frame = complete.conditions[condition].frames[i].clone();
+    frame.difference = if i == 0 {
+        None
+    } else {
+        Some(
+            reversebolt_vision::response::difference(
+                &engine
+                    .runtime_tests
+                    .read_image(complete, condition, i - 1)
+                    .unwrap(),
+                &engine
+                    .runtime_tests
+                    .read_image(complete, condition, i)
+                    .unwrap(),
+            )
+            .unwrap(),
+        )
+    };
+    frame
+}
+
 /// Feed saved PNG/input bytes through the same core completion operation
 /// used by native capture, including the actual whole-screen response metric.
 fn collect_saved_baseline(engine: &Engine, complete: &Test) -> Test {
@@ -166,23 +188,256 @@ fn collect_saved_baseline(engine: &Engine, complete: &Test) -> Test {
     t.conditions = Default::default();
     t.phase = Phase::Baseline;
     for i in 0..6 {
-        let mut frame = complete.conditions[0].frames[i].clone();
-        frame.difference = if i == 0 {
-            None
-        } else {
-            Some(
-                reversebolt_vision::response::difference(
-                    &engine.runtime_tests.read_image(complete, 0, i - 1).unwrap(),
-                    &engine.runtime_tests.read_image(complete, 0, i).unwrap(),
-                )
-                .unwrap(),
-            )
-        };
+        let frame = measured_saved_frame(engine, complete, 0, i);
         let input = engine.runtime_tests.read_input(complete, 0, i).unwrap();
         t.begin_capture(t.revision).unwrap();
         t.finish_capture(frame, input.as_ref()).unwrap();
     }
     t
+}
+
+#[test]
+fn regional_intervention_joins_exact_edit_records_without_promoting_the_control() {
+    use reversebolt_core::{
+        changes::Phase as TrialPhase,
+        runtime_trials::{Attempt, Context, Evidence, Trial},
+    };
+    let (directory, state_path, mut engine, mut images) = motion_fixture(true);
+    let patch = Patch {
+        path: images.candidate.locator.clone(),
+        type_code: 8,
+        expected: 8i32.to_le_bytes().to_vec(),
+        replacement: 0i32.to_le_bytes().to_vec(),
+        field_address: 0x2000,
+        object_addresses: vec![0x1000],
+        prepared_unix_ms: 4500,
+    };
+    let check = |p: &Patch, bytes: &[u8]| {
+        json!({"path_id":p.path.id(),"status":"read","type_code":p.type_code,"bytes":bytes,
+        "value":scalar_value(p.type_code,bytes).unwrap(),"field_address":format!("0x{:x}",p.field_address),
+        "snapshot_object_addresses":p.object_addresses.iter().map(|a|format!("0x{a:x}")).collect::<Vec<_>>()})
+    };
+    let reading = |bytes: &[u8]| {
+        Evidence::new("synthetic-read.json".into(),
+        json!({"operation":"refresh_runtime_paths","scope":patch.path.scope,"checks":[check(&patch,bytes)]})).unwrap()
+    };
+    let attempt = |p: Patch| {
+        let e = Evidence::new("synthetic-write.json".into(), json!({"operation":"patch_runtime_path","scope":p.path.scope,"patch_id":p.id(),
+            "checks":[check(&p,&p.expected)],"patch":{"state":"written","attempted":true,"transferred":p.replacement.len(),"guard":"ready","observed_after":p.replacement}})).unwrap();
+        Attempt {
+            started_ms: p.prepared_unix_ms,
+            completed_ms: Some(p.prepared_unix_ms + 20),
+            patch: p,
+            evidence: Some(e),
+            outcome: "written".into(),
+            error: None,
+        }
+    };
+    // All receipts and wall times in this test are generated, not native edits.
+    images.preparation = Some(reading(&patch.expected));
+    let mut test = collect_saved_baseline(&engine, &images);
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let proposals = reversebolt_vision::trial_appearance_suggestions::analyze(
+        &test,
+        |c, i| engine.runtime_tests.read_image(&test, c, i),
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    test.finish_baseline_review(proposals.recommended, test.revision, 4000)
+        .unwrap();
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let written = Trial {
+        id: test.change_id.clone(),
+        direct: true,
+        actor: "agent".into(),
+        context: Context {
+            investigation: test.investigation.clone(),
+            catalog_id: test.catalog_id.clone(),
+            revision: 1,
+            process: test.scope.clone(),
+        },
+        candidate_id: test.candidate.id.clone(),
+        name: "Synthetic parameter".into(),
+        patch: patch.clone(),
+        baseline: reading(&patch.expected),
+        phase: TrialPhase::Written,
+        reason: "Synthetic receipt".into(),
+        write: Some(attempt(patch.clone())),
+        restoration: None,
+    };
+    test.sync_trial(&written).unwrap();
+    for i in 0..6 {
+        let input = engine.runtime_tests.read_input(&images, 1, i).unwrap();
+        test.begin_capture(test.revision).unwrap();
+        test.finish_capture(measured_saved_frame(&engine, &images, 1, i), input.as_ref())
+            .unwrap();
+    }
+    test.conditions[1].runtime_evidence = Some(reading(&patch.replacement));
+    test.conditions[1].runtime_checked_unix_ms = Some(10000);
+    let inverse = patch
+        .restoration(
+            &written
+                .write
+                .as_ref()
+                .unwrap()
+                .evidence
+                .as_ref()
+                .unwrap()
+                .report,
+            11000,
+        )
+        .unwrap();
+    let restored = Trial {
+        phase: TrialPhase::Restored,
+        restoration: Some(attempt(inverse)),
+        ..written
+    };
+    test.sync_trial(&restored).unwrap();
+    for i in 0..6 {
+        let input = engine.runtime_tests.read_input(&images, 2, i).unwrap();
+        test.begin_capture(test.revision).unwrap();
+        test.finish_capture(measured_saved_frame(&engine, &images, 2, i), input.as_ref())
+            .unwrap();
+    }
+    test.conditions[2].runtime_evidence = Some(reading(&patch.expected));
+    test.conditions[2].runtime_checked_unix_ms = Some(17000);
+    test.complete(&restored, test.revision).unwrap();
+    test.check_recorded_intervention(&restored).unwrap();
+    assert_eq!(test.assessment.as_ref().unwrap().status, "inconclusive");
+    engine.runtime_tests.record(test.clone()).unwrap();
+    // Persist the generated receipt to exercise strict history loading on restart.
+    std::fs::write(
+        engine
+            .runtime_trials
+            .directory()
+            .join(format!("{}.json", restored.id)),
+        serde_json::to_vec(&restored).unwrap(),
+    )
+    .unwrap();
+    engine.runtime_trials.records.push(restored.clone());
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let command = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id}),
+    };
+    let read = |session: &mut Session, engine: &mut Engine| {
+        session
+            .command(engine, &command, &directory, &published)
+            .unwrap()
+    };
+    let result = read(&mut session, &mut engine);
+    assert_eq!(
+        result["regional_intervention_assessment"]["status"],
+        "regional_change_and_return_observed"
+    );
+    assert!(result["regional_intervention_assessment"]["intervention_error"].is_null());
+    assert_eq!(
+        result["regional_intervention_assessment"]["trial_sha256"],
+        reversebolt_core::visual::digest(&serde_json::to_vec(&restored).unwrap())
+    );
+    let mut completion = test.summary();
+    completed_regional_assessment(&engine, &test, &mut completion);
+    assert_eq!(
+        completion["regional_intervention_assessment"],
+        result["regional_intervention_assessment"]
+    );
+    assert!(completion.get("trial_appearance_comparison").is_none());
+    assert_eq!(result["test"], json!(test));
+    assert!(
+        !engine
+            .runtime_tests
+            .get(&test.id)
+            .unwrap()
+            .candidate
+            .edit_authority
+    );
+    drop(engine);
+    let mut engine = Engine::load(state_path).unwrap();
+    assert_eq!(read(&mut session, &mut engine), result);
+
+    engine.runtime_trials.records.clear();
+    let missing = read(&mut session, &mut engine);
+    assert_eq!(
+        missing["regional_intervention_assessment"]["status"],
+        "inconclusive"
+    );
+    assert_eq!(
+        missing["trial_appearance_comparison"],
+        result["trial_appearance_comparison"]
+    );
+    engine.runtime_trials.records.push(restored.clone());
+    let mut wrong = test.clone();
+    wrong.conditions[1].runtime_evidence = Some(reading(&patch.expected));
+    engine.runtime_tests.record(wrong).unwrap();
+    let changed = read(&mut session, &mut engine);
+    assert_eq!(
+        changed["trial_appearance_comparison"]["status"],
+        "appearance_displacement_changed_and_returned"
+    );
+    assert_eq!(
+        changed["regional_intervention_assessment"]["status"],
+        "inconclusive"
+    );
+    engine.runtime_tests.record(test.clone()).unwrap();
+
+    let frame = directory
+        .join("runtime-tests")
+        .join(&test.id)
+        .join("1-2.png");
+    let original = std::fs::read(&frame).unwrap();
+    std::fs::write(&frame, b"corrupt").unwrap();
+    let corrupt = read(&mut session, &mut engine);
+    assert_eq!(
+        corrupt["regional_intervention_assessment"]["status"],
+        "inconclusive"
+    );
+    assert!(corrupt["regional_intervention_assessment"]["intervention_error"].is_null());
+    std::fs::write(&frame, original).unwrap();
+
+    // An unchanged image pattern must remain negative with the same receipts.
+    let mut similar = test.clone();
+    for i in 0..6 {
+        let bytes = engine.runtime_tests.read_image(&test, 0, i).unwrap();
+        std::fs::write(
+            directory
+                .join("runtime-tests")
+                .join(&test.id)
+                .join(format!("1-{i}.png")),
+            &bytes,
+        )
+        .unwrap();
+        similar.conditions[1].frames[i].sha256 = reversebolt_core::visual::digest(&bytes);
+        similar.conditions[1].frames[i].difference = test.conditions[0].frames[i].difference;
+    }
+    engine.runtime_tests.record(similar.clone()).unwrap();
+    let negative = read(&mut session, &mut engine);
+    assert_eq!(
+        negative["regional_intervention_assessment"]["status"],
+        "regional_change_not_observed"
+    );
+    let report = reversebolt_vision::trial_appearance::analyze(
+        &similar,
+        similar.appearance.as_ref().unwrap().selection.clone(),
+        |c, i| engine.runtime_tests.read_image(&similar, c, i),
+        |c, i| engine.runtime_tests.read_input(&similar, c, i),
+    )
+    .unwrap();
+    assert!(
+        reversebolt_vision::trial_intervention::assess(&test, Some(&restored), &report).is_err()
+    );
+    assert!(!similar.candidate.edit_authority);
+    drop(engine);
+    assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
 }
 
 #[test]

@@ -772,6 +772,98 @@ impl Test {
         }
         a
     }
+    /// Check retained intervention records independently of the screen metric.
+    /// Image bytes and sampled-input files still need independent verification.
+    /// This establishes recorded ordering/readbacks, not gameplay causality.
+    pub fn check_recorded_intervention(&self, trial: &Trial) -> Result<()> {
+        let mut linked = self.clone();
+        linked.sync_trial(trial)?;
+        if self.phase != Phase::Complete
+            || self.pending_capture
+            || self.assessment.is_none()
+            || trial.phase != TrialPhase::Restored
+            || self
+                .conditions
+                .iter()
+                .any(|c| c.frames.len() != FRAMES_PER_CONDITION)
+        {
+            return Err("Complete the comparison and restore the recorded edit first.".into());
+        }
+        let plan = self
+            .appearance
+            .as_ref()
+            .ok_or("No region was saved before the edit.")?;
+        if self.preparation.is_none() {
+            return Err("The original value was not checked before baseline collection.".into());
+        }
+        let write = trial.write.as_ref().ok_or("The edit receipt is missing.")?;
+        let restore = trial
+            .restoration
+            .as_ref()
+            .ok_or("The restoration receipt is missing.")?;
+        if write.outcome != "written"
+            || restore.outcome != "written"
+            || write.error.is_some()
+            || restore.error.is_some()
+        {
+            return Err("Both the edit and restoration need completed write receipts; already-original is not a restore write.".into());
+        }
+        let write_end = write.completed_ms.ok_or("The edit did not finish.")?;
+        let restore_end = restore.completed_ms.ok_or("Restoration did not finish.")?;
+        if self.created_unix_ms > self.conditions[0].frames[0].started_unix_ms
+            || plan.selected_unix_ms > trial.patch.prepared_unix_ms
+            || trial.patch.prepared_unix_ms > write.started_ms
+            || write.started_ms > write_end
+            || write_end > self.conditions[1].frames[0].started_unix_ms
+            || self.conditions[1]
+                .runtime_checked_unix_ms
+                .is_none_or(|t| t > restore.patch.prepared_unix_ms)
+            || restore.patch.prepared_unix_ms > restore.started_ms
+            || restore.started_ms > restore_end
+            || restore_end > self.conditions[2].frames[0].started_unix_ms
+        {
+            return Err("Baseline selection, edit, value checks and restoration are not in the required order.".into());
+        }
+        if !self.value_observed(trial, 1) || !self.value_observed(trial, 2) {
+            return Err("The changed and recovered values lack valid readbacks on the same reference after their images.".into());
+        }
+        let generation = &self.conditions[0].frames[1].input.generation;
+        if generation.is_empty()
+            || self
+                .conditions
+                .iter()
+                .flat_map(|c| c.frames.iter().skip(1))
+                .any(|f| !f.input.matches || f.input.generation != *generation)
+        {
+            return Err(
+                "One continuous input monitor must support the planned actions in every condition."
+                    .into(),
+            );
+        }
+        for pulse in 2..FRAMES_PER_CONDITION {
+            let keys = self.actions[pulse - 2].keys.len();
+            if self
+                .conditions
+                .iter()
+                .any(|c| c.frames[pulse].input.held_us.len() != keys)
+            {
+                return Err("An action lacks a sampled hold for each planned key.".into());
+            }
+            for key in 0..keys {
+                let holds = self
+                    .conditions
+                    .each_ref()
+                    .map(|c| c.frames[pulse].input.held_us[key]);
+                let min = *holds.iter().min().unwrap();
+                let max = *holds.iter().max().unwrap();
+                if min == 0 || max - min > 50_000.max(max / 4) {
+                    return Err("Sampled input durations differ between conditions.".into());
+                }
+            }
+        }
+        Ok(())
+    }
+
     fn value_observed(&self, trial: &Trial, index: usize) -> bool {
         let c = &self.conditions[index];
         let Some(e) = &c.runtime_evidence else {

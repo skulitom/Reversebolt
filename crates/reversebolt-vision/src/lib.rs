@@ -14,6 +14,7 @@ mod stable_region_selection;
 pub mod trial_appearance;
 pub mod trial_appearance_suggestions;
 mod trial_evidence;
+pub mod trial_intervention;
 pub mod trial_motion;
 
 use geometry::{Projection, Quad, bounds, crop, distance, ordered, overlap, rectangle, resize};
