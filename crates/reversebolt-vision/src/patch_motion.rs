@@ -1,4 +1,4 @@
-//! Sparse screen-space patch correspondence, never world motion or object identity.
+//! Distributed screen-space correspondence, never world motion or object identity.
 use image::{
     GrayImage,
     imageops::{self, FilterType},
@@ -6,12 +6,18 @@ use image::{
 use reversebolt_core::Result;
 use serde::Serialize;
 
-pub const METRIC: &str = "rgb601-triangle256x144-grid21-patch12-zmssd-r10-fb1-v1";
-pub const LIMITATION: &str = "Sparse integer displacement of matched image patches in a normalized 256x144 image, not physical speed, camera motion, an actor or input causality. Low texture, repeated patterns, large motion, occlusion and appearance changes may be unresolved. Zero displacement is not proof of no movement. Consensus covers only its stated patches; thresholds are heuristics, not calibrated probabilities.";
-const SIZE: i32 = 12;
-const RADIUS: i32 = 10;
-const N: i64 = SIZE as i64 * SIZE as i64;
+pub const METRIC: &str = "rgb601-triangle256x144-corners48-pyramid2-patch9-zmssd-r16x3-fb1-v2";
+pub const LIMITATION: &str = "Sparse integer displacement of source-selected image patches in a normalized 256x144 image, not physical speed, camera motion, an actor or input causality. Feature selection omits weak texture. Repeated patterns, large motion, occlusion and appearance changes may be unresolved. Zero displacement is not proof of no movement. Consensus covers only its stated patches/cells; thresholds are heuristics, not calibrated probabilities.";
+const SIZE: i32 = 9;
+const HALF: i32 = SIZE / 2;
+const N: i64 = (SIZE * SIZE) as i64;
 const DENOM: i64 = N * N;
+const WIDTH: i32 = 256;
+const HEIGHT: i32 = 144;
+const COLS: i32 = 6;
+const ROWS: i32 = 4;
+const MAX_PATCHES: usize = 48;
+const MIN_DISTANCE: i32 = 12;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -23,10 +29,10 @@ pub enum Status {
     SearchBoundary,
     InconsistentReverse,
 }
-
 #[derive(Debug, Serialize)]
 pub struct Patch {
     pub anchor: [i32; 2],
+    pub corner_score: f64,
     pub status: Status,
     pub displacement: Option<[i32; 2]>,
     pub brightness_change: Option<f64>,
@@ -37,6 +43,16 @@ pub struct Consensus {
     pub displacement: [i32; 2],
     pub tolerance_pixels: i32,
     pub supporting_patches: usize,
+    pub supporting_cells: usize,
+}
+#[derive(Debug, Serialize)]
+pub struct Selection {
+    pub candidate_patches: usize,
+    pub selected_patches: usize,
+    pub max_patches: usize,
+    pub grid: [i32; 2],
+    pub min_distance_pixels: i32,
+    pub occupied_cells: usize,
 }
 #[derive(Debug, Serialize)]
 pub struct Report {
@@ -45,28 +61,90 @@ pub struct Report {
     pub measurement_dimensions: [u32; 2],
     pub patch_size: i32,
     pub search_radius: i32,
+    pub selection: Selection,
     pub matched_patches: usize,
+    pub matched_cells: usize,
     pub zero_displacement_patches: usize,
     pub nonzero_displacement_patches: usize,
     pub patches: Vec<Patch>,
     pub consensus: Option<Consensus>,
     pub limitation: &'static str,
 }
-
 fn block(image: &GrayImage, center: [i32; 2]) -> [i64; N as usize] {
     let mut pixels = [0; N as usize];
     let mut index = 0;
-    for y in center[1] - SIZE / 2..center[1] + SIZE / 2 {
-        for x in center[0] - SIZE / 2..center[0] + SIZE / 2 {
+    for y in center[1] - HALF..=center[1] + HALF {
+        for x in center[0] - HALF..=center[0] + HALF {
             pixels[index] = i64::from(image.get_pixel(x as u32, y as u32)[0]);
             index += 1;
         }
     }
     pixels
 }
-fn variance(pixels: &[i64; N as usize]) -> i64 {
-    let sum: i64 = pixels.iter().sum();
-    N * pixels.iter().map(|p| p * p).sum::<i64>() - sum * sum
+fn cell([x, y]: [i32; 2]) -> usize {
+    (y * ROWS / HEIGHT * COLS + x * COLS / WIDTH) as usize
+}
+fn occupied<'a>(points: impl Iterator<Item = &'a [i32; 2]>) -> Vec<usize> {
+    let mut counts = vec![0; (COLS * ROWS) as usize];
+    for point in points {
+        counts[cell(*point)] += 1;
+    }
+    counts
+}
+fn corner_score(image: &GrayImage, [x, y]: [i32; 2]) -> f64 {
+    let (mut xx, mut yy, mut xy) = (0., 0., 0.);
+    for dy in -HALF..=HALF {
+        for dx in -HALF..=HALF {
+            let (px, py) = ((x + dx) as u32, (y + dy) as u32);
+            let gx = (f64::from(image.get_pixel(px + 1, py)[0])
+                - f64::from(image.get_pixel(px - 1, py)[0]))
+                / 2.;
+            let gy = (f64::from(image.get_pixel(px, py + 1)[0])
+                - f64::from(image.get_pixel(px, py - 1)[0]))
+                / 2.;
+            xx += gx * gx;
+            yy += gy * gy;
+            xy += gx * gy;
+        }
+    }
+    ((xx + yy - ((xx - yy).powi(2) + 4. * xy * xy).sqrt()) / (2. * N as f64)).max(0.)
+}
+fn select(image: &GrayImage) -> (Vec<(f64, [i32; 2])>, Selection) {
+    let mut candidates = vec![];
+    for y in (12..HEIGHT - 12).step_by(2) {
+        for x in (12..WIDTH - 12).step_by(2) {
+            let score = corner_score(image, [x, y]);
+            if score >= 16. {
+                candidates.push((score, [x, y]));
+            }
+        }
+    }
+    candidates.sort_by(|a, b| b.0.total_cmp(&a.0).then(a.1.cmp(&b.1)));
+    let candidate_patches = candidates.len();
+    let mut chosen: Vec<(f64, [i32; 2])> = vec![];
+    let mut cells = [0; (COLS * ROWS) as usize];
+    for candidate in candidates {
+        let slot = cell(candidate.1);
+        if cells[slot] == 2
+            || chosen.iter().any(|(_, p)| {
+                (p[0] - candidate.1[0]).pow(2) + (p[1] - candidate.1[1]).pow(2)
+                    < MIN_DISTANCE.pow(2)
+            })
+        {
+            continue;
+        }
+        cells[slot] += 1;
+        chosen.push(candidate);
+    }
+    let selection = Selection {
+        candidate_patches,
+        selected_patches: chosen.len(),
+        max_patches: MAX_PATCHES,
+        grid: [COLS, ROWS],
+        min_distance_pixels: MIN_DISTANCE,
+        occupied_cells: cells.iter().filter(|n| **n > 0).count(),
+    };
+    (chosen, selection)
 }
 #[derive(Clone, Copy)]
 struct Match {
@@ -74,26 +152,41 @@ struct Match {
     cost: i64,
     brightness: i64,
 }
-
 fn search(
     source: &GrayImage,
     target: &GrayImage,
     center: [i32; 2],
+    guess: [i32; 2],
+    radius: i32,
 ) -> std::result::Result<Match, Status> {
+    // Source bounds are checked as well because the reverse anchor is data-dependent.
+    let valid = |p: [i32; 2]| {
+        p[0] >= HALF
+            && p[1] >= HALF
+            && p[0] < source.width() as i32 - HALF
+            && p[1] < source.height() as i32 - HALF
+    };
+    if !valid(center) {
+        return Err(Status::SearchBoundary);
+    }
     let reference = block(source, center);
-    if variance(&reference) < 64 * DENOM {
+    let sum: i64 = reference.iter().sum();
+    if N * reference.iter().map(|p| p * p).sum::<i64>() - sum * sum < 64 * DENOM {
         return Err(Status::LowTexture);
     }
-    let mut scores = Vec::with_capacity(((RADIUS * 2 + 1).pow(2)) as usize);
-    for dy in -RADIUS..=RADIUS {
-        for dx in -RADIUS..=RADIUS {
-            let other = block(target, [center[0] + dx, center[1] + dy]);
-            let mut sum = 0;
-            let mut squared = 0;
+    let mut scores = Vec::with_capacity(((radius * 2 + 1).pow(2)) as usize);
+    for dy in guess[1] - radius..=guess[1] + radius {
+        for dx in guess[0] - radius..=guess[0] + radius {
+            let point = [center[0] + dx, center[1] + dy];
+            if !valid(point) {
+                continue;
+            }
+            let other = block(target, point);
+            let (mut sum, mut squared) = (0, 0);
             for (a, b) in reference.iter().zip(other) {
-                let difference = b - a;
-                sum += difference;
-                squared += difference * difference;
+                let d = b - a;
+                sum += d;
+                squared += d * d;
             }
             scores.push(Match {
                 delta: [dx, dy],
@@ -102,8 +195,17 @@ fn search(
             });
         }
     }
-    let best = *scores.iter().min_by_key(|m| m.cost).unwrap();
-    if best.delta.iter().any(|d| d.abs() == RADIUS) {
+    let best = *scores
+        .iter()
+        .min_by_key(|m| m.cost)
+        .ok_or(Status::SearchBoundary)?;
+    let point = [center[0] + best.delta[0], center[1] + best.delta[1]];
+    if (0..2).any(|i| (best.delta[i] - guess[i]).abs() == radius)
+        || point[0] == HALF
+        || point[1] == HALF
+        || point[0] == source.width() as i32 - HALF - 1
+        || point[1] == source.height() as i32 - HALF - 1
+    {
         return Err(Status::SearchBoundary);
     }
     if best.cost > 144 * DENOM {
@@ -111,90 +213,137 @@ fn search(
     }
     let second = scores
         .iter()
-        .filter(|m| {
-            (m.delta[0] - best.delta[0]).abs() > 1 || (m.delta[1] - best.delta[1]).abs() > 1
-        })
+        .filter(|m| (0..2).any(|i| (m.delta[i] - best.delta[i]).abs() > 1))
         .map(|m| m.cost)
         .min()
-        .unwrap();
+        .ok_or(Status::Ambiguous)?;
     if second * 4 < best.cost * 5 + 36 * DENOM {
         return Err(Status::Ambiguous);
     }
     Ok(best)
 }
-
-fn prepared(a: &GrayImage, b: &GrayImage, dimensions: [u32; 2]) -> Report {
+fn track(
+    a: &[GrayImage; 2],
+    b: &[GrayImage; 2],
+    anchor: [i32; 2],
+) -> std::result::Result<Match, Status> {
+    let coarse = search(&a[1], &b[1], [anchor[0] / 2, anchor[1] / 2], [0, 0], 16)?;
+    search(
+        &a[0],
+        &b[0],
+        anchor,
+        [coarse.delta[0] * 2, coarse.delta[1] * 2],
+        3,
+    )
+}
+fn consensus(patches: &[Patch]) -> Option<Consensus> {
+    let matched: Vec<_> = patches
+        .iter()
+        .filter(|p| p.displacement.is_some())
+        .collect();
+    let (delta, supporters) = matched
+        .iter()
+        .map(|p| {
+            let d = p.displacement.unwrap();
+            let supporters: Vec<_> = matched
+                .iter()
+                .filter(|p| (0..2).all(|i| (p.displacement.unwrap()[i] - d[i]).abs() <= 1))
+                .collect();
+            (d, supporters)
+        })
+        .max_by_key(|(_, v)| v.len())?;
+    if supporters.len() < 10 || supporters.len() * 4 < matched.len() * 3 {
+        return None;
+    }
+    let cells = occupied(supporters.iter().map(|p| &p.anchor));
+    let occupied_cells = cells.iter().filter(|n| **n > 0).count();
+    let rows = (0..ROWS)
+        .filter(|y| (0..COLS).any(|x| cells[(y * COLS + x) as usize] > 0))
+        .count();
+    let cols = (0..COLS)
+        .filter(|x| (0..ROWS).any(|y| cells[(y * COLS + x) as usize] > 0))
+        .count();
+    if occupied_cells < 6 || rows < 2 || cols < 2 {
+        return None;
+    }
+    Some(Consensus {
+        displacement: delta,
+        tolerance_pixels: 1,
+        supporting_patches: supporters.len(),
+        supporting_cells: occupied_cells,
+    })
+}
+fn pyramid(image: GrayImage) -> [GrayImage; 2] {
+    let coarse = imageops::resize(&image, 128, 72, FilterType::Triangle);
+    [image, coarse]
+}
+fn prepared(a: GrayImage, b: GrayImage, dimensions: [u32; 2]) -> Report {
     debug_assert_eq!(a.dimensions(), (256, 144));
     debug_assert_eq!(b.dimensions(), (256, 144));
+    let (chosen, selection) = select(&a);
+    let (a, b) = (pyramid(a), pyramid(b));
     let mut patches = vec![];
-    for y in [32, 64, 96] {
-        for x in [32, 64, 96, 128, 160, 192, 224] {
-            let anchor = [x, y];
-            let measured = search(a, b, anchor).and_then(|forward| {
-                // Grid anchors leave room for both complete search windows.
-                let backward = search(b, a, [x + forward.delta[0], y + forward.delta[1]])
-                    .map_err(|_| Status::InconsistentReverse)?;
-                if (0..2).any(|i| (forward.delta[i] + backward.delta[i]).abs() > 1) {
-                    return Err(Status::InconsistentReverse);
-                }
-                Ok(forward)
-            });
-            patches.push(match measured {
-                Ok(m) => Patch {
-                    anchor,
-                    status: Status::Matched,
-                    displacement: Some(m.delta),
-                    brightness_change: Some(m.brightness as f64 / N as f64),
-                    error_rms: Some((m.cost as f64 / DENOM as f64).sqrt()),
-                },
-                Err(status) => Patch {
-                    anchor,
-                    status,
-                    displacement: None,
-                    brightness_change: None,
-                    error_rms: None,
-                },
-            });
-        }
-    }
-    let matches: Vec<_> = patches.iter().filter_map(|p| p.displacement).collect();
-    let best = matches
-        .iter()
-        .map(|d| {
-            (
-                *d,
-                matches
-                    .iter()
-                    .filter(|other| (0..2).all(|i| (d[i] - other[i]).abs() <= 1))
-                    .count(),
+    for (corner_score, anchor) in chosen {
+        let measured = track(&a, &b, anchor).and_then(|forward| {
+            let backward = track(
+                &b,
+                &a,
+                [anchor[0] + forward.delta[0], anchor[1] + forward.delta[1]],
             )
-        })
-        .max_by_key(|(_, n)| *n);
-    let consensus = best
-        .filter(|(_, n)| *n >= 10 && *n * 4 >= matches.len() * 3)
-        .map(|(d, n)| Consensus {
-            displacement: d,
-            tolerance_pixels: 1,
-            supporting_patches: n,
+            .map_err(|_| Status::InconsistentReverse)?;
+            if (0..2).any(|i| (forward.delta[i] + backward.delta[i]).abs() > 1) {
+                return Err(Status::InconsistentReverse);
+            }
+            Ok(forward)
         });
-    let stationary = matches.iter().filter(|d| **d == [0, 0]).count();
+        patches.push(match measured {
+            Ok(m) => Patch {
+                anchor,
+                corner_score,
+                status: Status::Matched,
+                displacement: Some(m.delta),
+                brightness_change: Some(m.brightness as f64 / N as f64),
+                error_rms: Some((m.cost as f64 / DENOM as f64).sqrt()),
+            },
+            Err(status) => Patch {
+                anchor,
+                corner_score,
+                status,
+                displacement: None,
+                brightness_change: None,
+                error_rms: None,
+            },
+        });
+    }
+    let matched: Vec<_> = patches
+        .iter()
+        .filter(|p| p.displacement.is_some())
+        .collect();
+    let zero = matched
+        .iter()
+        .filter(|p| p.displacement == Some([0, 0]))
+        .count();
+    let consensus = consensus(&patches);
     Report {
         metric: METRIC,
         source_dimensions: dimensions,
         measurement_dimensions: [256, 144],
         patch_size: SIZE,
-        search_radius: RADIUS,
-        matched_patches: matches.len(),
-        zero_displacement_patches: stationary,
-        nonzero_displacement_patches: matches.len() - stationary,
+        search_radius: 35,
+        selection,
+        matched_patches: matched.len(),
+        matched_cells: occupied(matched.iter().map(|p| &p.anchor))
+            .iter()
+            .filter(|n| **n > 0)
+            .count(),
+        zero_displacement_patches: zero,
+        nonzero_displacement_patches: matched.len() - zero,
         patches,
         consensus,
         limitation: LIMITATION,
     }
 }
-
-/// Bounded two-image measurement. Callers must separately bind image hashes,
-/// input/timing evidence and scene epoch; this function rejects unequal geometry.
+/// Bounded image correspondence. Callers separately bind hashes, time/input and epoch.
 pub fn measure(before: &[u8], after: &[u8]) -> Result<Report> {
     let a = crate::response::grayscale(before)?;
     let b = crate::response::grayscale(after)?;
@@ -202,16 +351,17 @@ pub fn measure(before: &[u8], after: &[u8]) -> Result<Report> {
         return Err("Image geometry changed.".into());
     }
     let dimensions = [a.width(), a.height()];
-    let a = imageops::resize(&a, 256, 144, FilterType::Triangle);
-    let b = imageops::resize(&b, 256, 144, FilterType::Triangle);
-    Ok(prepared(&a, &b, dimensions))
+    Ok(prepared(
+        imageops::resize(&a, 256, 144, FilterType::Triangle),
+        imageops::resize(&b, 256, 144, FilterType::Triangle),
+        dimensions,
+    ))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use image::Luma;
-
     fn texture(seed: u32) -> GrayImage {
         GrayImage::from_fn(256, 144, |x, y| {
             let mut n = (x + y * 256)
@@ -238,19 +388,46 @@ mod tests {
         file.into_inner()
     }
     #[test]
-    fn recovers_signed_translation_separately_from_uniform_brightness_change() {
+    fn selects_distributed_corners_deterministically_and_ignores_flat_edges() {
+        let image = texture(1);
+        let (chosen, selection) = select(&image);
+        assert_eq!(chosen, select(&image).0);
+        assert_eq!(chosen.len(), 48);
+        assert_eq!(selection.occupied_cells, 24);
+        for (i, a) in chosen.iter().enumerate() {
+            for b in &chosen[i + 1..] {
+                assert!((a.1[0] - b.1[0]).pow(2) + (a.1[1] - b.1[1]).pow(2) >= 144);
+            }
+        }
+        for image in [
+            GrayImage::from_pixel(256, 144, Luma([60])),
+            GrayImage::from_fn(256, 144, |x, _| Luma([if x < 128 { 40 } else { 180 }])),
+        ] {
+            assert_eq!(select(&image).1.selected_patches, 0);
+        }
+    }
+    #[test]
+    fn recovers_signed_small_and_large_translation_with_brightness() {
         let before = texture(1);
-        for delta in [[0, 0], [4, -3], [-6, 2]] {
+        for delta in [[0, 0], [3, -2], [18, 8], [-24, -10]] {
             let after = shift(&before, delta, 30);
             let measured = measure(&png(&before), &png(&after)).unwrap();
-            assert_eq!(measured.matched_patches, 21);
+            assert!(
+                measured.matched_patches >= 20,
+                "{delta:?}: {}",
+                measured.matched_patches
+            );
             assert_eq!(measured.consensus.unwrap().displacement, delta);
-            for patch in measured.patches {
+            for patch in measured
+                .patches
+                .iter()
+                .filter(|p| p.status == Status::Matched)
+            {
                 assert_eq!(patch.displacement, Some(delta));
                 assert_eq!(patch.brightness_change, Some(30.));
                 assert_eq!(patch.error_rms, Some(0.));
             }
-            let reverse = prepared(&after, &before, [256, 144]);
+            let reverse = prepared(after, before.clone(), [256, 144]);
             assert_eq!(
                 reverse.consensus.unwrap().displacement,
                 [-delta[0], -delta[1]]
@@ -258,37 +435,27 @@ mod tests {
         }
     }
     #[test]
-    fn unresolved_texture_repetition_large_motion_and_scene_change_are_not_stationary() {
-        let flat = GrayImage::from_pixel(256, 144, Luma([60]));
-        let bright = GrayImage::from_pixel(256, 144, Luma([160]));
+    fn repetition_unrelated_and_out_of_range_are_unresolved_not_stationary() {
         let repeated = GrayImage::from_fn(256, 144, |x, y| {
-            Luma([if (x / 2 + y / 2) % 2 == 0 { 40 } else { 180 }])
+            Luma([if (x / 4 + y / 4) % 2 == 0 { 40 } else { 180 }])
         });
         let before = texture(1);
         for (a, b) in [
-            (&flat, &bright),
-            (&repeated, &repeated),
-            (&before, &texture(9999)),
-            (&before, &shift(&before, [10, 0], 0)),
-            (&before, &shift(&before, [18, 0], 0)),
+            (repeated.clone(), repeated),
+            (before.clone(), texture(9999)),
+            (before.clone(), shift(&before, [48, 0], 0)),
         ] {
             let measured = prepared(a, b, [256, 144]);
             assert_eq!(measured.matched_patches, 0);
-            assert_eq!(measured.zero_displacement_patches, 0);
             assert!(measured.consensus.is_none());
-            assert!(
-                measured
-                    .patches
-                    .iter()
-                    .all(|p| p.displacement.is_none() && p.status != Status::Matched)
-            );
+            assert!(measured.patches.iter().all(|p| p.displacement.is_none()));
         }
     }
     #[test]
-    fn opposing_local_displacements_do_not_become_one_average_motion() {
+    fn opposite_motion_is_not_averaged_and_occlusion_remains_missing() {
         let before = texture(5);
-        let left = shift(&before, [4, 0], 0);
-        let right = shift(&before, [-4, 0], 0);
+        let left = shift(&before, [18, 0], 0);
+        let right = shift(&before, [-18, 0], 0);
         let after = GrayImage::from_fn(256, 144, |x, y| {
             *if x < 128 {
                 left.get_pixel(x, y)
@@ -296,40 +463,43 @@ mod tests {
                 right.get_pixel(x, y)
             }
         });
-        let measured = prepared(&before, &after, [256, 144]);
-        assert_eq!(measured.matched_patches, 18);
-        assert_eq!(measured.nonzero_displacement_patches, 18);
+        let measured = prepared(before.clone(), after, [256, 144]);
+        assert!(measured.matched_patches >= 15);
         assert!(measured.consensus.is_none());
-        assert_eq!(
+        for p in measured.patches.iter().filter(|p| p.displacement.is_some()) {
+            assert!([[18, 0], [-18, 0]].contains(&p.displacement.unwrap()));
+        }
+        let after = GrayImage::from_fn(256, 144, |x, y| {
+            if x < 128 {
+                Luma([0])
+            } else {
+                *before.get_pixel(x, y)
+            }
+        });
+        let measured = prepared(before, after, [256, 144]);
+        assert!(measured.matched_patches > 0 && measured.matched_patches < 48);
+        assert!(
             measured
                 .patches
                 .iter()
-                .filter(|p| p.displacement == Some([4, 0]))
-                .count(),
-            9
-        );
-        assert_eq!(
-            measured
-                .patches
-                .iter()
-                .filter(|p| p.displacement == Some([-4, 0]))
-                .count(),
-            9
+                .filter(|p| p.anchor[0] < 100)
+                .all(|p| p.displacement.is_none())
         );
     }
     #[test]
-    fn occlusion_keeps_missing_patch_evidence_and_geometry_mismatch_is_rejected() {
-        let before = texture(7);
-        let mut after = before.clone();
-        for y in 20..44 {
-            for x in 20..44 {
-                after.put_pixel(x, y, Luma([0]));
-            }
-        }
-        let measured = measure(&png(&before), &png(&after)).unwrap();
-        assert_eq!(measured.matched_patches, 20);
-        assert!(measured.patches[0].displacement.is_none());
-        assert_eq!(measured.patches[0].anchor, [32, 32]);
+    fn localized_support_cannot_claim_broad_consensus_and_invalid_images_fail() {
+        let patches: Vec<_> = (0..12)
+            .map(|i| Patch {
+                anchor: [20 + i, 20],
+                corner_score: 20.,
+                status: Status::Matched,
+                displacement: Some([2, 0]),
+                brightness_change: Some(0.),
+                error_rms: Some(0.),
+            })
+            .collect();
+        assert!(consensus(&patches).is_none());
+        let before = texture(1);
         let small = GrayImage::from_pixel(80, 45, Luma([0]));
         assert!(measure(&png(&before), &png(&small)).is_err());
         assert!(measure(b"invalid", &png(&before)).is_err());

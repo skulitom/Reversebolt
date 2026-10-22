@@ -1,0 +1,430 @@
+{
+  "frozen_sha256": "d69c1957b21e0d655a6c8105dfed8c91dc3d22fcad76a5b8c1e2d02106094704",
+  "result_sha256": "72d12232d0a69419ae8bbb4aac45824fdb723d1d85f4a65095f186fe18a662bb",
+  "transform_result_sha256": "91998eef7ce031d2d0e25f3f1f68feff7971afa8f0d58a2163957bca79932234",
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "intervals": 14,
+      "old_grid_matched": 51,
+      "old_grid_selected": 294,
+      "new_selected": 348,
+      "new_matched": 236,
+      "new_nonzero": 43,
+      "statuses": {
+        "matched": 236,
+        "low_texture": 20,
+        "poor_match": 69,
+        "search_boundary": 11,
+        "ambiguous": 7,
+        "inconsistent_reverse": 5
+      },
+      "consensus_intervals": 10,
+      "consensus_displacements": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "key_intervals": [
+        {
+          "key": 68,
+          "selected": 26,
+          "matched": 3,
+          "matched_cells": 3,
+          "nonzero": 3,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 23,
+          "matched": 5,
+          "matched_cells": 4,
+          "nonzero": 5,
+          "consensus": null
+        },
+        {
+          "key": 68,
+          "selected": 26,
+          "matched": 7,
+          "matched_cells": 6,
+          "nonzero": 7,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 23,
+          "matched": 6,
+          "matched_cells": 5,
+          "nonzero": 6,
+          "consensus": null
+        }
+      ]
+    },
+    {
+      "name": "Owned striped fixture retained baseline",
+      "intervals": 5,
+      "old_grid_matched": 0,
+      "old_grid_selected": 105,
+      "new_selected": 0,
+      "new_matched": 0,
+      "new_nonzero": 0,
+      "statuses": {},
+      "consensus_intervals": 0,
+      "consensus_displacements": [],
+      "key_intervals": [
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        }
+      ]
+    },
+    {
+      "name": "Owned striped fixture retained changed",
+      "intervals": 5,
+      "old_grid_matched": 0,
+      "old_grid_selected": 105,
+      "new_selected": 0,
+      "new_matched": 0,
+      "new_nonzero": 0,
+      "statuses": {},
+      "consensus_intervals": 0,
+      "consensus_displacements": [],
+      "key_intervals": [
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        }
+      ]
+    },
+    {
+      "name": "Owned striped fixture retained recovered",
+      "intervals": 5,
+      "old_grid_matched": 0,
+      "old_grid_selected": 105,
+      "new_selected": 0,
+      "new_matched": 0,
+      "new_nonzero": 0,
+      "statuses": {},
+      "consensus_intervals": 0,
+      "consensus_displacements": [],
+      "key_intervals": [
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 68,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 0,
+          "matched": 0,
+          "matched_cells": 0,
+          "nonzero": 0,
+          "consensus": null
+        }
+      ]
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "intervals": 14,
+      "old_grid_matched": 36,
+      "old_grid_selected": 294,
+      "new_selected": 183,
+      "new_matched": 139,
+      "new_nonzero": 13,
+      "statuses": {
+        "matched": 139,
+        "low_texture": 14,
+        "poor_match": 23,
+        "ambiguous": 6,
+        "search_boundary": 1
+      },
+      "consensus_intervals": 10,
+      "consensus_displacements": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "key_intervals": [
+        {
+          "key": 68,
+          "selected": 14,
+          "matched": 5,
+          "matched_cells": 3,
+          "nonzero": 3,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 12,
+          "matched": 4,
+          "matched_cells": 3,
+          "nonzero": 4,
+          "consensus": null
+        },
+        {
+          "key": 68,
+          "selected": 13,
+          "matched": 5,
+          "matched_cells": 3,
+          "nonzero": 3,
+          "consensus": null
+        },
+        {
+          "key": 65,
+          "selected": 12,
+          "matched": 3,
+          "matched_cells": 3,
+          "nonzero": 3,
+          "consensus": null
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "source": "Hyperbolica retained discovery",
+      "expected": [
+        0,
+        0
+      ],
+      "selected": 26,
+      "matched": 24,
+      "exact": 24,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Hyperbolica retained discovery",
+      "expected": [
+        3,
+        -2
+      ],
+      "selected": 26,
+      "matched": 18,
+      "exact": 18,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Hyperbolica retained discovery",
+      "expected": [
+        18,
+        8
+      ],
+      "selected": 26,
+      "matched": 21,
+      "exact": 21,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Hyperbolica retained discovery",
+      "expected": [
+        -24,
+        -10
+      ],
+      "selected": 26,
+      "matched": 19,
+      "exact": 19,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Manifold Garden retained discovery",
+      "expected": [
+        0,
+        0
+      ],
+      "selected": 13,
+      "matched": 12,
+      "exact": 12,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Manifold Garden retained discovery",
+      "expected": [
+        3,
+        -2
+      ],
+      "selected": 13,
+      "matched": 11,
+      "exact": 11,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Manifold Garden retained discovery",
+      "expected": [
+        18,
+        8
+      ],
+      "selected": 13,
+      "matched": 12,
+      "exact": 12,
+      "wrong_over_one_pixel": 0
+    },
+    {
+      "source": "Manifold Garden retained discovery",
+      "expected": [
+        -24,
+        -10
+      ],
+      "selected": 13,
+      "matched": 11,
+      "exact": 11,
+      "wrong_over_one_pixel": 0
+    }
+  ],
+  "legacy_difference_values_exactly_preserved": 43,
+  "workspace_test_executions_passed": 314,
+  "test_log_sha256": "8c32163f05a10109645708ad6762e316091f2b04fc2c789008de46794461a2b3",
+  "new_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "limitation": "Known-image regression and controlled transforms, not real-game flow truth or semantic verification. Selection denominators differ; most consensus is near zero in quiet intervals. One epoch test also runs in an example target."
+}

@@ -44,18 +44,25 @@ image pair, with both image IDs/hashes and explicit measurement errors. It is
 computed automatically with play evidence and retained in the automatic activity
 review's evidence archive. It uses no model call. Displacements are integer pixels
 in a normalized 256×144 image: positive x is right, positive y is down. The output
-lists all 21 patches, matched/zero/nonzero counts, per-patch brightness changes and
-residual RMS, and an optional consensus with its support count and one-pixel
-tolerance. Read its `source_dimensions` and `measurement_dimensions` explicitly.
+lists selected patches, matched/zero/nonzero counts, per-patch brightness changes
+and residual RMS, and an optional consensus with patch/cell support and one-pixel
+tolerance. Read its `metric`, `source_dimensions` and `measurement_dimensions`.
+The current v2 metric selects at most 48 source-image corners, distributed across
+a 6×4 grid, and uses a two-level search. `selection` reports eligible candidates,
+selected/max counts, occupied cells and minimum spacing; `matched_cells` reports
+successful spatial coverage. This is a selected subset, not whole-image coverage.
+`corner_score` is a texture score, not confidence. The earlier v1 metric sampled
+21 fixed patches; its counts are not directly interchangeable with v2.
 
 Unresolved matches have null displacement, not zero. Flat/repeated patterns,
 occlusion, large motion and inconsistent reverse matches are excluded. The
 heuristic thresholds are not calibrated probabilities. A zero displacement or a
 consensus does not identify an actor, camera, physical speed or lack of movement.
-Current known-game replay has low match coverage and no broad consensus; this
-measurement is not ready to validate movement. Existing play-context selection,
+Current known-game replay has more accepted matches, mostly at quiet intervals.
+Intervals containing sampled keys still have sparse support and no consensus.
+This measurement is not ready to validate movement. Existing play-context selection,
 comparison assessment, names and edit authority remain unchanged.
-See [measurement evidence and limits](../research/patch-motion/README.md).
+See [measurement evidence and limits](../research/feature-motion/README.md).
 
 ## Direct edits
 

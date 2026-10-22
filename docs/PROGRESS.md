@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Distributed features and larger image displacement (2026-10-22): **35% unchanged**.
+The shared motion measurement now selects textured points across the image and
+matches at two scales, with explicit selection/spatial coverage and rejection
+reasons. Its version changes to v2; historical v1 evidence remains intact. Local
+matches and consensus do not identify an actor or validate a gameplay property.
+
+One frozen replay improves accepted matches from 51/294 fixed samples to 236/348
+selected points in Hyperbolica, and from 36/294 to 139/178 in Manifold Garden.
+Denominators differ and real-pair accuracy remains unmeasured. Key-sampled intervals
+still have sparse support and no consensus. Eight controlled shifts/brightness
+changes of two retained game images produce 128 exact accepted matches out of 156
+selected patches; 28 remain unresolved. All 43 earlier image-difference values and
+their evidence summaries are unchanged. All 314 test executions and strict Clippy
+pass. No new capture, model call, target access, input or gameplay write ran.
+No new verified control or generalization credit is established. The source is
+unpublished and the preview remains unavailable. [Evidence and limits](../research/feature-motion/README.md).
+
 Sparse patch-motion evidence (2026-10-22): **35% unchanged**.
 Shared observation reads and automatic evidence archives now include local image
 displacements with hash bindings and explicit unresolved patches. Historical

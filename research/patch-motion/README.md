@@ -1,5 +1,8 @@
 # Sparse image-patch motion: experimental evidence
 
+This records the original v1 grid experiment. The [v2 feature-selection experiment](../feature-motion/README.md)
+supersedes its product measurement; the frozen v1 artifacts below remain unchanged.
+
 The shared evidence reader now reports local image-patch displacements alongside
 the existing image-difference measurement. This adds a way to describe some image
 changes without a model call. **Coverage on retained game captures is too low to
