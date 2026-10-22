@@ -4,6 +4,13 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[features]
+comparison-priority-research = ["reversebolt-core/comparison-priority-research"]
+
+[[example]]
+name = "comparison-priority-replay"
+required-features = ["comparison-priority-research"]
+
 [dependencies]
 reversebolt-core.workspace = true
 reversebolt-vision = { path = "../reversebolt-vision" }

@@ -4,6 +4,10 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[features]
+# Saved-data research only; excluded from the desktop and MCP builds.
+comparison-priority-research = []
+
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true

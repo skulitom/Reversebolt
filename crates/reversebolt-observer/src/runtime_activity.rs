@@ -224,9 +224,9 @@ impl Observer {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
-    fn fixture() -> Input {
+    pub(crate) fn fixture() -> Input {
         use reversebolt_core::{
             play_context::{Frame as Citation, Pair},
             visual::CaptureInterval,

@@ -13,6 +13,8 @@ pub mod point_tracks;
 pub mod review;
 pub mod runtime_activity;
 pub mod runtime_naming;
+#[cfg(feature = "comparison-priority-research")]
+pub mod runtime_priority;
 pub mod tracking;
 
 const ENDPOINT: &str = "http://127.0.0.1:11434";

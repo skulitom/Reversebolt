@@ -297,9 +297,9 @@ pub fn choices(
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
-    fn observed() -> (Context, Vec<FrameRef>, Evidence) {
+    pub(crate) fn observed() -> (Context, Vec<FrameRef>, Evidence) {
         let keys = [0, 68, 0, 65, 0, 68, 0, 65, 0];
         let (mut frames, _) = crate::action_patterns::tests::fixture(&keys, &[0.; 9]);
         for (i, f) in frames.iter_mut().enumerate() {

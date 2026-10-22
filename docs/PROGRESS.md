@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Comparison-priority development replay (2026-10-23): **36% unchanged**.
+Two frozen four-case local replays tested whether a model could order existing
+comparisons using their labels and retained activity. V1 abstained in all four
+cases. V2 moved the known positive path from third to seventh in the original
+order, ranked it second after reversal, and mistook sound-event metadata for
+observed events. No new game, image, input or field-write test was performed.
+The experiment remains behind an opt-in research feature, excluded from default
+desktop/MCP builds. No automatic planner or displayed control changed. The
+current desktop process remains responsive. Neither replay earns capability
+credit or generalization claims. All **456 workspace tests** with the research
+feature, strict all-target Clippy, formatting, four typed receipt replays and the
+artifact audit pass. Default desktop/MCP dependency features exclude the experiment.
+[Experiment and retained failures](../research/comparison-priority/README.md).
+
 Live Viewfinder development validation (2026-10-23 local): **36%**.
 The unchanged paged preview produced six hypotheses automatically. Its first
 comparison was negative; a separately frozen four-comparison continuation of
