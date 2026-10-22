@@ -233,6 +233,14 @@ pub struct Context {
     pub observation: Observation,
 }
 impl Context {
+    pub fn motion_comparison(&self) -> Result<Option<crate::motion_comparison::Comparison>> {
+        self.validate()?;
+        self.motion
+            .as_ref()
+            .map(|motion| crate::motion_comparison::compare(&self.source, motion))
+            .transpose()
+    }
+
     pub fn from_observation(source: Source, observation: Observation) -> Result<Self> {
         let basis = if observation.consistent_visible_change {
             Basis::Interpreted

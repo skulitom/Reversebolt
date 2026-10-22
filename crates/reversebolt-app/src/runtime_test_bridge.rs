@@ -217,7 +217,14 @@ impl Session {
             .ok_or("Choose an experiment from the shared session.")?;
         let mut test = engine.runtime_tests.get(id)?.clone();
         if c.action == "read_runtime_test" {
-            let mut result = json!({"test":test,"executions":engine.runtime_tests.read_executions(&test)?,"limitation":runtime_tests::LIMITATION});
+            let origin_motion = test
+                .origin
+                .as_ref()
+                .and_then(|origin| origin.play_context.as_ref())
+                .map(|context| context.motion_comparison())
+                .transpose()?
+                .flatten();
+            let mut result = json!({"test":test,"origin_activity_motion_comparison":origin_motion,"executions":engine.runtime_tests.read_executions(&test)?,"limitation":runtime_tests::LIMITATION});
             if c.args.get("condition").is_some() || c.args.get("frame").is_some() {
                 let condition = c.args["condition"]
                     .as_u64()

@@ -11,6 +11,7 @@ pub mod inputs;
 pub mod intervention;
 pub mod investigation;
 pub mod live;
+pub mod motion_comparison;
 pub mod play_context;
 pub mod play_evidence;
 pub mod prediction;

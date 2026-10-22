@@ -105,7 +105,7 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             }
             let receipt = read_archive(&dir.join("receipt.json"))?;
             return Ok(
-                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"replayed":true,"published":false}),
+                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"activity_motion_comparison":receipt["activity_motion_comparison"],"replayed":true,"published":false}),
             );
         }
     }
@@ -175,6 +175,12 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
         batch: Some(batch),
         error: None,
     };
+    let motion_comparison = review
+        .play_context
+        .as_ref()
+        .map(|context| context.motion_comparison())
+        .transpose()?
+        .flatten();
     let dir = base.join("naming").join(&p.review_id);
     std::fs::create_dir_all(base.join("naming")).map_err(|e| e.to_string())?;
     std::fs::create_dir(&dir).map_err(|e| e.to_string())?;
@@ -182,11 +188,11 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     save_new(&dir.join("inventory.json"), &json!(inventory))?;
     save_new(
         &dir.join("receipt.json"),
-        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"limitation":h::LIMITATION}),
+        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"limitation":h::LIMITATION}),
     )?;
     publish(view, &p.catalog_id, review.clone(), false)?;
     Ok(
-        json!({"review":review,"activity_transfer":activity_transfer,"replayed":false,"published":true}),
+        json!({"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"replayed":false,"published":true}),
     )
 }
 
@@ -238,7 +244,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     };
     Ok(
         json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
-        "report_sha256":review.report_sha256,"activity_context":context,"activity_limitation":reversebolt_core::play_context::LIMITATION,
+        "report_sha256":review.report_sha256,"activity_context":context,"activity_motion_comparison":context.motion_comparison()?,"activity_limitation":reversebolt_core::play_context::LIMITATION,
         "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"limitation":p::LIMITATION}),
     )
 }

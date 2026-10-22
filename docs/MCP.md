@@ -82,6 +82,25 @@ contradictory directions and unsupported causal suggestions. Treat the text as a
 provisional interpretation and inspect the numeric coverage. Neither a positive
 flag nor a plausible explanation verifies a control. [Evaluation and correction](../research/motion-interpretation/README.md).
 
+`activity_motion_comparison` in new hypothesis-submission receipts and comparison
+plans derives a separate description from the retained numeric evidence. Its
+`scope` is `discovery_activity_pairs`; it describes the original two observations,
+not a baseline/change/recovery test result. The versioned policy distinguishes
+missing measurement, insufficient spatial support, below-threshold displacement,
+matching displacement, aligned/opposed directions and other differing directions.
+It retains exact vectors, image bindings, support counts and source/summary hashes.
+No-consensus cases abstain; sub-two-pixel consensus is not called stationary.
+Descriptions use fixed templates with the image-coordinate signs. The model's
+original interpretation remains separate and is never overwritten. Historical
+agent receipts without this addition replay with a null comparison.
+
+`read_runtime_test` returns the same derived result as
+`origin_activity_motion_comparison` when its question origin retains motion.
+This can be read after disconnect/restart without image access or model calls.
+Neither field changes comparison eligibility, saved assessments or edit authority.
+The alignment thresholds describe selected patches, not physical speed or causal
+gameplay meaning. [Policy and replay](../research/motion-comparison/README.md).
+
 ## Direct edits
 
 Automatic metadata reviews may create literal internal questions after a valid

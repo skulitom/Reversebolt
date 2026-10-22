@@ -1,0 +1,110 @@
+{
+  "frozen_sha256": "fdee554cccd8cc9c66eb611bbe2ab3658ee2fed29377b51180feeac19c352a34",
+  "result_sha256": "2e6f69252489c70b637c18f7cf1acfc992c5e22e11e4c8aa37a1e95ead8b7928",
+  "cases": [
+    {
+      "case": "baseline-hyperbolica",
+      "relation": null,
+      "description": null,
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot on the right shifts slightly leftward and the foreground red conical plants on the left disappear. The camera angle appears to adjust slightly, revealing more of the right-side background in the 'after' frames.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera drift or animation rather than a specific control input. The disappearance of the red plants is consistent, but the robot's movement is slight and ambiguous."
+      },
+      "source_sha256": null,
+      "motion_summary_sha256": null
+    },
+    {
+      "case": "baseline-manifold",
+      "relation": null,
+      "description": null,
+      "original_observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the central trapezoidal floor area shifts slightly rightward and its left edge becomes more pronounced, while the right-side geometry appears to compress. The overall perspective of the room and ceiling elements remains stable.",
+        "uncertainty": "The shift is subtle and could be attributed to minor camera drift or rendering variance rather than a discrete control action. No other elements change consistently to confirm a specific input effect."
+      },
+      "source_sha256": null,
+      "motion_summary_sha256": null
+    },
+    {
+      "case": "baseline-consistent",
+      "relation": null,
+      "description": null,
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the scene is static. The central table, background trees, and sky remain in identical positions. The only variation is the opacity of the white heart icons on the left, which appear slightly more transparent in the 'after' images (1 and 3) compared to the 'before' images (0 and 2).",
+        "uncertainty": "The change is limited to the opacity of the UI overlay (hearts). It is unclear if this represents a state change or a rendering artifact. The core scene geometry shows no movement or modification."
+      },
+      "source_sha256": null,
+      "motion_summary_sha256": null
+    },
+    {
+      "case": "baseline-opposed",
+      "relation": null,
+      "description": null,
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the white heart-shaped particle effect on the left side of the screen appears to shift slightly upward and to the right, or fade out. The rest of the scene, including the central table, the tree, and the UI element on the right, remains static.",
+        "uncertainty": "The change is subtle and could be attributed to the natural animation cycle of the particle effect rather than a specific input. It is difficult to distinguish between a controlled change and a passive visual update without further context."
+      },
+      "source_sha256": null,
+      "motion_summary_sha256": null
+    },
+    {
+      "case": "revised-hyperbolica",
+      "relation": "insufficient_support",
+      "description": "At least one image pair lacks enough distributed matching patches to compare displacement.",
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot shifts slightly left and the foreground red plants disappear. The camera angle appears to change slightly, altering the view of the horizon and background elements. The desk and chair remain central but their perspective shifts marginally.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera adjustments or rendering variations rather than a specific control action. The sparse and inconsistent match data makes it difficult to confirm a consistent, significant change driven by a single input."
+      },
+      "source_sha256": "4c005c7ac99c6b0dfa2ce69847b6e32d471e5896256910013a127b75b04e3a97",
+      "motion_summary_sha256": "3ef8474be3038411e8f015a1fbcc8c5182957fd62838f134b215aa0b5319ed2c"
+    },
+    {
+      "case": "revised-manifold",
+      "relation": "insufficient_support",
+      "description": "At least one image pair lacks enough distributed matching patches to compare displacement.",
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a static room with a central trapezoidal floor and a small staircase. The only apparent difference is a slight horizontal shift of the floor's internal line pattern and the staircase's position relative to the frame edges, suggesting a minor camera pan or rendering variance. No new objects, color changes, or structural alterations are visible.",
+        "uncertainty": "The measured displacements are small (2-11px) and sparse (3-4 matches out of 12 selected), with many unresolved matches. The changes are subtle and could be due to rendering artifacts, minor camera drift, or measurement noise rather than a deliberate scene change. The consistency between pairs is weak due to low match counts."
+      },
+      "source_sha256": "618a5e9018c6b5c1381637f8a1182ac0e85e67e466bbb017bf32a6bc09f62149",
+      "motion_summary_sha256": "a8a13239f0240d90470a62675e4c3b1b0af5224c172b3f6c8e576b4b2fbde651"
+    },
+    {
+      "case": "revised-consistent",
+      "relation": "matching_displacement",
+      "description": "Supported patch displacements are 18 pixels right, then 18 pixels right. They agree within one normalized pixel per axis.",
+      "original_observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the scene shifts horizontally to the right by 18 pixels. The table, tree, and background elements move leftward in the frame, while the white UI element on the right edge moves further right, partially exiting the view. The heart icons on the left also shift rightward.",
+        "uncertainty": "The change is consistent across both pairs and supported by 22 matched patches. However, the cause of the shift (camera pan, object movement, or screen scroll) is not determined. The uniformity of the delta suggests a global shift rather than individual object motion."
+      },
+      "source_sha256": "51b9979dcd6f33b981cc7b0f11064e323a8b011449b464cf83c0da93768a4c2e",
+      "motion_summary_sha256": "ceb9f008863e6cbd00eda3b650f3044a2723ecaad74e05fbd3e07ca7b125b9ea"
+    },
+    {
+      "case": "revised-opposed",
+      "relation": "opposed_direction",
+      "description": "Supported patch displacements are 18 pixels right, then 18 pixels left. They point in opposing directions.",
+      "original_observation": {
+        "consistent_visible_change": false,
+        "description": "Pair 1 shows a uniform rightward shift of scene elements. Pair 2 shows a uniform leftward shift. The directions are opposite. The heart icon also shifts differently between pairs. The changes are inconsistent in direction, indicating no single consistent visible change across both intervals.",
+        "uncertainty": "The opposite horizontal shifts in the two pairs contradict a consistent directional change. The heart icon's movement is also inconsistent. This suggests the observed changes are not caused by a single consistent input or effect, or that the measurements are capturing different underlying phenomena."
+      },
+      "source_sha256": "4045156f037b1693728c511d220001baaf9d2d62c1358cfb90e510ccb407c691",
+      "motion_summary_sha256": "e4e01c0f2818a5b28f081d7d4ecd0e20a40eabbd83ded4969ef6e71c306ae519"
+    }
+  ],
+  "unchanged_input_files": 25,
+  "new_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "workspace_test_executions_passed": 320,
+  "test_log_sha256": "b85fcd2922d6e42e6eaca287996cf7ba4fbc2d11de5396bca79dc7aeae381e90",
+  "limitation": "Deterministic descriptions of retained selected-patch displacement. Both genuine game cases lack support. Original model prose and flags remain unchanged; this establishes no gameplay effect, physical velocity or trial outcome."
+}

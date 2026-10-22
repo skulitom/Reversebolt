@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Deterministic displacement comparison (2026-10-22): **35% unchanged**.
+A shared core policy now compares retained patch displacements independently of
+model prose, with hash bindings, explicit missing/sparse/sub-threshold cases and
+template-generated signed descriptions. Agent handoffs and plans expose it;
+historical test reads clearly scope it to the original discovery observations.
+Model interpretations, comparison eligibility and trial assessments are unchanged.
+
+A frozen eight-receipt replay yields right/right and right/left descriptions for
+the corrected controlled shifts. Both genuine game cases remain insufficiently
+supported, and image-only receipts have no invented numeric result. The earlier
+contradictory model text is preserved. All 320 test executions and strict Clippy
+pass, including real app handoff/replay and historical-read/restart checks. No new
+model, game, capture, target access, input or gameplay write ran in the replay.
+No new control or generalization is verified. The source remains unpublished and
+the preview unavailable. [Policy, evidence and limits](../research/motion-comparison/README.md).
+
 Motion evidence in automatic interpretation (2026-10-22): **35% unchanged**.
 The image interpreter now receives source-bound correspondence summaries, retained
 in shared activity contexts and comparison origins. Metadata discovery remains

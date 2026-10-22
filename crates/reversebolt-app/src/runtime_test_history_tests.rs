@@ -232,3 +232,168 @@ fn historical_frame_read_exposes_motion_and_isolates_prior_image_failure() {
     );
     std::fs::remove_dir_all(resolved).unwrap();
 }
+
+#[test]
+fn historical_read_compares_origin_activity_without_changing_the_trial_outcome() {
+    use reversebolt_core::{activity_motion as m, play_context as pc, runtime_hypotheses as h};
+    let parent = std::env::temp_dir().canonicalize().unwrap();
+    let directory = parent.join(format!("reversebolt-origin-motion-{}", id()));
+    std::fs::create_dir(&directory).unwrap();
+    let state = directory.join("state.json");
+    let mut test = saved(&id());
+    let frame = |n| pc::Frame {
+        id: format!("synthetic-{n}"),
+        sha256: format!("{n:064x}"),
+        number: n,
+        width: 256,
+        height: 144,
+        interval: reversebolt_core::visual::CaptureInterval {
+            clock_id: test.investigation.clone(),
+            begin_us: n as u64 * 1_000_000,
+            end_us: n as u64 * 1_000_000 + 1000,
+        },
+    };
+    let source = pc::Source {
+        investigation_id: test.investigation.clone(),
+        batch: 1,
+        frame_metadata_sha256: "b".repeat(64),
+        key: 68,
+        quiet_difference: 0.,
+        pairs: [1, 4].map(|n| pc::Pair {
+            episode: n,
+            before: frame(n),
+            after: frame(n + 1),
+            input_sha256: "c".repeat(64),
+            difference: 20.,
+        }),
+    };
+    let mut context = pc::Context::from_observation(
+        source,
+        pc::Observation {
+            consistent_visible_change: false,
+            description: "The image interpretation is uncertain.".into(),
+            uncertainty: "No gameplay effect has been established.".into(),
+        },
+    )
+    .unwrap();
+    context.motion = Some(m::Summary {
+        metric: m::METRIC_V2.into(),
+        frame_metadata_sha256: context.source.frame_metadata_sha256.clone(),
+        measurement_dimensions: [256, 144],
+        maximum_selected: 48,
+        grid: [6, 4],
+        pairs: [0, 1].map(|i| {
+            let p = &context.source.pairs[i];
+            let delta = [if i == 0 { 18 } else { -18 }, 0];
+            m::Pair {
+                before_id: p.before.id.clone(),
+                before_sha256: p.before.sha256.clone(),
+                after_id: p.after.id.clone(),
+                after_sha256: p.after.sha256.clone(),
+                error: None,
+                measurement: Some(m::Measurement {
+                    selected: 12,
+                    matched_cells: 6,
+                    unresolved: Default::default(),
+                    matches: [20, 62]
+                        .into_iter()
+                        .flat_map(|y| {
+                            [20, 34, 62, 76, 104, 118].map(|x| m::Match { at: [x, y], delta })
+                        })
+                        .collect(),
+                    consensus: Some(m::Consensus {
+                        delta,
+                        supporting_patches: 12,
+                        supporting_cells: 6,
+                    }),
+                }),
+            }
+        }),
+    });
+    let row = h::Row {
+        id: 0,
+        type_id: 0,
+        field_id: 0,
+        path_id: test.candidate.id.clone(),
+        type_name: "Actor".into(),
+        field_name: "Speed".into(),
+        value: test.candidate.value.clone(),
+        object_text: vec![],
+    };
+    test.origin = Some(h::TestOrigin {
+        question_source: Default::default(),
+        question_policy: None,
+        play_context: Some(context),
+        reference: h::Reference {
+            review_id: id(),
+            hypothesis_path_id: row.path_id.clone(),
+            selected_path_id: row.path_id.clone(),
+        },
+        report_sha256: "a".repeat(64),
+        hypothesis: h::Hypothesis {
+            proposal: h::Proposal {
+                candidate: 0,
+                name: "Speed".into(),
+                explanation: "The label suggests speed; its effect is untested.".into(),
+                question: test.hypothesis.clone(),
+                citations: vec![h::Citation {
+                    source: "field_name".into(),
+                    index: None,
+                    quote: "Speed".into(),
+                }],
+                alternatives: vec![],
+            },
+            candidate: row,
+            alternatives: vec![],
+        },
+    });
+    let mut engine = Engine::load(state.clone()).unwrap();
+    engine.runtime_tests.record(test.clone()).unwrap();
+    drop(engine);
+    let mut engine = Engine::load(state).unwrap();
+    assert!(engine.live.is_none());
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let read = session
+        .command(
+            &mut engine,
+            &Command {
+                action: "read_runtime_test".into(),
+                source: "agent".into(),
+                args: json!({"test_id":test.id}),
+            },
+            &directory,
+            &published,
+        )
+        .unwrap();
+    assert_eq!(read["test"], json!(test));
+    assert!(read["test"]["assessment"].is_null());
+    assert_eq!(
+        read["origin_activity_motion_comparison"]["scope"],
+        "discovery_activity_pairs"
+    );
+    assert_eq!(
+        read["origin_activity_motion_comparison"]["relation"],
+        "opposed_direction"
+    );
+    assert_eq!(
+        read["test"]["origin"]["play_context"]["observation"]["consistent_visible_change"],
+        false
+    );
+    assert_eq!(
+        json!(engine.runtime_tests.get(&test.id).unwrap()),
+        json!(test)
+    );
+    drop(session);
+    drop(engine);
+    let resolved = directory.canonicalize().unwrap();
+    assert_eq!(resolved.parent().unwrap(), parent);
+    assert!(
+        resolved
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-origin-motion-")
+    );
+    std::fs::remove_dir_all(resolved).unwrap();
+}

@@ -179,6 +179,14 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     let first = command(&mut engine, &first_request, &base).unwrap();
     assert_eq!(first["activity_transfer"]["retained"], true);
     assert_eq!(first["review"]["model"], "agent:fixture-agent");
+    assert_eq!(
+        first["activity_motion_comparison"]["relation"],
+        "insufficient_support"
+    );
+    assert_eq!(
+        first["activity_motion_comparison"]["scope"],
+        "discovery_activity_pairs"
+    );
     let first_context = &first["review"]["play_context"];
     assert_eq!(first_context["observation"], json!(context.observation));
     assert_eq!(first_context["motion"], json!(context.motion));
@@ -190,9 +198,17 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     let second_request = request(first_request.args["review_id"].as_str().unwrap());
     let second = command(&mut engine, &second_request, &base).unwrap();
     assert_eq!(second["review"]["play_context"], *first_context);
+    assert_eq!(
+        second["activity_motion_comparison"],
+        first["activity_motion_comparison"]
+    );
     let replay = command(&mut engine, &first_request, &base).unwrap();
     assert_eq!(replay["review"], first["review"]);
     assert_eq!(replay["activity_transfer"], first["activity_transfer"]);
+    assert_eq!(
+        replay["activity_motion_comparison"],
+        first["activity_motion_comparison"]
+    );
     assert_eq!(replay["replayed"], true);
     assert_eq!(
         engine
@@ -219,11 +235,16 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     let third = command(&mut engine, &third_request, &base).unwrap();
     assert_eq!(third["activity_transfer"]["retained"], false);
     assert!(third["review"]["play_context"].is_null());
+    assert!(third["activity_motion_comparison"].is_null());
     drop(engine);
     let mut reopened = Engine::load(directory.join("state.json")).unwrap();
     assert!(reopened.live.is_none());
     let replay = command(&mut reopened, &first_request, &base).unwrap();
     assert_eq!(replay["review"], first["review"]);
+    assert_eq!(
+        replay["activity_motion_comparison"],
+        first["activity_motion_comparison"]
+    );
     assert_eq!(replay["activity_transfer"], first["activity_transfer"]);
     drop(reopened);
     let resolved = directory.canonicalize().unwrap();
