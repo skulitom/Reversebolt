@@ -40,8 +40,23 @@ pub struct Pair {
     pub input_sha256: String,
     pub difference: f64,
 }
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SelectionBasis {
+    #[default]
+    WholeImage,
+    RegionalCandidateV1,
+}
+impl SelectionBasis {
+    fn is_whole_image(&self) -> bool {
+        *self == Self::WholeImage
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Source {
+    /// Regional candidates are not usable activity until matching supports them.
+    #[serde(default, skip_serializing_if = "SelectionBasis::is_whole_image")]
+    pub selection_basis: SelectionBasis,
     pub investigation_id: String,
     pub batch: usize,
     pub frame_metadata_sha256: String,
@@ -73,7 +88,9 @@ impl Source {
             if !hash(&pair.input_sha256)
                 || !pair.difference.is_finite()
                 || pair.difference > 255.
-                || pair.difference < 5_f64.max(5. * self.quiet_difference)
+                || pair.difference < 0.
+                || (self.selection_basis == SelectionBasis::WholeImage
+                    && pair.difference < 5_f64.max(5. * self.quiet_difference))
                 || pair.before.number.checked_add(1) != Some(pair.after.number)
                 || pair.before.interval.end_us >= pair.after.interval.begin_us
                 || pair
@@ -109,6 +126,21 @@ impl Source {
             .flat_map(|p| [&p.before, &p.after])
             .collect()
     }
+    pub fn validate_activity(
+        &self,
+        regions: Option<&crate::activity_regions::Summary>,
+    ) -> Result<()> {
+        self.validate()?;
+        if self.selection_basis == SelectionBasis::RegionalCandidateV1
+            && !regions
+                .map(|r| r.supports(self))
+                .transpose()?
+                .unwrap_or(false)
+        {
+            return Err("Regional activity needs a quiet matched region that moves in both selected intervals.".into());
+        }
+        Ok(())
+    }
 }
 /// Select at most one sampled key and its first two eligible separated episodes.
 /// Single-interval episodes keep the complete key window with each image pair.
@@ -118,6 +150,44 @@ pub fn select(
     investigation: &str,
     batch: usize,
 ) -> Result<Option<Source>> {
+    Ok(select_candidates(
+        frames,
+        evidence,
+        investigation,
+        batch,
+        SelectionBasis::WholeImage,
+        1,
+    )?
+    .into_iter()
+    .next())
+}
+
+/// At most four prospective keys; qualification requires engine-measured regions.
+pub fn regional_candidates(
+    frames: &[FrameRef],
+    evidence: &Evidence,
+    investigation: &str,
+    batch: usize,
+) -> Result<Vec<Source>> {
+    select_candidates(
+        frames,
+        evidence,
+        investigation,
+        batch,
+        SelectionBasis::RegionalCandidateV1,
+        4,
+    )
+}
+
+fn select_candidates(
+    frames: &[FrameRef],
+    evidence: &Evidence,
+    investigation: &str,
+    batch: usize,
+    basis: SelectionBasis,
+    maximum: usize,
+) -> Result<Vec<Source>> {
+    let mut selected = vec![];
     let mut actions: Vec<_> = evidence.actions.iter().collect();
     actions.sort_by(|a, b| {
         b.median_difference
@@ -140,7 +210,7 @@ pub fn select(
             let Some(difference) = e.median_difference else {
                 continue;
             };
-            if difference < 5_f64.max(5. * quiet) {
+            if basis == SelectionBasis::WholeImage && difference < 5_f64.max(5. * quiet) {
                 continue;
             }
             let Some(a) = frames.get(e.first_interval) else {
@@ -167,6 +237,7 @@ pub fn select(
         }
         if let Ok(pairs) = pairs.try_into() {
             let source = Source {
+                selection_basis: basis.clone(),
                 investigation_id: investigation.into(),
                 batch,
                 key: action.key,
@@ -177,10 +248,13 @@ pub fn select(
                 ),
             };
             source.validate()?;
-            return Ok(Some(source));
+            selected.push(source);
+            if selected.len() == maximum {
+                break;
+            }
         }
     }
-    Ok(None)
+    Ok(selected)
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -248,6 +322,14 @@ impl Context {
     }
 
     pub fn from_observation(source: Source, observation: Observation) -> Result<Self> {
+        Self::from_regional_observation(source, observation, None)
+    }
+
+    pub fn from_regional_observation(
+        source: Source,
+        observation: Observation,
+        regions: Option<crate::activity_regions::Summary>,
+    ) -> Result<Self> {
         let basis = if observation.consistent_visible_change {
             Basis::Interpreted
         } else {
@@ -258,7 +340,7 @@ impl Context {
             interpretation_source: None,
             motion: None,
             appearances: None,
-            regions: None,
+            regions,
             source,
             observation,
         };
@@ -279,7 +361,7 @@ impl Context {
     }
 
     pub fn validate(&self) -> Result<()> {
-        self.source.validate()?;
+        self.source.validate_activity(self.regions.as_ref())?;
         self.observation.validate()?;
         if let Some(motion) = &self.motion {
             motion.validate(&self.source)?;

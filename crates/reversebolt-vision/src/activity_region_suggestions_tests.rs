@@ -85,6 +85,7 @@ fn source(frames: &[FrameRef]) -> Source {
         interval: f.capture_interval.clone().unwrap(),
     };
     Source {
+        selection_basis: Default::default(),
         investigation_id: "clock".into(),
         batch: 1,
         key: 68,

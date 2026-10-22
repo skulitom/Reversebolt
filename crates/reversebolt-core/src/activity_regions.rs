@@ -40,6 +40,26 @@ fn hash(s: &str) -> bool {
     s.len() == 64 && s.bytes().all(|b| b.is_ascii_hexdigit())
 }
 impl Summary {
+    /// Existing matcher thresholds, converted from original to normalized pixels.
+    /// A descriptive qualification, never object identity or gameplay authority.
+    pub fn supports(&self, source: &Source) -> Result<bool> {
+        self.validate(source)?;
+        let size = [source.pairs[0].before.width, source.pairs[0].before.height];
+        let displacement = |o: &Outcome| {
+            o.displacement.map(|d| {
+                (d[0] * 512. / f64::from(size[0]))
+                    .abs()
+                    .max((d[1] * 288. / f64::from(size[1])).abs())
+            })
+        };
+        Ok(self.regions.iter().any(|r| {
+            r.root_status == Status::Matched
+                && displacement(&r.quiet).is_some_and(|d| d <= 1. + 1e-6)
+                && r.pairs
+                    .iter()
+                    .all(|p| displacement(p).is_some_and(|d| d >= 2. - 1e-6))
+        }))
+    }
     /// Structural and source checks do not establish image accuracy or causality.
     pub fn validate(&self, source: &Source) -> Result<()> {
         source.validate()?;

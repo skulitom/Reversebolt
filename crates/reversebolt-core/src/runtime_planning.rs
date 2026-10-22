@@ -26,6 +26,9 @@ pub struct ObservedActions {
     pub frame_metadata_sha256: String,
     pub episodes: Vec<Episode>,
     pub actions: Vec<Action>,
+    /// When present, indexes the observed episodes used for each planned action.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub episode_order: Option<Vec<usize>>,
 }
 
 pub fn actions(
@@ -35,20 +38,34 @@ pub fn actions(
 ) -> Result<ObservedActions> {
     context.validate()?;
     let hash = visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
-    if hash != context.source.frame_metadata_sha256
-        || crate::play_context::select(
+    let regional =
+        context.source.selection_basis == crate::play_context::SelectionBasis::RegionalCandidateV1;
+    let source_matches = if regional {
+        crate::play_context::regional_candidates(
+            frames,
+            evidence,
+            &context.source.investigation_id,
+            context.source.batch,
+        )?
+        .contains(&context.source)
+    } else {
+        crate::play_context::select(
             frames,
             evidence,
             &context.source.investigation_id,
             context.source.batch,
         )?
         .as_ref()
-            != Some(&context.source)
-    {
+            == Some(&context.source)
+    };
+    if hash != context.source.frame_metadata_sha256 || !source_matches {
         return Err("The retained activity evidence changed.".into());
     }
     let mut episodes = vec![];
-    for e in &evidence.episodes {
+    for (index, e) in evidence.episodes.iter().enumerate() {
+        if regional && !context.source.pairs.iter().any(|p| p.episode == index) {
+            continue;
+        }
         let Exposure::Key(key) = e.exposure else {
             continue;
         };
@@ -66,8 +83,9 @@ pub fn actions(
         else {
             continue;
         };
-        if e.median_difference
-            .is_none_or(|d| !d.is_finite() || d < 5f64.max(quiet * 5.))
+        if !regional
+            && e.median_difference
+                .is_none_or(|d| !d.is_finite() || d < 5f64.max(quiet * 5.))
         {
             continue;
         }
@@ -129,9 +147,29 @@ pub fn actions(
             hold_bounds_us: [lower, upper],
             action,
         });
-        if episodes.len() == 4 {
+        if episodes.len() == if regional { 2 } else { 4 } {
             break;
         }
+    }
+    if regional {
+        if episodes.len() != 2
+            || episodes
+                .iter()
+                .any(|e| e.action.keys != [context.source.key])
+            || episodes[0]
+                .action
+                .hold_ms
+                .abs_diff(episodes[1].action.hold_ms)
+                > 50
+        {
+            return Err("Both locally measured responses need bounded, consistent sampled holds before proposing repetition.".into());
+        }
+        return Ok(ObservedActions {
+            frame_metadata_sha256: hash,
+            actions: [0, 1, 0, 1].map(|i| episodes[i].action.clone()).into(),
+            episodes,
+            episode_order: Some(vec![0, 1, 0, 1]),
+        });
     }
     if episodes.len() != 4
         || !episodes
@@ -152,6 +190,7 @@ pub fn actions(
         frame_metadata_sha256: hash,
         actions: episodes.iter().map(|e| e.action.clone()).collect(),
         episodes,
+        episode_order: None,
     })
 }
 

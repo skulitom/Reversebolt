@@ -161,6 +161,7 @@ mod tests {
             },
         };
         let source = Source {
+            selection_basis: Default::default(),
             investigation_id: "synthetic".into(),
             batch: 1,
             frame_metadata_sha256: "a".repeat(64),

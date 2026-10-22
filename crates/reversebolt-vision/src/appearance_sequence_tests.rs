@@ -114,6 +114,7 @@ fn activity_source(
         interval: f.capture_interval.clone().unwrap(),
     };
     Source {
+        selection_basis: Default::default(),
         investigation_id: frames[0]
             .capture_interval
             .as_ref()

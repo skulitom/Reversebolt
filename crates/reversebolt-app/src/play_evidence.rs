@@ -175,6 +175,83 @@ pub(crate) fn measure_pair(
     )
 }
 
+fn regional_suggestions(
+    source: &reversebolt_core::play_context::Source,
+    frames: &[reversebolt_core::visual::FrameRef],
+    read: &mut impl FnMut(&reversebolt_core::visual::FrameRef) -> Result<Vec<u8>>,
+) -> Value {
+    match reversebolt_vision::activity_region_suggestions::analyze(source, frames, read) {
+        Ok(report) => {
+            match reversebolt_vision::activity_region_summary::summarize(&report, source, frames) {
+                Ok(summary) => json!({"report":report,"summary":summary,"error":null}),
+                Err(error) => {
+                    json!({"report":report,"summary":null,"summary_error":error,"error":null})
+                }
+            }
+        }
+        Err(error) => json!({"report":null,"error":error}),
+    }
+}
+
+/// Existing whole-image selection wins. Otherwise inspect at most four sampled
+/// keys with the unchanged twenty-check regional matcher for each candidate.
+fn select_activity(
+    frames: &[reversebolt_core::visual::FrameRef],
+    evidence: &play_evidence::Evidence,
+    investigation: &str,
+    batch: usize,
+    mut read: impl FnMut(&reversebolt_core::visual::FrameRef) -> Result<Vec<u8>>,
+) -> Result<(
+    Option<reversebolt_core::play_context::Source>,
+    Value,
+    Option<Value>,
+)> {
+    use reversebolt_core::play_context;
+    if let Some(source) = play_context::select(frames, evidence, investigation, batch)? {
+        let suggestions = regional_suggestions(&source, frames, &mut read);
+        return Ok((Some(source), suggestions, None));
+    }
+    let mut attempts = vec![];
+    let mut selected = None;
+    let mut suggestions = json!({"report":null,"error":null,"status":"no_activity_source"});
+    for source in play_context::regional_candidates(frames, evidence, investigation, batch)? {
+        let result = regional_suggestions(&source, frames, &mut read);
+        let supported = serde_json::from_value::<reversebolt_core::activity_regions::Summary>(
+            result["summary"].clone(),
+        )
+        .ok()
+        .is_some_and(|summary| summary.supports(&source).unwrap_or(false));
+        attempts.push(json!({"source":source,"supported":supported,"result":result}));
+        if supported {
+            suggestions = result;
+            selected = Some(source);
+            break;
+        }
+    }
+    Ok((
+        selected,
+        suggestions,
+        Some(json!({"policy":"regional_activity_selection_v1",
+        "maximum_candidates":4,"maximum_template_checks":80,"attempts":attempts})),
+    ))
+}
+
+/// Require current engine-measured qualification when a plan uses regional activity.
+pub(crate) fn check_activity_context(
+    context: &reversebolt_core::play_context::Context,
+    result: &Value,
+) -> Result<()> {
+    if context.source.selection_basis
+        == reversebolt_core::play_context::SelectionBasis::RegionalCandidateV1
+        && (result["activity_source"] != json!(context.source)
+            || result["automatic_region_motion"]["activity_region_suggestions"]["summary"]
+                != json!(context.regions))
+    {
+        return Err("The regional activity source or its supporting measurements changed.".into());
+    }
+    Ok(())
+}
+
 pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     let investigation = args["investigation_id"]
         .as_str()
@@ -268,19 +345,39 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
         "frame_metadata_sha256":frame_metadata_sha256,"evidence":evidence,
         "patch_motion":{"metric":reversebolt_vision::patch_motion::METRIC,"intervals":patch_motion,
             "limitation":reversebolt_vision::patch_motion::LIMITATION}});
+    result["activity_source"] = json!(
+        reversebolt_core::play_context::select(
+            &frames,
+            &evidence,
+            investigation,
+            session.view.coverage.batch
+        )
+        .ok()
+        .flatten()
+    );
     if let Some(region) = region {
         result["region_motion"] = region_evidence(&frames, region, region_intervals)?;
     }
     if let Some(automatic) = automatic {
         result["automatic_region_motion"] = match automatic {
             Ok(selection) => {
-                let activity = reversebolt_core::play_context::select(
+                let selected = select_activity(
                     &frames,
                     &evidence,
                     investigation,
                     session.view.coverage.batch,
+                    |frame| {
+                        session
+                            .read_frame(investigation, &frame.id)
+                            .map(|(_, bytes)| bytes)
+                    },
                 );
-                let mut sequences = automatic_sequences(
+                let (activity, suggestions, search) = match selected {
+                    Ok(selected) => selected,
+                    Err(error) => (None, json!({"report":null,"error":error}), None),
+                };
+                result["activity_source"] = json!(activity);
+                let sequences = automatic_sequences(
                     investigation,
                     &frames,
                     &session.view.visual_tracks,
@@ -289,43 +386,13 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
                             .read_frame(investigation, &frame.id)
                             .map(|(_, bytes)| bytes)
                     },
-                    activity.as_ref().ok().and_then(Option::as_ref),
+                    activity.as_ref(),
                 );
-                let suggestions = match &activity {
-                    Ok(Some(source)) => {
-                        match reversebolt_vision::activity_region_suggestions::analyze(
-                            source,
-                            &frames,
-                            |frame| {
-                                session
-                                    .read_frame(investigation, &frame.id)
-                                    .map(|(_, bytes)| bytes)
-                            },
-                        ) {
-                            Ok(report) => {
-                                let summary =
-                                    reversebolt_vision::activity_region_summary::summarize(
-                                        &report, source, &frames,
-                                    );
-                                match summary {
-                                    Ok(summary) => {
-                                        json!({"report":report,"summary":summary,"error":null})
-                                    }
-                                    Err(error) => {
-                                        json!({"report":report,"summary":null,"summary_error":error,"error":null})
-                                    }
-                                }
-                            }
-                            Err(error) => json!({"report":null,"error":error}),
-                        }
-                    }
-                    Ok(None) => json!({"report":null,"error":null,"status":"no_activity_source"}),
-                    Err(error) => json!({"report":null,"error":error}),
-                };
-                if let Err(error) = activity {
-                    sequences["activity"] = json!({"summary":null,"error":error});
+                let mut automatic = json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"activity_region_suggestions":suggestions,"error":null});
+                if let Some(search) = search {
+                    automatic["regional_activity_search"] = search;
                 }
-                json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"activity_region_suggestions":suggestions,"error":null})
+                automatic
             }
             Err(error) => json!({"selection":null,"measurements":[],"error":error}),
         };
@@ -416,8 +483,7 @@ pub(crate) mod tests {
         }
         (session, directory)
     }
-    #[test]
-    fn passive_suggestions_need_no_observer_labels_and_leave_session_unchanged() {
+    fn generated_activity_session(local: bool) -> (LiveSession, PathBuf) {
         use reversebolt_core::inputs::{Focus, Poll, Window};
         let (mut session, directory) = saved_observations();
         session.view.visual_tracks.clear();
@@ -431,6 +497,21 @@ pub(crate) mod tests {
                 v = ((v >> ((v >> 28) + 4)) ^ v).wrapping_mul(277803737);
                 image::Luma([((v >> 22) ^ v) as u8])
             });
+            let image = if local {
+                let mut background = image::GrayImage::from_pixel(512, 288, image::Luma([20]));
+                let subject = image::GrayImage::from_fn(64, 64, |x, y| {
+                    let mut v = (x + y * 64 + 17)
+                        .wrapping_mul(747796405)
+                        .wrapping_add(2891336453);
+                    v = ((v >> ((v >> 28) + 4)) ^ v).wrapping_mul(277803737);
+                    image::Luma([40 + (((v >> 22) ^ v) % 140) as u8])
+                });
+                image::imageops::replace(&mut background, &subject, i64::from(64 + shift), 80);
+                background
+            } else {
+                image
+            };
+            let dimensions = image.dimensions();
             let mut bytes = std::io::Cursor::new(vec![]);
             image.write_to(&mut bytes, image::ImageFormat::Png).unwrap();
             let bytes = bytes.into_inner();
@@ -445,7 +526,7 @@ pub(crate) mod tests {
                 monitor_started_us: 0,
                 retained_from_us: 0,
                 omitted_polls: 0,
-                largest_unsampled_us: 20_000,
+                largest_unsampled_us: if local { 19_900 } else { 20_000 },
                 polls: (prior..begin)
                     .step_by(20_000)
                     .enumerate()
@@ -453,7 +534,9 @@ pub(crate) mod tests {
                         begin_us: t,
                         end_us: t + 100,
                         focus: Focus::SelectedForeground,
-                        down: if [2, 6].contains(&i) && k < 10 {
+                        down: if [2, 6].contains(&i)
+                            && if local { (10..20).contains(&k) } else { k < 10 }
+                        {
                             vec![68]
                         } else {
                             vec![]
@@ -464,12 +547,154 @@ pub(crate) mod tests {
             };
             session.view.frames.push(serde_json::from_value(json!({
                 "id":format!("frame-{n}"),"number":n,"sha256":visual::digest(&bytes),
-                "width":256,"height":144,"epoch":0,"started_unix_ms":n,"input_context":input,
+                "width":dimensions.0,"height":dimensions.1,"epoch":0,"started_unix_ms":n,"input_context":input,
                 "capture_interval":{"clock_id":session.view.investigation_id,"begin_us":begin,"end_us":begin+1000}
             })).unwrap());
         }
         session.view.sample_count = 8;
         session.view.coverage.batch = 1;
+        (session, directory)
+    }
+
+    #[test]
+    fn small_local_activity_reaches_interpretation_and_planning_without_global_contrast() {
+        use reversebolt_core::{play_context as pc, runtime_planning as planning};
+        let (session, directory) = generated_activity_session(true);
+        let args = json!({"investigation_id":session.view.investigation_id,"batch":1,
+            "frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()});
+        let before = json!(session.view);
+        let result = read(&session, &args).unwrap();
+        let evidence: play_evidence::Evidence =
+            serde_json::from_value(result["evidence"].clone()).unwrap();
+        assert!(
+            evidence
+                .intervals
+                .iter()
+                .all(|i| i.measurement.difference.unwrap() < 5.)
+        );
+        assert!(
+            pc::select(
+                &session.view.frames,
+                &evidence,
+                &session.view.investigation_id,
+                1
+            )
+            .unwrap()
+            .is_none()
+        );
+        let source: pc::Source = serde_json::from_value(result["activity_source"].clone()).unwrap();
+        assert_eq!(
+            source.selection_basis,
+            pc::SelectionBasis::RegionalCandidateV1
+        );
+        let search = &result["automatic_region_motion"]["regional_activity_search"];
+        assert_eq!(search["attempts"].as_array().unwrap().len(), 1);
+        assert_eq!(search["maximum_template_checks"], 80);
+        let prepared = crate::runtime_naming_bridge::prepare_activity(&session, &directory)
+            .unwrap()
+            .unwrap();
+        prepared.validate().unwrap();
+        assert_eq!(prepared.source, source);
+        let observation = pc::Observation {
+            consistent_visible_change: false,
+            description: "A small area may have moved.".into(),
+            uncertainty: "Synthetic images; no gameplay meaning.".into(),
+        };
+        assert!(pc::Context::from_observation(source.clone(), observation.clone()).is_err());
+        let context =
+            pc::Context::from_regional_observation(source, observation, prepared.regions.clone())
+                .unwrap();
+        check_activity_context(&context, &result).unwrap();
+        let plan = planning::actions(&context, &session.view.frames, &evidence).unwrap();
+        assert_eq!(plan.episodes.len(), 2);
+        assert_eq!(plan.episode_order, Some(vec![0, 1, 0, 1]));
+        assert_eq!(plan.actions.len(), 4);
+        assert!(
+            plan.actions
+                .iter()
+                .all(|a| a.keys == [68] && (180..=220).contains(&a.hold_ms))
+        );
+        assert!(!context.observation.consistent_visible_change);
+        let roundtrip: pc::Context = serde_json::from_value(json!(context)).unwrap();
+        assert_eq!(
+            planning::actions(&roundtrip, &session.view.frames, &evidence).unwrap(),
+            plan
+        );
+        let mut missing = context.clone();
+        missing.regions = None;
+        assert!(planning::actions(&missing, &session.view.frames, &evidence).is_err());
+        let mut one_pair = context.clone();
+        for region in &mut one_pair.regions.as_mut().unwrap().regions {
+            if region.pairs[1].displacement.is_some() {
+                region.pairs[1].displacement = Some([0., 0.]);
+                region.pairs[1].after_region = region.pairs[1].before_region;
+            }
+        }
+        assert!(one_pair.validate().is_err());
+        let mut altered = result.clone();
+        altered["automatic_region_motion"]["activity_region_suggestions"]["summary"] = Value::Null;
+        assert!(check_activity_context(&context, &altered).is_err());
+        let mut frames = session.view.frames.clone();
+        frames[2].input_context = None;
+        assert!(planning::actions(&context, &frames, &evidence).is_err());
+        // Static images and unreadable evidence cannot qualify prospective input.
+        let static_bytes = session
+            .read_frame(&session.view.investigation_id, &session.view.frames[0].id)
+            .unwrap()
+            .1;
+        let mut static_frames = session.view.frames.clone();
+        for f in &mut static_frames {
+            f.sha256 = reversebolt_core::visual::digest(&static_bytes);
+        }
+        let static_evidence = play_evidence::analyze(
+            &static_frames,
+            (1..static_frames.len())
+                .map(|_| Measurement {
+                    difference: Some(0.),
+                    error: None,
+                })
+                .collect(),
+        )
+        .unwrap();
+        let (none, _, audit) = select_activity(
+            &static_frames,
+            &static_evidence,
+            &session.view.investigation_id,
+            1,
+            |_| Ok(static_bytes.clone()),
+        )
+        .unwrap();
+        assert!(none.is_none());
+        assert_eq!(audit.unwrap()["attempts"][0]["supported"], false);
+        let (none, _, audit) = select_activity(
+            &session.view.frames,
+            &evidence,
+            &session.view.investigation_id,
+            1,
+            |_| Err("Unreadable".into()),
+        )
+        .unwrap();
+        assert!(none.is_none());
+        assert_eq!(
+            audit.unwrap()["attempts"][0]["result"]["error"],
+            "Unreadable"
+        );
+        assert_eq!(json!(session.view), before);
+        drop(session);
+        assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .starts_with("reversebolt-regions-")
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn passive_suggestions_need_no_observer_labels_and_leave_session_unchanged() {
+        let (session, directory) = generated_activity_session(false);
         let before = json!(session.view);
         let mut args = json!({"investigation_id":session.view.investigation_id,
             "batch":session.view.coverage.batch,

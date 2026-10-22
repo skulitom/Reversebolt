@@ -1869,6 +1869,7 @@ fn historical_read_compares_origin_activity_without_changing_the_trial_outcome()
         },
     };
     let source = pc::Source {
+        selection_basis: Default::default(),
         investigation_id: test.investigation.clone(),
         batch: 1,
         frame_metadata_sha256: "b".repeat(64),

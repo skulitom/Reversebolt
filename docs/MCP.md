@@ -1080,6 +1080,26 @@ It does not capture, run inference, access the target or execute an action.
 exact report row. `name`, `explanation` and `question` describe the originating
 primary hypothesis, not a verified meaning for a selected alternative.
 
+The saved-image reader now returns its selected `activity_source`. Whole-image
+selection retains priority and its existing serialized source shape. If it finds
+none and automatic regions are enabled, `regional_activity_selection_v1` checks
+at most four sampled-key candidates (80 template checks total). Every attempt,
+including failures, appears in `automatic_region_motion.regional_activity_search`.
+A source with `selection_basis: "regional_candidate_v1"` is usable only with a
+source-bound region summary: root and quiet match, quiet displacement at most one
+normalized pixel, and displacement at least two pixels in both action intervals.
+Original whole-image differences remain unchanged; they are not replaced with
+regional scores. This is a measured reason to investigate, not verified semantics.
+
+For regional activity, the planner uses the two qualified same-key episodes,
+checks released states around each hold, sample coverage and consistent duration,
+and proposes their repetition as four actions. `observed_actions.episodes`
+contains **two actual observations** and `episode_order: [0,1,0,1]` explains the
+four planned actions. These are not four observed episodes. The legacy whole-image
+path retains its four-episode rule. Model uncertainty remains unchanged, and
+planning rechecks the current selected source and region summary. No input or
+edit is executed by selecting or planning this activity.
+
 Each exact path appears once, preferring its own primary hypothesis when present.
 `question_refs` retains every accepted question mentioning that path; its first
 entry is the chosen `hypothesis_ref`. Distinct paths to the same declared field

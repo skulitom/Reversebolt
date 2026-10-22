@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Small local activity enters discovery (2026-10-22): **35% unchanged**.
+Discovery previously rejected small subject motion before regional measurement.
+When whole-image selection finds no source, the shared reader now checks at most
+four sampled-key candidates with the existing regional matcher (80 checks).
+Only a matched quiet region moving in both selected intervals reaches activity
+interpretation. Regional planning derives four explicitly repeated actions from
+two actual bounded episodes; old whole-image selection/planning stays intact.
+Missing support cannot become a valid context, and model uncertainty is retained.
+
+All 379 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. A generated-image test reaches shared reading, interpreter input,
+context persistence and planning below the old gate, with negative cases.
+Frozen saved-image replay exactly preserves the prior source, full regional
+report/summary, base evidence and observations in Hyperbolica and Manifold Garden.
+All 204 frozen files pass audit; no model call, new capture or gameplay write ran.
+These are integration and compatibility results, not fresh gameplay validation.
+Desktop publication remains unavailable; security review artifacts stay local.
+[Implementation, protocol and limits](../research/regional-activity-entry/README.md).
+
 Shared comparison notes on cards (2026-10-22): **35% unchanged**.
 Completion, shared history and planning results now publish the same compact
 regional review to session status. Already named desktop cards show a short

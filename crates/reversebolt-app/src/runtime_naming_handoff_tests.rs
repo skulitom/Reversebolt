@@ -87,6 +87,7 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     };
     let mut context = pc::Context::from_observation(
         pc::Source {
+            selection_basis: Default::default(),
             investigation_id: live.view.investigation_id.clone(),
             batch: 1,
             frame_metadata_sha256: reversebolt_core::visual::digest(

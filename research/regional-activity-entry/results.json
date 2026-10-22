@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "name": "Hyperbolica retained discovery",
+      "checks": {
+        "source_equal": true,
+        "regional_report_equal": true,
+        "regional_summary_equal": true,
+        "base_evidence_equal": true,
+        "observations_equal": true,
+        "new_model_calls_zero": true,
+        "no_regional_fallback": true
+      },
+      "result_sha256": "f70c1d50ffc1f4bec120306f96d7f73b9ef120ade184597cf359c8d38a585273"
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "checks": {
+        "source_equal": true,
+        "regional_report_equal": true,
+        "regional_summary_equal": true,
+        "base_evidence_equal": true,
+        "observations_equal": true,
+        "new_model_calls_zero": true,
+        "no_regional_fallback": true
+      },
+      "result_sha256": "ba6153fc1ee80ed3e49bfd96b44c1c329f1901f8625f9395fba60600954f53c6"
+    }
+  ],
+  "frozen_inputs": 204,
+  "changed": []
+}

@@ -266,6 +266,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     )?;
     let evidence =
         serde_json::from_value(response["evidence"].clone()).map_err(|e| e.to_string())?;
+    crate::play_evidence::check_activity_context(context, &response)?;
     let actions = p::actions(context, &session.view.frames, &evidence)?;
     let inventory =
         reversebolt_core::runtime_inventory::build(&crate::runtime_bridge::catalog_report(rt)?)?;
@@ -506,19 +507,13 @@ pub(crate) fn prepare_activity(
     session: &reversebolt_core::live::LiveSession,
     directory: &Path,
 ) -> Result<Option<reversebolt_observer::runtime_activity::Input>> {
-    use reversebolt_core::{play_context, play_evidence};
     let ids: Vec<_> = session.view.frames.iter().map(|f| f.id.clone()).collect();
     let args = json!({"investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,"frame_ids":ids});
     let prepared = (|| -> Result<_> {
         let evidence = crate::play_evidence::read(session, &args)?;
-        let parsed: play_evidence::Evidence =
-            serde_json::from_value(evidence["evidence"].clone()).map_err(|e| e.to_string())?;
-        let source = play_context::select(
-            &session.view.frames,
-            &parsed,
-            &session.view.investigation_id,
-            session.view.coverage.batch,
-        )?;
+        let source: Option<reversebolt_core::play_context::Source> =
+            serde_json::from_value(evidence["activity_source"].clone())
+                .map_err(|e| e.to_string())?;
         Ok((evidence, source))
     })();
     let (evidence, source) = match prepared {

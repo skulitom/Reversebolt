@@ -19,7 +19,7 @@ pub struct Input {
 }
 impl Input {
     pub fn validate(&self) -> Result<()> {
-        self.source.validate()?;
+        self.source.validate_activity(self.regions.as_ref())?;
         if let Some(appearances) = &self.appearances {
             appearances.validate(&self.source)?;
         }
@@ -174,8 +174,12 @@ impl Receipt {
         if self.error.is_some() {
             return None;
         }
-        let mut context =
-            Context::from_observation(self.source.clone(), self.observation.clone()?).ok()?;
+        let mut context = Context::from_regional_observation(
+            self.source.clone(),
+            self.observation.clone()?,
+            self.regions.clone(),
+        )
+        .ok()?;
         context.motion = self.motion.clone();
         context.appearances = self.appearances.clone();
         context.regions = self.regions.clone();
@@ -250,6 +254,7 @@ mod tests {
             frames.push(frame);
         }
         let source = Source {
+            selection_basis: Default::default(),
             investigation_id: "clock".into(),
             batch: 1,
             frame_metadata_sha256: "a".repeat(64),

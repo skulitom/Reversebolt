@@ -72,6 +72,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             })
             .collect();
         let source = Source {
+            selection_basis: Default::default(),
             investigation_id: clock.clone(),
             batch: 1,
             frame_metadata_sha256: visual::digest(&serde_json::to_vec(&refs)?),
