@@ -161,6 +161,10 @@ An agent or desktop controller can lock that region after baseline collection
 and before the linked edit. The choice remains bound to the original baseline,
 target, value and action sequence, survives restart, and is used automatically
 by the shared history reader. See [saved appearance choices](research/appearance-plan/README.md).
+The completed baseline also proposes a region automatically, using source
+texture and quiet stability before bounded matching. It can abstain, and a
+proposal still needs an explicit pre-edit choice. See
+[baseline region selection and its limits](research/stable-baseline-regions/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

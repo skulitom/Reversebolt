@@ -1212,10 +1212,19 @@ derives suggestions by default. Set `suggest_appearance:false` to skip this extr
 analysis, or `true` to derive baseline-only suggestions from a historical test.
 Unusable evidence is explicit; metadata remains readable on an analysis error.
 
-Suggestions rank normalized 16/32/64-pixel tiles by first-action change minus
-idle change, require mean difference at least 8 gray levels, suppress overlap
-above one quarter of the smaller tile and check at most four candidates. Invalid
-original-image geometry is rejected, never padded. The unchanged appearance
+`baseline_stable_texture_regions_v2` first gates normalized 16/32/64-pixel tiles
+by first-action change minus idle change, requiring a mean of at least 8 gray
+levels. It uses the shared stable-texture selector: sparse/dense template standard
+deviation >=8, center 9x9 corner score >=16, and quiet mean absolute difference
+<=4. Here **baseline frame 0 is the source template and frame 1 is the quiet
+comparison**; passive discovery coordinates and its later root are not reused.
+Rank is corner score divided by one plus quiet difference, then change descending
+and tile size/y/x ascending. `selection` records filtering counts/requirements;
+`selection_quality` records each tried candidate's measurements in the exact
+normalized matcher rectangle. These scores are heuristic, not confidence.
+Overlap above one quarter of the smaller grid tile is suppressed; at most four
+candidates are checked, with no replacement after failure. Invalid original-image
+geometry is rejected, never padded. The unchanged appearance
 matcher checks each candidate against baseline frame 0 and stops at the first
 unresolved match, up to 24 checks total. A recommendation requires all six matches,
 idle displacement at most one and each action displacement at least two pixels
@@ -1223,6 +1232,11 @@ on the normalized 512×288 grid, plus matching input witnesses from one monitor.
 The report binds baseline metadata, image/input hashes and the action plan; later
 conditions are not read. Background/camera motion may pass. No semantic identity,
 causality, saved selection or edit authority follows from a recommendation.
+No candidate can change rank using later baseline-action matches, changed-condition
+images or recovery results. If every change tile fails source-quality checks, the
+status is `no_stable_textured_region`. The offline library/replay retains an
+explicit `ChangeOnly` / `change_only` path for exact v1 output comparisons; normal
+shared reads use v2. Versioned source hashes distinguish these derivations.
 
 To save a recommended or manually chosen region before the linked edit, call `lock_runtime_test_appearance`
 with `test_id`, the exact current test `after_revision`, and

@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Stable regions for pre-edit baselines (2026-10-22): **35% unchanged**.
+Automatic baseline suggestions now share the source-texture, corner and quiet
+stability selector, with frame 0 as the immutable source and frame 1 as the quiet
+comparison. Discovery coordinates are not reused. Candidate matching keeps its
+four-region/24-check limit and stops on unresolved evidence. Nothing is locked,
+edited or labeled automatically, and later conditions cannot affect selection.
+
+All 370 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. A controlled flashing-distractor case recovers known local motion;
+the shared automatic recommendation now feeds the existing lock, comparison and
+restart test. Frozen paired replay preserves all three OwnedPathFixture outcomes:
+two incomplete baselines and one striped baseline with no recommendation. V2
+rejects all 647 striped tiles for weak corners before template matching. Old
+outputs exactly equal the original archive; both methods repeat identically.
+All 163 sources, 24 inputs and the executable pass audit. No model call, new
+capture, game input or target operation ran. These software fixtures do not
+establish a gameplay intervention or independent generalization. The desktop
+remains unavailable after quarantine.
+[Method and results](../research/stable-baseline-regions/README.md).
+
 Passive regions in automatic interpretation (2026-10-22): **35% unchanged**.
 Automatic discovery now carries the source-selected region outcomes into the
 four-image interpreter and shared durable context. A bounded summary retains

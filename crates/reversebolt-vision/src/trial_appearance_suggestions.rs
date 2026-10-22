@@ -1,5 +1,8 @@
 //! Propose comparison regions using only retained baseline images and inputs.
-use crate::{region_appearance as matcher, response, trial_evidence};
+pub use crate::stable_region_selection::Ranking;
+use crate::{
+    region_appearance as matcher, response, stable_region_selection as stable, trial_evidence,
+};
 use image::{
     GrayImage,
     imageops::{self, FilterType},
@@ -14,8 +17,10 @@ use reversebolt_core::{
 use serde::Serialize;
 use serde_json::json;
 
-pub const POLICY: &str = "baseline_action_region_suggestions_v1";
-pub const LIMITATION: &str = "Heuristic proposals from baseline evidence only. First-action image change minus idle change ranks fixed multiscale tiles; up to four candidates with limited overlap are checked against all six baseline images using the original template. At most twenty-four frame checks; stop each candidate at its first unresolved correspondence. Camera/background motion and identical appearances can pass. A suggestion is not a character identity, physical speed, gameplay meaning, causal control or edit authority. Nothing is selected or edited automatically. Later conditions are never read or used to rank suggestions.";
+pub const POLICY: &str = "baseline_stable_texture_regions_v2";
+pub const CHANGE_POLICY: &str = "baseline_action_region_suggestions_v1";
+pub const CHANGE_LIMITATION: &str = "Heuristic proposals from baseline evidence only. First-action image change minus idle change ranks fixed multiscale tiles; up to four candidates with limited overlap are checked against all six baseline images using the original template. At most twenty-four frame checks; stop each candidate at its first unresolved correspondence. Camera/background motion and identical appearances can pass. A suggestion is not a character identity, physical speed, gameplay meaning, causal control or edit authority. Nothing is selected or edited automatically. Later conditions are never read or used to rank suggestions.";
+pub const LIMITATION: &str = "Heuristic proposals from baseline evidence only. First-action-minus-idle change supplies fixed tiles; texture in the first baseline image and stability against the idle image filter and rank them before matching. Up to four candidates with limited overlap are checked against all six baseline images using the immutable first baseline template. At most twenty-four frame checks; stop each candidate at its first unresolved correspondence. Scores are heuristics, not probabilities. Camera/background motion and identical appearances can pass. A suggestion is not a character identity, physical speed, gameplay meaning, causal control or edit authority. Nothing is locked or edited automatically. Passive-discovery regions are not reused, and later conditions are never read or used to rank suggestions.";
 const WIDTH: u32 = 512;
 const HEIGHT: u32 = 288;
 const MAX_CANDIDATES: usize = 4;
@@ -31,6 +36,8 @@ pub struct PairEvidence {
 pub struct Suggestion {
     pub selection: AppearanceSelection,
     pub action_minus_idle_change: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selection_quality: Option<stable::Quality>,
     pub frames: Vec<matcher::Report>,
     pub displacement: [Option<[i32; 2]>; 5],
     pub status: &'static str,
@@ -48,6 +55,8 @@ pub struct Report {
     pub evidence: Vec<PairEvidence>,
     pub status: &'static str,
     pub ranked_regions: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selection: Option<stable::Selection>,
     pub attempted_frames: usize,
     pub maximum_attempted_frames: usize,
     pub suggestions: Vec<Suggestion>,
@@ -137,6 +146,19 @@ pub fn analyze(
     read_image: impl FnMut(usize, usize) -> Result<Vec<u8>>,
     read_input: impl FnMut(usize, usize) -> Result<Option<Window>>,
 ) -> Result<Report> {
+    analyze_with_ranking(test, read_image, read_input, Ranking::StableTexture)
+}
+
+pub fn analyze_with_ranking(
+    test: &Test,
+    read_image: impl FnMut(usize, usize) -> Result<Vec<u8>>,
+    read_input: impl FnMut(usize, usize) -> Result<Option<Window>>,
+    ranking: Ranking,
+) -> Result<Report> {
+    let (policy, limitation) = match ranking {
+        Ranking::ChangeOnly => (CHANGE_POLICY, CHANGE_LIMITATION),
+        Ranking::StableTexture => (POLICY, LIMITATION),
+    };
     // Later outcomes, saved assessments and choices never influence selection.
     let mut baseline = test.clone();
     baseline.conditions[1..].fill_with(Default::default);
@@ -145,13 +167,13 @@ pub fn analyze(
     let baseline_record_sha256 =
         visual::digest(&serde_json::to_vec(condition).map_err(|e| e.to_string())?);
     let source_sha256 = visual::digest(
-        &serde_json::to_vec(&json!({"policy":POLICY,"matcher":matcher::POLICY,
+        &serde_json::to_vec(&json!({"policy":policy,"matcher":matcher::POLICY,
         "test_id":test.id,"investigation":test.investigation,"scope":test.scope,
         "baseline_record_sha256":baseline_record_sha256,"actions":test.actions}))
         .map_err(|e| e.to_string())?,
     );
     let mut report = Report {
-        policy: POLICY,
+        policy,
         matcher_policy: matcher::POLICY,
         test_id: test.id.clone(),
         baseline_record_sha256,
@@ -167,11 +189,12 @@ pub fn analyze(
         evidence: vec![],
         status: "incomplete_baseline",
         ranked_regions: 0,
+        selection: None,
         attempted_frames: 0,
         maximum_attempted_frames: 24,
         suggestions: vec![],
         recommended: None,
-        limitation: LIMITATION,
+        limitation,
     };
     if condition.frames.len() != 6 {
         return Ok(report);
@@ -220,9 +243,25 @@ pub fn analyze(
         .collect::<Option<Vec<_>>>()
         .ok_or("Missing verified baseline image.")?;
     let ranked = regions(&images, dimensions);
+    let ranked = match ranking {
+        Ranking::ChangeOnly => ranked.into_iter().map(stable::Candidate::from).collect(),
+        Ranking::StableTexture => {
+            // This test's immutable template is frame 0. Frame 1 is the idle
+            // comparison, not the passive selector's later root.
+            let (ranked, selection) = stable::select(&images[1], &images[0], dimensions, ranked);
+            report.selection = Some(selection);
+            ranked
+        }
+    };
     report.ranked_regions = ranked.len();
     let mut chosen = vec![];
-    for (score, region, tile) in ranked {
+    for stable::Candidate {
+        change,
+        region,
+        normalized: tile,
+        quality,
+    } in ranked
+    {
         if chosen.iter().any(|&r| overlap(tile, r)) {
             continue;
         }
@@ -232,7 +271,8 @@ pub fn analyze(
                 baseline_sha256: condition.frames[0].sha256.clone(),
                 region,
             },
-            action_minus_idle_change: score,
+            action_minus_idle_change: change,
+            selection_quality: quality,
             frames: vec![],
             displacement: [None; 5],
             status: "unresolved_appearance",
@@ -280,6 +320,13 @@ pub fn analyze(
     }
     report.status = if report.recommended.is_some() {
         "suggestions_available"
+    } else if report.suggestions.is_empty()
+        && report
+            .selection
+            .as_ref()
+            .is_some_and(|s| s.input_regions > 0)
+    {
+        "no_stable_textured_region"
     } else if report.suggestions.is_empty() {
         "no_action_regions"
     } else {

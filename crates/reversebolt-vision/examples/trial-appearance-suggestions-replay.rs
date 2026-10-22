@@ -17,9 +17,16 @@ fn bounded(path: &Path, max: u64) -> Result<Vec<u8>, String> {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 2 {
-        return Err("Use TEST_JSON NEW_OUTPUT_JSON.".into());
+    if !(2..=3).contains(&args.len()) {
+        return Err("Use TEST_JSON NEW_OUTPUT_JSON [change_only|stable_texture].".into());
     }
+    let ranking = match args.get(2).map(String::as_str).unwrap_or("stable_texture") {
+        "change_only" => reversebolt_vision::trial_appearance_suggestions::Ranking::ChangeOnly,
+        "stable_texture" => {
+            reversebolt_vision::trial_appearance_suggestions::Ranking::StableTexture
+        }
+        _ => return Err("Unknown baseline ranking policy.".into()),
+    };
     let path = Path::new(&args[0]);
     let bytes = bounded(path, 512 * 1024)?;
     let test: Test = serde_json::from_slice(&bytes)?;
@@ -29,7 +36,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .join(&test.id);
     let mut images_read = vec![];
     let mut inputs_read = vec![];
-    let result = reversebolt_vision::trial_appearance_suggestions::analyze(
+    let result = reversebolt_vision::trial_appearance_suggestions::analyze_with_ranking(
         &test,
         |c, i| {
             assert_eq!(c, 0);
@@ -45,6 +52,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             )?)
             .map_err(|e| e.to_string())
         },
+        ranking,
     );
     let (report, error) = match result {
         Ok(report) => (Some(report), None),

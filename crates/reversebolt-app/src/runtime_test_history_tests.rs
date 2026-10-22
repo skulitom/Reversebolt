@@ -266,29 +266,49 @@ fn locked_appearance_survives_history_and_cannot_be_added_after_an_edit_record()
         changes::Phase as ChangePhase,
         runtime_tests::AppearanceSelection,
         runtime_trials::{Context, Evidence, Trial},
-        visual_regions::Region,
     };
     let (directory, state_path, mut engine, complete) = motion_fixture(true);
     let mut baseline = complete.clone();
     baseline.conditions[1..].fill(Default::default());
     baseline.phase = Phase::ReadyToApply;
     engine.runtime_tests.record(baseline.clone()).unwrap();
-    let selection = AppearanceSelection {
-        baseline_sha256: baseline.conditions[0].frames[0].sha256.clone(),
-        region: Region {
-            x: 64,
-            y: 80,
-            width: 64,
-            height: 64,
-        },
-    };
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let offered = session
+        .command(
+            &mut engine,
+            &Command {
+                action: "read_runtime_test".into(),
+                source: "agent".into(),
+                args: json!({"test_id":baseline.id}),
+            },
+            &directory,
+            &published,
+        )
+        .unwrap();
+    let selection: AppearanceSelection =
+        serde_json::from_value(offered["appearance_suggestions"]["recommended"].clone()).unwrap();
+    assert_eq!(
+        offered["appearance_suggestions"]["policy"],
+        reversebolt_vision::trial_appearance_suggestions::POLICY
+    );
+    assert_eq!(
+        selection.baseline_sha256,
+        baseline.conditions[0].frames[0].sha256
+    );
+    assert!(
+        engine
+            .runtime_tests
+            .get(&baseline.id)
+            .unwrap()
+            .appearance
+            .is_none()
+    );
     let request = Command {
         action: "lock_runtime_test_appearance".into(),
         source: "agent".into(),
         args: json!({"test_id":baseline.id,"after_revision":baseline.revision,"appearance":selection}),
     };
-    let published = Arc::new(RwLock::new(engine.view.clone()));
-    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
     session.before(&mut engine, &request).unwrap();
     assert_eq!(
         engine.runtime_tests.get(&baseline.id).unwrap().phase,
@@ -386,7 +406,7 @@ fn locked_appearance_survives_history_and_cannot_be_added_after_an_edit_record()
         bytes_before
     );
     let mut changed = request.clone();
-    changed.args["appearance"]["region"]["x"] = json!(65);
+    changed.args["appearance"]["region"]["x"] = json!(selection.region.x + 1);
     assert!(
         session
             .command(&mut engine, &changed, &directory, &published)
@@ -742,6 +762,105 @@ fn appearance_suggestions_are_automatic_baseline_only_and_survive_history_reads(
     assert_eq!(historical["appearance_suggestions"], json!(report));
     assert_eq!(historical["test"]["phase"], "stopped");
     drop(reopened);
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn baseline_suggestions_ignore_flat_flashes_and_measure_the_actual_first_template() {
+    use reversebolt_vision::trial_appearance_suggestions as suggestions;
+    let (directory, _, engine, mut test) = motion_fixture(true);
+    let folder = directory.join("runtime-tests").join(&test.id);
+    for i in 0..6 {
+        let mut image =
+            image::load_from_memory(&engine.runtime_tests.read_image(&test, 0, i).unwrap())
+                .unwrap()
+                .to_luma8();
+        for y in 0..288 {
+            for x in 256..512 {
+                image[(x, y)] = image::Luma([if i >= 2 && i % 2 == 0 { 240 } else { 20 }]);
+            }
+        }
+        if i == 1 {
+            for p in image.pixels_mut() {
+                p.0[0] = (u16::from(p.0[0]) * 99 / 100) as u8;
+            }
+        }
+        let mut png = std::io::Cursor::new(vec![]);
+        image.write_to(&mut png, image::ImageFormat::Png).unwrap();
+        let bytes = png.into_inner();
+        test.conditions[0].frames[i].sha256 = reversebolt_core::visual::digest(&bytes);
+        std::fs::write(folder.join(format!("0-{i}.png")), bytes).unwrap();
+    }
+    let run = |ranking| {
+        suggestions::analyze_with_ranking(
+            &test,
+            |c, i| {
+                assert_eq!(c, 0);
+                engine.runtime_tests.read_image(&test, c, i)
+            },
+            |c, i| {
+                assert_eq!(c, 0);
+                engine.runtime_tests.read_input(&test, c, i)
+            },
+            ranking,
+        )
+        .unwrap()
+    };
+    let old = run(suggestions::Ranking::ChangeOnly);
+    assert_eq!(old.status, "no_supported_region");
+    assert!(
+        old.suggestions.iter().all(
+            |s| s.frames[0].status == reversebolt_vision::region_appearance::Status::LowTexture
+        )
+    );
+    assert!(json!(old).get("selection").is_none());
+    let new = run(suggestions::Ranking::StableTexture);
+    assert_eq!(new.status, "suggestions_available");
+    assert!(new.selection.as_ref().unwrap().rejected_low_texture > 0);
+    assert!(new.suggestions.len() <= 4 && new.attempted_frames <= 24);
+    let chosen = new
+        .suggestions
+        .iter()
+        .find(|s| Some(&s.selection) == new.recommended.as_ref())
+        .unwrap();
+    assert_eq!(
+        chosen.displacement,
+        [
+            Some([0, 0]),
+            Some([16, 0]),
+            Some([-16, 0]),
+            Some([16, 0]),
+            Some([-16, 0])
+        ]
+    );
+    let quality = chosen.selection_quality.as_ref().unwrap();
+    assert!(quality.quiet_mean_absolute_difference > 0.);
+    assert_eq!(
+        quality.source_std[0],
+        chosen.frames[0].forward.as_ref().unwrap().source_std
+    );
+    assert_ne!(
+        quality.source_std[0],
+        chosen.frames[1].reverse.as_ref().unwrap().source_std
+    );
+    assert_eq!(
+        chosen.selection.baseline_sha256,
+        test.conditions[0].frames[0].sha256
+    );
+    assert_ne!(
+        chosen.selection.baseline_sha256,
+        test.conditions[0].frames[1].sha256
+    );
+    assert_eq!(json!(new), json!(run(suggestions::Ranking::StableTexture)));
+    drop(engine);
+    assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
     assert!(
         directory
             .file_name()

@@ -6,6 +6,12 @@ use serde::Serialize;
 
 const MAX_QUIET_DIFFERENCE: f64 = 4.;
 
+#[derive(Clone, Copy)]
+pub enum Ranking {
+    ChangeOnly,
+    StableTexture,
+}
+
 #[derive(Debug, Serialize)]
 pub struct Quality {
     pub measurement_region: Region,

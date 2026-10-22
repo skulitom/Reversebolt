@@ -19,11 +19,7 @@ pub const CHANGE_LIMITATION: &str = "Numeric proposals from two sampled-key inte
 pub const LIMITATION: &str = "Numeric proposals from two sampled-key intervals and preceding quiet evidence. First-action-minus-quiet change supplies fixed tiles; source texture, two-direction corner strength and quiet stability filter and rank them before matching. Quality scores are heuristics, not confidence. At most four candidates and twenty original-template checks. The two action intervals are independent correspondences, not continuous tracking between them; intervening images are not read and occlusion or replacement there is unknown. Same-key samples do not prove game input delivery, equal movement or direction. Camera/background motion and identical appearances can pass. No object identity, gameplay name, physical speed, causal field, edit authority or trial baseline is established. No control or comparison selection is created.";
 const MAX_CANDIDATES: usize = 4;
 
-#[derive(Clone, Copy)]
-pub enum Ranking {
-    ChangeOnly,
-    StableTexture,
-}
+pub use crate::stable_region_selection::Ranking;
 
 #[derive(Debug, Serialize)]
 pub struct Suggestion {
