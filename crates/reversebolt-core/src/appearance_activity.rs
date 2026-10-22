@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 
 pub const POLICY: &str = "selected_action_appearance_v1";
 pub const SEQUENCE_POLICY: &str = "immutable_appearance_sequence_v1";
+pub const ACTIVITY_SEQUENCE_POLICY: &str = "activity_bounded_appearance_sequence_v1";
 pub const MATCHER_POLICY: &str = "rgb601-triangle512x288-region-ncc16-dense-reverse-v1";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -67,7 +68,7 @@ impl Summary {
     pub fn validate(&self, source: &Source) -> Result<()> {
         source.validate()?;
         if self.policy != POLICY
-            || self.sequence_policy != SEQUENCE_POLICY
+            || ![SEQUENCE_POLICY, ACTIVITY_SEQUENCE_POLICY].contains(&self.sequence_policy.as_str())
             || self.matcher_policy != MATCHER_POLICY
             || self.frame_metadata_sha256 != source.frame_metadata_sha256
             || self.activity_source_sha256

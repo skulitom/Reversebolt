@@ -146,6 +146,173 @@ fn activity_fixture(images: &[Vec<u8>]) -> (Vec<FrameRef>, Vec<VisualTrack>) {
 }
 
 #[test]
+fn activity_horizon_reaches_both_selected_intervals_without_reading_beyond_them() {
+    let patch = texture(17);
+    let images: Vec<_> = (0..12).map(|i| png(&patch, [64 + i * 8, 80])).collect();
+    let (frames, tracks) = activity_fixture(&images);
+    let source = activity_source(&frames, [0, 8]);
+    let old = run(&frames, &tracks, &images);
+    assert_eq!(old.series[0].accepted_steps, 6);
+    assert!(json!(old).get("target").is_none());
+    let mut reads = vec![];
+    let report = analyze_for_activity(
+        "inv",
+        &frames,
+        &tracks,
+        |f| {
+            reads.push(f.number);
+            Ok(images[f.number - 1].clone())
+        },
+        &source,
+    )
+    .unwrap();
+    assert_eq!(report.attempted_pairs, 9);
+    assert_eq!(report.series[0].accepted_steps, 9);
+    assert_eq!(report.series[0].stop, Stop::ActivityHorizonReached);
+    assert_eq!(report.series[0].stopped_before.as_deref(), Some("f11"));
+    assert!(reads.iter().all(|n| *n <= 10));
+    assert_eq!(report.target.as_ref().unwrap().last_frame_id, "f10");
+    // The new scheduling policy changes provenance, never the shared prefix's pixels/matches.
+    for (a, b) in old.series[0].steps.iter().zip(&report.series[0].steps) {
+        let (mut a, mut b) = (json!(a), json!(b));
+        a.as_object_mut().unwrap().remove("source_sha256");
+        b.as_object_mut().unwrap().remove("source_sha256");
+        assert_eq!(a, b);
+    }
+    let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+    assert_eq!(summary.sequence_policy, ACTIVITY_POLICY);
+    assert!(
+        summary.appearances[0]
+            .pairs
+            .iter()
+            .all(|p| p.displacement == Some([8., 0.]))
+    );
+    let mut changed = source.clone();
+    changed.batch += 1;
+    assert!(crate::appearance_activity::summarize(&report, &changed, &frames).is_err());
+    let mut changed = source.clone();
+    changed.key = 65;
+    assert!(
+        analyze_for_activity(
+            "inv",
+            &frames,
+            &tracks,
+            |_| panic!("reject input rebinding before reading images"),
+            &changed
+        )
+        .is_err()
+    );
+    let mut changed = source.clone();
+    changed.frame_metadata_sha256 = "e".repeat(64);
+    assert!(
+        analyze_for_activity(
+            "inv",
+            &frames,
+            &tracks,
+            |_| panic!("reject metadata rebinding before reading images"),
+            &changed
+        )
+        .is_err()
+    );
+    for changed in [
+        {
+            let mut s = source.clone();
+            s.pairs[0].before.id = "missing".into();
+            s
+        },
+        {
+            let mut s = source.clone();
+            s.pairs[0].before.sha256 = "f".repeat(64);
+            s
+        },
+    ] {
+        assert!(
+            analyze_for_activity(
+                "inv",
+                &frames,
+                &tracks,
+                |_| panic!("reject changed selected images before reading pixels"),
+                &changed
+            )
+            .is_err()
+        );
+    }
+}
+
+#[test]
+fn activity_horizon_preserves_budget_and_reports_uncovered_second_interval() {
+    let images = vec![png(&texture(17), [64, 80]); 16];
+    let (frames, tracks) = activity_fixture(&images);
+    let source = activity_source(&frames, [0, 14]);
+    let report = analyze_for_activity(
+        "inv",
+        &frames,
+        &tracks,
+        |f| Ok(images[f.number - 1].clone()),
+        &source,
+    )
+    .unwrap();
+    assert_eq!(report.maximum_attempted_pairs, 12);
+    assert_eq!(report.attempted_pairs, 12);
+    assert_eq!(report.series[0].accepted_steps, 12);
+    assert_eq!(report.series[0].stop, Stop::AnalysisBudget);
+    assert_eq!(report.series[0].stopped_before.as_deref(), Some("f14"));
+    let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+    assert_eq!(
+        summary.appearances[0].pairs[1].status,
+        reversebolt_core::appearance_activity::Status::NotMeasured
+    );
+    assert_eq!(summary.appearances[0].pairs[1].displacement, None);
+}
+
+#[test]
+fn activity_horizon_never_skips_a_failed_or_missing_intermediate_capture() {
+    for change in 0..4 {
+        let mut images = vec![png(&texture(17), [64, 80]); 12];
+        if change == 0 {
+            images[7] = png(&texture(999), [64, 80]);
+        }
+        let (mut frames, tracks) = activity_fixture(&images);
+        let expected = match change {
+            0 => Stop::UnresolvedAppearance,
+            1 => {
+                frames.remove(7);
+                Stop::OmittedCapture
+            }
+            2 => {
+                frames[7].epoch = 1;
+                Stop::ChangedGeometryOrEpoch
+            }
+            _ => Stop::SourceError,
+        };
+        let source = activity_source(&frames, [0, if change == 1 { 7 } else { 8 }]);
+        let mut reads = vec![];
+        let report = analyze_for_activity(
+            "inv",
+            &frames,
+            &tracks,
+            |f| {
+                reads.push(f.number);
+                if change == 3 && f.number == 8 {
+                    return Err("Missing saved image".into());
+                }
+                Ok(images[f.number - 1].clone())
+            },
+            &source,
+        )
+        .unwrap();
+        assert_eq!(report.series[0].accepted_steps, 6);
+        assert_eq!(report.series[0].stop, expected);
+        assert!(reads.iter().all(|n| *n <= 8));
+        let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+        assert_eq!(
+            summary.appearances[0].pairs[1].status,
+            reversebolt_core::appearance_activity::Status::NotMeasured
+        );
+    }
+}
+
+#[test]
 fn activity_projection_uses_selected_intervals_not_origin_delta_and_preserves_missing() {
     use reversebolt_core::appearance_activity::Status;
     let patch = texture(17);
@@ -424,7 +591,7 @@ fn corrupted_missing_or_rebound_sources_stop_only_their_sequence() {
 fn shared_budget_is_round_robin_and_one_source_cannot_consume_all_work() {
     let image = png(&texture(17), [64, 80]);
     let images = vec![image; 10];
-    let (frames, mut tracks) = fixture(&images);
+    let (frames, mut tracks) = activity_fixture(&images);
     let single = run(&frames, &tracks, &images);
     assert_eq!(single.attempted_pairs, 6);
     assert_eq!(single.series[0].stop, Stop::StepLimit);
@@ -446,6 +613,20 @@ fn shared_budget_is_round_robin_and_one_source_cannot_consume_all_work() {
     assert_eq!(report.attempted_pairs, 12);
     assert_eq!(report.series.len(), 4);
     for s in &report.series {
+        assert_eq!(s.accepted_steps, 3);
+        assert_eq!(s.stop, Stop::AnalysisBudget);
+    }
+    let activity = activity_source(&frames, [0, 8]);
+    let targeted = analyze_for_activity(
+        "inv",
+        &frames,
+        &tracks,
+        |f| Ok(images[f.number - 1].clone()),
+        &activity,
+    )
+    .unwrap();
+    assert_eq!(targeted.attempted_pairs, 12);
+    for s in &targeted.series {
         assert_eq!(s.accepted_steps, 3);
         assert_eq!(s.stop, Stop::AnalysisBudget);
     }

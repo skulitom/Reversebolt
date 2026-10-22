@@ -104,12 +104,22 @@ pub(crate) fn automatic_sequences(
     read_image: impl FnMut(&reversebolt_core::visual::FrameRef) -> Result<Vec<u8>>,
     activity: Option<&reversebolt_core::play_context::Source>,
 ) -> Value {
-    match reversebolt_vision::appearance_sequence::analyze(
-        investigation,
-        frames,
-        tracks,
-        read_image,
-    ) {
+    let report = match activity {
+        Some(source) => reversebolt_vision::appearance_sequence::analyze_for_activity(
+            investigation,
+            frames,
+            tracks,
+            read_image,
+            source,
+        ),
+        None => reversebolt_vision::appearance_sequence::analyze(
+            investigation,
+            frames,
+            tracks,
+            read_image,
+        ),
+    };
+    match report {
         Ok(report) => {
             let mut value = json!({"report":report,"error":null});
             if let Some(source) = activity {

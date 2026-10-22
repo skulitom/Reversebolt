@@ -144,6 +144,11 @@ exact selected image pairs. Missing intervals stay explicit; the interpreter's
 uncertainty is retained with the measurements. A four-call saved-image comparison
 verified this connection, but did not establish better accuracy. See [regional
 interpretation context](research/appearance-context/README.md).
+Traces now aim for the last selected activity image within the same twelve-match
+budget. Both exposed saved-game cases consequently supply a regional measurement
+for each interval; augmented interpretations flag a repeated visible change.
+Object meaning and causal control remain unverified. See [activity horizon
+results](research/activity-horizon/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

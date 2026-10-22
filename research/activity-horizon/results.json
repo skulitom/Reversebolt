@@ -1,0 +1,282 @@
+{
+  "source_manifest_sha256": "ce9cd1a5edae52b4af65c9d30cc0e15ccc4ce045b33ed2586a2b5ac64228cc94",
+  "source_files": 151,
+  "input_files": 37,
+  "image_interpretation_calls": 4,
+  "new_object_observation_calls": 0,
+  "native_target_access": false,
+  "cases": [
+    {
+      "case": 0,
+      "selected_frames": [
+        [
+          2,
+          3
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "attempted_pairs": 10,
+      "series": [
+        {
+          "accepted_steps": 7,
+          "stop": "activity_horizon_reached",
+          "stopped_before": "b7413896-119d-41e7-9572-a92be48fd518"
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "feeeafa7-a384-401d-9426-3729165808ef"
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "feeeafa7-a384-401d-9426-3729165808ef"
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "feeeafa7-a384-401d-9426-3729165808ef"
+        }
+      ],
+      "outcomes": [
+        [
+          {
+            "after_region": [
+              429.6875,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "before_region": [
+              487.6953125,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "displacement": [
+              -58.0078125,
+              0.0
+            ],
+            "status": "matched"
+          },
+          {
+            "after_region": [
+              429.6875,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "before_region": [
+              483.3984375,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "displacement": [
+              -53.7109375,
+              0.0
+            ],
+            "status": "matched"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "poor_match"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "poor_match"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "ambiguous"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ]
+      ],
+      "baseline": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot shifts slightly left and the foreground red plants disappear. The camera angle appears to change slightly, altering the view of the horizon and background elements. The desk and chair remain central but their perspective shifts marginally.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera adjustments or rendering variations rather than a specific control action. The sparse and inconsistent match data makes it difficult to confirm a consistent, significant change driven by a single input."
+      },
+      "augmented": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the cyan robot on the right shifts leftward and slightly downward, and the central tree shifts leftward. The left-side red conical plants disappear in the 'after' frames. The camera view appears to pan slightly right.",
+        "uncertainty": "Measurements show sparse matches with many unresolved cells. The robot's movement is consistent across both pairs, but the magnitude and exact nature of the shift (camera pan vs. object movement) cannot be definitively determined from the provided data."
+      },
+      "baseline_error": null,
+      "augmented_error": null,
+      "baseline_receipt_sha256": "54f548c02f88a1d7ef1f43e316bc564988ec308060eb957a4e20cb7025a787ba",
+      "augmented_receipt_sha256": "b11d56ab377fcee07b5e2060baed25176b98fee0cd20bbf748db3df039252f3a",
+      "global_motion_unchanged": true,
+      "accuracy": "unknown"
+    },
+    {
+      "case": 1,
+      "selected_frames": [
+        [
+          4,
+          5
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "attempted_pairs": 12,
+      "series": [
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "067d1247-be58-496c-98a0-d124fdfb08fe"
+        },
+        {
+          "accepted_steps": 9,
+          "stop": "activity_horizon_reached",
+          "stopped_before": "0288d5c1-e558-47c9-bcaf-78819ecbbe57"
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "067d1247-be58-496c-98a0-d124fdfb08fe"
+        },
+        {
+          "accepted_steps": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "067d1247-be58-496c-98a0-d124fdfb08fe"
+        }
+      ],
+      "outcomes": [
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": [
+              682.5,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "before_region": [
+              642.5,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "displacement": [
+              40.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          {
+            "after_region": [
+              685.0,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "before_region": [
+              642.5,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "displacement": [
+              42.5,
+              0.0
+            ],
+            "status": "matched"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ]
+      ],
+      "baseline": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a static room with a central trapezoidal floor and a small staircase. The only apparent difference is a slight horizontal shift of the floor's internal line pattern and the staircase's position relative to the frame edges, suggesting a minor camera pan or rendering variance. No new objects, color changes, or structural alterations are visible.",
+        "uncertainty": "The measured displacements are small (2-11px) and sparse (3-4 matches out of 12 selected), with many unresolved matches. The changes are subtle and could be due to rendering artifacts, minor camera drift, or measurement noise rather than a deliberate scene change. The consistency between pairs is weak due to low match counts."
+      },
+      "augmented": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the upper-right colored shapes (peach and pink) shift horizontally to the right. The peach shape moves approximately 40-42 pixels right, and the pink shape shifts similarly. The rest of the scene (walls, floor, stairs) remains static. This consistent rightward displacement of the top-right elements across both intervals indicates a visible change in screen-space arrangement.",
+        "uncertainty": "The change is limited to the upper-right colored regions; other elements show no measurable displacement. The cause of this shift is unknown, and it may be due to camera motion, UI animation, or other unmeasured factors. The consistency across both pairs supports the observation, but the underlying mechanism remains uncertain."
+      },
+      "baseline_error": null,
+      "augmented_error": null,
+      "baseline_receipt_sha256": "d889dc29a4d7437592e6d54520affae1ae468940673c6a651fe8119cbed40326",
+      "augmented_receipt_sha256": "e2548de4b99cbeb5d8b6b310d0b5be04a12b662db1cc70039590fecbb22db6e7",
+      "global_motion_unchanged": true,
+      "accuracy": "unknown"
+    }
+  ]
+}

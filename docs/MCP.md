@@ -127,15 +127,19 @@ See [controlled and saved-game correspondence checks](../research/region-appeara
 `automatic_region_motion.appearance_sequences` also follows each selected original
 appearance through consecutive requested captures. Its `report` compares the
 unchanged original image and rectangle independently with each later image. It
-never uses the previous match as a new template. At most six following captures
-per source and twelve attempted pairs are shared in rounds across sources; these
-are additional to the existing first-pair measurements. No new observation or
+never uses the previous match as a new template. Without selected activity
+intervals, it retains the six-following-capture limit. When the existing activity
+selector supplies two intervals, `activity_bounded_appearance_sequence_v1` follows
+consecutive captures as far as their last image, within the requested 20-image
+window. Its `target` binds the complete activity source and last image identity.
+Both policies keep the same twelve attempted pairs shared in rounds across
+sources; these are additional to the existing first-pair measurements. No new observation or
 editable card is published. Results are also retained in automatic discovery's
 evidence archive.
 
 Each series retains its source plan, accepted count, attempted steps, stopping
 reason and `stopped_before` frame. Reasons distinguish requested-frame exhaustion,
-per-source/shared limits, unresolved appearance, source error, omitted capture and
+the activity horizon, per-source/shared limits, unresolved appearance, source error, omitted capture and
 geometry/epoch change. A failed match is the last attempted step; no later match
 is reacquired. A gap or limit is reported without inventing a measurement there.
 Independent later source observations can still be analyzed.

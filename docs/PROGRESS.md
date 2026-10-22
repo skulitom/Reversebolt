@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Activity-selected appearance horizon (2026-10-22): **35% unchanged**.
+Automatic regional traces can now reach the last image of the selected activity
+intervals within the existing twelve-match shared budget. The original template,
+source selection, matcher and stop-on-failure/gap behavior remain; the old
+six-step behavior remains when no activity source is selected. Target provenance
+binds the complete activity source and last image. Selected image/input references
+are checked before tracing.
+
+All 357 workspace test executions and strict workspace Clippy pass. Frozen saved
+Hyperbolica/Garden replays used ten/twelve attempts and now provide a matched
+region in both selected intervals, previously only one. All shared-prefix
+measurements and base evidence remain unchanged. Four activity calls changed
+both consistency flags from false without regional context to true with it;
+descriptions still contain unverified object/camera/static-scene claims. This
+proves improved evidence coverage and interpreter use, not accuracy or causal
+control. All 151 frozen source files and 37 inputs pass the audit. No game,
+new screenshot, input, memory operation or new object-observation call ran.
+Desktop publication remains unavailable after quarantine.
+[Method and results](../research/activity-horizon/README.md).
+
 Regional interpretation context (2026-10-22): **35% unchanged**.
 The automatic reader projects appearance traces onto the exact two activity
 intervals, preserving missing/failed results and original-image rectangles and

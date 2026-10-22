@@ -11,13 +11,16 @@ use serde::Serialize;
 use serde_json::json;
 
 pub const POLICY: &str = "immutable_appearance_sequence_v1";
+pub const ACTIVITY_POLICY: &str = reversebolt_core::appearance_activity::ACTIVITY_SEQUENCE_POLICY;
 pub const MAX_STEPS: usize = 6;
 pub const MAX_ATTEMPTS: usize = 12;
 pub const LIMITATION: &str = "Independent image matches to the original observed rectangle, never an updated template or persistent object identity. Stop on the first unresolved appearance, source error, missing capture or changed geometry/epoch; never resume across that gap. At most six following captures per source and twelve attempted pairs shared in rounds across selected sources. Displacements are approximate image pixels, not physical speed or causal effects. Capture bounds are not presentation times, and sampled keys do not prove delivery or absence of other input. Identical-looking replacements and background dominance can mislead. No interpolation, semantic label, memory correspondence or edit authority is created.";
+pub const ACTIVITY_LIMITATION: &str = "Independent image matches to the original observed rectangle, never an updated template or persistent object identity. Follow consecutive captures only as far as the last selected activity image, within the requested 20-image window and the same twelve attempted pairs shared in rounds across selected sources. Stop on the first unresolved appearance, source error, missing capture or changed geometry/epoch; never skip or resume across that gap. Budget exhaustion can leave selected intervals unmeasured. Displacements are approximate image pixels, not physical speed or causal effects. Capture bounds are not presentation times, and sampled keys do not prove delivery or absence of other input. Identical-looking replacements and background dominance can mislead. No interpolation, semantic label, memory correspondence or edit authority is created.";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Stop {
+    ActivityHorizonReached,
     EndOfRequestedFrames,
     StepLimit,
     AnalysisBudget,
@@ -54,12 +57,19 @@ pub struct Series {
     pub reason: String,
 }
 #[derive(Debug, Serialize)]
+pub struct ActivityTarget {
+    pub source_sha256: String,
+    pub last_frame_id: String,
+}
+#[derive(Debug, Serialize)]
 pub struct Report {
     pub policy: &'static str,
     pub appearance_policy: &'static str,
     pub frame_metadata_sha256: String,
     pub selection_sha256: String,
     pub source_sha256: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub target: Option<ActivityTarget>,
     pub maximum_steps_per_source: usize,
     pub maximum_attempted_pairs: usize,
     pub attempted_pairs: usize,
@@ -77,25 +87,79 @@ pub fn analyze(
     investigation: &str,
     frames: &[FrameRef],
     tracks: &[VisualTrack],
+    read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
+) -> Result<Report> {
+    analyze_inner(investigation, frames, tracks, read_image, None)
+}
+
+pub fn analyze_for_activity(
+    investigation: &str,
+    frames: &[FrameRef],
+    tracks: &[VisualTrack],
+    read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
+    source: &reversebolt_core::play_context::Source,
+) -> Result<Report> {
+    analyze_inner(investigation, frames, tracks, read_image, Some(source))
+}
+
+fn analyze_inner(
+    investigation: &str,
+    frames: &[FrameRef],
+    tracks: &[VisualTrack],
     mut read_image: impl FnMut(&FrameRef) -> Result<Vec<u8>>,
+    activity: Option<&reversebolt_core::play_context::Source>,
 ) -> Result<Report> {
     let selection = visual_regions::select(investigation, frames, tracks)?;
+    let last = activity
+        .map(|source| {
+            if source.investigation_id != investigation {
+                return Err("Activity belongs to another investigation.".into());
+            }
+            crate::appearance_activity::validate_source(source, frames)
+        })
+        .transpose()?;
+    let target = activity
+        .zip(last)
+        .map(|(source, last)| -> Result<_> {
+            Ok(ActivityTarget {
+                source_sha256: visual::digest(
+                    &serde_json::to_vec(source).map_err(|e| e.to_string())?,
+                ),
+                last_frame_id: frames[last].id.clone(),
+            })
+        })
+        .transpose()?;
+    let policy = if activity.is_some() {
+        ACTIVITY_POLICY
+    } else {
+        POLICY
+    };
+    let maximum_steps = if activity.is_some() {
+        frames.len() - 1
+    } else {
+        MAX_STEPS
+    };
     let selection_sha256 =
         visual::digest(&serde_json::to_vec(&selection).map_err(|e| e.to_string())?);
-    let source_sha256=visual::digest(&serde_json::to_vec(&json!({"policy":POLICY,"appearance_policy":region_appearance::POLICY,
-        "selection_sha256":selection_sha256,"maximum_steps":MAX_STEPS,"maximum_attempts":MAX_ATTEMPTS})).map_err(|e|e.to_string())?);
+    let mut binding = json!({"policy":policy,"appearance_policy":region_appearance::POLICY,
+        "selection_sha256":selection_sha256,"maximum_steps":maximum_steps,"maximum_attempts":MAX_ATTEMPTS});
+    if let Some(target) = &target {
+        binding["target"] = json!(target);
+    }
+    let source_sha256 = visual::digest(&serde_json::to_vec(&binding).map_err(|e| e.to_string())?);
     let starts = selection
         .regions
         .iter()
         .map(|p| frames.iter().position(|f| f.id == p.before_id).unwrap())
         .collect::<Vec<_>>();
     let mut report = Report {
-        policy: POLICY,
+        policy,
         appearance_policy: region_appearance::POLICY,
         frame_metadata_sha256: selection.frame_metadata_sha256,
         selection_sha256,
         source_sha256,
-        maximum_steps_per_source: MAX_STEPS,
+        target,
+        maximum_steps_per_source: maximum_steps,
         maximum_attempted_pairs: MAX_ATTEMPTS,
         attempted_pairs: 0,
         series: selection
@@ -110,12 +174,28 @@ pub fn analyze(
                 reason: String::new(),
             })
             .collect(),
-        limitation: LIMITATION,
+        limitation: if activity.is_some() {
+            ACTIVITY_LIMITATION
+        } else {
+            LIMITATION
+        },
     };
     let mut finished = vec![false; report.series.len()];
-    for round in 0..MAX_STEPS {
+    for round in 0..maximum_steps {
         for (index, series) in report.series.iter_mut().enumerate() {
             if finished[index] {
+                continue;
+            }
+            if let Some(last) = last
+                && starts[index] + round >= last
+            {
+                stop(
+                    series,
+                    Stop::ActivityHorizonReached,
+                    frames.get(starts[index] + round + 1),
+                    "No further capture is needed for the selected activity intervals.",
+                );
+                finished[index] = true;
                 continue;
             }
             let origin = &frames[starts[index]];
@@ -163,7 +243,7 @@ pub fn analyze(
             };
             let exposure = action_patterns::exposure(previous, next)
                 .unwrap_or_else(|e| Exposure::Unknown(e.into()));
-            let bound=visual::digest(&serde_json::to_vec(&json!({"policy":POLICY,"appearance_policy":region_appearance::POLICY,
+            let bound=visual::digest(&serde_json::to_vec(&json!({"policy":policy,"appearance_policy":region_appearance::POLICY,
                 "source_sha256":series.source.source_sha256,"frames":&frames[starts[index]..=starts[index]+round+1]})).map_err(|e|e.to_string())?);
             let measured = (|| -> Result<MatchReport> {
                 let mut checked = |frame: &FrameRef| -> Result<Vec<u8>> {
@@ -240,8 +320,15 @@ pub fn analyze(
         if finished[index] {
             continue;
         }
-        let next = frames.get(starts[index] + MAX_STEPS + 1);
-        if next.is_some() {
+        let next = frames.get(starts[index] + maximum_steps + 1);
+        if let Some(last) = last {
+            stop(
+                series,
+                Stop::ActivityHorizonReached,
+                frames.get(last + 1),
+                "No further capture is needed for the selected activity intervals.",
+            );
+        } else if next.is_some() {
             stop(
                 series,
                 Stop::StepLimit,

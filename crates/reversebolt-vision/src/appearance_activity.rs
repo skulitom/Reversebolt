@@ -6,22 +6,11 @@ use reversebolt_core::{
     visual::{self, FrameRef},
 };
 
-pub fn summarize(
-    report: &appearance_sequence::Report,
-    source: &Source,
-    frames: &[FrameRef],
-) -> Result<a::Summary> {
+pub(crate) fn validate_source(source: &Source, frames: &[FrameRef]) -> Result<usize> {
     source.validate()?;
     let hash = visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
-    if report.policy != a::SEQUENCE_POLICY
-        || report.appearance_policy != a::MATCHER_POLICY
-        || report.frame_metadata_sha256 != hash
-        || source.frame_metadata_sha256 != hash
-        || report.maximum_steps_per_source != appearance_sequence::MAX_STEPS
-        || report.maximum_attempted_pairs != appearance_sequence::MAX_ATTEMPTS
-        || report.attempted_pairs > appearance_sequence::MAX_ATTEMPTS
-    {
-        return Err("Appearance sequence differs from the activity's retained evidence.".into());
+    if !(2..=20).contains(&frames.len()) || source.frame_metadata_sha256 != hash {
+        return Err("Activity frame metadata changed.".into());
     }
     for reference in source.frames() {
         let frame = frames
@@ -35,6 +24,52 @@ pub fn summarize(
         {
             return Err("Selected image metadata changed.".into());
         }
+    }
+    for pair in &source.pairs {
+        let before = frames.iter().position(|f| f.id == pair.before.id).unwrap();
+        let after = frames.iter().position(|f| f.id == pair.after.id).unwrap();
+        if before + 1 != after
+            || visual::digest(
+                &serde_json::to_vec(&frames[after].input_context).map_err(|e| e.to_string())?,
+            ) != pair.input_sha256
+            || reversebolt_core::action_patterns::exposure(&frames[before], &frames[after])
+                != Ok(reversebolt_core::action_patterns::Exposure::Key(source.key))
+        {
+            return Err("Selected action input differs from its retained interval.".into());
+        }
+    }
+    Ok(frames
+        .iter()
+        .position(|f| f.id == source.pairs[1].after.id)
+        .unwrap())
+}
+
+pub fn summarize(
+    report: &appearance_sequence::Report,
+    source: &Source,
+    frames: &[FrameRef],
+) -> Result<a::Summary> {
+    let last = validate_source(source, frames)?;
+    let hash = source.frame_metadata_sha256.clone();
+    let bound_source = visual::digest(&serde_json::to_vec(source).map_err(|e| e.to_string())?);
+    let valid_policy = match (&report.target, report.policy) {
+        (None, a::SEQUENCE_POLICY) => {
+            report.maximum_steps_per_source == appearance_sequence::MAX_STEPS
+        }
+        (Some(target), a::ACTIVITY_SEQUENCE_POLICY) => {
+            report.maximum_steps_per_source == frames.len() - 1
+                && target.source_sha256 == bound_source
+                && target.last_frame_id == frames[last].id
+        }
+        _ => false,
+    };
+    if !valid_policy
+        || report.appearance_policy != a::MATCHER_POLICY
+        || report.frame_metadata_sha256 != hash
+        || report.maximum_attempted_pairs != appearance_sequence::MAX_ATTEMPTS
+        || report.attempted_pairs > appearance_sequence::MAX_ATTEMPTS
+    {
+        return Err("Appearance sequence differs from the activity's retained evidence.".into());
     }
     let mut appearances = vec![];
     for series in &report.series {
