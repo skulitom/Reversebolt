@@ -1,6 +1,14 @@
 # Windows security detection investigation
 
-**Latest status, 2026-10-22:** a second published build was detected after a
+**Latest status, 2026-10-22:** Artem explicitly authorized allowing Reversebolt
+locally. The latest source was built as `0.1.0-20261022-233909`; a Windows Defender
+file exclusion was added for that release's `Reversebolt.exe` only after checking
+its SHA-256. The application is running on the main desktop and its Controls
+screen was verified. Antivirus, real-time protection and tamper protection remain
+enabled. No upload was made. The classification remains unexplained; this is an
+explicit local allowance, not vendor clearance. [Scope and evidence](LOCAL-ALLOWANCE-2026-10-22.md).
+
+**Earlier status, 2026-10-22:** a second published build was detected after a
 native discovery run. Windows quarantined it and closed the desktop preview;
 hashing its build-output copy is also refused. No replacement was published.
 The [follow-up review](FOLLOWUP-2026-10-22.md) and local text-only packet retain
@@ -58,7 +66,7 @@ above was a separate, explicit on-demand scan of one generated artifact.
 
 Microsoft's documented developer-review route requires submitting the file to
 its analysis service. That external submission is prepared but not authorized
-or performed. The current desktop preview is quarantined and progress remains
+or performed. At packet preparation the desktop preview was quarantined; progress remains
 **35%**. The full goal is still unfulfilled; resolving native validation remains
 necessary before claiming new verified gameplay controls or generalization.
 

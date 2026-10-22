@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Desktop restored to availability with an authorized local allowance (2026-10-22):
+**35% unchanged**. Release `0.1.0-20261022-233909` is running on the main desktop
+and the existing shortcut opens it. A file-specific Defender exclusion was added
+after Artem explicitly authorized allowing Reversebolt. Antivirus, real-time
+protection and tamper protection remain enabled. No submission was made and the
+behavioral classification remains unexplained. No game was attached in this
+launch check. [Scope and verification](../research/security-review/LOCAL-ALLOWANCE-2026-10-22.md).
+
+The runtime now refuses incomplete or oversized module inventories instead of
+treating every enumeration error as the end of the list. This prevents partial
+snapshots from claiming helper absence or runtime-provider uniqueness. All
+**445 workspace tests**, strict all-target Clippy and formatting pass; the three
+new tests use generated enumeration results. This corrects reliability but does
+not prove the cause or resolution of the Defender detection.
+[Implementation and limits](../research/module-inventory/README.md).
+
 Automatic memory follow-up selection (2026-10-22): **35% unchanged**.
 Initial automatic broad observation can now select up to four retained memory
 patterns for one fresh check without manual group selection. It requires repeated
