@@ -20,6 +20,10 @@ six cited hypotheses, with no target access or new images. These are unverified
 questions, not an independent-game acceptance pass. All **449 workspace tests**,
 strict all-target Clippy and formatting pass. No game-specific labels, offsets
 or layouts were added. [Native failure and replay evidence](../research/independent-viewfinder/README.md).
+Preview `0.1.0-20261022-235934` is published and ready through the desktop
+shortcut, with an exact-file Windows allowance. The user's connected desktop
+session was preserved on its prior version; the update takes effect on the next
+close/reopen. The revised discovery still needs a new native effect test.
 
 Desktop restored to availability with an authorized local allowance (2026-10-22):
 **35% unchanged**. Release `0.1.0-20261022-233909` is running on the main desktop

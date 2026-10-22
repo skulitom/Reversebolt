@@ -46,3 +46,21 @@ full-goal capability estimate remains **35%**.
 
 Microsoft documents exact-file exclusions in
 [Add-MpPreference](https://learn.microsoft.com/en-us/powershell/module/defender/add-mppreference?view=windowsserver2025-ps).
+
+## Subsequent published update
+
+After the independent Viewfinder test exposed a large-catalog timeout, source
+`1cd8e03` was published as `0.1.0-20261022-235934`. The standing authorization to
+allow Reversebolt was applied to this release's exact `Reversebolt.exe` path
+using the same reviewed helper, after checking SHA-256
+`53d7944b1d622962d3a73a683d0fd5b5a492c7928e9c7a6020e99fcbbfab0c94`.
+`test-results/allow-desktop-20261022-235934.json` confirms the file exclusion and
+the same enabled protection settings at 2026-10-22 23:00:13 UTC (23 October locally).
+
+The user's existing desktop session was attached to an application, so its
+process 98332 and original release were left running. The desktop launcher now
+points to the new release for the next close/reopen. Both exact executable paths
+are allowed while that earlier session remains in use; no folder, process-wide
+or threat-wide rule was introduced. The new release passed binary-hash and
+launcher-availability checks. Its revised discovery has been exercised against
+saved evidence, not yet in a new native game run.
