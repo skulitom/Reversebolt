@@ -1128,6 +1128,37 @@ and the saved trial assessment. It neither validates a gameplay name nor grants
 edit authority. No target, input, capture or model is used by this read. See the
 [policy and retained regression](../research/trial-motion/README.md).
 
+Alternatively, supply `appearance: {baseline_sha256, region: {x, y, width, height}}`
+to `read_runtime_test` for `trial_appearance_comparison`. The rectangle must refer
+to baseline condition 0 frame 0, with its exact SHA-256 and integer original-image
+coordinates. Width/height must be at least 32 pixels and area at most four million.
+Choose it using the retained baseline image; coordinates from a discovery image
+cannot be silently reused. A stale selection or unavailable baseline is an error.
+
+The shared analyzer independently matches that unchanged original template to
+each condition's images, including each condition's initial frame. It performs
+at most eighteen template checks and stops within a condition at its first
+unresolved image. Each condition is a separate branch, not continuous identity
+across intervention gaps. Other conditions remain independently readable. Image,
+input, chronology and monitor checks use the same streaming verifier as the
+global comparison. Failed matches and skipped frames are explicit, never zero.
+
+Pair/action `displacement` uses normalized 512×288 image pixels, while pair
+`original_pixel_displacement` uses the original image dimensions. Action indices
+are compared separately. Idle displacement must be within one normalized pixel
+per axis; every baseline action must reach two. A changed action must differ by
+at least three, recovery must agree within one, and the two-pixel gap remains
+inconclusive. All four actions must agree for the descriptive change-and-return
+status. Full matching diagnostics, selected-region/test digests and errors remain
+in the numeric response; PNGs are returned only when separately requested.
+
+The optional region can be chosen retrospectively, which can bias the result.
+Identical replacements, background matches and camera movement can also confound
+it. It does not establish gameplay meaning, physical speed, causality or complete
+recovery, and changes no saved assessment or write permission. It does not run a
+model or interact with the target. Omitting `appearance` retains the existing
+read behavior. See [regional comparison evidence](../research/trial-appearance/README.md).
+
 Only one test can be active; the limit is eight saved tests **per investigation**,
 128 retained records per data directory and 15 minutes per active test. Closed
 history is not evicted. Saved IDs cannot move to another investigation. A full

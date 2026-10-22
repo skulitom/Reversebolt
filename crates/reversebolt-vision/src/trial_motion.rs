@@ -61,10 +61,10 @@ pub struct Report {
     pub limitation: &'static str,
 }
 
-fn distance(a: [i32; 2], b: [i32; 2]) -> i32 {
+pub(crate) fn distance(a: [i32; 2], b: [i32; 2]) -> i32 {
     (a[0] - b[0]).abs().max((a[1] - b[1]).abs())
 }
-fn changed(a: [i32; 2], b: [i32; 2]) -> Option<bool> {
+pub(crate) fn changed(a: [i32; 2], b: [i32; 2]) -> Option<bool> {
     match distance(a, b) {
         0..=1 => Some(false),
         2 => None, // Leave a gap between agreement and a detected difference.
@@ -162,114 +162,44 @@ fn verdict(conditions: &[Condition; 3], actions: &[Action]) -> (&'static str, &'
 /// checked here too, so the file replay and engine use the same evidence gates.
 pub fn analyze(
     test: &Test,
-    mut read_image: impl FnMut(usize, usize) -> Result<Vec<u8>>,
-    mut read_input: impl FnMut(usize, usize) -> Result<Option<Window>>,
+    read_image: impl FnMut(usize, usize) -> Result<Vec<u8>>,
+    read_input: impl FnMut(usize, usize) -> Result<Option<Window>>,
 ) -> Result<Report> {
-    test.validate_plan()?;
-    if test.conditions.iter().any(|c| c.frames.len() > 6) {
-        return Err("Trial motion supports at most six frames per condition.".into());
-    }
-    for (c, condition) in test.conditions.iter().enumerate() {
-        for (i, frame) in condition.frames.iter().enumerate() {
-            if frame.path != format!("{}/{c}-{i}.png", test.id)
-                || frame.input_path != format!("{}/{c}-{i}.input.json", test.id)
-                || [&frame.sha256, &frame.input_sha256]
-                    .iter()
-                    .any(|h| h.len() != 64 || !h.bytes().all(|b| b.is_ascii_hexdigit()))
-            {
-                return Err("Trial motion requires canonical retained evidence references.".into());
-            }
-        }
-    }
-    let reference_size = test.conditions[0]
-        .frames
-        .first()
-        .map(|f| [f.width, f.height]);
-    let mut preceding_frame: Option<&reversebolt_core::runtime_tests::Frame> = None;
     let mut conditions = ["baseline", "changed", "recovered"].map(|name| Condition {
         name,
         pairs: vec![],
     });
-    for (c, condition) in test.conditions.iter().enumerate() {
-        let mut previous: Option<Result<Vec<u8>>> = None;
-        for (i, frame) in condition.frames.iter().enumerate() {
-            let image = read_image(c, i).and_then(|bytes| {
-                if visual::digest(&bytes) != frame.sha256 {
-                    return Err("Image checksum changed.".into());
-                }
-                if preceding_frame.is_some_and(|p| {
-                    p.interval.end_us >= frame.interval.begin_us
-                        || p.completed_unix_ms > frame.started_unix_ms
-                }) {
-                    return Err("Condition chronology changed.".into());
-                }
-                Ok(bytes)
-            });
-            preceding_frame = Some(frame);
-            if let Some(prior) = previous.as_ref() {
-                let before = &condition.frames[i - 1];
-                let motion = (|| -> Result<Motion> {
-                    if Some([frame.width, frame.height]) != reference_size
-                        || [before.width, before.height] != [frame.width, frame.height]
-                        || before.interval.clock_id != test.investigation
-                        || frame.interval.clock_id != test.investigation
-                        || before.interval.end_us >= frame.interval.begin_us
-                        || before.completed_unix_ms > frame.started_unix_ms
-                    {
-                        return Err("Image geometry, clock or chronology changed.".into());
-                    }
-                    let report = patch_motion::measure(
-                        prior.as_ref().map_err(Clone::clone)?,
-                        image.as_ref().map_err(Clone::clone)?,
-                    )?;
-                    if report.source_dimensions != [frame.width, frame.height] {
-                        return Err("PNG dimensions disagree with the retained frame.".into());
-                    }
-                    Ok(Motion {
-                        selected: report.selection.selected_patches,
-                        matched: report.matched_patches,
-                        matched_cells: report.matched_cells,
-                        displacement: report.consensus.as_ref().map(|c| c.displacement),
-                        supporting_patches: report.consensus.as_ref().map(|c| c.supporting_patches),
-                        supporting_cells: report.consensus.as_ref().map(|c| c.supporting_cells),
-                    })
-                })();
-                let input = read_input(c, i).and_then(|window| {
-                    if visual::digest(&serde_json::to_vec(&window).map_err(|e| e.to_string())?)
-                        != frame.input_sha256
-                    {
-                        return Err("Sampled-input checksum changed.".into());
-                    }
-                    let witness = InputWitness::check(
-                        window.as_ref(),
-                        i.checked_sub(2).and_then(|a| test.actions.get(a)),
-                        &frame.interval,
-                        before.interval.end_us,
-                    );
-                    if serde_json::to_value(&witness).map_err(|e| e.to_string())?
-                        != serde_json::to_value(&frame.input).map_err(|e| e.to_string())?
-                    {
-                        return Err(
-                            "Sampled-input summary differs from the retained window.".into()
-                        );
-                    }
-                    Ok(witness)
-                });
-                conditions[c].pairs.push(Pair {
-                    before_frame: i - 1,
-                    after_frame: i,
-                    before_sha256: before.sha256.clone(),
-                    after_sha256: frame.sha256.clone(),
-                    input_sha256: frame.input_sha256.clone(),
-                    measurement_error: motion.as_ref().err().map(|e| e.chars().take(512).collect()),
-                    motion: motion.ok(),
-                    input_error: input.as_ref().err().map(|e| e.chars().take(512).collect()),
-                    input: input.ok(),
-                });
+    crate::trial_evidence::visit(test, read_image, read_input, |pair| {
+        let motion = pair.images.and_then(|(a, b)| -> Result<Motion> {
+            let report = patch_motion::measure(a, b)?;
+            if report.source_dimensions != [pair.after.width, pair.after.height] {
+                return Err("PNG dimensions disagree with the retained frame.".into());
             }
-            previous = Some(image);
-        }
-    }
+            Ok(Motion {
+                selected: report.selection.selected_patches,
+                matched: report.matched_patches,
+                matched_cells: report.matched_cells,
+                displacement: report.consensus.as_ref().map(|c| c.displacement),
+                supporting_patches: report.consensus.as_ref().map(|c| c.supporting_patches),
+                supporting_cells: report.consensus.as_ref().map(|c| c.supporting_cells),
+            })
+        });
+        conditions[pair.condition].pairs.push(Pair {
+            before_frame: pair.index - 1,
+            after_frame: pair.index,
+            before_sha256: pair.before.sha256.clone(),
+            after_sha256: pair.after.sha256.clone(),
+            input_sha256: pair.after.input_sha256.clone(),
+            measurement_error: motion.as_ref().err().map(|e| e.chars().take(512).collect()),
+            motion: motion.ok(),
+            input_error: pair
+                .input
+                .as_ref()
+                .err()
+                .map(|e| e.chars().take(512).collect()),
+            input: pair.input.ok(),
+        });
+    })?;
     let actions = test
         .actions
         .iter()

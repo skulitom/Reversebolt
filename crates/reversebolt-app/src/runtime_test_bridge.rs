@@ -240,6 +240,19 @@ impl Session {
                     )?)
                     .map_err(|e| e.to_string())?;
             }
+            if let Some(selection) = c.args.get("appearance") {
+                let selection = serde_json::from_value(selection.clone()).map_err(|_| {
+                    "Supply the baseline frame 0 SHA-256 and an integer image region.".to_string()
+                })?;
+                result["trial_appearance_comparison"] =
+                    serde_json::to_value(reversebolt_vision::trial_appearance::analyze(
+                        &test,
+                        selection,
+                        |condition, frame| engine.runtime_tests.read_image(&test, condition, frame),
+                        |condition, frame| engine.runtime_tests.read_input(&test, condition, frame),
+                    )?)
+                    .map_err(|e| e.to_string())?;
+            }
             if c.args.get("condition").is_some() || c.args.get("frame").is_some() {
                 let condition = c.args["condition"]
                     .as_u64()

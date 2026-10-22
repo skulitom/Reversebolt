@@ -17,8 +17,11 @@ fn bounded(path: &Path, max: u64) -> Result<Vec<u8>, String> {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 2 {
-        return Err("usage: trial-motion-replay TEST_JSON NEW_OUTPUT_JSON".into());
+    if !(2..=3).contains(&args.len()) {
+        return Err(
+            "usage: trial-motion-replay TEST_JSON NEW_OUTPUT_JSON [APPEARANCE_SELECTION_JSON]"
+                .into(),
+        );
     }
     let path = Path::new(&args[0]);
     let bytes = bounded(path, 512 * 1024)?;
@@ -38,8 +41,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .map_err(|e| e.to_string())
         },
     )?;
-    let output = json!({"record_file_sha256":visual::digest(&bytes),"original_assessment":test.assessment,
+    let mut output = json!({"record_file_sha256":visual::digest(&bytes),"original_assessment":test.assessment,
         "trial_motion_comparison":motion,"target_access":false,"new_captures":0,"input_sent":false,"field_writes":0,"model_calls":0});
+    if let Some(selection) = args.get(2) {
+        let selection = serde_json::from_slice(&bounded(Path::new(selection), 65536)?)?;
+        let report = reversebolt_vision::trial_appearance::analyze(
+            &test,
+            selection,
+            |c, i| visual::image_bytes(&folder.join(format!("{c}-{i}.png"))),
+            |c, i| {
+                serde_json::from_slice(&bounded(
+                    &folder.join(format!("{c}-{i}.input.json")),
+                    1024 * 1024,
+                )?)
+                .map_err(|e| e.to_string())
+            },
+        );
+        output["trial_appearance_comparison"] = match report {
+            Ok(report) => json!({"report":report,"error":null}),
+            Err(error) => json!({"report":null,"error":error}),
+        };
+    }
     let file = fs::OpenOptions::new()
         .write(true)
         .create_new(true)

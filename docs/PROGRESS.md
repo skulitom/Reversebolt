@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Regional trial comparison (2026-10-22): **35% unchanged**.
+The shared retained-test reader and MCP can compare one exact baseline appearance
+across baseline/changed/recovered images. Each condition independently uses the
+immutable original template and stops on its first unresolved frame. At most
+eighteen checks produce separate action-index displacements, matching diagnostics,
+input failures and provenance. Global and regional comparisons share streaming
+source/input verification. Region selection is caller-supplied and retrospective;
+no saved assessment, desktop card or edit authority is promoted.
+
+All 358 workspace test executions and strict Clippy pass. The dispatcher/history
+tests recover known local-subject displacements where global support is missing,
+and reject failed recovery, idle movement, mixed monitor generations, stale
+selection, corrupt input/images, disappearance and incomplete evidence. Frozen
+file replays of three older OwnedPathFixture records retain every original global
+report and scalar assessment; the full striped record remains ambiguous, one
+partial record incomplete and one empty record lacks a baseline. All 153 frozen
+sources and 49 bound inputs pass audit. No model, game, new capture, input or
+memory operation ran. Real-game regional intervention evidence and automatic
+meaningful trial-region selection remain absent; desktop publication remains
+unavailable after quarantine.
+[Method and results](../research/trial-appearance/README.md).
+
 Activity-selected appearance horizon (2026-10-22): **35% unchanged**.
 Automatic regional traces can now reach the last image of the selected activity
 intervals within the existing twelve-match shared budget. The original template,

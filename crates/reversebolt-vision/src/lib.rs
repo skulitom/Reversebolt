@@ -8,6 +8,8 @@ pub mod patch_motion;
 pub mod region_appearance;
 pub mod region_motion;
 pub mod response;
+pub mod trial_appearance;
+mod trial_evidence;
 pub mod trial_motion;
 
 use geometry::{Projection, Quad, bounds, crop, distance, ordered, overlap, rectangle, resize};

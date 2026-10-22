@@ -53,8 +53,7 @@ fn prepare(t: &Test) -> Command {
     }
 }
 
-#[test]
-fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
+fn motion_fixture(local: bool) -> (std::path::PathBuf, std::path::PathBuf, Engine, Test) {
     use reversebolt_core::{
         inputs::{Buffer, Focus, Poll},
         visual::{CaptureInterval, digest},
@@ -65,7 +64,7 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
         .join(format!("reversebolt-trial-motion-{}", id()));
     std::fs::create_dir(&directory).unwrap();
     let state_path = directory.join("state.json");
-    let mut engine = Engine::load(state_path.clone()).unwrap();
+    let engine = Engine::load(state_path.clone()).unwrap();
     let mut test = saved(&id());
     test.actions
         .iter_mut()
@@ -84,13 +83,28 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
     for c in 0..3 {
         for i in 0..6 {
             let shift = if c != 1 && i >= 2 && i % 2 == 0 { 8 } else { 0 };
-            let image = image::GrayImage::from_fn(256, 144, |x, y| {
-                if x >= shift {
-                    *texture.get_pixel(x - shift, y)
-                } else {
-                    image::Luma([0])
-                }
-            });
+            let image = if local {
+                let mut background = image::GrayImage::from_fn(512, 288, |x, y| {
+                    let mut n = (x + y * 512)
+                        .wrapping_add(811)
+                        .wrapping_mul(747796405)
+                        .wrapping_add(2891336453);
+                    n = ((n >> ((n >> 28) + 4)) ^ n).wrapping_mul(277803737);
+                    image::Luma([32 + (((n >> 22) ^ n) % 128) as u8])
+                });
+                let subject = image::GrayImage::from_fn(64, 64, |x, y| *texture.get_pixel(x, y));
+                image::imageops::replace(&mut background, &subject, i64::from(64 + shift * 2), 80);
+                background
+            } else {
+                image::GrayImage::from_fn(256, 144, |x, y| {
+                    if x >= shift {
+                        *texture.get_pixel(x - shift, y)
+                    } else {
+                        image::Luma([0])
+                    }
+                })
+            };
+            let dimensions = image.dimensions();
             let mut png = std::io::Cursor::new(vec![]);
             image.write_to(&mut png, image::ImageFormat::Png).unwrap();
             let bytes = png.into_inner();
@@ -131,8 +145,8 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
                 input_path: format!("{}/{c}-{i}.input.json", test.id),
                 sha256: digest(&bytes),
                 input_sha256: digest(&input),
-                width: 256,
-                height: 144,
+                width: dimensions.0,
+                height: dimensions.1,
                 interval,
                 started_unix_ms: u128::from(start / 1000),
                 completed_unix_ms: u128::from(start / 1000 + 20),
@@ -142,13 +156,20 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
             });
         }
     }
+    (directory, state_path, engine, test)
+}
+
+#[test]
+fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
+    let (directory, state_path, mut engine, test) = motion_fixture(false);
+    let folder = directory.join("runtime-tests").join(&test.id);
     engine.runtime_tests.record(test.clone()).unwrap();
     let published = Arc::new(RwLock::new(engine.view.clone()));
     let mut session = Session::new(Arc::new(AtomicBool::new(false)));
     let request = Command {
         action: "read_runtime_test".into(),
         source: "agent".into(),
-        args: json!({"test_id":test.id,"include_motion":true}),
+        args: json!({"test_id":test.id,"include_motion":true,"appearance":{"baseline_sha256":test.conditions[0].frames[0].sha256,"region":{"x":64,"y":40,"width":64,"height":64}}}),
     };
     let read = session
         .command(&mut engine, &request, &directory, &published)
@@ -167,6 +188,11 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
             json!([[x, 0], [0, 0], [x, 0]])
         );
     }
+    assert_eq!(
+        read["trial_appearance_comparison"]["status"],
+        "appearance_displacement_changed_and_returned"
+    );
+    assert_eq!(read["trial_appearance_comparison"]["attempted_frames"], 18);
     checkpoint(&mut engine, &published).unwrap();
     drop(engine);
     let mut engine = Engine::load(state_path).unwrap();
@@ -186,6 +212,10 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
         bad_input["trial_motion_comparison"]["status"],
         "unavailable_evidence"
     );
+    assert_eq!(
+        bad_input["trial_appearance_comparison"]["status"],
+        "unavailable_evidence"
+    );
     assert!(
         bad_input["trial_motion_comparison"]["conditions"][1]["pairs"][1]["input_error"]
             .is_string()
@@ -199,6 +229,10 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
         bad_image["trial_motion_comparison"]["status"],
         "unavailable_evidence"
     );
+    assert_eq!(
+        bad_image["trial_appearance_comparison"]["status"],
+        "unavailable_evidence"
+    );
     assert!(bad_image["trial_motion_comparison"]["conditions"][2]["pairs"][1]["motion"].is_null());
     assert!(bad_image["trial_motion_comparison"]["conditions"][2]["pairs"][2]["motion"].is_null());
     assert!(
@@ -207,6 +241,7 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
     assert_eq!(bad_image["test"], json!(test));
     let mut light = request.clone();
     light.args["include_motion"] = json!(false);
+    light.args.as_object_mut().unwrap().remove("appearance");
     assert!(
         session
             .command(&mut engine, &light, &directory, &published)
@@ -221,6 +256,185 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
             .unwrap_err()
             .contains("true or false")
     );
+    drop(engine);
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn local_appearance_comparison_distinguishes_small_subject_from_static_background() {
+    use reversebolt_core::{visual, visual_regions::Region};
+    use reversebolt_vision::trial_appearance::{self, Selection};
+    let (directory, _, mut engine, test) = motion_fixture(true);
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let selection = Selection {
+        baseline_sha256: test.conditions[0].frames[0].sha256.clone(),
+        region: Region {
+            x: 64,
+            y: 80,
+            width: 64,
+            height: 64,
+        },
+    };
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let request = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id,"include_motion":true,"appearance":selection}),
+    };
+    let result = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(
+        result["trial_motion_comparison"]["status"],
+        "insufficient_support"
+    );
+    assert_eq!(
+        result["trial_appearance_comparison"]["status"],
+        "appearance_displacement_changed_and_returned"
+    );
+    assert_eq!(result["test"], json!(test));
+    assert!(result.get("png_base64").is_none());
+    for i in 0..4 {
+        let x = if i % 2 == 0 { 16 } else { -16 };
+        assert_eq!(
+            result["trial_appearance_comparison"]["actions"][i]["displacement"],
+            json!([[x, 0], [0, 0], [x, 0]])
+        );
+        assert!(
+            result["trial_motion_comparison"]["actions"][i]["displacement"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|d| d.is_null() || *d == json!([0, 0]))
+        );
+    }
+    let mut bad = selection.clone();
+    bad.baseline_sha256 = "a".repeat(64);
+    assert!(
+        trial_appearance::analyze(
+            &test,
+            bad,
+            |_, _| panic!("stale selection must not read"),
+            |_, _| panic!("stale selection must not read")
+        )
+        .is_err()
+    );
+
+    // One failed recovery action must not be pooled with the other three.
+    let baseline = engine.runtime_tests.read_image(&test, 0, 0).unwrap();
+    let mut divergent = test.clone();
+    divergent.conditions[2].frames[2].sha256 = visual::digest(&baseline);
+    let failed_return = trial_appearance::analyze(
+        &divergent,
+        selection.clone(),
+        |c, i| {
+            if c == 2 && i == 2 {
+                Ok(baseline.clone())
+            } else {
+                engine.runtime_tests.read_image(&test, c, i)
+            }
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(failed_return.status, "mixed_appearance_displacement");
+    assert_eq!(failed_return.actions[0].returned, Some(false));
+
+    // A moving idle interval is a confound even when later actions can be matched.
+    let displaced = engine.runtime_tests.read_image(&test, 0, 2).unwrap();
+    let mut idle = test.clone();
+    idle.conditions[0].frames[1].sha256 = visual::digest(&displaced);
+    let idle_motion = trial_appearance::analyze(
+        &idle,
+        selection.clone(),
+        |c, i| {
+            if c == 0 && i == 1 {
+                Ok(displaced.clone())
+            } else {
+                engine.runtime_tests.read_image(&test, c, i)
+            }
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(idle_motion.status, "idle_displacement");
+
+    // Valid windows from different monitor generations must not be pooled.
+    let mut restarted = test.clone();
+    let mut windows = (0..3)
+        .map(|c| {
+            (0..6)
+                .map(|i| engine.runtime_tests.read_input(&test, c, i).unwrap())
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    for (i, window) in windows[1].iter_mut().enumerate().skip(1) {
+        window.as_mut().unwrap().generation = "different-monitor".into();
+        let before_end = restarted.conditions[1].frames[i - 1].interval.end_us;
+        let frame = &mut restarted.conditions[1].frames[i];
+        frame.input_sha256 = visual::digest(&serde_json::to_vec(&window).unwrap());
+        frame.input = InputWitness::check(
+            window.as_ref(),
+            i.checked_sub(2).and_then(|a| test.actions.get(a)),
+            &frame.interval,
+            before_end,
+        );
+        assert!(frame.input.matches);
+    }
+    let mixed_monitors = trial_appearance::analyze(
+        &restarted,
+        selection.clone(),
+        |c, i| engine.runtime_tests.read_image(&test, c, i),
+        |c, i| Ok(windows[c][i].clone()),
+    )
+    .unwrap();
+    assert_eq!(mixed_monitors.status, "input_mismatch");
+
+    // Erasing the subject once must stop this condition, even when it reappears.
+    let blank = image::GrayImage::from_pixel(512, 288, image::Luma([20]));
+    let mut output = std::io::Cursor::new(vec![]);
+    blank
+        .write_to(&mut output, image::ImageFormat::Png)
+        .unwrap();
+    let missing = output.into_inner();
+    let mut interrupted = test.clone();
+    interrupted.conditions[1].frames[2].sha256 = visual::digest(&missing);
+    let failed_match = trial_appearance::analyze(
+        &interrupted,
+        selection.clone(),
+        |c, i| {
+            if c == 1 && i == 2 {
+                Ok(missing.clone())
+            } else {
+                engine.runtime_tests.read_image(&test, c, i)
+            }
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(failed_match.status, "unresolved_appearance");
+    assert_eq!(failed_match.attempted_frames, 15);
+    assert!(
+        failed_match.conditions[1].frames[3..]
+            .iter()
+            .all(|f| f.stopped && f.measurement.is_none())
+    );
+    assert_eq!(
+        failed_match.conditions[2].pairs[1].displacement,
+        Some([16, 0])
+    );
+
+    let mut incomplete = test.clone();
+    incomplete.conditions[2].frames.pop();
+    let partial = trial_appearance::analyze(
+        &incomplete,
+        selection,
+        |c, i| engine.runtime_tests.read_image(&test, c, i),
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(partial.status, "incomplete");
     drop(engine);
     std::fs::remove_dir_all(directory).unwrap();
 }

@@ -149,6 +149,11 @@ budget. Both exposed saved-game cases consequently supply a regional measurement
 for each interval; augmented interpretations flag a repeated visible change.
 Object meaning and causal control remain unverified. See [activity horizon
 results](research/activity-horizon/README.md).
+Agents can also compare one selected baseline appearance across a retained edit
+trial's original, changed and recovered conditions. The bounded comparison keeps
+the original template, checks each action separately and stops on unresolved
+matches. It remains a retrospective image observation, not a verified gameplay
+effect. See [regional trial comparisons](research/trial-appearance/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,
