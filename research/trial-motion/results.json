@@ -1,0 +1,91 @@
+{
+  "artifact_root": "test-results\\trial-motion-v1",
+  "frozen_sha256": "e570f75401df455df383430e15916189a4676f9e06e512f4b4e93d663ef16d15",
+  "source_files_verified": 137,
+  "original_files_unchanged": 43,
+  "results": [
+    {
+      "test_id": "02c71c32-0047-407d-82cd-61b227745943",
+      "provenance": "OwnedPathFixture; not an independent game",
+      "frames": [
+        0,
+        0,
+        0
+      ],
+      "original_assessment": null,
+      "motion_status": "incomplete",
+      "measurement_errors": 0,
+      "input_errors": 0,
+      "selected": [],
+      "consensus_pairs": 0,
+      "output_sha256": "5799e0133be7db2ed2280a5f55bca7cb6e92a790bbd673843e3a5d00e164acf9",
+      "seconds": 0.0779999999795109
+    },
+    {
+      "test_id": "080b5643-5718-494f-9ed6-751bf8059402",
+      "provenance": "OwnedPathFixture; not an independent game",
+      "frames": [
+        6,
+        6,
+        6
+      ],
+      "original_assessment": {
+        "status": "suppression_observed",
+        "reason": "Less rendered response was observed after the edit, and response returned after recovery.",
+        "medians": [
+          136.84459459459458,
+          0.0,
+          131.80574324324323
+        ],
+        "limitation": "A comparison of rendered response within these observations. Windows key samples are not proof of delivered game actions. Screen changes do not measure physical speed or identify a gameplay property; unobserved and downstream effects remain unknown."
+      },
+      "motion_status": "insufficient_support",
+      "measurement_errors": 0,
+      "input_errors": 0,
+      "selected": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "consensus_pairs": 0,
+      "output_sha256": "b258da6861f98ffabe4237c04789e53d22eb88241332d9c42e9a35f752e5a261",
+      "seconds": 0.21900000001187436
+    },
+    {
+      "test_id": "517f5cdc-a4d2-4b48-8091-218f249451b9",
+      "provenance": "OwnedPathFixture; not an independent game",
+      "frames": [
+        2,
+        0,
+        0
+      ],
+      "original_assessment": null,
+      "motion_status": "incomplete",
+      "measurement_errors": 0,
+      "input_errors": 0,
+      "selected": [
+        0
+      ],
+      "consensus_pairs": 0,
+      "output_sha256": "2e812ce9845711e2665d955600342bb56bfa78dc1d635d097a12b692cd9e43cd",
+      "seconds": 0.046000000002095476
+    }
+  ],
+  "new_captures": 0,
+  "model_calls": 0,
+  "target_access": false,
+  "field_writes": 0,
+  "limitation": "Known owned-fixture regression. No new verified gameplay control or independent-game acceptance."
+}

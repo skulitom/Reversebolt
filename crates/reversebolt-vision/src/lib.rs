@@ -4,6 +4,7 @@
 mod geometry;
 pub mod patch_motion;
 pub mod response;
+pub mod trial_motion;
 
 use geometry::{Projection, Quad, bounds, crop, distance, ordered, overlap, rectangle, resize};
 use image::RgbImage;

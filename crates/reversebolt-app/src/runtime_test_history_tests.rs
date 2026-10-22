@@ -54,6 +54,178 @@ fn prepare(t: &Test) -> Command {
 }
 
 #[test]
+fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
+    use reversebolt_core::{
+        inputs::{Buffer, Focus, Poll},
+        visual::{CaptureInterval, digest},
+    };
+    let directory = std::env::temp_dir()
+        .canonicalize()
+        .unwrap()
+        .join(format!("reversebolt-trial-motion-{}", id()));
+    std::fs::create_dir(&directory).unwrap();
+    let state_path = directory.join("state.json");
+    let mut engine = Engine::load(state_path.clone()).unwrap();
+    let mut test = saved(&id());
+    test.actions
+        .iter_mut()
+        .enumerate()
+        .for_each(|(i, a)| a.keys = vec![if i % 2 == 0 { 68 } else { 65 }]);
+    let folder = directory.join("runtime-tests").join(&test.id);
+    std::fs::create_dir(&folder).unwrap();
+    let texture = image::GrayImage::from_fn(256, 144, |x, y| {
+        let mut n = (x + y * 256)
+            .wrapping_add(9)
+            .wrapping_mul(747796405)
+            .wrapping_add(2891336453);
+        n = ((n >> ((n >> 28) + 4)) ^ n).wrapping_mul(277803737);
+        image::Luma([32 + (((n >> 22) ^ n) % 128) as u8])
+    });
+    for c in 0..3 {
+        for i in 0..6 {
+            let shift = if c != 1 && i >= 2 && i % 2 == 0 { 8 } else { 0 };
+            let image = image::GrayImage::from_fn(256, 144, |x, y| {
+                if x >= shift {
+                    *texture.get_pixel(x - shift, y)
+                } else {
+                    image::Luma([0])
+                }
+            });
+            let mut png = std::io::Cursor::new(vec![]);
+            image.write_to(&mut png, image::ImageFormat::Png).unwrap();
+            let bytes = png.into_inner();
+            let start = ((c * 10 + i + 1) as u64) * 620000;
+            let interval = CaptureInterval {
+                clock_id: test.investigation.clone(),
+                begin_us: start,
+                end_us: start + 20000,
+            };
+            let begin = test.conditions[c]
+                .frames
+                .last()
+                .map_or(start, |f| f.interval.end_us);
+            let action = i.checked_sub(2).and_then(|a| test.actions.get(a));
+            let mut buffer = Buffer::new(test.investigation.clone(), "synthetic-monitor".into(), 0);
+            for t in (begin + 1000..interval.end_us - 100).step_by(16000) {
+                buffer
+                    .push(Poll {
+                        begin_us: t,
+                        end_us: t + 100,
+                        focus: Focus::SelectedForeground,
+                        down: action
+                            .filter(|_| (100000..300000).contains(&(t - begin)))
+                            .map_or_else(Vec::new, |a| a.keys.clone()),
+                    })
+                    .unwrap();
+            }
+            let window = buffer.window(begin, interval.end_us);
+            let input = serde_json::to_vec(&window).unwrap();
+            let witness = InputWitness::check(window.as_ref(), action, &interval, begin);
+            if i > 0 {
+                assert!(witness.matches, "{}", witness.reason);
+            }
+            std::fs::write(folder.join(format!("{c}-{i}.png")), &bytes).unwrap();
+            std::fs::write(folder.join(format!("{c}-{i}.input.json")), &input).unwrap();
+            test.conditions[c].frames.push(Frame {
+                path: format!("{}/{c}-{i}.png", test.id),
+                input_path: format!("{}/{c}-{i}.input.json", test.id),
+                sha256: digest(&bytes),
+                input_sha256: digest(&input),
+                width: 256,
+                height: 144,
+                interval,
+                started_unix_ms: u128::from(start / 1000),
+                completed_unix_ms: u128::from(start / 1000 + 20),
+                sampling: None,
+                difference: (i > 0).then_some(0.),
+                input: witness,
+            });
+        }
+    }
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let request = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id,"include_motion":true}),
+    };
+    let read = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(read["test"], json!(test));
+    assert!(read["test"]["assessment"].is_null());
+    assert!(read.get("png_base64").is_none());
+    assert_eq!(
+        read["trial_motion_comparison"]["status"],
+        "displacement_changed_and_returned"
+    );
+    for i in 0..4 {
+        let x = if i % 2 == 0 { 8 } else { -8 };
+        assert_eq!(
+            read["trial_motion_comparison"]["actions"][i]["displacement"],
+            json!([[x, 0], [0, 0], [x, 0]])
+        );
+    }
+    checkpoint(&mut engine, &published).unwrap();
+    drop(engine);
+    let mut engine = Engine::load(state_path).unwrap();
+    assert_eq!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .unwrap(),
+        read
+    );
+    let input_path = folder.join("1-2.input.json");
+    let original_input = std::fs::read(&input_path).unwrap();
+    std::fs::write(&input_path, b"null").unwrap();
+    let bad_input = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(
+        bad_input["trial_motion_comparison"]["status"],
+        "unavailable_evidence"
+    );
+    assert!(
+        bad_input["trial_motion_comparison"]["conditions"][1]["pairs"][1]["input_error"]
+            .is_string()
+    );
+    std::fs::write(&input_path, original_input).unwrap();
+    std::fs::write(folder.join("2-2.png"), b"broken").unwrap();
+    let bad_image = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(
+        bad_image["trial_motion_comparison"]["status"],
+        "unavailable_evidence"
+    );
+    assert!(bad_image["trial_motion_comparison"]["conditions"][2]["pairs"][1]["motion"].is_null());
+    assert!(bad_image["trial_motion_comparison"]["conditions"][2]["pairs"][2]["motion"].is_null());
+    assert!(
+        bad_image["trial_motion_comparison"]["conditions"][0]["pairs"][1]["motion"].is_object()
+    );
+    assert_eq!(bad_image["test"], json!(test));
+    let mut light = request.clone();
+    light.args["include_motion"] = json!(false);
+    assert!(
+        session
+            .command(&mut engine, &light, &directory, &published)
+            .unwrap()
+            .get("trial_motion_comparison")
+            .is_none()
+    );
+    light.args["include_motion"] = json!("true");
+    assert!(
+        session
+            .command(&mut engine, &light, &directory, &published)
+            .unwrap_err()
+            .contains("true or false")
+    );
+    drop(engine);
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
 fn comparison_capacity_and_old_request_replay_survive_engine_restart() {
     let parent = std::env::temp_dir().canonicalize().unwrap();
     let directory = parent.join(format!("reversebolt-history-command-{}", id()));

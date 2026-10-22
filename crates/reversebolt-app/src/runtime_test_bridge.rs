@@ -225,6 +225,21 @@ impl Session {
                 .transpose()?
                 .flatten();
             let mut result = json!({"test":test,"origin_activity_motion_comparison":origin_motion,"executions":engine.runtime_tests.read_executions(&test)?,"limitation":runtime_tests::LIMITATION});
+            if c.args
+                .get("include_motion")
+                .is_some_and(|v| v.as_bool().is_none())
+            {
+                return Err("include_motion must be true or false.".into());
+            }
+            if c.args["include_motion"] == true {
+                result["trial_motion_comparison"] =
+                    serde_json::to_value(reversebolt_vision::trial_motion::analyze(
+                        &test,
+                        |condition, frame| engine.runtime_tests.read_image(&test, condition, frame),
+                        |condition, frame| engine.runtime_tests.read_input(&test, condition, frame),
+                    )?)
+                    .map_err(|e| e.to_string())?;
+            }
             if c.args.get("condition").is_some() || c.args.get("frame").is_some() {
                 let condition = c.args["condition"]
                     .as_u64()

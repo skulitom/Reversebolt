@@ -1005,6 +1005,21 @@ or invalid previous image produces a motion error while the requested current
 image can remain readable. A corrupted requested image still fails its hash check.
 No saved comparison assessment is changed by this additional read-time measurement.
 
+Set `include_motion: true` on `read_runtime_test` to obtain
+`trial_motion_comparison` without requesting any image payload. The default is
+false. This bounded analysis reads the three conditions' retained images and
+sampled-input windows, verifies their hashes and dimensions, and recomputes the
+input witnesses. It compares each of the four action indices across baseline,
+changed and recovered conditions, retaining signed displacements, coverage,
+per-pair errors, policy/version and the canonical test-record digest. Missing
+evidence or sparse matches stay unavailable/inconclusive. All four actions must
+support a difference and return for the descriptive change-and-return pattern;
+idle displacement, mismatched input and threshold gaps prevent that conclusion.
+This is separate from both `origin_activity_motion_comparison` (discovery only)
+and the saved trial assessment. It neither validates a gameplay name nor grants
+edit authority. No target, input, capture or model is used by this read. See the
+[policy and retained regression](../research/trial-motion/README.md).
+
 Only one test can be active; the limit is eight saved tests **per investigation**,
 128 retained records per data directory and 15 minutes per active test. Closed
 history is not evicted. Saved IDs cannot move to another investigation. A full

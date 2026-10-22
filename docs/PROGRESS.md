@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Retained trial displacement comparison (2026-10-22): **35% unchanged**.
+The shared history/MCP reader can now compare all four action indices across
+baseline, change and recovery using saved images, with no model or image payload
+required. Hashes, geometry, chronology and sampled input are rechecked. Missing
+or sparse support remains inconclusive; the derived movement pattern neither
+rewrites the saved trial assessment nor establishes a verified gameplay control.
+
+Known alternating image shifts pass through the real command/store/restart path;
+corrupted input/images remain isolated. A frozen replay of three older owned-
+fixture records returns insufficient support for the complete striped-image
+comparison and incomplete for the two interrupted records. All 43 original files
+and prior assessments are unchanged. The 91 test executions across affected
+packages and strict Clippy pass. No new game, capture, input, write or model call
+ran. Native publication still awaits resolution of the security detection; no
+replacement was launched. [Policy and evidence](../research/trial-motion/README.md).
+
 Direct control polish (2026-10-22): **35% unchanged**.
 Generated array labels, generic storage names and opaque identifiers are now
 excluded from the control board and its add-controls results. Additional placeholder
