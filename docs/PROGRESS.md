@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Regional baseline entry (2026-10-22): **35% unchanged**.
+The live comparison no longer stops a valid small local response solely because
+its whole-screen difference is weak. The final baseline observation now reviews
+the saved six-image/input baseline with the existing regional selector. A
+supported result durably saves its immutable region before reaching ready to
+apply; no suitable region stops. Input failure, stop, restart, an existing edit
+or an unresolved write prevents a new choice. This adds no capture or native
+operation. Read-time proposals and strong whole-screen baselines keep their
+existing behavior.
+
+All 374 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. The new regression computes the actual whole-screen metric, feeds
+all six generated captures through baseline completion, then exercises the same
+review helper used by native capture. Its small subject is below the old gate,
+but now yields a saved choice and a descriptive later change-and-return pattern.
+Store/dispatcher/restart and negative cases pass. Earlier tests had manually
+constructed a ready baseline and missed this entry failure. The scalar edit
+assessment remains unchanged; connecting regional response to verified field
+intervention evidence still needs work. No gameplay or generalization credit
+is added. Desktop publication remains unavailable after quarantine.
+[Implementation and test limits](../research/regional-baseline-flow/README.md).
+
 Stable regions for pre-edit baselines (2026-10-22): **35% unchanged**.
 Automatic baseline suggestions now share the source-texture, corner and quiet
 stability selector, with frame 0 as the immutable source and frame 1 as the quiet

@@ -159,6 +159,240 @@ fn motion_fixture(local: bool) -> (std::path::PathBuf, std::path::PathBuf, Engin
     (directory, state_path, engine, test)
 }
 
+/// Feed saved PNG/input bytes through the same core completion operation
+/// used by native capture, including the actual whole-screen response metric.
+fn collect_saved_baseline(engine: &Engine, complete: &Test) -> Test {
+    let mut t = complete.clone();
+    t.conditions = Default::default();
+    t.phase = Phase::Baseline;
+    for i in 0..6 {
+        let mut frame = complete.conditions[0].frames[i].clone();
+        frame.difference = if i == 0 {
+            None
+        } else {
+            Some(
+                reversebolt_vision::response::difference(
+                    &engine.runtime_tests.read_image(complete, 0, i - 1).unwrap(),
+                    &engine.runtime_tests.read_image(complete, 0, i).unwrap(),
+                )
+                .unwrap(),
+            )
+        };
+        let input = engine.runtime_tests.read_input(complete, 0, i).unwrap();
+        t.begin_capture(t.revision).unwrap();
+        t.finish_capture(frame, input.as_ref()).unwrap();
+    }
+    t
+}
+
+#[test]
+fn small_local_baseline_reaches_apply_with_an_automatic_immutable_choice() {
+    let (directory, state_path, mut engine, complete) = motion_fixture(true);
+    let mut test = collect_saved_baseline(&engine, &complete);
+    assert!(test.conditions[0].median().unwrap() < 5.);
+    assert_eq!(test.phase, Phase::BaselineReview);
+    assert!(test.appearance.is_none());
+    let baseline_before = json!(test.conditions[0]);
+    review_baseline(&mut engine, &mut test, &AtomicBool::new(false)).unwrap();
+    assert_eq!(test.phase, Phase::ReadyToApply);
+    assert_eq!(json!(test.conditions[0]), baseline_before);
+    let plan = test.appearance.clone().unwrap();
+    assert_eq!(
+        engine.runtime_tests.get(&test.id).unwrap().appearance,
+        Some(plan.clone())
+    );
+    assert_eq!(
+        plan.selection.baseline_sha256,
+        test.conditions[0].frames[0].sha256
+    );
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let read = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id}),
+    };
+    let initial = session
+        .command(&mut engine, &read, &directory, &published)
+        .unwrap();
+    assert_eq!(initial["test"]["appearance"], json!(plan));
+    assert_eq!(
+        initial["trial_appearance_comparison"]["status"],
+        "incomplete"
+    );
+    assert!(engine.runtime_trials.records.is_empty());
+    assert!(!test.candidate.edit_authority);
+    // Generated later evidence exercises the chosen region; no native edit/input.
+    test.conditions[1..].clone_from_slice(&complete.conditions[1..]);
+    test.stop("Synthetic local response history.");
+    engine.runtime_tests.record(test.clone()).unwrap();
+    let compared = session
+        .command(&mut engine, &read, &directory, &published)
+        .unwrap();
+    assert_eq!(
+        compared["trial_appearance_comparison"]["status"],
+        "appearance_displacement_changed_and_returned"
+    );
+    assert!(compared["test"]["assessment"].is_null());
+    drop(engine);
+    let mut engine = Engine::load(state_path).unwrap();
+    assert_eq!(
+        session
+            .command(&mut engine, &read, &directory, &published)
+            .unwrap(),
+        compared
+    );
+    let mut erased = engine.runtime_tests.get(&test.id).unwrap().clone();
+    erased.appearance = None;
+    assert!(engine.runtime_tests.record(erased).is_err());
+    drop(engine);
+    assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn regional_baseline_review_rejects_missing_evidence_and_honors_stop_and_restart() {
+    let (directory, state_path, mut engine, complete) = motion_fixture(true);
+    let baseline = collect_saved_baseline(&engine, &complete);
+    assert_eq!(baseline.phase, Phase::BaselineReview);
+    let mut stopped = baseline.clone();
+    assert!(review_baseline(&mut engine, &mut stopped, &AtomicBool::new(true)).is_err());
+    assert!(stopped.appearance.is_none());
+    assert!(engine.runtime_tests.records.is_empty());
+    // A persisted review is interrupted on restart, never automatically resumed.
+    engine.runtime_tests.record(baseline.clone()).unwrap();
+    drop(engine);
+    let mut engine = Engine::load(state_path).unwrap();
+    assert_eq!(
+        engine.runtime_tests.get(&baseline.id).unwrap().phase,
+        Phase::Stopped
+    );
+    assert!(
+        engine
+            .runtime_tests
+            .get(&baseline.id)
+            .unwrap()
+            .appearance
+            .is_none()
+    );
+    let mut stale = baseline;
+    assert!(review_baseline(&mut engine, &mut stale, &AtomicBool::new(false)).is_err());
+    assert!(stale.appearance.is_none());
+    drop(engine);
+    assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+
+    let (directory, _, mut engine, complete) = motion_fixture(true);
+    let mut unavailable = collect_saved_baseline(&engine, &complete);
+    std::fs::write(
+        directory
+            .join("runtime-tests")
+            .join(&complete.id)
+            .join("0-3.png"),
+        b"corrupt",
+    )
+    .unwrap();
+    review_baseline(&mut engine, &mut unavailable, &AtomicBool::new(false)).unwrap();
+    assert_eq!(unavailable.phase, Phase::Stopped);
+    assert!(unavailable.appearance.is_none());
+    assert!(engine.runtime_trials.records.is_empty());
+    drop(engine);
+    assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn regional_baseline_does_not_admit_static_scenes_or_a_prepared_edit() {
+    for prepared in [false, true] {
+        let (directory, _, mut engine, mut complete) = motion_fixture(true);
+        if !prepared {
+            let first = engine.runtime_tests.read_image(&complete, 0, 0).unwrap();
+            for i in 1..6 {
+                std::fs::write(
+                    directory
+                        .join("runtime-tests")
+                        .join(&complete.id)
+                        .join(format!("0-{i}.png")),
+                    &first,
+                )
+                .unwrap();
+                complete.conditions[0].frames[i].sha256 = reversebolt_core::visual::digest(&first);
+            }
+        }
+        let mut baseline = collect_saved_baseline(&engine, &complete);
+        assert_eq!(baseline.phase, Phase::BaselineReview);
+        if prepared {
+            use reversebolt_core::runtime_trials::{Context, Evidence, Trial};
+            let patch = Patch {
+                path: baseline.candidate.locator.clone(),
+                type_code: 8,
+                expected: 8i32.to_le_bytes().to_vec(),
+                replacement: 0i32.to_le_bytes().to_vec(),
+                field_address: 0x2000,
+                object_addresses: vec![0x1000],
+                prepared_unix_ms: now_ms(),
+            };
+            let evidence = Evidence::new("fixture.json".into(), json!({"operation":"refresh_runtime_paths","scope":baseline.scope,
+                "checks":[{"path_id":patch.path.id(),"status":"read","type_code":8,"bytes":patch.expected,"value":8,
+                "field_address":"0x2000","snapshot_object_addresses":["0x1000"]}]})).unwrap();
+            let mut trial = Trial::prepare(
+                Context {
+                    investigation: baseline.investigation.clone(),
+                    catalog_id: baseline.catalog_id.clone(),
+                    revision: 1,
+                    process: baseline.scope.clone(),
+                },
+                "Fixture".into(),
+                "agent".into(),
+                patch,
+                evidence,
+            )
+            .unwrap();
+            trial.id = baseline.change_id.clone();
+            engine.runtime_trials.records.push(trial); // No native operation or trial file.
+            assert!(review_baseline(&mut engine, &mut baseline, &AtomicBool::new(false)).is_err());
+            assert_eq!(baseline.phase, Phase::BaselineReview);
+        } else {
+            review_baseline(&mut engine, &mut baseline, &AtomicBool::new(false)).unwrap();
+            assert_eq!(baseline.phase, Phase::Stopped);
+        }
+        assert!(baseline.appearance.is_none());
+        assert!(!baseline.candidate.edit_authority);
+        drop(engine);
+        assert!(directory.starts_with(std::env::temp_dir().canonicalize().unwrap()));
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .starts_with("reversebolt-trial-motion-")
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+}
+
 #[test]
 fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
     let (directory, state_path, mut engine, test) = motion_fixture(false);

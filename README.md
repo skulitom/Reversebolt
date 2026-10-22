@@ -162,9 +162,12 @@ and before the linked edit. The choice remains bound to the original baseline,
 target, value and action sequence, survives restart, and is used automatically
 by the shared history reader. See [saved appearance choices](research/appearance-plan/README.md).
 The completed baseline also proposes a region automatically, using source
-texture and quiet stability before bounded matching. It can abstain, and a
-proposal still needs an explicit pre-edit choice. See
+texture and quiet stability before bounded matching. A weak whole-screen
+baseline can now proceed when this regional check succeeds; the engine saves
+the region before any edit. Read-time proposals remain optional choices. See
 [baseline region selection and its limits](research/stable-baseline-regions/README.md).
+The [regional baseline flow](research/regional-baseline-flow/README.md) covers
+this integration and its automated regression checks.
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

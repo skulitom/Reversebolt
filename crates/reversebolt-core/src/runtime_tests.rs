@@ -31,6 +31,7 @@ pub struct Action {
 #[serde(rename_all = "snake_case")]
 pub enum Phase {
     Baseline,
+    BaselineReview,
     ReadyToApply,
     Changed,
     ReadyToRestore,
@@ -314,7 +315,7 @@ impl Test {
                         &serde_json::to_vec(baseline).map_err(|e| e.to_string())?,
                     )
                 || plan.comparison_plan_sha256 != self.comparison_plan_digest()?
-                || self.phase == Phase::Baseline
+                || matches!(self.phase, Phase::Baseline | Phase::BaselineReview)
             {
                 return Err("The retained appearance plan or baseline changed.".into());
             }
@@ -421,6 +422,47 @@ impl Test {
         next.validate_plan()?;
         *self = next;
         Ok(true)
+    }
+
+    /// Resolve the engine's image review, never a caller assertion of motion.
+    /// The engine must verify the complete saved baseline and the selected region
+    /// before supplying Some, and refuse any existing linked edit or unresolved write.
+    /// Acceptance locks this choice atomically before the test can permit an edit.
+    pub fn finish_baseline_review(
+        &mut self,
+        selection: Option<AppearanceSelection>,
+        revision: u64,
+        now: u128,
+    ) -> Result<()> {
+        self.validate_plan()?;
+        self.check_cursor(revision)?;
+        if self.phase != Phase::BaselineReview
+            || self.conditions[0].frames.len() != FRAMES_PER_CONDITION
+            || !self.conditions[0]
+                .frames
+                .iter()
+                .skip(1)
+                .all(|f| f.input.matches)
+            || self.appearance.is_some()
+            || self.conditions[1..]
+                .iter()
+                .any(|c| !c.frames.is_empty() || c.runtime_evidence.is_some())
+            || self.assessment.is_some()
+        {
+            return Err(
+                "Only a complete, unedited baseline can receive its regional review.".into(),
+            );
+        }
+        if let Some(selection) = selection {
+            let mut next = self.clone();
+            next.phase = Phase::ReadyToApply;
+            next.lock_appearance(selection, revision, now)?;
+            next.reason = "A local response was measured and its comparison region saved. The planned edit can now be applied.".into();
+            *self = next;
+        } else {
+            self.stop("Neither the whole-screen nor regional baseline supports this comparison. No planned edit was made.");
+        }
+        Ok(())
     }
 
     fn comparison_plan_digest(&self) -> Result<String> {
@@ -543,12 +585,18 @@ impl Test {
             match index {
                 0 => {
                     let c = &self.conditions[0];
-                    if !c.frames.iter().skip(1).all(|f| f.input.matches)
-                        || c.median().is_none_or(|m| {
-                            m < 5. || m < 5. * c.stationary().unwrap_or(f64::INFINITY)
-                        })
+                    if !c.frames.iter().skip(1).all(|f| f.input.matches) {
+                        self.stop(
+                            "Baseline input coverage is insufficient. No planned edit was made.",
+                        );
+                    } else if c
+                        .median()
+                        .is_none_or(|m| m < 5. || m < 5. * c.stationary().unwrap_or(f64::INFINITY))
                     {
-                        self.stop("Baseline response or input coverage is insufficient. No planned edit was made.");
+                        self.phase = Phase::BaselineReview;
+                        self.reason =
+                            "Checking the saved baseline for a local response before any edit."
+                                .into();
                     } else {
                         self.phase = Phase::ReadyToApply;
                         self.reason =
@@ -622,7 +670,10 @@ impl Test {
             }
             (_, TrialPhase::Refused | TrialPhase::Uncertain | TrialPhase::Expired) => self
                 .stop("The edit did not settle as planned. Check its history before continuing."),
-            (Phase::Baseline, TrialPhase::Written | TrialPhase::Restored)
+            (
+                Phase::Baseline | Phase::BaselineReview,
+                TrialPhase::Written | TrialPhase::Restored,
+            )
             | (Phase::ReadyToApply, TrialPhase::Restored) => {
                 self.stop("The edit did not follow the test's baseline and recovery order.")
             }

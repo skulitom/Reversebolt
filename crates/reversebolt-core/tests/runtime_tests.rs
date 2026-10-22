@@ -291,6 +291,9 @@ fn comparison_needs_ordered_action_images_value_checks_and_recovery() {
 fn weak_baseline_and_missing_sampling_never_reach_apply() {
     let (mut t, _, _) = fixture();
     condition(&mut t, 1.);
+    assert_eq!(t.phase, Phase::BaselineReview);
+    assert!(t.begin_capture(t.revision).is_err());
+    t.finish_baseline_review(None, t.revision, 16000).unwrap();
     assert_eq!(t.phase, Phase::Stopped);
     let (mut t, _, _) = fixture();
     for _ in 0..6 {
@@ -300,6 +303,64 @@ fn weak_baseline_and_missing_sampling_never_reach_apply() {
         t.finish_capture(f, None).unwrap();
     }
     assert_eq!(t.phase, Phase::Stopped);
+}
+
+#[test]
+fn regional_baseline_acceptance_is_atomic_and_cannot_follow_an_edit_or_restart() {
+    use reversebolt_core::{runtime_tests::AppearanceSelection, visual_regions::Region};
+    let (mut baseline, write, _) = fixture();
+    condition(&mut baseline, 1.);
+    let selection = AppearanceSelection {
+        baseline_sha256: "a".repeat(64),
+        region: Region {
+            x: 64,
+            y: 64,
+            width: 64,
+            height: 64,
+        },
+    };
+    let before = json!(baseline);
+    let mut wrong = selection.clone();
+    wrong.baseline_sha256 = "b".repeat(64);
+    assert!(
+        baseline
+            .finish_baseline_review(Some(wrong), baseline.revision, 16000)
+            .is_err()
+    );
+    assert!(
+        baseline
+            .finish_baseline_review(Some(selection.clone()), baseline.revision - 1, 16000)
+            .is_err()
+    );
+    assert_eq!(json!(baseline), before);
+    for after_edit in [false, true] {
+        let mut t = baseline.clone();
+        if after_edit {
+            t.sync_trial(&write).unwrap();
+        } else {
+            t.recover();
+        }
+        assert_eq!(t.phase, Phase::Stopped);
+        assert!(
+            t.finish_baseline_review(Some(selection.clone()), t.revision, 16000)
+                .is_err()
+        );
+        assert!(t.appearance.is_none());
+    }
+    let revision = baseline.revision;
+    baseline
+        .finish_baseline_review(Some(selection.clone()), revision, 16000)
+        .unwrap();
+    assert_eq!(baseline.phase, Phase::ReadyToApply);
+    assert_eq!(baseline.revision, revision + 1);
+    assert_eq!(baseline.appearance.as_ref().unwrap().selection, selection);
+    baseline.validate_plan().unwrap();
+    assert!(
+        baseline
+            .finish_baseline_review(Some(selection), baseline.revision, 16000)
+            .is_err()
+    );
+    assert!(!baseline.candidate.edit_authority);
 }
 
 #[test]

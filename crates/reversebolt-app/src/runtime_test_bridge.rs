@@ -36,6 +36,44 @@ fn appearance_suggestions(engine: &Engine, test: &Test, result: &mut Value) {
     }
 }
 
+/// Called only after the engine has saved all six baseline images/input windows.
+/// This also serves target-free protocol tests of the real post-capture path.
+fn review_baseline(engine: &mut Engine, test: &mut Test, abort: &AtomicBool) -> Result<()> {
+    if test.phase != Phase::BaselineReview {
+        return Ok(());
+    }
+    if abort.load(Ordering::SeqCst) {
+        return Err("The desktop stopped the baseline review.".into());
+    }
+    if engine
+        .runtime_tests
+        .get(&test.id)
+        .is_ok_and(|saved| !matches!(saved.phase, Phase::Baseline | Phase::BaselineReview))
+    {
+        return Err("The saved test is no longer collecting or reviewing its baseline.".into());
+    }
+    if engine.runtime_trials.get(&test.change_id).is_ok()
+        || engine.runtime_trials.holds(&test.scope)
+    {
+        return Err("The baseline cannot be selected after preparing an edit or while a write is unresolved.".into());
+    }
+    // Make the complete baseline durable before adding its immutable choice.
+    // A restart here stops the test; it never resumes or guesses a selection.
+    engine.runtime_tests.record(test.clone())?;
+    let report = reversebolt_vision::trial_appearance_suggestions::analyze(
+        test,
+        |condition, frame| engine.runtime_tests.read_image(test, condition, frame),
+        |condition, frame| engine.runtime_tests.read_input(test, condition, frame),
+    )?;
+    if abort.load(Ordering::SeqCst) {
+        return Err("The desktop stopped the baseline review.".into());
+    }
+    test.finish_baseline_review(report.recommended, test.revision, now_ms())?;
+    // Persist the exact acceptance before a late stop/expiry changes its phase.
+    // The outer capture completion can then retain the choice while stopping.
+    engine.runtime_tests.record(test.clone())
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Prepare {
@@ -690,6 +728,12 @@ impl Session {
         if self.abort.load(Ordering::SeqCst) {
             return Err(
                 "The desktop stopped this comparison after the current image settled.".into(),
+            );
+        }
+        review_baseline(engine, test, &self.abort)?;
+        if self.abort.load(Ordering::SeqCst) || self.deadline.is_none_or(|d| Instant::now() >= d) {
+            return Err(
+                "The experiment stopped or expired while the baseline review settled.".into(),
             );
         }
         if index == 5 && condition > 0 {

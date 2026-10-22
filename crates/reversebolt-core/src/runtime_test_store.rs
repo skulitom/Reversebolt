@@ -244,11 +244,19 @@ impl Store {
                 }
                 (None, Some(plan)) => {
                     let mut expected = previous.clone();
-                    expected.lock_appearance(
-                        plan.selection.clone(),
-                        previous.revision,
-                        plan.selected_unix_ms,
-                    )?;
+                    if previous.phase == crate::runtime_tests::Phase::BaselineReview {
+                        expected.finish_baseline_review(
+                            Some(plan.selection.clone()),
+                            previous.revision,
+                            plan.selected_unix_ms,
+                        )?;
+                    } else {
+                        expected.lock_appearance(
+                            plan.selection.clone(),
+                            previous.revision,
+                            plan.selected_unix_ms,
+                        )?;
+                    }
                     if serde_json::to_value(&expected).map_err(|e| e.to_string())?
                         != serde_json::to_value(&t).map_err(|e| e.to_string())?
                     {

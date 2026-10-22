@@ -1177,6 +1177,16 @@ selected foreground application, with at least 250 ms released before capture.
 The engine checks retained sampled states; callers cannot submit their own images
 or input attestations. An old cursor never produces another capture.
 
+Missing sampled-input coverage stops the baseline. A weak whole-screen response
+now enters `baseline_review` instead of stopping immediately. During that same
+final observation, the engine checks the six saved images/input windows using
+`baseline_stable_texture_regions_v2`. A supported regional result automatically
+saves the recommended appearance choice before reaching `ready_to_apply`. No
+supported region stops the test. This review adds no capture, input or target
+operation. It rejects an existing linked edit or unresolved write, and stop,
+expiry or restart cannot resume the review. The chosen baseline and region are
+immutable and available in `test.appearance` through the usual history reader.
+
 At `ready_to_apply`, use the existing runtime edit action with the plan's exact
 `change_id`, candidate/value and current runtime revision. At `ready_to_restore`,
 use `reversebolt_restore_runtime_change`; gather the recovery condition only after
@@ -1211,6 +1221,10 @@ choice, its response includes `appearance_suggestions`. Reading that test also
 derives suggestions by default. Set `suggest_appearance:false` to skip this extra
 analysis, or `true` to derive baseline-only suggestions from a historical test.
 Unusable evidence is explicit; metadata remains readable on an analysis error.
+Read-time suggestions remain read-only. The automatic acceptance above is part
+of the final baseline observation and saves the choice as its own durable
+transition. Whole-screen baselines that already meet the original response gate
+retain the existing optional choice flow.
 
 `baseline_stable_texture_regions_v2` first gates normalized 16/32/64-pixel tiles
 by first-action change minus idle change, requiring a mean of at least 8 gray
