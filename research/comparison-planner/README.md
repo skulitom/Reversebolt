@@ -10,7 +10,11 @@ captures no new images, loads no target helper and performs no model inference.
 Proposals retain exact hypothesis references. Eligible positive scalar values up
 to 20 can be compared with zero; canonical true booleans with false. This is a
 bounded experimental policy, not a learned range or proof that zero is useful.
-Declared fields are deduplicated and selected types are interleaved. Existing
+Current source considers primary candidates and retained alternatives, deduplicates
+only exact paths, and interleaves selected types. Separate paths to the same field
+remain eligible, with unresolved aliasing made explicit. The frozen exploratory
+run below used the earlier field-group deduplication and primary-only policy.
+Existing
 outcomes in the same evidence context are retained, with no automatic retry or
 promotion to a gameplay control. Active edits, tests and freezes suppress `next`.
 Preparing, observing, editing and restoring remain explicit engine operations.

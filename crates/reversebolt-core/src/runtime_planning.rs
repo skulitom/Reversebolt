@@ -11,9 +11,8 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::BTreeSet;
 
-pub const LIMITATION: &str = "A proposed comparison, not learned button meaning or verified gameplay semantics. Timing is estimated from sampled transitions. Repeating the observed sequence can move or otherwise change the game; restoration concerns the selected bytes, not world rollback. Distinct declared fields may still alias or affect unrelated systems. Outcomes describe only the tested path, action sequence and context.";
+pub const LIMITATION: &str = "A proposed comparison, not learned button meaning or verified gameplay semantics. Timing is estimated from sampled transitions. Repeating the observed sequence can move or otherwise change the game; restoration concerns the selected bytes, not world rollback. Different paths may alias or change occupants; sharing a declared field does not establish the same object. A question's name describes its primary hypothesis, not the meaning of a selected alternative. Outcomes describe only the tested path, action sequence and context.";
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Episode {
     pub before: String,
@@ -168,13 +167,19 @@ pub fn choices(
         .batch
         .as_ref()
         .ok_or("No completed hypotheses are available.")?;
-    let mut groups = BTreeSet::new();
-    let mut choices = vec![];
-    for hypothesis in &batch.accepted {
-        let row = &hypothesis.candidate;
+    let mut choices: Vec<Value> = vec![];
+    // Prefer a path's own hypothesis when it also appears as an alternative to
+    // another question. Retain all question references, but propose a path once.
+    let candidates = batch.accepted.iter().map(|h| (h, &h.candidate, "primary"));
+    let alternatives = batch.accepted.iter().flat_map(|h| {
+        h.alternatives
+            .iter()
+            .map(move |row| (h, row, "alternative"))
+    });
+    for (hypothesis, row, role) in candidates.chain(alternatives) {
         let reference = Reference {
             review_id: review.evidence_id.clone(),
-            hypothesis_path_id: row.path_id.clone(),
+            hypothesis_path_id: hypothesis.candidate.path_id.clone(),
             selected_path_id: row.path_id.clone(),
         };
         h::resolve(review, &reference, inventory)?;
@@ -199,7 +204,17 @@ pub fn choices(
             None
         };
         let Some(value) = value else { continue };
-        if !groups.insert((row.type_id, row.field_id)) {
+        // The same field can occur on different objects. Snapshot-local node
+        // IDs cannot establish identity across captures, so do not merge paths
+        // by field, value, label, or reused node ID.
+        if let Some(existing) = choices
+            .iter_mut()
+            .find(|c| c["hypothesis_ref"]["selected_path_id"] == row.path_id)
+        {
+            existing["question_refs"]
+                .as_array_mut()
+                .unwrap()
+                .push(json!(reference));
             continue;
         }
         let prior = tests
@@ -218,12 +233,14 @@ pub fn choices(
                     })
             })
             .max_by_key(|t| t.created_unix_ms);
-        choices.push(json!({"hypothesis_ref":reference,"name":hypothesis.proposal.name,"explanation":hypothesis.proposal.explanation,"question":hypothesis.proposal.question,
+        choices.push(json!({"hypothesis_ref":reference,"question_refs":[reference],"selection_role":role,"selected_candidate":row,
+            "name":hypothesis.proposal.name,"explanation":hypothesis.proposal.explanation,"question":hypothesis.proposal.question,
             "type_id":row.type_id,"field_id":row.field_id,"observed_value":row.value,"value":value,"actions":actions.actions,
             "status":prior.map_or("untried",|t|t.assessment.as_ref().map_or(if t.active(){"in_progress"}else{"stopped"},|a|a.status.as_str())),
             "previous_test":prior.map(|t|t.summary()),"alternatives":hypothesis.alternatives}));
     }
-    // Round-robin declared types; model order within a type remains visible.
+    // Round-robin declared types; primary candidates precede alternatives within
+    // each type. Model order remains visible within each of those queues.
     let order = batch.selected_types.clone();
     let mut sorted = vec![];
     while !choices.is_empty() {
@@ -474,8 +491,7 @@ mod tests {
         assert!(!transfer(Some(&invalid), &frames).1.retained);
         assert!(!transfer(None, &frames).1.retained);
     }
-    #[test]
-    fn questions_round_robin_types_without_counting_aliases_as_competitors() {
+    fn question_fixture() -> (Review, Inventory, ObservedActions) {
         let report = "a".repeat(64);
         // Runtime integer samples are JSON numbers; floating samples are strings.
         // Exercise both through the real inventory/hypothesis representation.
@@ -510,10 +526,11 @@ mod tests {
                 }
             })
             .collect();
+        let (context, frames, evidence) = observed();
         let review = Review {
             question_source: Default::default(),
             question_policy: None,
-            play_context: None,
+            play_context: Some(context.clone()),
             evidence_id: uuid::Uuid::new_v4().to_string(),
             report_sha256: report,
             model: "test".into(),
@@ -522,23 +539,197 @@ mod tests {
             error: None,
         };
         assert_eq!(review.batch.as_ref().unwrap().accepted.len(), 4);
-        let plan = ObservedActions {
-            frame_metadata_sha256: "f".repeat(64),
-            episodes: vec![],
-            actions: vec![],
-        };
+        let plan = actions(&context, &frames, &evidence).unwrap();
+        (review, inventory, plan)
+    }
+    #[test]
+    fn questions_keep_distinct_paths_to_the_same_field() {
+        let (review, inventory, plan) = question_fixture();
         let choices = choices(&review, &inventory, &plan, &[], "inv", "catalog").unwrap();
         assert_eq!(
             choices
                 .iter()
                 .map(|c| c["name"].as_str().unwrap())
                 .collect::<Vec<_>>(),
-            vec!["walkSpeed", "lookSpeed", "runSpeed"]
+            vec!["walkSpeed", "lookSpeed", "runSpeed", "walkSpeed"]
         );
         assert!(
             choices
                 .iter()
                 .all(|c| c["status"] == "untried" && c["value"] == "0")
         );
+        assert_ne!(
+            choices[0]["selected_candidate"]["path_id"],
+            choices[3]["selected_candidate"]["path_id"]
+        );
+    }
+    fn competing_questions(review: &mut Review, inventory: &Inventory) {
+        let selection = h::select(inventory, &[0, 1]).unwrap();
+        let batch = review.batch.as_ref().unwrap();
+        let mut first = batch.accepted[0].proposal.clone();
+        first.alternatives = vec![1, 2, 3];
+        let mut second = batch.accepted[1].proposal.clone();
+        second.alternatives = vec![1];
+        review.batch = Some(
+            h::validate(
+                &selection,
+                h::Proposals {
+                    hypotheses: vec![first, second],
+                },
+            )
+            .unwrap(),
+        );
+        assert_eq!(review.batch.as_ref().unwrap().accepted.len(), 2);
+    }
+    #[test]
+    fn alternatives_keep_exact_provenance_and_share_only_identical_paths() {
+        let (mut review, inventory, plan) = question_fixture();
+        competing_questions(&mut review, &inventory);
+        let proposed = choices(&review, &inventory, &plan, &[], "inv", "catalog").unwrap();
+        assert_eq!(proposed.len(), 4);
+        // The same path is mentioned by two questions, but is proposed once.
+        let shared = &proposed[1];
+        assert_eq!(shared["selection_role"], "alternative");
+        assert_eq!(shared["selected_candidate"]["field_name"], "lookSpeed");
+        assert_eq!(shared["name"], "walkSpeed"); // question label, not alternative semantics
+        assert_eq!(shared["question_refs"].as_array().unwrap().len(), 2);
+        // Prefer a path's own hypothesis, even when an earlier question also
+        // mentions it as an alternative. Keep both references.
+        assert_eq!(proposed[2]["selection_role"], "primary");
+        assert_eq!(proposed[2]["name"], "runSpeed");
+        assert_eq!(proposed[2]["question_refs"].as_array().unwrap().len(), 2);
+        assert_eq!(proposed[3]["selection_role"], "alternative");
+        for choice in &proposed {
+            let references = choice["question_refs"].as_array().unwrap();
+            assert_eq!(references[0], choice["hypothesis_ref"]);
+            for reference in references {
+                let origin = h::resolve(
+                    &review,
+                    &serde_json::from_value(reference.clone()).unwrap(),
+                    &inventory,
+                )
+                .unwrap();
+                assert_eq!(
+                    json!(origin.selected().unwrap()),
+                    choice["selected_candidate"]
+                );
+            }
+        }
+        let mut changed = inventory.clone();
+        changed.types[1].fields[0].samples[0].value = json!("9");
+        assert!(choices(&review, &changed, &plan, &[], "inv", "catalog").is_err());
+    }
+    #[test]
+    fn ineligible_primary_does_not_hide_a_bounded_alternative() {
+        let (mut review, mut inventory, plan) = question_fixture();
+        // A zero primary cannot use the planner's zero probe. Its other object
+        // and another field remain separate eligible questions.
+        inventory.types[0].fields[0].samples[0].value = json!("0");
+        inventory.types[0].fields[0].values = vec![json!("0"), json!("8")];
+        // A large alternative is outside the existing probe bounds.
+        inventory.types[1].fields[0].samples[0].value = json!("50");
+        inventory.types[1].fields[0].values = vec![json!("50")];
+        competing_questions(&mut review, &inventory);
+        let proposed = choices(&review, &inventory, &plan, &[], "inv", "catalog").unwrap();
+        assert_eq!(proposed.len(), 2);
+        assert_eq!(proposed[0]["selection_role"], "primary");
+        assert_eq!(proposed[0]["selected_candidate"]["field_name"], "runSpeed");
+        assert_eq!(proposed[1]["selection_role"], "alternative");
+        assert_eq!(proposed[1]["observed_value"], "8");
+        // Boolean alternatives use false only for the canonical observed true.
+        inventory.types[0].fields[1].type_code = 2;
+        for (value, expected) in [
+            (json!({"boolean":true,"raw":1}), 2),
+            (json!({"boolean":false,"raw":0}), 1),
+        ] {
+            inventory.types[0].fields[1].samples[0].value = value.clone();
+            inventory.types[0].fields[1].values = vec![value];
+            competing_questions(&mut review, &inventory);
+            let proposed = choices(&review, &inventory, &plan, &[], "inv", "catalog").unwrap();
+            assert_eq!(proposed.len(), expected);
+            if expected == 2 {
+                assert_eq!(proposed[0]["value"], "false");
+            }
+        }
+    }
+    #[test]
+    fn prior_results_apply_only_to_the_exact_path_and_comparison_context() {
+        use crate::runtime_tests::{Assessment, Phase};
+        let (mut review, inventory, plan) = question_fixture();
+        competing_questions(&mut review, &inventory);
+        let before = choices(&review, &inventory, &plan, &[], "inv", "catalog").unwrap();
+        let reference: Reference =
+            serde_json::from_value(before[0]["hypothesis_ref"].clone()).unwrap();
+        let origin = h::resolve(&review, &reference, &inventory).unwrap();
+        // Synthetic history entries exercise selection, not a completed native
+        // experiment. This fixture has no target, byte receipt or causal claim.
+        let mut prior: Test = serde_json::from_value(json!({
+            "id":uuid::Uuid::new_v4().to_string(),"change_id":uuid::Uuid::new_v4().to_string(),"actor":"test",
+            "investigation":"inv","catalog_id":"catalog","scope":inventory.scope,"window":1,
+            "candidate":{"id":reference.selected_path_id,"name":"walkSpeed","description":"Fixture",
+                "locator":{"scope":inventory.scope,"root":{"declaring":inventory.types[0].key,"field_id":0},"steps":[]},
+                "value":"8","bytes":[0,0,0,65],"type_code":12,"snapshot_id":0,"node_id":0,"edit_authority":false},
+            "value":"0","hypothesis":origin.hypothesis.proposal.question,"origin":origin,"actions":plan.actions,
+            "prepared_revision":0,"created_unix_ms":1,"preparation":null,"metric":crate::runtime_tests::METRIC_ID,
+            "revision":1,"phase":"stopped","pending_capture":false,"conditions":[{"frames":[]},{"frames":[]},{"frames":[]}],
+            "assessment":null,"reason":"Synthetic stopped record"
+        })).unwrap();
+        let get = |history: &[Test]| {
+            choices(&review, &inventory, &plan, history, "inv", "catalog").unwrap()
+        };
+        for status in [
+            "stopped",
+            "in_progress",
+            "inconclusive",
+            "suppression_observed",
+            "suppression_not_observed",
+        ] {
+            prior.phase = match status {
+                "stopped" => Phase::Stopped,
+                "in_progress" => Phase::Baseline,
+                _ => Phase::Complete,
+            };
+            prior.assessment = (!matches!(status, "stopped" | "in_progress")).then(|| Assessment {
+                status: status.into(),
+                reason: "Synthetic assessment".into(),
+                medians: [None; 3],
+                limitation: "Fixture".into(),
+            });
+            let proposed = get(&[prior.clone()]);
+            assert_eq!(proposed[0]["status"], status);
+            assert_eq!(proposed[0]["previous_test"]["id"], prior.id);
+            assert!(proposed[1..].iter().all(|c| c["status"] == "untried"));
+            // Even a positive result does not remove or validate alternatives,
+            // including the other path to exactly the same declared field.
+            assert_eq!(proposed.len(), 4);
+        }
+        let mut latest = prior.clone();
+        latest.created_unix_ms += 1;
+        latest.phase = Phase::Stopped;
+        latest.assessment = None;
+        assert_eq!(get(&[latest, prior.clone()])[0]["status"], "stopped");
+        for mutation in 0..7 {
+            let mut changed = prior.clone();
+            match mutation {
+                0 => changed.investigation.push('!'),
+                1 => changed.catalog_id.push('!'),
+                2 => changed.value = "1".into(),
+                3 => changed.actions[0].hold_ms += 1,
+                4 => changed.origin.as_mut().unwrap().report_sha256 = "0".repeat(64),
+                5 => {
+                    changed
+                        .origin
+                        .as_mut()
+                        .unwrap()
+                        .play_context
+                        .as_mut()
+                        .unwrap()
+                        .source
+                        .frame_metadata_sha256 = "0".repeat(64)
+                }
+                _ => changed.origin = None,
+            }
+            assert!(get(&[changed]).iter().all(|c| c["status"] == "untried"));
+        }
     }
 }

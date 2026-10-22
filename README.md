@@ -27,7 +27,10 @@ candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.
 See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
 Source builds expose a read-only comparison planner using retained play timing
-and cited field hypotheses. The published build passed a limited window/picker
+and cited field hypotheses. It keeps eligible alternatives and separate paths
+available, with exact question references and unresolved aliasing visible.
+See [the saved-case planning regression](research/path-planning/README.md).
+The published build passed a limited window/picker
 check and a native discovery run, but was subsequently quarantined by Windows.
 See [comparison planning and its limits](research/comparison-planner/README.md)
 and [the earlier preview check](research/desktop-preview-ui/README.md).

@@ -1,0 +1,21 @@
+{
+  "frozen_manifest_sha256": "d146134c9e070e6d2b4d1770f255a52ca8aab378818978d5d85761391a887181",
+  "replay_sha256": "81bc2e038a36c302a6550f34be56ca2497ea339b133617b6af537a142251695a",
+  "archived_binary_verified": true,
+  "retained_questions": 2,
+  "prior_choices": 1,
+  "current_choices": 2,
+  "selected_fields": [
+    "walkingSpeed",
+    "jumpSpeed"
+  ],
+  "images_rehashed_and_measurements_recomputed": 15,
+  "original_ambiguous_interpretation_preserved": true,
+  "new_model_calls": 0,
+  "target_access": false,
+  "input_sent": false,
+  "field_writes": 0,
+  "workspace_tests_passed": 302,
+  "test_log_sha256": "b5461651b825ace0fcf22270741950a14e3479d07b9d90bc5066a5c6d80c7aa2",
+  "limitation": "Known-case offline regression. Neither proposal was executed; no gameplay effect or new generalization is established."
+}

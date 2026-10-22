@@ -824,6 +824,29 @@ timing are visible. A window-rendering timeout preserves memory evidence.
 
 ## Explicit runtime response comparisons
 
+`reversebolt_plan_runtime_comparisons` takes the current `catalog_id` and
+`review_id`. It rechecks saved images and sampled input, then proposes bounded
+comparisons for eligible primary candidates **and their retained alternatives**.
+It does not capture, run inference, access the target or execute an action.
+`selection_role` is `primary` or `alternative`; `selected_candidate` gives the
+exact report row. `name`, `explanation` and `question` describe the originating
+primary hypothesis, not a verified meaning for a selected alternative.
+
+Each exact path appears once, preferring its own primary hypothesis when present.
+`question_refs` retains every accepted question mentioning that path; its first
+entry is the chosen `hypothesis_ref`. Distinct paths to the same declared field
+remain separate choices. They may still alias or change occupants; equal names,
+values or snapshot-local node IDs do not establish persistent object identity.
+Selected types are interleaved, with primary candidates before alternatives
+within each type. The existing probe bounds remain: positive scalars up to 20
+can be compared with zero, canonical true booleans with false.
+
+Prior results match the exact path, value, actions, investigation, catalogue,
+report and frame/input metadata hash. A stopped, inconclusive or completed result
+keeps its status without suppressing other paths. `next` is the first untried
+choice, or null while a test, edit or Freeze is active. Preparing and executing
+the returned proposal still require the explicit comparison operations below.
+
 `submit_runtime_hypotheses` preserves eligible activity context from the previous
 completed review when the discovery report, investigation, batch and complete
 frame/input metadata hash still match. Its response and durable receipt include

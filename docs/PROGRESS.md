@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Distinct paths and retained alternatives (2026-10-22): **35% unchanged**.
+The comparison planner now includes eligible alternatives and keeps different
+paths to the same declared field available. Shared field names/types do not prove
+the same object; cross-snapshot aliasing remains unresolved. Identical paths are
+proposed once with all question references retained, preferring their own primary
+hypothesis. Prior outcomes remain scoped to the exact path and comparison context.
+
+A frozen offline replay of the unchanged Hyperbolica evidence preserves both
+original questions, the image model's uncertainty and four 198 ms holds. It now
+proposes the retained jump-speed alternative alongside the original walking-speed
+candidate. Neither comparison was executed. All 302 workspace tests, strict Clippy
+and the artifact audit pass. There are no new model calls, target accesses, inputs,
+writes or verified gameplay controls. The preview remains unavailable and this
+change is unpublished. [Evidence and limits](../research/path-planning/README.md).
+
 Agent activity handoff and numeric persistence (2026-10-22): **35% unchanged**.
 Agent hypotheses now preserve matching activity evidence instead of dropping it.
 Original image-source attribution and uncertainty survive repeated handoffs,
