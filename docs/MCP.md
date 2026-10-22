@@ -64,7 +64,7 @@ for investigation jobs and respect human control. Up to eight holds can be activ
 128 activation records are retained. This is periodic checking, not a promised
 per-frame lock. OCR/image observations do not yet support holding.
 
-The server exposes 45 tools. `reversebolt_set_runtime_value` combines a fresh
+The server exposes 53 tools. `reversebolt_set_runtime_value` combines a fresh
 runtime reading, durable preparation and guarded application in one command.
 Supply a canonical lowercase UUID `change_id`, the current `investigation_id`,
 `catalog_id`, `after_revision`, `candidate_id`, and exact string `value` (number

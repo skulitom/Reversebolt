@@ -4,6 +4,29 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Desktop preview publication (2026-10-22): **35% unchanged**. Preview
+`0.1.0-20261022-010125` is now running on the user's desktop with the named-card,
+direct-number, arrow-key and conditional-slider refinements, shared agent
+context and literal object-text questions. All 44 history entries and the local
+model setting survived a normal idle-window close/relaunch. The installed
+shortcut points to the current preview and its binary manifest was verified.
+
+The release workspace build succeeded. Anode verified window startup, accessible
+picker opening, search with no matches, disabled Connect and cancellation; its
+owned test window exited and the lease was released. No game was attached, no
+model called and no screenshot was reviewed. The earlier 292-test workspace run
+covers the direct controls and naming rules. The published MCP catalogue check
+passes with 53 tools and no engine connection.
+
+The original Windows-review sample remains byte-for-byte intact. A separate
+normal Cargo output directory preserves that sample during ongoing development;
+the publisher now accepts an explicit target directory. Protection remained on,
+and no new related detection was observed during this limited UI check. This
+does not clear the prior behavioral alert or validate attachment/edit behavior.
+External review submission still awaits approval. Earlier entries describing an
+unpublished desktop are historical; this publication supersedes that status.
+[Preview evidence and limits](../research/desktop-preview-ui/README.md).
+
 Literal object-text questions (2026-10-22): **35% unchanged**. After a successful
 empty metadata review, complete same-object text can now seed an internal,
 explicitly untested question. All selected competing paths remain alternatives;

@@ -22,13 +22,17 @@ Agents can also submit their own cited hypotheses through MCP and connect an exa
 candidate or alternative directly to a durable response comparison. Its question
 and evidence remain attached to the result; gameplay meaning stays unverified.
 See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
-Source builds also expose a read-only comparison planner using retained play
-timing and cited field hypotheses. The first actual-game run abstained and its
-restart was blocked by Windows security; the desktop preview remains on the
-preceding build. See [comparison planning and its limits](research/comparison-planner/README.md).
+The current desktop preview also exposes a read-only comparison planner using
+retained play timing and cited field hypotheses. The first actual-game run
+abstained and its restart was blocked by Windows security. The latest source
+build passes a window/picker smoke check with protection enabled; game attachment
+has not been revalidated and the earlier behavioral detection remains unresolved.
+See [comparison planning and its limits](research/comparison-planner/README.md)
+and [the current preview check](research/desktop-preview-ui/README.md).
 Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
 On/Off checkbox. Sliders require known small domain bounds, rather than an invented
 range around the current number. Press Enter or leave the number field to apply.
+Use the up/down keys while editing to adjust the displayed draft by one.
 **Freeze** periodically holds a supported internal value using fresh guarded
 checks. Uncheck it to stop and leave the last value in place. It stops on reference
 changes and never resumes automatically after restart; it is not a per-frame lock.

@@ -1,10 +1,15 @@
-param([switch]$Launch, [switch]$SkipBuild)
+param([switch]$Launch, [switch]$SkipBuild, [string]$TargetDirectory = 'target')
 $ErrorActionPreference = 'Stop'
 $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+$buildDirectory = if ([IO.Path]::IsPathRooted($TargetDirectory)) {
+    [IO.Path]::GetFullPath($TargetDirectory)
+} else {
+    [IO.Path]::GetFullPath((Join-Path $repository $TargetDirectory))
+}
 if (-not $SkipBuild) {
     Push-Location $repository
     try {
-        & cargo build --workspace --release --locked
+        & cargo build --workspace --release --locked --target-dir $buildDirectory
         if ($LASTEXITCODE -ne 0) { throw 'Preview build failed.' }
     } finally { Pop-Location }
 }
@@ -12,7 +17,7 @@ $version = '0.1.0-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
 $destination = Join-Path $repository "dist\$version"
 New-Item -ItemType Directory -Path $destination -Force | Out-Null
 foreach ($name in @('Reversebolt.exe','reversebolt-mcp.exe','reversebolt-runtime-loader.exe','reversebolt_runtime.dll')) {
-    Copy-Item -LiteralPath (Join-Path $repository "target\release\$name") -Destination (Join-Path $destination $name)
+    Copy-Item -LiteralPath (Join-Path $buildDirectory "release\$name") -Destination (Join-Path $destination $name)
 }
 Copy-Item -LiteralPath (Join-Path $repository 'LICENSE') -Destination $destination
 $publishedLicenses = Join-Path $destination 'licenses'
