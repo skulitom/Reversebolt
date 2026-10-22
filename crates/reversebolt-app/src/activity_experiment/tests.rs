@@ -180,7 +180,11 @@ fn execute(state: &State, index: usize) -> Result<()> {
 }
 #[test]
 fn activity_experiment_generates_four_bounded_responses_without_any_memory_field() {
-    let (mut engine, state, root, owner, plan, reference) = setup();
+    let (mut engine, state, root, owner, mut plan, _) = setup();
+    let selection = activity::selection::suggest(&engine.live.as_ref().unwrap().view, &[]).unwrap();
+    assert_eq!(selection.next.as_ref().unwrap().key, plan.key);
+    plan.selection = Some(selection);
+    let reference = store(&root.join("runtime"), &plan).unwrap();
     assert!(
         engine
             .live
@@ -320,6 +324,7 @@ fn activity_experiment_generates_four_bounded_responses_without_any_memory_field
     assert_eq!(review["review"]["status"], "measured");
     assert!(review["review"]["context"].is_null());
     let archived = super::review::read_result(&engine, &reference, &root.join("runtime")).unwrap();
+    assert_eq!(archived["result"]["input_selection"], json!(plan.selection));
     assert_eq!(
         archived["result"]["measurement"]["frames"]
             .as_array()

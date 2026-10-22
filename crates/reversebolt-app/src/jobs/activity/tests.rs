@@ -1,6 +1,7 @@
 use super::*;
 use crate::jobs::tests::{controller, initial_view, request};
 use reversebolt_core::inputs::{Buffer, Focus, Poll};
+mod selection_tests;
 
 fn view() -> EngineView {
     let mut view = initial_view();

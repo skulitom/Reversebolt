@@ -134,6 +134,7 @@ fn read_only(action: &str) -> bool {
             | "read_sequence"
             | "read_play_evidence"
             | "read_activity_experiment"
+            | "plan_activity_experiment"
             | "read_change_evidence"
             | "read_runtime_test"
             | "search_runtime_values"
@@ -817,6 +818,15 @@ impl Controller {
                 return self.jobs.events_after(command.args["cursor"].as_u64().unwrap_or(0),64)
                     .map(|p|json!(p)).map_err(|e|format!("Event cursor unavailable: {e:?}. Refresh status and use its event_head."));
             }
+            if command.action == "plan_activity_experiment" {
+                if !command.args.is_null() && command.args.as_object().is_none_or(|m| !m.is_empty())
+                {
+                    return Err(
+                        "Input planning uses the current session and accepts no arguments.".into(),
+                    );
+                }
+                return self.activity_suggestion().map(|s| json!(s));
+            }
             if matches!(
                 command.action.as_str(),
                 "start_observation_job"
@@ -909,6 +919,7 @@ impl Controller {
             "status"
                 | "history"
                 | "job_events"
+                | "plan_activity_experiment"
                 | "start_observation_job"
                 | "start_activity_experiment"
                 | "start_runtime_job"

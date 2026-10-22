@@ -7,6 +7,7 @@ use crate::{
     visual::{self, FrameRef},
 };
 use serde::{Deserialize, Serialize};
+pub mod selection;
 
 pub const STEPS: usize = 10;
 pub const HOLD_MS: u32 = 250;
@@ -96,6 +97,16 @@ pub fn eligible_keys(live: &LiveView) -> Vec<u8> {
         .collect()
 }
 
+fn source(live: &LiveView, key: u8) -> Option<&FrameRef> {
+    let last = live.frames.last()?;
+    live.frames.iter().rev().find(|f| {
+        f.epoch == last.epoch
+            && f.width == last.width
+            && f.height == last.height
+            && sampled(f, key).is_ok()
+    })
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Plan {
@@ -109,24 +120,12 @@ pub struct Plan {
     pub request: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub observer_model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<selection::Suggestion>,
 }
 impl Plan {
     pub fn new(live: &LiveView, key: u8, request: String) -> Result<Self> {
-        let last = live
-            .frames
-            .last()
-            .ok_or("Play briefly so Reversebolt can observe a key first.")?;
-        let source = live
-            .frames
-            .iter()
-            .rev()
-            .find(|f| {
-                f.epoch == last.epoch
-                    && f.width == last.width
-                    && f.height == last.height
-                    && sampled(f, key).is_ok()
-            })
-            .ok_or("That key has no complete sampled source.")?;
+        let source = source(live, key).ok_or("That key has no complete sampled source.")?;
         let plan = Self {
             policy: POLICY.into(),
             investigation: live.investigation_id.clone(),
@@ -137,6 +136,7 @@ impl Plan {
             source: source.clone(),
             request,
             observer_model: None,
+            selection: None,
         };
         plan.check(live, 0)?;
         if live.sample_count + STEPS > crate::live::MAX_SAMPLES
@@ -188,6 +188,17 @@ impl Plan {
             return Err("The input experiment's target, plan or next capture changed.".into());
         }
         sampled(&self.source, self.key)?;
+        if let Some(selection) = &self.selection {
+            let expected = selection::Choice::from_frame(&self.source, self.key)?;
+            if selection.policy != selection::POLICY
+                || selection.next.as_ref() != Some(&expected)
+                || selection.attempted_keys.contains(&self.key)
+                || selection.unavailable.is_some()
+                || !selection.candidates.contains(&expected)
+            {
+                return Err("Automatic input selection differs from its pinned source".into());
+            }
+        }
         let current = live
             .frames
             .iter()

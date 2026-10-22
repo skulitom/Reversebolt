@@ -208,7 +208,7 @@ pub(super) fn run_with(
     }
     let result = json!({"schema":1,"experiment":step.activity,"job":owner.job,"review_id":review_id,"model":plan.observer_model,
         "status":summary.status,"error":summary.error,"frame_ids":ids,"measurement":evidence,
-        "interpretation":receipt,"cancelled":cancelled,"limitation":activity::LIMITATION});
+        "interpretation":receipt,"input_selection":plan.selection,"cancelled":cancelled,"limitation":activity::LIMITATION});
     save_new(&review_dir.join("result.json"), &result)?;
     summary.receipt_sha256 =
         visual::digest(&fs::read(review_dir.join("result.json")).map_err(|e| e.to_string())?);

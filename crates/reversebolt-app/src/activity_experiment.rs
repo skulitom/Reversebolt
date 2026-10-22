@@ -16,6 +16,7 @@ use std::{
     sync::atomic::Ordering,
 };
 pub(crate) mod review;
+pub(crate) mod selection_history;
 #[cfg(test)]
 mod tests;
 

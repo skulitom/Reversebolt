@@ -59,10 +59,34 @@ fail. Appearance observations remain provisional and supply no write authority.
 `start_activity_experiment` investigates one observed key before any gameplay
 field or isolated response has been identified. It requires the same exact
 `boot`, `binding` and monotonically increasing `request_id` as observation jobs,
-plus a Windows virtual-key `key` sampled in this batch. Supported keys are
+and accepts an optional Windows virtual-key `key` sampled in this batch. Supported keys are
 letters, digits, arrows and Space. The source must have complete foreground
 sampling and the current image geometry. A key sample establishes provenance,
 not its meaning or effect.
+
+Omit `key` for automatic selection. `plan_activity_experiment` takes no arguments
+and exposes the same current recommendation without creating a job or accessing
+the target. The `untried_observed_key_v1` policy considers each eligible key's
+latest complete source window. It sorts by single-key sampled polls, then total
+pressed polls, source recency and a deterministic key-code tie break. It does not
+accumulate overlapping windows or infer key meaning, continuous hold duration,
+gameplay usefulness or expected information gain. Results include `candidates`,
+`attempted_keys`, `next` or `unavailable`, exact source metadata hashes and limits.
+Image capacity or incomplete evidence can prevent a recommendation. Other active
+work and job authorization are checked when submitting, not promised by planning.
+
+Automatic selection excludes previously proposed keys in the same investigation
+and batch, including cancelled or uncertain attempts. New proposals reserve an
+immutable local marker before job admission; it survives bounded job-history
+eviction and restart. A failed or interrupted admission can therefore reserve a
+key even if no input ran. Incomplete or inconsistent markers fail explicitly.
+Older proposals are excluded while retained in legacy job history; no complete
+history is claimed for legacy jobs already evicted before this feature existed.
+An explicit `key` permits a deliberate new proposal under the existing checks.
+The immutable plan retains the selection and exact source; identical retries
+return that plan even if later evidence changes the ranking. Switching between
+omitted and explicit key modes on the same request is rejected. Completed review
+archives expose the original choice in `result.input_selection`.
 
 The fixed sequence contains ten Play images: a seed, a quiet interval, then
 four 250 ms presses each followed by a quiet interval. Capture performs no memory
@@ -73,7 +97,8 @@ capture. The experiment reserves ten capture slots and ten worst-case image
 allowances; this fits after the usual 31-capture pass under the new 48-image cap.
 The independent 20-memory-sample and 512 MiB storage ceilings remain unchanged.
 
-The desktop's **Explore an input** menu starts this sequence explicitly. An
+The desktop's single **Explore next** button chooses an input and starts this
+sequence explicitly, without a key-selection menu. An
 agent proposal stays queued until the desktop's **Start** action grants the
 existing job effect authorization. Nothing sends input merely on attachment.
 There are three seconds to return to the selected game; the worker never changes

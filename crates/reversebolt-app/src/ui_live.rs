@@ -480,26 +480,11 @@ impl LivePane {
                     .jobs
                     .values()
                     .all(|j| j.phase.terminal());
-            ui.add_enabled_ui(idle, |ui| {
-                ui.menu_button("Explore an input", |ui| {
-                    let keys = reversebolt_core::activity_experiment::eligible_keys(live);
-                    if keys.is_empty() {
-                        ui.label("Play briefly while Reversebolt observes a key first.");
-                        return;
-                    }
-                    ui.label("Repeat an observed key four times, then analyse its response.");
-                    ui.label("Return to the game within 3 seconds. This can change gameplay.");
-                    for key in keys {
-                        if ui
-                            .button(format!("Test {}", reversebolt_core::inputs::key_name(key)))
-                            .clicked()
-                        {
-                            handle.submit("start_activity_experiment", json!({"key":key}));
-                            ui.close();
-                        }
-                    }
-                });
-            });
+            if ui.add_enabled(idle, egui::Button::new("Explore next"))
+                .on_hover_text("Choose the next key from recorded gameplay, repeat it four times, then analyse the response. Return to the game within 3 seconds. This can change gameplay.")
+                .clicked() {
+                handle.submit("start_activity_experiment", json!({}));
+            }
             let frozen: Vec<_> = state.freezes.iter().filter(|f| f.active()).collect();
             if !frozen.is_empty()
                 && ui

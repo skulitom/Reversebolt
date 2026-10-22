@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic input selection (2026-10-22): **35% unchanged**.
+The desktop now has one **Explore next** action. It chooses an observed key under
+a versioned sampling policy and pins that choice in the experiment plan. Agents
+can inspect the same recommendation with `plan_activity_experiment` and omit
+`key` when proposing a job. Cancelled, uncertain and prior proposals are excluded
+within the batch; new immutable reservation markers survive job-history eviction.
+Replay returns the original choice and existing effect authorization is preserved.
+
+The unchanged selection policy finds eligible inputs in all four original saved
+2048/Tetris recordings. This is metadata-only replay on exposed data, not evidence
+that the selected key reveals a useful control. Tests cover sampling, key renaming,
+overlap, capacity, altered evidence, cancellation, replay, real history eviction
+and restart. The generated ten-capture/review integration now uses an automatic
+plan and retains its selection with zero memory samples. All **402 workspace
+tests**, strict Clippy and formatting pass. Initial visibility and test journal-
+ownership failures are retained. No game, native input worker or live model ran.
+
+The preview remains unavailable; artifacts and security materials remain local.
+The fixed capability weights and total remain **35/100**. A broader scheduler,
+causal discovery and independent-game validation are still required.
+[Implementation, replay results and limits](../research/input-selection/README.md).
+
 Saved interpretation reuse and exact image scope (2026-10-22): **35% unchanged**.
 Later local metadata review and agent hypothesis submission now reuse a checked
 input experiment interpretation without another image-model call. The original

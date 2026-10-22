@@ -5,6 +5,28 @@ use reversebolt_core::activity_experiment::{self as activity, Plan};
 mod tests;
 
 impl Controller {
+    pub(super) fn activity_suggestion(&self) -> Result<activity::selection::Suggestion> {
+        let view = self.engine.view.read().unwrap();
+        let live = view.live.as_ref().ok_or("Connect an application first.")?;
+        let binding = Scope::from_view(&view)
+            .ok_or("Application disconnected")?
+            .key();
+        let history = self.jobs.snapshot();
+        let mut attempted: Vec<_> = history
+            .jobs
+            .values()
+            .filter(|j| j.binding.target == binding)
+            .filter_map(|j| j.steps.first())
+            .filter_map(|s| serde_json::from_str::<Step>(&s.payload).ok())
+            .map(|s| s.key)
+            .collect();
+        attempted.extend(crate::activity_experiment::selection_history::keys(
+            &self.runtime_directory,
+            &binding,
+        )?);
+        activity::selection::suggest(live, &attempted)
+    }
+
     pub(super) fn plan_activity(
         &self,
         command: &Command,
@@ -19,10 +41,17 @@ impl Controller {
         }) {
             return Err("Input experiments accept only a sampled key and the job envelope.".into());
         }
-        let key = command.args["key"]
-            .as_u64()
-            .filter(|k| *k < 255)
-            .ok_or("Choose a previously sampled key.")? as u8;
+        let requested_key = command
+            .args
+            .get("key")
+            .map(|value| {
+                value
+                    .as_u64()
+                    .filter(|k| (1..255).contains(k))
+                    .map(|k| k as u8)
+                    .ok_or("Supply a sampled key or omit key for automatic selection.")
+            })
+            .transpose()?;
         let history = self.jobs.snapshot();
         if let Some(client) = history.clients.get(&actor.client)
             && request <= client.high_water
@@ -35,10 +64,14 @@ impl Controller {
             let job::Action::Submit { steps, .. } = &receipt.command.action else {
                 return Err("Request ID belongs to another operation".into());
             };
-            if steps
+            let first = steps
                 .first()
                 .and_then(|s| serde_json::from_str::<Step>(&s.payload).ok())
-                .is_none_or(|s| s.key != key)
+                .ok_or("Request ID belongs to another operation")?;
+            let original =
+                crate::activity_experiment::load(&self.runtime_directory, &first.activity)?;
+            if requested_key.is_none() != original.selection.is_some()
+                || requested_key.is_some_and(|k| k != first.key)
             {
                 return Err("Request ID was already used with different arguments".into());
             }
@@ -55,6 +88,23 @@ impl Controller {
         if actor.role == job::Role::Agent && history.human_hold.is_some() {
             return Err("The desktop has control.".into());
         }
+        let selection = requested_key
+            .is_none()
+            .then(|| self.activity_suggestion())
+            .transpose()?;
+        let key = requested_key
+            .or_else(|| {
+                selection
+                    .as_ref()
+                    .and_then(|s| s.next.as_ref())
+                    .map(|c| c.key)
+            })
+            .ok_or_else(|| {
+                selection
+                    .as_ref()
+                    .and_then(|s| s.unavailable.clone())
+                    .unwrap_or_else(|| "No input experiment is available.".into())
+            })?;
         let view = self.engine.view.read().unwrap();
         if view.analysis.is_some()
             || view.runtime_tests.iter().any(|t| t["active"] == true)
@@ -75,10 +125,17 @@ impl Controller {
         }
         let mut plan = Plan::new(live, key, format!("{boot}:{}:{request}", actor.client))?;
         plan.observer_model = view.observer_model.clone();
+        plan.selection = selection;
+        plan.check(live, 0)?;
         if plan.binding() != binding.target {
             return Err("Application binding changed".into());
         }
         let reference = crate::activity_experiment::store(&self.runtime_directory, &plan)?;
+        crate::activity_experiment::selection_history::reserve(
+            &self.runtime_directory,
+            &plan,
+            &reference,
+        )?;
         let steps = (0..=activity::STEPS)
             .map(|index| {
                 Ok(job::Step {

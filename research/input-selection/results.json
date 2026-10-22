@@ -1,0 +1,194 @@
+{
+  "method": "automatic_input_selection_v1",
+  "policy": "untried_observed_key_v1",
+  "goal_percent": 35,
+  "scope": "Generated capture/input tests and read-only metadata replay of four exposed saved browser-game sessions; no game, native key worker or live model invocation.",
+  "workspace_test_executions": 402,
+  "replays": [
+    {
+      "dataset": "2048-1",
+      "source": "test-results/independent-games-v1/2048-1-attempt-01/final-status.json",
+      "source_sha256": "1515f3d290607797e8e18403909136f659c77b7e220a3a551c978f7e1bc57210",
+      "replay": "test-results/input-selection-2048-1.json",
+      "replay_sha256": "dc1b6221fc60aaf8df27a5e725c0ec18149484dba208d4a959a84a8502d6f72f",
+      "candidate_keys": [
+        38,
+        39,
+        37,
+        40
+      ],
+      "next": {
+        "key": 38,
+        "pressed_polls": 15,
+        "single_key_polls": 15,
+        "source_frame": "47d29c82-9c02-4476-a43f-9296e39e9bc6",
+        "source_metadata_sha256": "46e8a0168ac9a157bc845d8ebfea31333a7e7992c04aaa7c8a7dbb972047901b",
+        "source_number": 16
+      },
+      "unavailable": null
+    },
+    {
+      "dataset": "2048-2",
+      "source": "test-results/independent-games-v1/2048-2-attempt-01/final-status.json",
+      "source_sha256": "a56c1cfc471daee2962f2f4411c437549c67d9e30fd65306ad61078450d85bf8",
+      "replay": "test-results/input-selection-2048-2.json",
+      "replay_sha256": "805e6e7463bca1d930ad2db29ac900d211bb5f26bf1c14d985a4412fadb7f160",
+      "candidate_keys": [
+        37,
+        38,
+        40,
+        39
+      ],
+      "next": {
+        "key": 37,
+        "pressed_polls": 15,
+        "single_key_polls": 15,
+        "source_frame": "8694d5cc-a137-4dea-82a0-143c0da6b1ea",
+        "source_metadata_sha256": "46d0f66b9cd3ffad85879cb137bd8faece5a05f3d04eab3ceefb7eb2c66844c6",
+        "source_number": 16
+      },
+      "unavailable": null
+    },
+    {
+      "dataset": "tetris-1",
+      "source": "test-results/independent-games-v1/tetris-1-attempt-01/final-status.json",
+      "source_sha256": "7700d1fe9ac112c959fb97e5a7866599a419afe2959e866d2f0871dfa575ff28",
+      "replay": "test-results/input-selection-tetris-1.json",
+      "replay_sha256": "7236f475c77b2ee0d485c063820d830494c29c037fe4f38ffdf41e7d3451ff48",
+      "candidate_keys": [
+        40,
+        38,
+        39,
+        32,
+        37
+      ],
+      "next": {
+        "key": 40,
+        "pressed_polls": 35,
+        "single_key_polls": 35,
+        "source_frame": "f274f0d7-d71d-4138-ab73-d9f71ea6f6dc",
+        "source_metadata_sha256": "949fce3e9a2e9b3b4eea82e065b5962714b6d7a5f88aec334ab174dfac2a6d18",
+        "source_number": 16
+      },
+      "unavailable": null
+    },
+    {
+      "dataset": "tetris-2",
+      "source": "test-results/independent-games-v1/tetris-2-attempt-01/final-status.json",
+      "source_sha256": "29000f38ec171c9245d761f18e8847c91fb8a161cda38e13806372537bdd791e",
+      "replay": "test-results/input-selection-tetris-2.json",
+      "replay_sha256": "48a15f191a80c7aaefbc4ef07e85eaff3c25825c5a0caa70e1f4f2e6f765b98d",
+      "candidate_keys": [
+        40,
+        37,
+        39,
+        32,
+        38
+      ],
+      "next": {
+        "key": 40,
+        "pressed_polls": 40,
+        "single_key_polls": 40,
+        "source_frame": "a041ca64-b1e2-4246-9e13-75f6f60c0b37",
+        "source_metadata_sha256": "41a6e9877c690348499cfac3fcc753a44208e41750d0c78a3e08a638e8ceea8e",
+        "source_number": 16
+      },
+      "unavailable": null
+    }
+  ],
+  "replay_limitation": "Hypothetical exclusion order does not execute experiments, spend image capacity or establish useful/causal gameplay responses. These are exposed development recordings, not withheld generalization evidence.",
+  "verified": [
+    "read-only planner shares the submission policy",
+    "automatic plans pin source and ranking",
+    "agent proposal sends no input before authorization",
+    "request replay survives ranking change without changing key",
+    "omitted/explicit mode change rejected for same request",
+    "cancelled proposals excluded",
+    "26 later cancelled jobs evict original proposals without erasing exclusions",
+    "restart retains reservations",
+    "new batch independent",
+    "corrupted reservation rejected",
+    "automatically selected plan reaches generated captures and archived review with zero memory samples"
+  ],
+  "checks": [
+    {
+      "path": "test-results/input-selection-2048-1.json",
+      "sha256": "dc1b6221fc60aaf8df27a5e725c0ec18149484dba208d4a959a84a8502d6f72f"
+    },
+    {
+      "path": "test-results/input-selection-2048-2.json",
+      "sha256": "805e6e7463bca1d930ad2db29ac900d211bb5f26bf1c14d985a4412fadb7f160"
+    },
+    {
+      "path": "test-results/input-selection-2048-2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/input-selection-clippy-first.log",
+      "sha256": "4a83bfe31fac88af2552b2bacf847706387845dd26e750d36c674d238c2d07b5"
+    },
+    {
+      "path": "test-results/input-selection-format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/input-selection-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/input-selection-replay-first.log",
+      "sha256": "001277c9e6436e9f3d40351a4fb3095f7f6edf5d051924a91434a403851ce5eb"
+    },
+    {
+      "path": "test-results/input-selection-targeted-first.log",
+      "sha256": "9a5f254f05651b9a5a8f384b7afb95d5fc221e09c01767b5753c8fa4d499d55d"
+    },
+    {
+      "path": "test-results/input-selection-targeted-second.log",
+      "sha256": "b4d07b8739bb88e6a05ce1cd1894c199ca4d59e97e0c60ec160fb37df2c51f13"
+    },
+    {
+      "path": "test-results/input-selection-targeted-third.log",
+      "sha256": "b4f90225d7e7a341617f83b4b76ec873ab3e583dafc592fd8a9d037450e7e6f3"
+    },
+    {
+      "path": "test-results/input-selection-tetris-1.json",
+      "sha256": "7236f475c77b2ee0d485c063820d830494c29c037fe4f38ffdf41e7d3451ff48"
+    },
+    {
+      "path": "test-results/input-selection-tetris-1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/input-selection-tetris-2.json",
+      "sha256": "48a15f191a80c7aaefbc4ef07e85eaff3c25825c5a0caa70e1f4f2e6f765b98d"
+    },
+    {
+      "path": "test-results/input-selection-tetris-2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/input-selection-workspace-first.log",
+      "sha256": "4b48a553d9b5ee1ad997f41825599118875d078111bdf48957830f7482895a5f"
+    }
+  ],
+  "initial_failures": {
+    "input-selection-targeted-first.log": "Missing pub(super) visibility for the controller helper; fixed.",
+    "input-selection-targeted-second.log": "Test reopened a journal while its owner was alive; corrected to drop the owner first, preserving exclusive ownership."
+  },
+  "frozen_directory": "test-results/input-selection-v1",
+  "frozen_files": 202,
+  "manifest_sha256": "ba75b2a85e02a9696bde99699777fe3978a274a4ce79e196e34b26ccfff0330d",
+  "changed": [],
+  "preceding_frozen_snapshot_changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "security_submission": "local only; no upload",
+  "generalization_claim": false
+}
