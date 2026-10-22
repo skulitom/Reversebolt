@@ -22,6 +22,8 @@ pub struct Editor {
     #[cfg(test)]
     value_id: Option<egui::Id>,
     #[cfg(test)]
+    value_rect: Option<egui::Rect>,
+    #[cfg(test)]
     increase_rect: Option<egui::Rect>,
 }
 
@@ -202,6 +204,25 @@ pub fn draw(
             response
         })
         .inner;
+    #[cfg(test)]
+    {
+        editor.value_rect = Some(response.rect);
+    }
+    // One click should let the user replace the whole number. Once focused,
+    // subsequent clicks still position the caret for editing individual digits.
+    if enabled
+        && response.gained_focus()
+        && !response.changed()
+        && let Some(mut state) = egui::TextEdit::load_state(ui.ctx(), value_id)
+    {
+        state
+            .cursor
+            .set_char_range(Some(egui::text::CCursorRange::two(
+                egui::text::CCursor::new(0),
+                egui::text::CCursor::new(editor.text.chars().count()),
+            )));
+        state.store(ui.ctx(), value_id);
+    }
     response
         .widget_info(|| egui::WidgetInfo::labeled(egui::WidgetType::TextEdit, enabled, "Value"));
     ui.ctx().accesskit_node_builder(value_id, |node| {
@@ -377,6 +398,53 @@ pub fn ocr(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn one_click_then_typing_replaces_the_number_and_enter_applies_once() {
+        let ctx = egui::Context::default();
+        let mut editor = Editor::default();
+        let render = |editor: &mut Editor, events| {
+            let mut requested = None;
+            let mut output = ctx.run_ui(
+                egui::RawInput {
+                    events,
+                    ..Default::default()
+                },
+                |ui| {
+                    requested = draw(ui, editor, 8, &json!("123"), true, None);
+                },
+            );
+            output.textures_delta.clear();
+            requested
+        };
+        assert!(render(&mut editor, vec![]).is_none());
+        let pos = editor.value_rect.unwrap().center();
+        let pointer = |pressed| egui::Event::PointerButton {
+            pos,
+            button: egui::PointerButton::Primary,
+            pressed,
+            modifiers: Default::default(),
+        };
+        assert!(
+            render(
+                &mut editor,
+                vec![egui::Event::PointerMoved(pos), pointer(true)]
+            )
+            .is_none()
+        );
+        assert!(render(&mut editor, vec![pointer(false)]).is_none());
+        assert!(render(&mut editor, vec![egui::Event::Text("7".into())]).is_none());
+        assert_eq!(editor.text, "7");
+        let enter = egui::Event::Key {
+            key: egui::Key::Enter,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: Default::default(),
+        };
+        assert_eq!(render(&mut editor, vec![enter]).as_deref(), Some("7"));
+        assert!(render(&mut editor, vec![]).is_none());
+    }
 
     #[test]
     fn numeric_cards_only_offer_sliders_for_known_small_ranges() {

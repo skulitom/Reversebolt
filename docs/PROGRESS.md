@@ -4,6 +4,21 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Direct control polish (2026-10-22): **35% unchanged**.
+Generated array labels, generic storage names and opaque identifiers are now
+excluded from the control board and its add-controls results. Additional placeholder
+explanations are rejected by the observation cards. Useful short names and compound
+names remain visible.
+Clicking an unfocused number selects it for replacement; typing stays local until
+Enter or focus loss. Subsequent clicks can still position the caret.
+
+Ten automated UI checks and strict app Clippy pass. The existing exact numeric
+steppers, known-small-range slider policy and supported Freeze controls remain.
+These presentation checks do not verify gameplay meanings: raw field descriptions
+still state that their effects are being checked, and model hypotheses are not
+promoted to identified controls. The availability check still reports the desktop
+executable missing after quarantine; no replacement was published or launched.
+
 Deterministic displacement comparison (2026-10-22): **35% unchanged**.
 A shared core policy now compares retained patch displacements independently of
 model prose, with hash bindings, explicit missing/sparse/sub-threshold cases and

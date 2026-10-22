@@ -96,19 +96,31 @@ fn identified_name(name: &str) -> bool {
         .split(|c: char| !c.is_alphabetic())
         .filter(|s| !s.is_empty())
         .collect();
+    let compact: String = lower.chars().filter(|c| c.is_alphanumeric()).collect();
+    let opaque = compact.strip_prefix("0x").unwrap_or(&compact);
+    let opaque = opaque.strip_prefix('t').unwrap_or(opaque);
     name.chars().filter(|c| c.is_alphabetic()).count() >= 2
         && name.chars().count() <= 80
-        && !matches!(
-            words.as_slice(),
-            ["value" | "number" | "field" | "item" | "scalar" | "float" | "int" | "bool"]
-                | ["internal", "value"]
-        )
+        // An array index, generated symbol or storage type does not identify
+        // what a value represents. Keep those in discovery, not on the board.
+        && !(opaque.len() >= 8 && opaque.bytes().all(|c| c.is_ascii_hexdigit()))
+        && !words.iter().all(|word| {
+            [
+                "value", "values", "number", "field", "item", "element", "index",
+                "member", "candidate", "scalar", "float", "double", "int", "uint",
+                "integer", "bool", "boolean", "byte", "internal", "memory", "observed",
+                "data", "parameter", "property", "setting", "state",
+            ].contains(word)
+        })
+        && !matches!(words.as_slice(), ["n", "a"] | ["not", "identified"] | ["not", "known"])
         && ![
             "unidentified",
             "unknown",
             "unnamed",
             "unlabelled",
             "unlabeled",
+            "unrecognized",
+            "unrecognised",
             "internal value",
             "value ",
         ]
@@ -129,6 +141,11 @@ fn observation_description(text: &str) -> Option<String> {
             "unknown"
                 | "unknown effect"
                 | "no explanation"
+                | "no description"
+                | "not identified"
+                | "not known"
+                | "unidentified value"
+                | "effect unknown"
                 | "n/a"
                 | "a provisional visual finding"
                 | "visual finding with an unknown effect"
@@ -1535,10 +1552,30 @@ mod card_copy_tests {
             "float32",
             "m_InternalValue",
             "<Speed>k__BackingField",
+            "Element 3",
+            "Memory value 2",
+            "Candidate_17",
+            "ScalarValue",
+            "uint64",
+            "N/A",
+            "Not identified",
+            "0xDEADBEEF1234",
+            "F0123456789abcdef",
+            "ffffffffffffffff",
         ] {
             assert!(!identified_name(&runtime_name(name)), "{name}");
         }
-        for name in ["HP", "XP", "m_WalkSpeed", "ItemCount", "Health", "生命值"] {
+        for name in [
+            "HP",
+            "XP",
+            "m_WalkSpeed",
+            "ItemCount",
+            "Health",
+            "生命值",
+            "ElementCount",
+            "MemoryCapacity",
+            "PlayerState",
+        ] {
             assert!(identified_name(&runtime_name(name)), "{name}");
         }
     }
@@ -1551,6 +1588,9 @@ mod card_copy_tests {
             "Unknown effect.",
             "A provisional visual finding.",
             "Visual finding with an unknown effect.",
+            "No description.",
+            "Not identified.",
+            "Effect unknown.",
         ] {
             assert!(observation_description(description).is_none());
         }
