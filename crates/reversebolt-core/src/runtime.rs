@@ -8,6 +8,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 pub const MAX_PATH_STEPS: usize = 8;
 pub const MAX_REFRESH_PATHS: usize = 32;
 pub const MAX_RUNTIME_READINGS: usize = 16;
+pub const MAX_RUNTIME_CARDS: usize = 64;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -172,6 +173,9 @@ pub struct View {
     pub search: Option<SearchPage>,
     #[serde(default)]
     pub card_generation: u64,
+    /// Explicit selections survive automatic card discovery within this catalogue.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub selected_cards: Vec<String>,
     /// Naming hypotheses for investigation. The UI may use explicitly tentative
     /// copy for an existing exact-path card; this grants no bounds or edit authority.
     #[serde(default)]
@@ -335,7 +339,15 @@ impl View {
                 .filter(|c| !ids.contains(&c.candidate.id))
                 .cloned(),
         );
-        selected.truncate(64);
+        selected.truncate(MAX_RUNTIME_CARDS);
+        let mut pinned = self.selected_cards.clone();
+        for id in ids {
+            if !pinned.contains(id) {
+                pinned.push(id.clone());
+            }
+        }
+        pinned.retain(|id| selected.iter().any(|c| &c.candidate.id == id));
+        self.selected_cards = pinned;
         self.cards = selected;
         self.revision = revision;
         self.card_generation = generation;

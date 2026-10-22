@@ -11,10 +11,46 @@ use reversebolt_core::{
 };
 use serde_json::{Value, json};
 use std::{
+    collections::BTreeSet,
     io::Write,
     path::Path,
     sync::{Arc, RwLock, atomic::Ordering},
 };
+
+fn protected_cards(engine: &Engine) -> BTreeSet<String> {
+    let Some(live) = &engine.live else {
+        return BTreeSet::new();
+    };
+    let catalog = &live.view.runtime.catalog_id;
+    let investigation = &live.view.investigation_id;
+    engine
+        .runtime_trials
+        .records
+        .iter()
+        .filter(|t| &t.context.catalog_id == catalog && &t.context.investigation == investigation)
+        .map(|t| t.candidate_id.clone())
+        .chain(
+            engine
+                .view
+                .freezes
+                .iter()
+                .filter(|f| {
+                    &f.catalog == catalog
+                        && &f.investigation == investigation
+                        && (f.active() || f.phase == "uncertain")
+                })
+                .map(|f| f.candidate.clone()),
+        )
+        .chain(
+            engine
+                .runtime_tests
+                .records
+                .iter()
+                .filter(|t| t.active())
+                .map(|t| t.candidate.id.clone()),
+        )
+        .collect()
+}
 
 fn save_new(path: &Path, value: &Value) -> Result<()> {
     let bytes = serde_json::to_vec_pretty(value).map_err(|e| e.to_string())?;
@@ -105,10 +141,11 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
             }
             let receipt = read_archive(&dir.join("receipt.json"))?;
             return Ok(
-                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"activity_motion_comparison":receipt["activity_motion_comparison"],"replayed":true,"published":false}),
+                json!({"review":receipt["review"],"activity_transfer":receipt["activity_transfer"],"activity_motion_comparison":receipt["activity_motion_comparison"],"card_publication":receipt["card_publication"],"replayed":true,"published":false}),
             );
         }
     }
+    let protected = protected_cards(engine);
     let live = &mut engine
         .live
         .as_mut()
@@ -182,17 +219,26 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
         .transpose()?
         .flatten();
     let dir = base.join("naming").join(&p.review_id);
+    let mut staged = view.clone();
+    let card_publication = publish(
+        &mut staged,
+        &p.catalog_id,
+        review.clone(),
+        false,
+        Some(&report),
+        &protected,
+    )?;
     std::fs::create_dir_all(base.join("naming")).map_err(|e| e.to_string())?;
     std::fs::create_dir(&dir).map_err(|e| e.to_string())?;
     save_new(&dir.join("agent-request.json"), &request)?;
     save_new(&dir.join("inventory.json"), &json!(inventory))?;
     save_new(
         &dir.join("receipt.json"),
-        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"limitation":h::LIMITATION}),
+        &json!({"schema":1,"selection":selection,"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"limitation":h::LIMITATION}),
     )?;
-    publish(view, &p.catalog_id, review.clone(), false)?;
+    *view = staged;
     Ok(
-        json!({"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"replayed":false,"published":true}),
+        json!({"review":review,"activity_transfer":activity_transfer,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"replayed":false,"published":true}),
     )
 }
 
@@ -254,7 +300,9 @@ pub(crate) fn publish(
     catalog: &str,
     mut review: Review,
     cancelled: bool,
-) -> Result<()> {
+    report: Option<&Value>,
+    protected: &BTreeSet<String>,
+) -> Result<Option<reversebolt_core::runtime_cards::Publication>> {
     if view.catalog_id != catalog
         || view
             .catalog_source
@@ -275,8 +323,24 @@ pub(crate) fn publish(
     if let Some(context) = &review.play_context {
         context.validate()?;
     }
+    let cards = if review.status == "complete"
+        && review.error.is_none()
+        && review
+            .batch
+            .as_ref()
+            .is_some_and(|b| !b.accepted.is_empty())
+    {
+        Some(reversebolt_core::runtime_cards::include(
+            view,
+            report.ok_or("Retained discovery is required to publish reviewed cards.")?,
+            &review,
+            protected,
+        )?)
+    } else {
+        None
+    };
     view.naming = Some(review);
-    Ok(())
+    Ok(cards)
 }
 
 pub fn review(
@@ -350,6 +414,8 @@ fn review_inner(
         &catalog,
         state.clone(),
         false,
+        None,
+        &BTreeSet::new(),
     )?;
     crate::observation_pipeline::checkpoint(engine, published)?;
     let inference = (|| -> Result<Value> {
@@ -394,6 +460,7 @@ fn review_inner(
     };
     // Persist the outcome before any hypothesis becomes visible, including failures.
     save_new(&directory.join("receipt.json"), &result)?;
+    let protected = protected_cards(engine);
     let session = engine.live.as_mut().unwrap();
     session.refresh_connection();
     let cancelled = owner.cancel.load(Ordering::SeqCst) || !session.view.connected;
@@ -412,11 +479,25 @@ fn review_inner(
     }
     let count = state.batch.as_ref().map_or(0, |b| b.accepted.len());
     let evidence_id = state.evidence_id.clone();
-    publish(&mut session.view.runtime, &catalog, state, cancelled)?;
-    engine.event("local-model",format!("Metadata review {evidence_id} retained {} provisional questions; cancelled: {cancelled}. No card meaning or edit authority changed.",if cancelled{0}else{count}));
+    let mut staged = session.view.runtime.clone();
+    let card_publication = publish(
+        &mut staged,
+        &catalog,
+        state,
+        cancelled,
+        Some(&report),
+        &protected,
+    )?;
+    save_new(
+        &directory.join("card-publication.json"),
+        &json!(card_publication),
+    )?;
+    session.view.runtime = staged;
+    let shown = card_publication.as_ref().map_or(0, |p| p.shown.len());
+    engine.event("local-model",format!("Metadata review {evidence_id} retained {} provisional questions and made {shown} primary paths available as tentative cards; cancelled: {cancelled}. No gameplay meaning was verified or edit authority granted.",if cancelled{0}else{count}));
     crate::observation_pipeline::checkpoint(engine, published)?;
     Ok(
-        json!({"evidence_id":evidence_id,"hypotheses":if cancelled{0}else{count},"cancelled":cancelled}),
+        json!({"evidence_id":evidence_id,"hypotheses":if cancelled{0}else{count},"cancelled":cancelled,"card_publication":card_publication}),
     )
 }
 
@@ -674,13 +755,13 @@ mod tests {
     #[test]
     fn cancelled_or_rebound_reviews_never_publish_hypotheses() {
         let mut v = view();
-        publish(&mut v, "current", review(), true).unwrap();
+        publish(&mut v, "current", review(), true, None, &BTreeSet::new()).unwrap();
         assert_eq!(v.naming.as_ref().unwrap().status, "cancelled");
         assert!(v.naming.as_ref().unwrap().batch.is_none());
-        assert!(publish(&mut v, "old", review(), false).is_err());
+        assert!(publish(&mut v, "old", review(), false, None, &BTreeSet::new()).is_err());
         let mut r = review();
         r.batch.as_mut().unwrap().report_sha256 = "b".repeat(64);
-        assert!(publish(&mut v, "current", r, false).is_err());
+        assert!(publish(&mut v, "current", r, false, None, &BTreeSet::new()).is_err());
         assert!(v.naming.as_ref().unwrap().batch.is_none());
         assert!(v.cards.is_empty());
         assert_eq!(v.revision, 0);

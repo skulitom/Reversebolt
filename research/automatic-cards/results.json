@@ -1,0 +1,53 @@
+{
+  "manifest_sha256": "9f004e96af8e26d2e366826233c61926372afd2157716035f2f40fe90dc82136",
+  "cases": [
+    {
+      "name": "Hyperbolica",
+      "exit_code": 0,
+      "log": "2 primary paths, 0 initially present, 2 added, 0 omitted",
+      "output_sha256": "c2802e87931f45753179709e68e7b8f1f6c636c0259092e7c7386bdf6881377e",
+      "initially_present": 0,
+      "publication": {
+        "added": [
+          "fc2ade9059660a98bbee1b88761032f85dcbfdf36c1848f291016f51644f68f5",
+          "db169e9771b93c7b7c20ee6a77a38503e78704d02639a3b6555f5244ef7dcded"
+        ],
+        "card_generation": 1,
+        "omitted": [],
+        "removed_preview": [
+          "b9b7a6d0cebc0df90fe65e688cf5f40ac91a8965899687bcdb282f6057ce1909",
+          "5c31d8556bbf7d21180aa57d771e673dcad04dd339ebe625797d3cecf189aa6b"
+        ],
+        "revision": 1,
+        "shown": [
+          "fc2ade9059660a98bbee1b88761032f85dcbfdf36c1848f291016f51644f68f5",
+          "db169e9771b93c7b7c20ee6a77a38503e78704d02639a3b6555f5244ef7dcded"
+        ]
+      },
+      "repeat_unchanged": true
+    },
+    {
+      "name": "Manifold Garden",
+      "exit_code": 0,
+      "log": "0 primary paths, 0 initially present, 0 added, 0 omitted",
+      "output_sha256": "338a5a6583d9e8e790b1f6487b5485d193bd7e5aa900e30dc7986f739a1556bf",
+      "initially_present": 0,
+      "publication": {
+        "added": [],
+        "card_generation": 0,
+        "omitted": [],
+        "removed_preview": [],
+        "revision": 0,
+        "shown": []
+      },
+      "repeat_unchanged": true
+    }
+  ],
+  "error": null,
+  "binary_sha256": "4229255f4ce50516f4725b29d6a687b569b6810c9da6fad3f2bdfeae5c760e6c",
+  "audit": {
+    "source_count": 155,
+    "input_count": 4,
+    "changed": []
+  }
+}

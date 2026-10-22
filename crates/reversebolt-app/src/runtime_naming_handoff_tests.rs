@@ -168,13 +168,13 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     };
     let catalog = live.view.runtime.catalog_id.clone();
     engine.live = Some(live);
-    let request = |after: &str| reversebolt_core::Command {
+    let request = |after: &str, revision| reversebolt_core::Command {
         action: "submit_runtime_hypotheses".into(),
         source: "fixture-agent".into(),
-        args: json!({"review_id":uuid::Uuid::new_v4().to_string(),"catalog_id":catalog,"after_revision":4,
+        args: json!({"review_id":uuid::Uuid::new_v4().to_string(),"catalog_id":catalog,"after_revision":revision,
             "after_review":after,"report_sha256":inventory.report_sha256,"selected_types":selected_types,"hypotheses":[hypothesis]}),
     };
-    let first_request = request(&original.evidence_id);
+    let first_request = request(&original.evidence_id, 4);
     let base = directory.join("runtime");
     let first = command(&mut engine, &first_request, &base).unwrap();
     assert_eq!(first["activity_transfer"]["retained"], true);
@@ -194,9 +194,19 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
         first_context["interpretation_source"],
         json!({"review_id":original.evidence_id,"model":"original-model"})
     );
-    assert!(engine.live.as_ref().unwrap().view.runtime.cards.is_empty());
-    let second_request = request(first_request.args["review_id"].as_str().unwrap());
+    let runtime = &engine.live.as_ref().unwrap().view.runtime;
+    assert_eq!(runtime.cards.len(), 1);
+    assert_eq!(runtime.cards[0].candidate.id, selection.rows[0].path_id);
+    assert!(!runtime.cards[0].candidate.edit_authority);
+    assert_eq!(runtime.revision, 5);
+    assert_eq!(
+        first["card_publication"]["added"],
+        json!([selection.rows[0].path_id])
+    );
+    let second_request = request(first_request.args["review_id"].as_str().unwrap(), 5);
     let second = command(&mut engine, &second_request, &base).unwrap();
+    assert_eq!(second["card_publication"]["added"], json!([]));
+    let current_cards = json!(engine.live.as_ref().unwrap().view.runtime.cards);
     assert_eq!(second["review"]["play_context"], *first_context);
     assert_eq!(
         second["activity_motion_comparison"],
@@ -210,6 +220,11 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
         first["activity_motion_comparison"]
     );
     assert_eq!(replay["replayed"], true);
+    assert_eq!(replay["card_publication"], first["card_publication"]);
+    assert_eq!(
+        json!(engine.live.as_ref().unwrap().view.runtime.cards),
+        current_cards
+    );
     assert_eq!(
         engine
             .live
@@ -227,11 +242,11 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     changed.args["hypotheses"][0]["question"] =
         json!("Does this changed request have a different effect?");
     assert!(command(&mut engine, &changed, &base).is_err());
-    let stale_request = request(&original.evidence_id);
+    let stale_request = request(&original.evidence_id, 4);
     assert!(command(&mut engine, &stale_request, &base).is_err());
     // Changed observations still allow new questions, but carry no stale activity.
     engine.live.as_mut().unwrap().view.frames[0].sha256 = "d".repeat(64);
-    let third_request = request(second_request.args["review_id"].as_str().unwrap());
+    let third_request = request(second_request.args["review_id"].as_str().unwrap(), 5);
     let third = command(&mut engine, &third_request, &base).unwrap();
     assert_eq!(third["activity_transfer"]["retained"], false);
     assert!(third["review"]["play_context"].is_null());

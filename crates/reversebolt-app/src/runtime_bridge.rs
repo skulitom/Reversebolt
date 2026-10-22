@@ -472,6 +472,7 @@ pub fn command(
             view.catalog_id = uuid::Uuid::new_v4().to_string();
             view.revision = 0;
             view.card_generation = 0;
+            view.selected_cards.clear();
             view.search = None;
             view.naming = None;
             view.catalog_source = Some(reversebolt_core::runtime::CatalogSource {

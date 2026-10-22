@@ -20,6 +20,7 @@ pub mod probes;
 pub mod references;
 pub mod rule_checks;
 pub mod runtime;
+pub mod runtime_cards;
 pub mod runtime_hypotheses;
 pub mod runtime_inventory;
 pub mod runtime_object_questions;

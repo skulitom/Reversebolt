@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic inclusion of reviewed controls (2026-10-22): **35% unchanged**.
+Completed local and agent reviews now add exact accepted primary paths from the
+full retained catalogue to the shared card list, including findings outside the
+initial preview. The 64-card budget preserves explicitly selected/refreshed cards
+and existing edit/freeze/comparison records, reporting exact omissions if full.
+New entries keep their original discovery values/timestamps and false authority.
+Publication advances the card revision only when the list changes. Durable
+agent replay returns the saved result without republishing old cards/reviews.
+This is automatic presentation of provisional findings, not verified meaning.
+
+All 358 workspace test executions, strict workspace/all-target Clippy and
+formatting pass. Frozen saved Hyperbolica evidence has two accepted primary
+paths absent from the initial preview; both are now added automatically. The
+saved Garden empty review adds nothing. Repeated inclusion leaves both complete
+views unchanged. All 155 source files, four inputs and the file-only binary pass
+audit. No model, screenshot, gameplay input or target memory operation ran for
+the replay. The desktop remains unpublished after its earlier quarantine.
+[Method and results](../research/automatic-cards/README.md).
+
 Explained runtime cards (2026-10-22): **35% unchanged**.
 The controls board and Add controls results no longer manufacture descriptions
 by repeating a raw field name and its owning type. A runtime card needs a named,

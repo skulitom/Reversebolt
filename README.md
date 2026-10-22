@@ -15,8 +15,11 @@ Values appear as simple cards; their gameplay meaning remains unverified.
 Unnamed readings stay off the board. Named cards have short descriptions;
 runtime descriptions are provisional metadata labels, not verified game meanings.
 An installed local model can retain evidence-linked questions and competing
-fields after runtime discovery. These remain shared engine/MCP investigation
-hints and do not rename cards. See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
+fields after runtime discovery. Accepted primary paths appear automatically as
+cards, including paths beyond the first discovery preview. Their descriptions
+say “Possible effect”; named hypotheses remain unverified investigation hints.
+Selected, refreshed and edited controls are preserved within the 64-card limit.
+See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
 Metadata discovery considers hidden and inactive properties before separately
 interpreting the current clip. See [the saved-evidence comparison](research/metadata-independence/README.md).
 Bounded same-object text examples now reach type selection with exact path

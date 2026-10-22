@@ -217,7 +217,8 @@ their comparison origins carry `question_source: "object_text"` and
 `question_policy: "complete-object-clue-v2"`. The raw model response and original
 empty batch remain in the receipt; incomplete context and deferred groups are
 counted. Existing nonempty/rejected/failed/cancelled reviews are not overridden.
-These questions do not rename cards, establish bounds or authorize edits. Legacy
+Accepted primary paths can supply tentative card names and explanations, but
+do not establish bounds, verified gameplay meaning or edit authority. Legacy
 declared questions omit the two optional provenance fields. See
 [the replay and limitations](../research/object-text-questions/README.md).
 
@@ -513,7 +514,18 @@ questions in `state.live.runtime.naming`. Its status is `pending`, `complete`,
 `unavailable`, `cancelled` or `failed`, with a report hash, evidence ID, optional
 batch and error. Accepted hypotheses contain exact candidate paths, quotations,
 separate alternatives and a question; rejected proposals retain their reasons.
-These are unverified investigation hints and do not rename cards or authorize edits.
+Completed accepted primary paths are automatically included in the shared card
+list, even outside the initial 64-value discovery preview. The desktop labels
+their explanations “Possible effect”; alternatives do not inherit the name.
+These are unverified investigation hints and do not authorize edits. Existing
+readings, explicit selections, freezes and edit/test controls are preserved.
+The 64-card budget remains; `card_publication.omitted` reports primary paths that
+do not fit. `card_publication` also returns shown/added/removed-preview paths and
+the resulting runtime revision/card generation. Read current status before the
+next command. Agent receipts retain this result; replay does not republish it.
+Explicit `show_runtime_values` selections are retained in `selected_cards` for
+this catalogue. A new discovery clears them. Presentation never performs a fresh
+target read; newly added readings retain their discovery observation time.
 Cancellation prevents further calls/publication after a running request settles.
 A missing model preserves discovery; a receipt-storage failure fails the job.
 Job/status controls remain responsive, while other engine work waits for the review.
