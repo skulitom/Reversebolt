@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Mixed-input prediction evaluated (2026-10-22): **35% unchanged**.
+A frozen offline experiment tests whether elapsed time plus sampled key fractions
+predicts aggregate image differences across the two original runs of each browser
+game. The primary timing choice is worse than elapsed time alone in all four
+directions: 2.3% / 1.8% higher error for 2048, 34.0% / 37.0% for Tetris. All 16
+direction/timing comparisons fail the declared misaligned-input control check.
+All 60 intervals, 240 feature profiles and 224 controls are retained, with no
+model tuning or result selection. All 245 frozen files pass audit.
+
+The representation is not integrated into discovery. Three new Rust extractor
+tests, targeted strict Clippy and formatting pass; production source is unchanged
+and its preceding 389-test result was not rerun. Synthetic checks establish only
+analysis behavior. These exposed recordings are not withheld generalization
+evidence. The result favors investigating bounded input-only observation that
+can separate actions before requiring a named field or isolated activity source.
+No game, target operation, new capture or model ran. Desktop availability and
+local-only security-review handling remain unchanged.
+[Method, negative results and next route](../research/input-mixtures/README.md).
+
 Selected-image clock diagnostics (2026-10-22): **35% unchanged**.
 Native screen operations now retain optional performance-counter anchors in the
 investigation's input clock. Checked integer conversion binds a compositor

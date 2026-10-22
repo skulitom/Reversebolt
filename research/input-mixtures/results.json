@@ -1,0 +1,273 @@
+{
+  "policy": "sample_fraction_mixtures_v1",
+  "synthetic_checks": [
+    {
+      "collinear": false,
+      "expected_centered_rank": 2,
+      "model": {
+        "penalty": 1.0,
+        "means": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "scales": [
+          0.0,
+          0.34156502553198653,
+          0.34156502553198653
+        ],
+        "intercept": -0.5,
+        "coefficients": [
+          0.0,
+          0.3415650255319866,
+          -0.5123475382979797
+        ],
+        "centered_design_rank": 2,
+        "columns": 3
+      },
+      "relative_mse_reduction": 0.75,
+      "limitation": "Synthetic arithmetic check, not independent game evidence."
+    },
+    {
+      "collinear": true,
+      "expected_centered_rank": 1,
+      "model": {
+        "penalty": 1.0,
+        "means": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "scales": [
+          0.0,
+          0.34156502553198653,
+          0.34156502553198653
+        ],
+        "intercept": -0.5000000000000001,
+        "coefficients": [
+          0.0,
+          -0.11385500851066219,
+          -0.11385500851066217
+        ],
+        "centered_design_rank": 1,
+        "columns": 3
+      },
+      "relative_mse_reduction": 0.8888888888888888,
+      "limitation": "Synthetic arithmetic check, not independent game evidence."
+    }
+  ],
+  "evaluations": [
+    {
+      "training": "2048-1",
+      "testing": "2048-2",
+      "variant": "interior",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 2.1433602342781537,
+      "baseline_mse": 2.09589160010817,
+      "relative_mse_reduction": -0.02264842044671278,
+      "controls_at_least_as_good": 7
+    },
+    {
+      "training": "2048-1",
+      "testing": "2048-2",
+      "variant": "early_early",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 2.088379384947106,
+      "baseline_mse": 2.1829717667615762,
+      "relative_mse_reduction": 0.04333193092771759,
+      "controls_at_least_as_good": 2
+    },
+    {
+      "training": "2048-1",
+      "testing": "2048-2",
+      "variant": "late_late",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 2.1149608452900934,
+      "baseline_mse": 2.1271388948303604,
+      "relative_mse_reduction": 0.0057250843232962145,
+      "controls_at_least_as_good": 2
+    },
+    {
+      "training": "2048-1",
+      "testing": "2048-2",
+      "variant": "outer",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 2.389198296534773,
+      "baseline_mse": 2.212679106069834,
+      "relative_mse_reduction": -0.07977622691908226,
+      "controls_at_least_as_good": 5
+    },
+    {
+      "training": "2048-2",
+      "testing": "2048-1",
+      "variant": "interior",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 1.3784993150763085,
+      "baseline_mse": 1.3543721253669136,
+      "relative_mse_reduction": -0.017814298786501315,
+      "controls_at_least_as_good": 7
+    },
+    {
+      "training": "2048-2",
+      "testing": "2048-1",
+      "variant": "early_early",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 1.258780583253403,
+      "baseline_mse": 1.3948238037372709,
+      "relative_mse_reduction": 0.09753434098224856,
+      "controls_at_least_as_good": 1
+    },
+    {
+      "training": "2048-2",
+      "testing": "2048-1",
+      "variant": "late_late",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 1.2045816590574223,
+      "baseline_mse": 1.3572630868413291,
+      "relative_mse_reduction": 0.11249213897007426,
+      "controls_at_least_as_good": 2
+    },
+    {
+      "training": "2048-2",
+      "testing": "2048-1",
+      "variant": "outer",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 1.3067049355500757,
+      "baseline_mse": 1.4013954491041916,
+      "relative_mse_reduction": 0.06756873201967684,
+      "controls_at_least_as_good": 8
+    },
+    {
+      "training": "tetris-1",
+      "testing": "tetris-2",
+      "variant": "interior",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.36822989161521785,
+      "baseline_mse": 0.2748672836759491,
+      "relative_mse_reduction": -0.3396643161407935,
+      "controls_at_least_as_good": 13
+    },
+    {
+      "training": "tetris-1",
+      "testing": "tetris-2",
+      "variant": "early_early",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.3322555357456713,
+      "baseline_mse": 0.2746023057937669,
+      "relative_mse_reduction": -0.2099517328714764,
+      "controls_at_least_as_good": 13
+    },
+    {
+      "training": "tetris-1",
+      "testing": "tetris-2",
+      "variant": "late_late",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.40244523891170586,
+      "baseline_mse": 0.2733822665384562,
+      "relative_mse_reduction": -0.4720970895714429,
+      "controls_at_least_as_good": 13
+    },
+    {
+      "training": "tetris-1",
+      "testing": "tetris-2",
+      "variant": "outer",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.3523850288461503,
+      "baseline_mse": 0.2741737434904039,
+      "relative_mse_reduction": -0.28526176270589443,
+      "controls_at_least_as_good": 14
+    },
+    {
+      "training": "tetris-2",
+      "testing": "tetris-1",
+      "variant": "interior",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.2956247520866026,
+      "baseline_mse": 0.21585315511185146,
+      "relative_mse_reduction": -0.3695641925336457,
+      "controls_at_least_as_good": 12
+    },
+    {
+      "training": "tetris-2",
+      "testing": "tetris-1",
+      "variant": "early_early",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.29332570172086264,
+      "baseline_mse": 0.21560078510788286,
+      "relative_mse_reduction": -0.360503866319817,
+      "controls_at_least_as_good": 10
+    },
+    {
+      "training": "tetris-2",
+      "testing": "tetris-1",
+      "variant": "late_late",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.299510127174247,
+      "baseline_mse": 0.21296618401710754,
+      "relative_mse_reduction": -0.40637410843679955,
+      "controls_at_least_as_good": 13
+    },
+    {
+      "training": "tetris-2",
+      "testing": "tetris-1",
+      "variant": "outer",
+      "error": null,
+      "passes_declared_comparison": false,
+      "mse": 0.3021946153763706,
+      "baseline_mse": 0.21355725690461386,
+      "relative_mse_reduction": -0.4150519619726476,
+      "controls_at_least_as_good": 11
+    }
+  ],
+  "passes_all_directions_and_timing_choices": false,
+  "frozen_files": 245,
+  "changed": [],
+  "features_sha256": "06c089c7670ae3e0f6b58210d06793a01ca80c2b2e390d9f2ccd1f7dc7b4f365",
+  "evaluations_sha256": "7d003bbba6c5bde21317aa3ef2b9708d4c370b16cd470b1d22c4e56d9fd1a8d8",
+  "production_changed": false,
+  "new_model_calls": 0,
+  "new_captures": 0,
+  "native_target_access": false,
+  "inputs_sent": 0,
+  "checks": {
+    "extractor_tests": {
+      "path": "test-results/input-mixtures-tests.log",
+      "sha256": "bc74119a3e2cf8d940f6085fc0b5bafa1842abe7302bc6e7bd1f13501c30673f"
+    },
+    "example_clippy": {
+      "path": "test-results/input-mixtures-clippy.log",
+      "sha256": "55867627bbd0319c073c7585855897d5798a61f48f5d9d774f7883c5e8260e2b"
+    },
+    "format": {
+      "path": "test-results/input-mixtures-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "build": {
+      "path": "test-results/input-mixtures-build-final.log",
+      "sha256": "c5a386a6798907eca66e54ef7d7e8c4e1cfcd74288569ff5ef18a83d07c98e98"
+    },
+    "preview": {
+      "path": "test-results/input-mixtures-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    }
+  },
+  "extractor_tests_passed": 3,
+  "production_baseline": "b58e939; production sources unchanged; preceding 389-test result remains applicable, not rerun",
+  "security_review": "local only; no submission",
+  "preview_status": "unavailable; published executable missing"
+}
