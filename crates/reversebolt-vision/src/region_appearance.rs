@@ -210,7 +210,12 @@ fn search(source: &GrayImage, target: &GrayImage, region: Region) -> Search {
     report
 }
 
-fn prepared(a: GrayImage, b: GrayImage, region: Region, dimensions: [u32; 2]) -> Report {
+pub(crate) fn prepared(
+    a: &GrayImage,
+    b: &GrayImage,
+    region: Region,
+    dimensions: [u32; 2],
+) -> Report {
     let scale = [
         f64::from(dimensions[0]) / f64::from(WIDTH),
         f64::from(dimensions[1]) / f64::from(HEIGHT),
@@ -256,13 +261,13 @@ fn prepared(a: GrayImage, b: GrayImage, region: Region, dimensions: [u32; 2]) ->
     {
         return report;
     }
-    let forward = search(&a, &b, normalized);
+    let forward = search(a, b, normalized);
     report.status = forward.status;
     if forward.status == Status::Matched {
         let at = forward.best_at.unwrap();
         let reverse = search(
-            &b,
-            &a,
+            b,
+            a,
             Region {
                 x: at[0],
                 y: at[1],
@@ -304,8 +309,8 @@ pub fn measure(before: &[u8], after: &[u8], region: Region) -> Result<Report> {
     let dimensions = [a.width(), a.height()];
     region.validate(dimensions)?;
     Ok(prepared(
-        imageops::resize(&a, WIDTH, HEIGHT, FilterType::Triangle),
-        imageops::resize(&b, WIDTH, HEIGHT, FilterType::Triangle),
+        &imageops::resize(&a, WIDTH, HEIGHT, FilterType::Triangle),
+        &imageops::resize(&b, WIDTH, HEIGHT, FilterType::Triangle),
         region,
         dimensions,
     ))

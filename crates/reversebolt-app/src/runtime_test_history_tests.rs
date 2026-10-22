@@ -638,6 +638,231 @@ fn local_appearance_comparison_distinguishes_small_subject_from_static_backgroun
 }
 
 #[test]
+fn appearance_suggestions_are_automatic_baseline_only_and_survive_history_reads() {
+    use reversebolt_vision::trial_appearance_suggestions as suggestions;
+    let (directory, state_path, mut engine, test) = motion_fixture(true);
+    let report = suggestions::analyze(
+        &test,
+        |c, i| {
+            assert_eq!(c, 0);
+            engine.runtime_tests.read_image(&test, c, i)
+        },
+        |c, i| {
+            assert_eq!(c, 0);
+            engine.runtime_tests.read_input(&test, c, i)
+        },
+    )
+    .unwrap();
+    assert_eq!(report.status, "suggestions_available");
+    assert!(report.suggestions.len() <= 4 && report.attempted_frames <= 24);
+    let chosen = report
+        .suggestions
+        .iter()
+        .find(|s| Some(&s.selection) == report.recommended.as_ref())
+        .unwrap();
+    assert_eq!(
+        chosen.displacement,
+        [
+            Some([0, 0]),
+            Some([16, 0]),
+            Some([-16, 0]),
+            Some([16, 0]),
+            Some([-16, 0])
+        ]
+    );
+    // Later results are deliberately invalid and must not even be consulted.
+    let mut later = test.clone();
+    for condition in &mut later.conditions[1..] {
+        for frame in &mut condition.frames {
+            frame.path = "invalid".into();
+            frame.sha256.clear();
+        }
+    }
+    let untouched = suggestions::analyze(
+        &later,
+        |c, i| {
+            assert_eq!(c, 0);
+            engine.runtime_tests.read_image(&test, c, i)
+        },
+        |c, i| {
+            assert_eq!(c, 0);
+            engine.runtime_tests.read_input(&test, c, i)
+        },
+    )
+    .unwrap();
+    assert_eq!(json!(untouched), json!(report));
+
+    let mut baseline = test.clone();
+    baseline.conditions[1..].fill_with(Default::default);
+    baseline.phase = Phase::ReadyToApply;
+    baseline.assessment = None;
+    engine.runtime_tests.record(baseline.clone()).unwrap();
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    let mut request = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":test.id}),
+    };
+    let automatic = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(automatic["appearance_suggestions"], json!(report));
+    assert_eq!(automatic["test"], json!(baseline));
+    assert!(automatic.get("png_base64").is_none());
+    assert!(engine.runtime_trials.records.is_empty());
+    assert!(
+        engine
+            .runtime_tests
+            .get(&test.id)
+            .unwrap()
+            .appearance
+            .is_none()
+    );
+    request.args["suggest_appearance"] = json!(false);
+    assert!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .unwrap()
+            .get("appearance_suggestions")
+            .is_none()
+    );
+    request.args["suggest_appearance"] = json!("yes");
+    assert!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .is_err()
+    );
+    drop(engine);
+    let mut reopened = Engine::load(state_path).unwrap();
+    request.args["suggest_appearance"] = json!(true);
+    let historical = session
+        .command(&mut reopened, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(historical["appearance_suggestions"], json!(report));
+    assert_eq!(historical["test"]["phase"], "stopped");
+    drop(reopened);
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn appearance_suggestions_abstain_on_stationary_incomplete_or_corrupt_baselines() {
+    use reversebolt_vision::trial_appearance_suggestions as suggestions;
+    let (directory, _, engine, test) = motion_fixture(true);
+    let stationary = engine.runtime_tests.read_image(&test, 0, 0).unwrap();
+    let mut quiet = test.clone();
+    for frame in &mut quiet.conditions[0].frames {
+        frame.sha256 = reversebolt_core::visual::digest(&stationary);
+    }
+    let report = suggestions::analyze(
+        &quiet,
+        |c, _| {
+            assert_eq!(c, 0);
+            Ok(stationary.clone())
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(report.status, "no_action_regions");
+    assert!(report.recommended.is_none() && report.attempted_frames == 0);
+    let bad_input = suggestions::analyze(
+        &test,
+        |c, i| engine.runtime_tests.read_image(&test, c, i),
+        |_, _| Ok(None),
+    )
+    .unwrap();
+    assert_eq!(bad_input.status, "unavailable_evidence");
+    assert!(bad_input.recommended.is_none() && bad_input.attempted_frames == 0);
+    let bad_image = suggestions::analyze(
+        &test,
+        |c, i| {
+            if i == 2 {
+                Ok(vec![0])
+            } else {
+                engine.runtime_tests.read_image(&test, c, i)
+            }
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(bad_image.status, "unavailable_evidence");
+    assert!(bad_image.recommended.is_none() && bad_image.attempted_frames == 0);
+    let mut mixed = test.clone();
+    let mut replacement = engine.runtime_tests.read_input(&test, 0, 2).unwrap();
+    replacement.as_mut().unwrap().generation = "different-monitor".into();
+    mixed.conditions[0].frames[2].input_sha256 =
+        reversebolt_core::visual::digest(&serde_json::to_vec(&replacement).unwrap());
+    mixed.conditions[0].frames[2].input = InputWitness::check(
+        replacement.as_ref(),
+        Some(&test.actions[0]),
+        &test.conditions[0].frames[2].interval,
+        test.conditions[0].frames[1].interval.end_us,
+    );
+    let report = suggestions::analyze(
+        &mixed,
+        |c, i| engine.runtime_tests.read_image(&test, c, i),
+        |c, i| {
+            if i == 2 {
+                Ok(replacement.clone())
+            } else {
+                engine.runtime_tests.read_input(&test, c, i)
+            }
+        },
+    )
+    .unwrap();
+    assert_eq!(report.status, "input_mismatch");
+    assert!(report.recommended.is_none() && report.attempted_frames == 0);
+
+    let mut blank = std::io::Cursor::new(vec![]);
+    image::GrayImage::new(512, 288)
+        .write_to(&mut blank, image::ImageFormat::Png)
+        .unwrap();
+    let blank = blank.into_inner();
+    let mut missing = test.clone();
+    missing.conditions[0].frames[3].sha256 = reversebolt_core::visual::digest(&blank);
+    let report = suggestions::analyze(
+        &missing,
+        |c, i| {
+            if i == 3 {
+                Ok(blank.clone())
+            } else {
+                engine.runtime_tests.read_image(&test, c, i)
+            }
+        },
+        |c, i| engine.runtime_tests.read_input(&test, c, i),
+    )
+    .unwrap();
+    assert_eq!(report.status, "no_supported_region");
+    assert!(report.recommended.is_none() && report.attempted_frames <= 16);
+    assert!(report.suggestions.iter().all(|s| s.frames.len() <= 4));
+    let mut partial = test.clone();
+    partial.conditions[0].frames.pop();
+    let report = suggestions::analyze(
+        &partial,
+        |_, _| panic!("incomplete must not read pixels"),
+        |_, _| panic!("incomplete must not read input"),
+    )
+    .unwrap();
+    assert_eq!(report.status, "incomplete_baseline");
+    drop(engine);
+    assert!(
+        directory
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .starts_with("reversebolt-trial-motion-")
+    );
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
 fn comparison_capacity_and_old_request_replay_survive_engine_restart() {
     let parent = std::env::temp_dir().canonicalize().unwrap();
     let directory = parent.join(format!("reversebolt-history-command-{}", id()));

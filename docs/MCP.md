@@ -1140,7 +1140,25 @@ and the saved trial assessment. It neither validates a gameplay name nor grants
 edit authority. No target, input, capture or model is used by this read. See the
 [policy and retained regression](../research/trial-motion/README.md).
 
-To save a region before the linked edit, call `lock_runtime_test_appearance`
+When the sixth baseline capture reaches `ready_to_apply` with no saved appearance
+choice, its response includes `appearance_suggestions`. Reading that test also
+derives suggestions by default. Set `suggest_appearance:false` to skip this extra
+analysis, or `true` to derive baseline-only suggestions from a historical test.
+Unusable evidence is explicit; metadata remains readable on an analysis error.
+
+Suggestions rank normalized 16/32/64-pixel tiles by first-action change minus
+idle change, require mean difference at least 8 gray levels, suppress overlap
+above one quarter of the smaller tile and check at most four candidates. Invalid
+original-image geometry is rejected, never padded. The unchanged appearance
+matcher checks each candidate against baseline frame 0 and stops at the first
+unresolved match, up to 24 checks total. A recommendation requires all six matches,
+idle displacement at most one and each action displacement at least two pixels
+on the normalized 512×288 grid, plus matching input witnesses from one monitor.
+The report binds baseline metadata, image/input hashes and the action plan; later
+conditions are not read. Background/camera motion may pass. No semantic identity,
+causality, saved selection or edit authority follows from a recommendation.
+
+To save a recommended or manually chosen region before the linked edit, call `lock_runtime_test_appearance`
 with `test_id`, the exact current test `after_revision`, and
 `appearance: {baseline_sha256, region: {x, y, width, height}}`. The test must have
 all six baseline captures and be `ready_to_apply`, with no pending capture and

@@ -1,0 +1,121 @@
+{
+  "manifest_sha256": "79cb1bfd59cb00036bbe78f3deb3e570bb38dd7f7045de6948b760739cbc65d2",
+  "cases": [
+    {
+      "test_id": "02c71c32-0047-407d-82cd-61b227745943",
+      "runs": [
+        {
+          "exit_code": 0,
+          "output": "case-0-0.json"
+        },
+        {
+          "exit_code": 0,
+          "output": "case-0-1.json"
+        }
+      ],
+      "status": "incomplete_baseline",
+      "attempted_frames": 0,
+      "ranked_regions": 0,
+      "suggestions": 0,
+      "recommended": null,
+      "images_read": [],
+      "inputs_read": [],
+      "repeat_equal": true
+    },
+    {
+      "test_id": "080b5643-5718-494f-9ed6-751bf8059402",
+      "runs": [
+        {
+          "exit_code": 0,
+          "output": "case-1-0.json"
+        },
+        {
+          "exit_code": 0,
+          "output": "case-1-1.json"
+        }
+      ],
+      "status": "no_supported_region",
+      "attempted_frames": 4,
+      "ranked_regions": 647,
+      "suggestions": 4,
+      "recommended": null,
+      "images_read": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "inputs_read": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "repeat_equal": true
+    },
+    {
+      "test_id": "517f5cdc-a4d2-4b48-8091-218f249451b9",
+      "runs": [
+        {
+          "exit_code": 0,
+          "output": "case-2-0.json"
+        },
+        {
+          "exit_code": 0,
+          "output": "case-2-1.json"
+        }
+      ],
+      "status": "incomplete_baseline",
+      "attempted_frames": 0,
+      "ranked_regions": 0,
+      "suggestions": 0,
+      "recommended": null,
+      "images_read": [],
+      "inputs_read": [],
+      "repeat_equal": true
+    }
+  ],
+  "error": null,
+  "binary_sha256": "b77161bf2ee647c2b80d3fe8ec90e51d241d398ab02d59d900e55c969dd42bd2",
+  "audit": {
+    "source_count": 157,
+    "input_count": 19,
+    "changed": []
+  }
+}

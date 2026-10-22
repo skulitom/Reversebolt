@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic baseline region proposals (2026-10-22): **35% unchanged**.
+The shared read/final-baseline API now proposes appearance regions before a linked
+edit, using only the six baseline images and sampled inputs. First-action change
+minus idle change ranks fixed multiscale tiles; at most four candidates and 24
+unchanged-template checks produce a recommendation or an explicit abstention.
+No later-condition evidence is read. Recommendations do not lock a choice, change
+an assessment, label a control or authorize an edit. History can derive the same
+result, and callers can opt out of the additional analysis.
+
+All 360 workspace test executions and strict workspace/all-target Clippy pass.
+Generated-image tests cover local movement, unavailable/corrupt evidence, mixed
+monitors, stationary scenes, disappearance without reacquisition, baseline-only
+dependence and automatic/historical API reads. Frozen replay keeps all three
+OwnedPathFixture outcomes: two incomplete baselines and four ambiguous proposals
+in the complete striped baseline, with no recommendations. Two runs are identical;
+only baseline files were available. All 157 source files, 19 inputs and the binary
+pass audit. No real-game intervention is validated, and the desktop remains
+unpublished after quarantine.
+[Method and results](../research/trial-appearance-suggestions/README.md).
+
 Automatic inclusion of reviewed controls (2026-10-22): **35% unchanged**.
 Completed local and agent reviews now add exact accepted primary paths from the
 full retained catalogue to the shared card list, including findings outside the

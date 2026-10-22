@@ -22,6 +22,20 @@ use std::{
     time::{Duration, Instant},
 };
 
+fn appearance_suggestions(engine: &Engine, test: &Test, result: &mut Value) {
+    match reversebolt_vision::trial_appearance_suggestions::analyze(
+        test,
+        |condition, frame| engine.runtime_tests.read_image(test, condition, frame),
+        |condition, frame| engine.runtime_tests.read_input(test, condition, frame),
+    ) {
+        Ok(report) => result["appearance_suggestions"] = json!(report),
+        Err(error) => {
+            result["appearance_suggestions"] = Value::Null;
+            result["appearance_suggestions_error"] = json!(error);
+        }
+    }
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Prepare {
@@ -218,6 +232,12 @@ impl Session {
             .ok_or("Choose an experiment from the shared session.")?;
         let mut test = engine.runtime_tests.get(id)?.clone();
         if c.action == "read_runtime_test" {
+            if c.args
+                .get("suggest_appearance")
+                .is_some_and(|v| v.as_bool().is_none())
+            {
+                return Err("suggest_appearance must be true or false.".into());
+            }
             let origin_motion = test
                 .origin
                 .as_ref()
@@ -226,6 +246,13 @@ impl Session {
                 .transpose()?
                 .flatten();
             let mut result = json!({"test":test,"origin_activity_motion_comparison":origin_motion,"executions":engine.runtime_tests.read_executions(&test)?,"limitation":runtime_tests::LIMITATION});
+            if c.args
+                .get("suggest_appearance")
+                .and_then(Value::as_bool)
+                .unwrap_or(test.phase == Phase::ReadyToApply && test.appearance.is_none())
+            {
+                appearance_suggestions(engine, &test, &mut result);
+            }
             if c.args
                 .get("include_motion")
                 .is_some_and(|v| v.as_bool().is_none())
@@ -376,7 +403,11 @@ impl Session {
         }
         engine.runtime_tests.record(test.clone())?;
         result?;
-        Ok(test.summary())
+        let mut summary = test.summary();
+        if test.phase == Phase::ReadyToApply && test.appearance.is_none() {
+            appearance_suggestions(engine, &test, &mut summary);
+        }
+        Ok(summary)
     }
     fn prepare(
         &mut self,

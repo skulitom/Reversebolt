@@ -39,6 +39,10 @@ fn full_frame_search_follows_large_translation_brightness_and_stationary_templat
     for (at, bright) in [([224, 144], 20), ([32, 32], 0), ([64, 80], 0)] {
         let target = frame(&texture(1), at, bright);
         let report = measure(&png(&source), &png(&target), region()).unwrap();
+        assert_eq!(
+            serde_json::to_value(&report).unwrap(),
+            serde_json::to_value(prepared(&source, &target, region(), [WIDTH, HEIGHT])).unwrap()
+        );
         assert_eq!(report.status, Status::Matched, "{report:?}");
         assert_eq!(
             report.displacement,
@@ -60,10 +64,10 @@ fn repeated_appearance_and_reverse_ambiguity_do_not_establish_a_correspondence()
     let single = frame(&patch, [64, 80], 0);
     let mut duplicate = single.clone();
     imageops::replace(&mut duplicate, &patch, 320, 80);
-    let forward = prepared(single.clone(), duplicate.clone(), region(), [WIDTH, HEIGHT]);
+    let forward = prepared(&single, &duplicate, region(), [WIDTH, HEIGHT]);
     assert_eq!(forward.status, Status::Ambiguous);
     assert!(forward.matched_region.is_none() && forward.displacement.is_none());
-    let reverse = prepared(duplicate, single, region(), [WIDTH, HEIGHT]);
+    let reverse = prepared(&duplicate, &single, region(), [WIDTH, HEIGHT]);
     assert_eq!(reverse.status, Status::InconsistentReverse);
     assert_eq!(reverse.reverse.unwrap().status, Status::Ambiguous);
     assert!(reverse.matched_region.is_none() && reverse.displacement.is_none());
@@ -74,17 +78,17 @@ fn sparse_sample_aliases_flat_missing_and_edge_templates_are_not_promoted() {
     let patch = texture(1);
     let source = frame(&patch, [64, 80], 0);
     let flat = GrayImage::from_pixel(WIDTH, HEIGHT, Luma([20]));
-    let low = prepared(flat.clone(), flat.clone(), region(), [WIDTH, HEIGHT]);
+    let low = prepared(&flat, &flat, region(), [WIDTH, HEIGHT]);
     assert_eq!(low.status, Status::LowTexture);
     assert_eq!(low.forward.unwrap().positions, 0);
     for target in [flat, frame(&texture(999), [224, 144], 0)] {
-        let report = prepared(source.clone(), target, region(), [WIDTH, HEIGHT]);
+        let report = prepared(&source, &target, region(), [WIDTH, HEIGHT]);
         assert_ne!(report.status, Status::Matched);
         assert!(report.displacement.is_none());
     }
     let at_boundary = prepared(
-        source.clone(),
-        frame(&patch, [0, 80], 0),
+        &source,
+        &frame(&patch, [0, 80], 0),
         region(),
         [WIDTH, HEIGHT],
     );
@@ -97,8 +101,8 @@ fn sparse_sample_aliases_flat_missing_and_edge_templates_are_not_promoted() {
         }
     }
     let report = prepared(
-        source,
-        frame(&alias, [224, 144], 0),
+        &source,
+        &frame(&alias, [224, 144], 0),
         region(),
         [WIDTH, HEIGHT],
     );
