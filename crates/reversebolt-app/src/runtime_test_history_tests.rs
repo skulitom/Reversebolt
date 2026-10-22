@@ -47,7 +47,16 @@ fn history_choice(test: &Test) -> Value {
         "status":test.assessment.as_ref().map_or("stopped", |a| a.status.as_str())})
 }
 
-fn assert_regional_history(engine: &Engine, test: &Test, expected: &Value) {
+fn review_snapshot(engine: &Engine, test: &Test) -> Value {
+    engine
+        .view
+        .runtime_tests
+        .iter()
+        .find(|v| v["id"] == test.id)
+        .map_or(Value::Null, |v| v["last_regional_review"].clone())
+}
+
+fn assert_regional_history(engine: &mut Engine, test: &Test, expected: &Value) {
     let untouched = json!({"previous_test":null,"status":"untried"});
     let mut choices = vec![history_choice(test), untouched.clone()];
     let records = json!(engine.runtime_tests.records);
@@ -59,6 +68,14 @@ fn assert_regional_history(engine: &Engine, test: &Test, expected: &Value) {
     assert_eq!(choices[0]["previous_test"], test.summary());
     assert_eq!(choices[1], untouched);
     assert_eq!(json!(engine.runtime_tests.records), records);
+    crate::runtime_test_review::publish(
+        engine,
+        Some(("plan_runtime_comparisons", &json!({"choices":choices}))),
+    );
+    assert_eq!(review_snapshot(engine, test)["assessment"], *expected);
+    let snapshot = review_snapshot(engine, test);
+    crate::runtime_test_review::publish(engine, None);
+    assert_eq!(review_snapshot(engine, test), snapshot);
 }
 
 #[test]
@@ -464,7 +481,35 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         result["regional_intervention_assessment"]
     );
     assert!(completion.get("trial_appearance_comparison").is_none());
-    assert_regional_history(&engine, &test, &result["regional_intervention_assessment"]);
+    // The completion, history reader and planner feed the same published state.
+    crate::runtime_test_review::publish(&mut engine, Some(("observe_runtime_test", &completion)));
+    assert_eq!(
+        review_snapshot(&engine, &test)["assessment"],
+        result["regional_intervention_assessment"]
+    );
+    let mut mismatched = result.clone();
+    mismatched["regional_intervention_assessment"]["test_sha256"] = json!("f".repeat(64));
+    crate::runtime_test_review::publish(&mut engine, Some(("read_runtime_test", &mismatched)));
+    assert!(review_snapshot(&engine, &test)["assessment"].is_null());
+    assert!(review_snapshot(&engine, &test)["error"].is_string());
+    crate::runtime_test_review::publish(&mut engine, Some(("read_runtime_test", &result)));
+    assert_eq!(
+        review_snapshot(&engine, &test)["assessment"],
+        result["regional_intervention_assessment"]
+    );
+    let failure = json!({"test":{"id":test.id},"regional_intervention_assessment":null,"trial_appearance_error":"Unavailable"});
+    crate::runtime_test_review::publish(&mut engine, Some(("read_runtime_test", &failure)));
+    assert_eq!(review_snapshot(&engine, &test)["error"], "Unavailable");
+    assert!(review_snapshot(&engine, &test)["assessment"].is_null());
+    // No unrelated command can inject a comparison result into status.
+    let old = review_snapshot(&engine, &test);
+    crate::runtime_test_review::publish(&mut engine, Some(("submit_observation", &result)));
+    assert_eq!(review_snapshot(&engine, &test), old);
+    assert_regional_history(
+        &mut engine,
+        &test,
+        &result["regional_intervention_assessment"],
+    );
     assert_eq!(result["test"], json!(test));
     assert!(
         !engine
@@ -474,12 +519,21 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
             .candidate
             .edit_authority
     );
+    engine.save().unwrap();
     drop(engine);
     let mut engine = Engine::load(state_path).unwrap();
+    // Restart does not trust a persisted display snapshot as fresh evidence.
+    assert!(review_snapshot(&engine, &test).is_null());
     assert_eq!(read(&mut session, &mut engine), result);
-    assert_regional_history(&engine, &test, &result["regional_intervention_assessment"]);
+    assert_regional_history(
+        &mut engine,
+        &test,
+        &result["regional_intervention_assessment"],
+    );
 
     engine.runtime_trials.records.clear();
+    crate::runtime_test_review::publish(&mut engine, None);
+    assert!(review_snapshot(&engine, &test).is_null());
     let missing = read(&mut session, &mut engine);
     assert_eq!(
         missing["regional_intervention_assessment"]["status"],
@@ -489,11 +543,22 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         missing["trial_appearance_comparison"],
         result["trial_appearance_comparison"]
     );
-    assert_regional_history(&engine, &test, &missing["regional_intervention_assessment"]);
+    assert_regional_history(
+        &mut engine,
+        &test,
+        &missing["regional_intervention_assessment"],
+    );
     engine.runtime_trials.records.push(restored.clone());
+    crate::runtime_test_review::publish(&mut engine, Some(("read_runtime_test", &result)));
+    assert_eq!(
+        review_snapshot(&engine, &test)["assessment"],
+        result["regional_intervention_assessment"]
+    );
     let mut wrong = test.clone();
     wrong.conditions[1].runtime_evidence = Some(reading(&patch.expected));
     engine.runtime_tests.record(wrong).unwrap();
+    crate::runtime_test_review::publish(&mut engine, None);
+    assert!(review_snapshot(&engine, &test).is_null());
     let changed = read(&mut session, &mut engine);
     assert_eq!(
         changed["trial_appearance_comparison"]["status"],
@@ -517,7 +582,11 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         "inconclusive"
     );
     assert!(corrupt["regional_intervention_assessment"]["intervention_error"].is_null());
-    assert_regional_history(&engine, &test, &corrupt["regional_intervention_assessment"]);
+    assert_regional_history(
+        &mut engine,
+        &test,
+        &corrupt["regional_intervention_assessment"],
+    );
     std::fs::write(&frame, original).unwrap();
 
     // An unchanged image pattern must remain negative with the same receipts.
@@ -542,7 +611,7 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         "regional_change_not_observed"
     );
     assert_regional_history(
-        &engine,
+        &mut engine,
         &similar,
         &negative["regional_intervention_assessment"],
     );

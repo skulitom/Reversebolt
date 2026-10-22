@@ -217,12 +217,13 @@ impl EngineHandle {
                 engine.view.live = engine.live.as_ref().map(|s| s.view.clone());
                 engine.view.changes = engine.changes.records.clone();
                 engine.view.runtime_trials = engine.runtime_trials.records.clone();
-                engine.view.runtime_tests = engine
-                    .runtime_tests
-                    .records
-                    .iter()
-                    .map(|t| t.summary())
-                    .collect();
+                crate::runtime_test_review::publish(
+                    &mut engine,
+                    result
+                        .as_ref()
+                        .ok()
+                        .map(|data| (command.action.as_str(), data)),
+                );
                 let (data, mut error) = match result {
                     Ok(data) => (
                         if matches!(
@@ -276,12 +277,7 @@ impl EngineHandle {
                 }
                 if !read_only && let Err(message) = engine.save() {
                     let _=tests.stop(&mut engine,"Session persistence failed; the experiment stopped. Check the edit history for recovery.");
-                    engine.view.runtime_tests = engine
-                        .runtime_tests
-                        .records
-                        .iter()
-                        .map(|t| t.summary())
-                        .collect();
+                    crate::runtime_test_review::publish(&mut engine, None);
                     if command.action == "set_runtime_freeze" {
                         for f in &mut engine.view.freezes {
                             if command.args["freeze_id"] == f.id {

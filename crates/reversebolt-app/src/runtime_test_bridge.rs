@@ -939,12 +939,7 @@ impl Session {
     }
 }
 pub fn checkpoint(engine: &mut Engine, published: &Arc<RwLock<View>>) -> Result<()> {
-    engine.view.runtime_tests = engine
-        .runtime_tests
-        .records
-        .iter()
-        .map(|t| t.summary())
-        .collect();
+    crate::runtime_test_review::publish(engine, None);
     crate::observation_pipeline::checkpoint(engine, published)
 }
 pub fn check_patch(engine: &Engine, id: Option<&str>, patch: &Patch) -> Result<()> {

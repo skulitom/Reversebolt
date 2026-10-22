@@ -785,6 +785,7 @@ impl LivePane {
                                         if let Some(card) = live.runtime.cards.get(*id) {
                                             let editor = self.runtime_requested.entry(card.candidate.id.clone()).or_default();
                                             crate::ui_runtime_trial::controls(ui, handle, state, card, editor, !busy && live.connected);
+                                            crate::ui_runtime_trial::comparison_note(ui, state, card);
                                         }
                                     }
                                     CardSource::Ocr => {

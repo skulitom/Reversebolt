@@ -1118,6 +1118,19 @@ whole-screen result. A valid inconclusive assessment is distinct from an analysi
 error. Stopped, active and legacy tests without a saved region retain the existing
 status. No images or full matcher reports are copied into the plan response.
 
+Successful `observe_runtime_test`, `read_runtime_test` and
+`plan_runtime_comparisons` responses also publish their compact regional results
+to shared session status. Each relevant `runtime_tests` summary can include
+`last_regional_review`: `reviewed_unix_ms`, `sources` (test/trial digests),
+`assessment` and `error`. The desktop uses the same snapshot for a short
+"Last comparison" note on an already named card. It adds no control or authority.
+Changed test/trial records remove the snapshot; an explicit unavailable or
+mismatched re-review replaces earlier support. Restart discards saved display
+snapshots; the durable test and trial remain available for a new shared read.
+Status publication performs no image/input-file reads or matching. A snapshot
+describes the earlier review, not fresh evidence about the files or running game.
+A command that fails before producing a review does not refresh its timestamp.
+
 `submit_runtime_hypotheses` preserves eligible activity context from the previous
 completed review when the discovery report, investigation, batch and complete
 frame/input metadata hash still match. Its response and durable receipt include

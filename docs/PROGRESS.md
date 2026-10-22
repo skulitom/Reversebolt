@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Shared comparison notes on cards (2026-10-22): **35% unchanged**.
+Completion, shared history and planning results now publish the same compact
+regional review to session status. Already named desktop cards show a short
+historical comparison note; the existing details view explains its limits and
+age. Test/trial digests bind the snapshot. Changed records invalidate it, explicit
+unavailable reviews replace older support, and a newer comparison supersedes the
+older card note. Publication does no image matching or evidence-file reads.
+Restart discards cached display notes and preserves the underlying evidence.
+
+All 378 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. Integration tests cover all three result sources, failure, source
+changes and restart; presentation-selection tests cover exact scope/path and
+newer-test behavior. No new real-game result or native-window validation is
+claimed. The desktop preview remains unavailable after quarantine, and the
+security executable/review packet remain local as requested.
+[Implementation and evidence limits](../research/comparison-card-status/README.md).
+
 Regional results in investigation planning (2026-10-22): **35% unchanged**.
 The shared planner now rechecks completed comparisons with a saved pre-edit
 region and exposes their recorded regional intervention outcome. The scalar
