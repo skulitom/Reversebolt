@@ -678,6 +678,23 @@ in the evidence, including missing readings. PNG checksums remain separate from
 RGBA hashes. Compatibility/older captures have no sampling receipt. These times
 do not establish atomic memory/image alignment or game-state freshness.
 
+New native receipts may also contain `sampling.clock`: two performance-counter
+reads bracketed in the investigation's monotonic input clock, using
+`qpc_to_monotonic_brackets_v1`. A collection failure is retained as
+`sampling.clock_error`. Older receipts omit both fields and keep their prior
+serialized shape. `read_play_evidence` adds `capture_clocks` only when one of
+those fields exists. Each diagnostic binds the selected compositor timestamp to
+the hash-checked PNG, decoded RGBA hash, image geometry, selection policy and
+capture-operation scope, with an uncertainty interval or an explicit error.
+Stale, future, inconsistent and overly imprecise correlations are rejected.
+The entire frame metadata remains included in its integrity hash.
+
+These diagnostics do not replace capture-operation bounds, change input
+classification, select activity or authorize edits. A compositor timestamp is
+not evidence of when the game updated or presented its state. Clock-only tests
+do not validate actual capture timing; see the
+[clock study](../research/capture-clock/README.md).
+
 The `live` state is separate from the practice state; practice
 write tools never edit the connected external application. A process restart
 requires a new selection; PID alone is not accepted as an identity.

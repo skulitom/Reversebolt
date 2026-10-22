@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Selected-image clock diagnostics (2026-10-22): **35% unchanged**.
+Native screen operations now retain optional performance-counter anchors in the
+investigation's input clock. Checked integer conversion binds a compositor
+timestamp to the selected saved image with explicit uncertainty; stale, future,
+inconsistent, wrong-scope or imprecise timing is rejected. Shared evidence exposes
+diagnostics only. Capture-operation bounds, discovery and editing rules remain
+unchanged, and older recordings retain their prior serialized shape.
+
+The frozen clock-only experiment passed 100/100 samples across calling and worker
+threads, with 1–4 us correlation intervals. All 170 frozen files passed audit.
+All 389 workspace tests, strict all-target Clippy and format checks pass. The
+initial integration test's incorrect unchanged-hash expectation was corrected;
+adding metadata correctly changes integrity hashes without changing activity.
+These results validate clock collection/conversion, not actual compositor
+images, game-update timing or generalization. No game or model ran. Desktop
+checking still reports the quarantined executable unavailable; security-review
+artifacts stay local.
+[Implementation, evidence and limitations](../research/capture-clock/README.md).
+
 Capture/input ambiguity corrected (2026-10-22): **35% unchanged**.
 A timing study found that passive classification ignored input sampled during
 image acquisition and could call that interval quiet. Both endpoint captures

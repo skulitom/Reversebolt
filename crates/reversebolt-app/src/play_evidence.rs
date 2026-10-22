@@ -308,8 +308,30 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     let mut patch_motion = vec![];
     let mut previous: Option<Vec<u8>> = None;
     let mut region_intervals = vec![];
+    let mut capture_clocks = vec![];
     for id in ids {
         let (frame, image) = session.read_frame(investigation, &id)?;
+        if frame
+            .sampling
+            .as_ref()
+            .is_some_and(|s| s.clock.is_some() || s.clock_error.is_some())
+        {
+            let projected = image::load_from_memory(&image)
+                .map_err(|e| format!("Clock image decode failed: {e}"))
+                .and_then(|pixels| {
+                    if pixels.width() != frame.width || pixels.height() != frame.height {
+                        return Err("Clock image dimensions do not match the saved frame.".into());
+                    }
+                    reversebolt_core::image_clock::project_frame(
+                        &frame,
+                        &reversebolt_core::visual::digest(pixels.to_rgba8().as_raw()),
+                    )
+                });
+            capture_clocks.push(match projected {
+                Ok(time) => json!({"frame_id":frame.id,"image_sha256":frame.sha256,"compositor_time":time,"error":null}),
+                Err(error) => json!({"frame_id":frame.id,"image_sha256":frame.sha256,"compositor_time":null,"error":error}),
+            });
+        }
         if let Some(prior) = &previous {
             let (measurement, spatial) =
                 measure_pair(frames.last().unwrap(), &frame, prior, &image);
@@ -396,6 +418,10 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
             }
             Err(error) => json!({"selection":null,"measurements":[],"error":error}),
         };
+    }
+    if !capture_clocks.is_empty() {
+        result["capture_clocks"] = json!({"diagnostic_only":true,"frames":capture_clocks,
+            "limitation":"Compositor clock correlation, not a game update or presentation timestamp. Capture-operation bounds remain authoritative for input classification and comparisons."});
     }
     Ok(result)
 }
@@ -791,6 +817,111 @@ pub(crate) mod tests {
                 .unwrap()
                 .to_str()
                 .unwrap()
+                .starts_with("reversebolt-regions-")
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+    #[test]
+    fn capture_clock_diagnostics_bind_saved_pixels_without_changing_activity_classification() {
+        use reversebolt_core::image_clock::{POLICY, Receipt, Sample};
+        let (mut session, directory) = generated_activity_session(true);
+        let args = json!({"investigation_id":session.view.investigation_id,"batch":1,
+            "frame_ids":session.view.frames.iter().map(|f|&f.id).collect::<Vec<_>>()});
+        let baseline = read(&session, &args).unwrap();
+        assert!(baseline.get("capture_clocks").is_none());
+        assert!(baseline["activity_source"].is_object());
+        let frame = &mut session.view.frames[0];
+        let pixels = image::open(directory.join("frame-001.png"))
+            .unwrap()
+            .to_rgba8();
+        let receipt = Receipt {
+            policy: POLICY.into(),
+            clock_id: session.view.investigation_id.clone(),
+            before: Sample {
+                frequency_hz: 10_000_000,
+                counter_ticks: 10_000_000,
+                local_before_us: 1_000_000,
+                local_after_us: 1_000_002,
+            },
+            after: Sample {
+                frequency_hz: 10_000_000,
+                counter_ticks: 10_010_000,
+                local_before_us: 1_001_000,
+                local_after_us: 1_001_000,
+            },
+        };
+        frame.sampling = Some(
+            serde_json::from_value(json!({
+                "policy":"last_completed_in_fixed_window_v1","settle_ms":80,"max_frames":8,
+                "selected":0,"clock":receipt,"frames":[{"completed_us":500,
+                "compositor_100ns":10005000,"width":frame.width,"height":frame.height,
+                "rgba_sha256":visual::digest(pixels.as_raw()),"detail_fraction":0.1}]
+            }))
+            .unwrap(),
+        );
+        let enabled = read(&session, &args).unwrap();
+        let clock = &enabled["capture_clocks"]["frames"][0];
+        assert_eq!(enabled["capture_clocks"]["diagnostic_only"], true);
+        assert!(clock["error"].is_null());
+        assert_eq!(clock["compositor_time"]["frame_id"], "frame-1");
+        assert_eq!(
+            clock["compositor_time"]["image_sha256"],
+            session.view.frames[0].sha256
+        );
+        for key in ["evidence", "patch_motion"] {
+            assert_eq!(baseline[key], enabled[key], "diagnostics changed {key}");
+        }
+        let activity_behavior = |value: &Value| {
+            let mut source = value["activity_source"].clone();
+            source
+                .as_object_mut()
+                .unwrap()
+                .remove("frame_metadata_sha256");
+            source
+        };
+        assert_eq!(activity_behavior(&baseline), activity_behavior(&enabled));
+        assert_eq!(
+            enabled["activity_source"]["frame_metadata_sha256"],
+            enabled["frame_metadata_sha256"]
+        );
+        assert_ne!(
+            baseline["frame_metadata_sha256"],
+            enabled["frame_metadata_sha256"]
+        );
+        session.view.frames[0].sampling.as_mut().unwrap().frames[0].rgba_sha256 = "0".repeat(64);
+        let mismatch = read(&session, &args).unwrap();
+        assert!(mismatch["capture_clocks"]["frames"][0]["compositor_time"].is_null());
+        assert!(
+            mismatch["capture_clocks"]["frames"][0]["error"]
+                .as_str()
+                .unwrap()
+                .contains("pixels")
+        );
+        assert_eq!(baseline["evidence"], mismatch["evidence"]);
+        assert_eq!(activity_behavior(&baseline), activity_behavior(&mismatch));
+        // Preserve failure details even when valid anchors also exist.
+        session.view.frames[0]
+            .sampling
+            .as_mut()
+            .unwrap()
+            .clock_error = Some("Counter unavailable".into());
+        let unavailable = read(&session, &args).unwrap();
+        assert!(
+            unavailable["capture_clocks"]["frames"][0]["error"]
+                .as_str()
+                .unwrap()
+                .contains("Counter unavailable")
+        );
+        drop(session);
+        assert_eq!(
+            directory.parent(),
+            Some(std::env::temp_dir().canonicalize().unwrap().as_path())
+        );
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
                 .starts_with("reversebolt-regions-")
         );
         std::fs::remove_dir_all(directory).unwrap();

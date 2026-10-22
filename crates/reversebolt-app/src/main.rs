@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod capture_clock;
 mod capture_sampling;
 mod fixture;
 mod freeze_bridge;

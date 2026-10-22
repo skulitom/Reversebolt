@@ -11,6 +11,10 @@ pub const MAX_TRACKS: usize = 32;
 /// Audit of the bounded, content-neutral graphics-frame selection policy.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CaptureSampling {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clock: Option<crate::image_clock::Receipt>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clock_error: Option<String>,
     pub policy: String,
     pub settle_ms: u64,
     pub max_frames: usize,

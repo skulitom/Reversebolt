@@ -1,0 +1,67 @@
+{
+  "method": "clock_api_correlation_probe_v1",
+  "groups": [
+    {
+      "group": "all",
+      "samples": 100,
+      "consistent": 100,
+      "errors": [],
+      "width_us_min": 1,
+      "width_us_upper_median": 2,
+      "width_us_max": 4
+    },
+    {
+      "group": "calling_thread",
+      "samples": 50,
+      "consistent": 50,
+      "errors": [],
+      "width_us_min": 1,
+      "width_us_upper_median": 2,
+      "width_us_max": 4
+    },
+    {
+      "group": "worker_thread",
+      "samples": 50,
+      "consistent": 50,
+      "errors": [],
+      "width_us_min": 1,
+      "width_us_upper_median": 2,
+      "width_us_max": 3
+    }
+  ],
+  "frozen_files": 170,
+  "changed": [],
+  "results_sha256": "48f160650e4c42649208da3441caae64e405c13b76d06b61fa57c42f452e28c9",
+  "limitation": "Clock APIs and arithmetic only; no captured image or game validation.",
+  "checks": {
+    "workspace_tests": {
+      "path": "test-results/image-clock-workspace-final.log",
+      "sha256": "f0c8b697a7667a0b04a89712dc7ee48de5799a8558ef9a3108f24c5a929fbcc0",
+      "passed": 389,
+      "failed": 0
+    },
+    "initial_workspace_tests": {
+      "path": "test-results/image-clock-workspace.log",
+      "sha256": "22848cba855ca373969c573aad4cc8d5868553b8122e548c1111f9eba649a8cc",
+      "failure": "New test incorrectly expected the activity source metadata hash to remain unchanged after adding clock receipts. Corrected assertion preserves integrity binding and compares activity behavior."
+    },
+    "strict_clippy": {
+      "path": "test-results/image-clock-clippy.log",
+      "sha256": "31f292ca66a53405151afa3b872fa9b76e9926b1482f8d366468224401e18059"
+    },
+    "format": {
+      "path": "test-results/image-clock-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "probe_build": {
+      "path": "test-results/image-clock-probe-build-final.log",
+      "sha256": "1b760861701703e177e88022fef2463a663cd3a38b39ff9222d7964707edc3e7"
+    },
+    "preview_availability": {
+      "path": "test-results/image-clock-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    }
+  },
+  "preview_status": "unavailable; published executable missing; read-only check only",
+  "security_review": "local only; no upload"
+}

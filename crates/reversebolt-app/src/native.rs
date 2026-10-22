@@ -596,6 +596,14 @@ impl NativeTarget for Process {
         }
         result
     }
+    fn screen_clocked(
+        &self,
+        path: &Path,
+        clock_id: &str,
+        origin: std::time::Instant,
+    ) -> Result<Screen> {
+        crate::capture_clock::capture(clock_id, origin, || self.screen(path))
+    }
     fn recognize(&self, screen: &mut Screen) -> Result<()> {
         let mut observer = self.observer.borrow_mut();
         observer

@@ -9,6 +9,7 @@ pub mod discovery;
 pub mod effects;
 pub mod engine;
 pub mod freezes;
+pub mod image_clock;
 pub mod inputs;
 pub mod intervention;
 pub mod investigation;

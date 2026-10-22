@@ -142,6 +142,10 @@ pub trait NativeTarget {
         crate::changes::WriteReceipt::refused("This target does not support trial writes.")
     }
     fn screen(&self, path: &Path) -> Result<Screen>;
+    /// Optional compositor-clock diagnostics; capture-operation bounds remain authoritative.
+    fn screen_clocked(&self, path: &Path, _clock_id: &str, _origin: Instant) -> Result<Screen> {
+        self.screen(path)
+    }
     /// Run recognition after memory capture to avoid adding inference time to
     /// the screen-to-memory sampling delay. Fixtures may supply words directly.
     fn recognize(&self, _screen: &mut Screen) -> Result<()> {
@@ -338,7 +342,9 @@ impl LiveSession {
         }
         let started_unix_ms = crate::changes::now_ms();
         let begin_us = self.capture_clock.elapsed().as_micros() as u64;
-        let screen = self.target.screen(path)?;
+        let screen =
+            self.target
+                .screen_clocked(path, &self.view.investigation_id, self.capture_clock)?;
         let interval = CaptureInterval {
             clock_id: self.view.investigation_id.clone(),
             begin_us,
@@ -772,7 +778,9 @@ impl LiveSession {
                 );
             }
             let begin_us = self.capture_clock.elapsed().as_micros() as u64;
-            let screen = self.target.screen(&path);
+            let screen =
+                self.target
+                    .screen_clocked(&path, &self.view.investigation_id, self.capture_clock);
             observation.capture_interval = Some(CaptureInterval {
                 clock_id: self.view.investigation_id.clone(),
                 begin_us,
@@ -1155,7 +1163,11 @@ impl LiveSession {
             .unwrap_or_default()
             .as_millis();
         let capture_begin_us = self.capture_clock.elapsed().as_micros() as u64;
-        let mut screen = self.target.screen(&screen_path);
+        let mut screen = self.target.screen_clocked(
+            &screen_path,
+            &self.view.investigation_id,
+            self.capture_clock,
+        );
         let capture_end_us = self.capture_clock.elapsed().as_micros() as u64;
         let image_length = std::fs::metadata(&screen_path)
             .map(|m| m.len())

@@ -31,6 +31,8 @@ impl<T> Burst<T> {
     }
     pub fn receipt(&self) -> Option<CaptureSampling> {
         Some(CaptureSampling {
+            clock: None,
+            clock_error: None,
             policy: "last_completed_in_fixed_window_v1".into(),
             settle_ms: SETTLE_US / 1000,
             max_frames: MAX_FRAMES,
