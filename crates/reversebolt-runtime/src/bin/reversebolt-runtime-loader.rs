@@ -116,11 +116,7 @@ fn run() -> Result<()> {
         let pid: u32 = a[2].parse().map_err(|_| "invalid PID")?;
         let expected_session: u32 = a[4].parse().map_err(|_| "invalid session")?;
         unsafe {
-            let process = OpenProcess(
-                PROCESS_QUERY_INFORMATION | PROCESS_VM_READ | PROCESS_SYNCHRONIZE,
-                0,
-                pid,
-            );
+            let process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_SYNCHRONIZE, 0, pid);
             if process.is_null() {
                 return Err(error("open detection target"));
             }
@@ -131,25 +127,54 @@ fn run() -> Result<()> {
             {
                 return Err("detection process identity mismatch".into());
             }
+            let initial = modules(pid)?;
+            if initial.len() > 512 {
+                return Err("module count exceeds detection budget".into());
+            }
             let mut providers = 0;
-            for module in modules(pid)? {
-                let local = LoadLibraryExW(
-                    wide(&module.path).as_ptr(),
-                    null_mut(),
-                    DONT_RESOLVE_DLL_REFERENCES,
-                );
-                if !local.is_null() {
-                    providers +=
-                        usize::from(reversebolt_runtime::has_runtime_exports(local as usize));
-                    FreeLibrary(local);
+            let mut unavailable = 0;
+            let mut read_bytes = 0;
+            let mut issues = Vec::new();
+            for module in &initial {
+                let inspection = reversebolt_runtime::pe_exports::from_file(
+                    Path::new(&module.path),
+                    reversebolt_runtime::REQUIRED_EXPORTS,
+                )
+                .and_then(|exports| {
+                    if exports.image_size as usize != module.size {
+                        return Err("Module image size differs from its file".into());
+                    }
+                    if !exports.forwarded.is_empty() {
+                        return Err("Forwarded runtime exports require separate validation".into());
+                    }
+                    Ok(exports)
+                });
+                match inspection {
+                    Ok(exports) => {
+                        read_bytes += exports.read_bytes;
+                        providers += usize::from(
+                            exports.contains_all(reversebolt_runtime::REQUIRED_EXPORTS),
+                        );
+                    }
+                    Err(error) => {
+                        unavailable += 1;
+                        if issues.len() < 16 {
+                            issues.push(json!({"module":module.path,"error":error}));
+                        }
+                    }
                 }
             }
-            if creation(process.0)? != a[3] || WaitForSingleObject(process.0, 0) != WAIT_TIMEOUT {
-                return Err("target exited during detection".into());
+            if creation(process.0)? != a[3]
+                || WaitForSingleObject(process.0, 0) != WAIT_TIMEOUT
+                || modules(pid)? != initial
+            {
+                return Err("target or loaded modules changed during detection".into());
             }
             println!(
                 "{}",
-                json!({"pid":pid,"created":a[3],"session":expected_session,"supported":providers==1,"providers":providers})
+                json!({"pid":pid,"created":a[3],"session":expected_session,"supported":providers==1 && unavailable==0,
+                    "providers":providers,"module_count":initial.len(),"unavailable":unavailable,"issues":issues,
+                    "successful_read_bytes":read_bytes,"basis":"bounded_pe_exports_v1"})
             );
         }
         return Ok(());
@@ -262,6 +287,12 @@ fn run() -> Result<()> {
     if hash != a[5].to_lowercase() {
         return Err("helper SHA256 mismatch".into());
     }
+    let helper_exports =
+        reversebolt_runtime::pe_exports::from_bytes(&helper_bytes, &["ReverseboltInspect"])?;
+    let rva = *helper_exports
+        .functions
+        .get("ReverseboltInspect")
+        .ok_or("helper inspection export missing or forwarded")? as usize;
     unsafe {
         let self_pid = GetCurrentProcessId();
         if pid == self_pid
@@ -307,18 +338,6 @@ fn run() -> Result<()> {
         }
         let load = system_export(pid, b"LoadLibraryW\0")?;
         let unload = system_export(pid, b"FreeLibrary\0")?;
-        let local = LoadLibraryExW(
-            wide(&helper).as_ptr(),
-            null_mut(),
-            DONT_RESOLVE_DLL_REFERENCES,
-        );
-        if local.is_null() {
-            return Err(error("map helper exports"));
-        }
-        let inspect = GetProcAddress(local, c"ReverseboltInspect".as_ptr().cast());
-        let rva = inspect.map(|p| p as usize - local as usize);
-        FreeLibrary(local);
-        let rva = rva.ok_or("helper inspection export missing")?;
         let start = Instant::now();
         println!(
             "{}",
@@ -332,7 +351,7 @@ fn run() -> Result<()> {
             .into_iter()
             .find(|m| normalized(&m.path) == normalized(&helper))
             .ok_or("helper failed to load")?;
-        if rva >= remote.size {
+        if rva >= remote.size || helper_exports.image_size as usize != remote.size {
             return Err("inspection export outside helper; helper retained".into());
         }
         let output_arg = allocate_string(process.0, &request)?;

@@ -1,0 +1,75 @@
+{
+  "file_only_evaluation_passed": true,
+  "cases": [
+    {
+      "name": "hyperbolica-runtime",
+      "runtime_provider": true,
+      "matched_functions": 39,
+      "file_bytes": 16182784,
+      "read_bytes": 15952,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "freight-hopper-runtime",
+      "runtime_provider": true,
+      "matched_functions": 39,
+      "file_bytes": 40131584,
+      "read_bytes": 21864,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "manifold-runtime",
+      "runtime_provider": true,
+      "matched_functions": 39,
+      "file_bytes": 45124096,
+      "read_bytes": 15382,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "hyperbolica-player",
+      "runtime_provider": false,
+      "matched_functions": 0,
+      "file_bytes": 28094040,
+      "read_bytes": 14442,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "freight-hopper-player",
+      "runtime_provider": false,
+      "matched_functions": 0,
+      "file_bytes": 28880960,
+      "read_bytes": 15042,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "hyperbolica-executable",
+      "runtime_provider": false,
+      "matched_functions": 0,
+      "file_bytes": 653824,
+      "read_bytes": 2606,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "windows-kernel",
+      "runtime_provider": false,
+      "matched_functions": 0,
+      "file_bytes": 836128,
+      "read_bytes": 106760,
+      "elapsed_ms": 0
+    },
+    {
+      "name": "reversebolt-helper",
+      "runtime_provider": false,
+      "matched_functions": 1,
+      "file_bytes": 632320,
+      "read_bytes": 3452,
+      "elapsed_ms": 0
+    }
+  ],
+  "target_access": false,
+  "dll_mapping": false,
+  "native_loader_integration_tested": false,
+  "windows_detection_resolved": false,
+  "frozen_manifest_sha256": "0f2df895c2c94302344b39ed3024634decf6db5ae722e5eff7c2bc475bd62d4d",
+  "process_record_sha256": "7d05582fda8c0e1457dd3a800c8bd339845518abfca25e7320b28436d8565f4c"
+}

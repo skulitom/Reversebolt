@@ -7,6 +7,19 @@ The [follow-up review](FOLLOWUP-2026-10-22.md) and local text-only packet retain
 the new events and frozen identities. External submission remains pending.
 The original investigation below describes evidence at its collection time.
 
+An additional event-log read confirms event 1117 at 00:26:26 UTC records quarantine
+of `target/desktop-preview/release/Reversebolt.exe`, following the earlier read
+refusal. [Retained build-copy events](build-copy-events.json). The existing review
+packets remain unchanged; no restore, relaunch or upload followed.
+
+Subsequent source inspection found a compatibility concern:
+export detection used the discouraged DONT_RESOLVE_DLL_REFERENCES flag. Source
+now uses bounded PE file parsing; an eight-file offline evaluation and 296 tests
+pass. This removes unnecessary local DLL mapping, not the runtime helper's actual
+instrumentation. It is **not** evidence that the detection is resolved. The change
+is unpublished; both exact review samples/packets remain separately documented.
+[Implementation and evidence](../file-export-detection/README.md).
+
 The preceding native evaluation could not restart its headless engine after
 Defender quarantined the test executable. The same condition remains relevant
 to desktop publication and new live-game validation. Offline model/code work

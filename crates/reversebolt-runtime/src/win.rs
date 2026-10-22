@@ -20,7 +20,7 @@ impl Drop for Handle {
         }
     }
 }
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Module {
     pub base: usize,
     pub size: usize,

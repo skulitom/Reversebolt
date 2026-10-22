@@ -219,10 +219,13 @@ pub fn detect(info: &ProcessInfo, base: &Path) -> Result<bool> {
             {
                 return Err("Runtime detection identity changed.".into());
             }
+            if value["unavailable"].as_u64().unwrap_or(0) != 0 {
+                return Err("Runtime detection could not inspect every loaded module. Details were saved with the investigation.".into());
+            }
             return Ok(value["supported"] == true);
         }
         if start.elapsed() > Duration::from_secs(10) {
-            // Detection only maps exports in this child; it never starts a target thread.
+            // Detection reads module files; it never maps them or starts a target thread.
             let _ = child.kill();
             let _ = child.wait();
             return Err("Runtime detection timed out.".into());

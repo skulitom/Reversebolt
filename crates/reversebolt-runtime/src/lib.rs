@@ -1,5 +1,6 @@
 //! Runtime-derived graph discovery, path reads and explicit guarded numeric trials.
 mod paths;
+pub mod pe_exports;
 pub mod win;
 use reversebolt_core::runtime::{Locator, Scope, TypeKey};
 use serde_json::{Value, json};
@@ -47,6 +48,7 @@ use windows_sys::Win32::System::{
 type Ptr = *mut c_void;
 macro_rules! api {
     ($($name:ident: $ty:ty),+ $(,)?) => {
+        pub const REQUIRED_EXPORTS: &[&str] = &[$(stringify!($name)),+];
         struct Api { $($name: $ty),+ }
         impl Api { unsafe fn load(module: usize) -> Result<Self> {
             Ok(Self { $($name: unsafe {
@@ -96,12 +98,6 @@ api! {
     il2cpp_string_chars: unsafe extern "C" fn(Ptr)->*const u16,
     il2cpp_stop_gc_world: unsafe extern "C" fn(),
     il2cpp_start_gc_world: unsafe extern "C" fn(),
-}
-/// Check exports only; never execute a function in this module.
-/// # Safety
-/// `module` must be a valid locally mapped Windows module handle.
-pub unsafe fn has_runtime_exports(module: usize) -> bool {
-    unsafe { Api::load(module).is_ok() }
 }
 struct Attached<'a>(&'a Api, Ptr);
 impl Drop for Attached<'_> {

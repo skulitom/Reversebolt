@@ -271,7 +271,8 @@ future milestones, not advertised capabilities.
 
 Original source: MIT. Current optional PP-OCRv6 weights and dictionary are
 Apache-2.0. Legacy Ocrs model installations remain separately CC-BY-SA-4.0.
-Ocrs/RTen are MIT OR Apache-2.0; windows-capture is MIT. Attribution is retained
+Ocrs/RTen and object are MIT OR Apache-2.0; windows-capture is MIT. Object 0.40.0
+provides bounded PE export parsing under its MIT license. Attribution is retained
 under `models/` and `licenses/`. Independent code originated in the MIT
 GameDiscoveryLab research prototype.
 Its measured failure cases and Squalr study are preserved under `docs/research/`.

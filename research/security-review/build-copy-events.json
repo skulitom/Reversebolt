@@ -1,0 +1,23 @@
+{
+  "observed_utc": "2026-10-22T00:46:32Z",
+  "source": "Microsoft-Windows-Windows Defender/Operational",
+  "events": [
+    {
+      "id": 1116,
+      "time_utc": "2026-10-22T00:26:07.9576502Z",
+      "threat": "Behavior:Win32/DefenseEvasion.A!ml",
+      "action": "Not Applicable",
+      "path": "target/desktop-preview/release/Reversebolt.exe",
+      "process": "pwsh.exe"
+    },
+    {
+      "id": 1117,
+      "time_utc": "2026-10-22T00:26:26.6497438Z",
+      "threat": "Behavior:Win32/DefenseEvasion.A!ml",
+      "action": "Quarantine",
+      "path": "target/desktop-preview/release/Reversebolt.exe",
+      "process": "pwsh.exe"
+    }
+  ],
+  "interpretation": "The event log records quarantine of the existing build-output copy after the previously recorded read refusal. This does not establish the triggering behavior. No restore, relaunch, exclusion or upload was performed. The prior review packets are unchanged."
+}

@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+File-based runtime compatibility checks (2026-10-22): **35% unchanged**.
+Runtime detection and helper entry-point lookup no longer map DLLs locally using
+the discouraged DONT_RESOLVE_DLL_REFERENCES flag. A bounded PE parser reads the
+same 39 required API names, reports incomplete checks and preserves target/module
+identity guards. Eight frozen file-only cases passed: three game runtime DLLs,
+four negative comparisons and the helper export. No game, editor, runtime loader
+or model ran in that evaluation. All 296 workspace tests and strict Clippy pass.
+
+The desktop shortcut now explains missing preview files or launch errors rather
+than failing silently; its non-launching check reports the quarantined executable
+as unavailable. The actual dialog was not opened during verification. This work
+does not identify the cause of the behavioral alert or validate native integration.
+No replacement preview or external submission was made, and protection remains
+enabled. The full goal is active; no generalization credit was added.
+[File-only evidence and limits](../research/file-export-detection/README.md).
+
 New-game baseline and measured investigation context (2026-10-22): **35% unchanged**.
 The unchanged published pipeline completed in Hyperbolica: fifteen automatic
 captures, four bounded evaluator inputs, one completed/unloaded helper, and two
