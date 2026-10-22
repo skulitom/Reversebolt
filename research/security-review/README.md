@@ -4,7 +4,8 @@
 native discovery run. Windows quarantined it and closed the desktop preview;
 hashing its build-output copy is also refused. No replacement was published.
 The [follow-up review](FOLLOWUP-2026-10-22.md) and local text-only packet retain
-the new events and frozen identities. External submission remains pending.
+the new events and frozen identities. Artem answered the submission request with
+**"Keep it local"** on 2026-10-22. Do not submit the executable or review packet.
 The original investigation below describes evidence at its collection time.
 
 An additional event-log read confirms event 1117 at 00:26:26 UTC records quarantine
@@ -71,9 +72,11 @@ Matching scan IDs were checked, and retained events contain no detection in that
 scan window. None of this establishes behavioral clearance.
 
 The prepared review was opened for Artem and explicit approval for external
-submission was requested. Approval is pending; nothing has been uploaded and no
-Microsoft sign-in or account consent has been performed. Local work can continue
-without treating silence as authorization.
+submission was requested. Artem declined external submission: **"Keep it local"**.
+Nothing has been uploaded and no Microsoft sign-in or account consent has been
+performed. Continue local development and testing. The frozen review packets and
+follow-up narrative retain their original contents and pre-answer status;
+this current instruction supersedes their references to pending approval.
 
 Official sources: [file submission](https://learn.microsoft.com/en-us/defender-xdr/submission-guide),
 [developer FAQ](https://learn.microsoft.com/en-us/defender-xdr/developer-faq),

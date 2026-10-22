@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Regional results in investigation planning (2026-10-22): **35% unchanged**.
+The shared planner now rechecks completed comparisons with a saved pre-edit
+region and exposes their recorded regional intervention outcome. The scalar
+result remains visible separately. Exact prior-test context selection, choice
+order, candidate authority and the first-untried rule stay unchanged. Missing
+evidence cannot retain a stale positive result or trigger an automatic retry.
+Review is bounded to eight distinct tests and 144 template checks per request.
+
+All 377 workspace test executions, strict workspace/all-target Clippy and format
+checks pass. Generated image/input files and synthetic receipts verify supported,
+missing, corrupt and unchanged evidence, restart, and agreement with the shared
+reader. A separate mocked evaluator checks budget and source-binding behavior.
+No new gameplay evidence or generalization credit is claimed. Desktop publication
+remains unavailable after quarantine. Artem answered the security submission
+request with **"Keep it local"**; no executable or review packet was uploaded.
+[Implementation and verification limits](../research/regional-planning/README.md).
+
 Regional intervention evidence (2026-10-22): **35% unchanged**.
 The final recovery response and shared history reader now join the preselected
 region's measured response to its exact recorded edit and restoration. The

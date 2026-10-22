@@ -1091,13 +1091,32 @@ can be compared with zero, canonical true booleans with false.
 
 Prior results match the exact path, value, actions, investigation, catalogue,
 report and frame/input metadata hash. A stopped, inconclusive or completed result
-keeps its status without suppressing other paths. `next` is the first untried
+remains tried without suppressing other paths. `next` is the first untried
 choice, or null while a test, edit or Freeze is active, the record budget is full,
 or comparison storage has faulted. `record_capacity` reports investigation and
 retained-record counts/limits, `remaining_record_slots` and an optional `reason`.
 It describes record capacity; image space is checked when reserving a capture.
 Preparing and executing
 the returned proposal still require the explicit comparison operations below.
+
+For completed tests with a saved pre-edit region, the shared planner recomputes
+`regional_intervention_assessment` from retained images, sampled inputs and the
+linked edit/restoration record. Choice `status` reflects that assessment and
+`status_basis` is `regional_intervention`; the original scalar outcome remains in
+`whole_screen_status` and the unchanged `previous_test`. Regional support is an
+observed pattern, not semantic confirmation. It never changes choice ordering,
+write authority, or the rule that only `untried` choices can become `next`.
+
+`regional_history` reports policy `regional_comparison_history_v1`, a maximum of
+eight distinct historical tests (144 template checks), `checked_test_ids`,
+`analysis_error_test_ids` and `omitted_test_ids`. Failed analyses consume budget;
+duplicate test IDs reuse the result within this request. An unavailable analysis
+or exhausted budget sets `status` to `inconclusive`, adds
+`regional_intervention_error` and sets `status_basis` to `regional_unavailable`
+or `regional_not_checked`, respectively. It does not fall back to a positive
+whole-screen result. A valid inconclusive assessment is distinct from an analysis
+error. Stopped, active and legacy tests without a saved region retain the existing
+status. No images or full matcher reports are copied into the plan response.
 
 `submit_runtime_hypotheses` preserves eligible activity context from the previous
 completed review when the discovery report, investigation, batch and complete

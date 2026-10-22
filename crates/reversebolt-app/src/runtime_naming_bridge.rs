@@ -269,7 +269,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     let actions = p::actions(context, &session.view.frames, &evidence)?;
     let inventory =
         reversebolt_core::runtime_inventory::build(&crate::runtime_bridge::catalog_report(rt)?)?;
-    let choices = p::choices(
+    let mut choices = p::choices(
         review,
         &inventory,
         &actions,
@@ -277,6 +277,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
         &session.view.investigation_id,
         &rt.catalog_id,
     )?;
+    let regional_history = crate::runtime_test_bridge::comparison_history(engine, &mut choices)?;
     let busy = engine.runtime_trials.holds(&inventory.scope)
         || engine.runtime_tests.records.iter().any(|t| t.active())
         || engine.view.freezes.iter().any(|f| f.active());
@@ -291,7 +292,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     Ok(
         json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
         "report_sha256":review.report_sha256,"activity_context":context,"activity_motion_comparison":context.motion_comparison()?,"activity_limitation":reversebolt_core::play_context::LIMITATION,
-        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"limitation":p::LIMITATION}),
+        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"regional_history":regional_history,"limitation":p::LIMITATION}),
     )
 }
 

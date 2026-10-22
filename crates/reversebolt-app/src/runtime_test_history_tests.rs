@@ -41,6 +41,126 @@ fn saved(investigation: &str) -> Test {
     })).unwrap()
 }
 
+fn history_choice(test: &Test) -> Value {
+    json!({"hypothesis_ref":{"selected_path_id":test.candidate.id},
+        "value":test.value,"actions":test.actions,"previous_test":test.summary(),
+        "status":test.assessment.as_ref().map_or("stopped", |a| a.status.as_str())})
+}
+
+fn assert_regional_history(engine: &Engine, test: &Test, expected: &Value) {
+    let untouched = json!({"previous_test":null,"status":"untried"});
+    let mut choices = vec![history_choice(test), untouched.clone()];
+    let records = json!(engine.runtime_tests.records);
+    let history = comparison_history(engine, &mut choices).unwrap();
+    assert_eq!(history["checked_test_ids"], json!([test.id]));
+    assert_eq!(choices[0]["regional_intervention_assessment"], *expected);
+    assert_eq!(choices[0]["status"], expected["status"]);
+    assert_eq!(choices[0]["whole_screen_status"], "inconclusive");
+    assert_eq!(choices[0]["previous_test"], test.summary());
+    assert_eq!(choices[1], untouched);
+    assert_eq!(json!(engine.runtime_tests.records), records);
+}
+
+#[test]
+fn regional_history_bounds_work_and_rejects_mismatched_or_unavailable_results() {
+    // These deliberately incomplete records test scheduling/binding only.
+    // Actual image/receipt validation is exercised by the integration test below.
+    let tests: Vec<_> = (0..10)
+        .map(|_| {
+            let mut t = saved(&id());
+            t.phase = Phase::Complete;
+            t.appearance = Some(serde_json::from_value(json!({
+                "selection":{"baseline_sha256":"a".repeat(64),"region":{"x":0,"y":0,"width":32,"height":32}},
+                "comparison_plan_sha256":"b".repeat(64),"baseline_record_sha256":"c".repeat(64),
+                "selected_revision":1,"selected_unix_ms":1
+            })).unwrap());
+            t.assessment = Some(runtime_tests::Assessment {
+                status: "suppression_observed".into(), reason: "Synthetic".into(),
+                medians: [None; 3], limitation: "Scheduling fixture only".into(),
+            });
+            t
+        }).collect();
+    let assessment = |t: &Test| {
+        json!({"policy":reversebolt_vision::trial_intervention::POLICY,
+        "test_id":t.id,"change_id":t.change_id,
+        "test_sha256":reversebolt_core::visual::digest(&serde_json::to_vec(t).unwrap()),
+        "status":"regional_change_and_return_observed"})
+    };
+    let mut choices: Vec<_> = tests.iter().map(history_choice).collect();
+    choices.push(choices[0].clone());
+    choices.push(json!({"previous_test":null,"status":"untried"}));
+    let untouched = choices[11].clone();
+    let mut calls = vec![];
+    let history = regional_history(&tests, &mut choices, |t| {
+        calls.push(t.id.clone());
+        if t.id == tests[1].id {
+            return Err("Missing evidence".into());
+        }
+        let mut a = assessment(t);
+        if t.id == tests[2].id {
+            a["test_sha256"] = json!("d".repeat(64));
+        }
+        Ok(a)
+    })
+    .unwrap();
+    assert_eq!(
+        calls,
+        tests[..8].iter().map(|t| t.id.clone()).collect::<Vec<_>>()
+    );
+    assert_eq!(history["checked_test_ids"], json!(calls));
+    assert_eq!(
+        history["analysis_error_test_ids"],
+        json!([tests[1].id, tests[2].id])
+    );
+    assert_eq!(history["omitted_test_ids"].as_array().unwrap().len(), 2);
+    for i in [8, 9] {
+        assert_eq!(choices[i]["status_basis"], "regional_not_checked");
+        assert_eq!(choices[i]["status"], "inconclusive");
+    }
+    for i in [1, 2] {
+        assert_eq!(choices[i]["status_basis"], "regional_unavailable");
+        assert_eq!(choices[i]["status"], "inconclusive");
+        assert_eq!(choices[i]["whole_screen_status"], "suppression_observed");
+    }
+    assert_eq!(choices[10], choices[0]); // Duplicate consumes no additional work.
+    assert_eq!(choices[11], untouched);
+    assert_eq!(
+        choices.iter().filter(|c| c["status"] == "untried").count(),
+        1
+    );
+    // A fresh review must remove a previous positive assessment on failure.
+    regional_history(&tests, &mut choices, |_| Err("Unavailable now".into())).unwrap();
+    assert!(choices[0].get("regional_intervention_assessment").is_none());
+    assert_eq!(choices[0]["status"], "inconclusive");
+    assert_eq!(choices[0]["whole_screen_status"], "suppression_observed");
+
+    for field in ["previous_test", "hypothesis_ref", "value", "actions"] {
+        let mut wrong = history_choice(&tests[0]);
+        match field {
+            "previous_test" => wrong[field]["revision"] = json!(999),
+            "hypothesis_ref" => wrong[field]["selected_path_id"] = json!("other"),
+            "value" => wrong[field] = json!("1"),
+            _ => wrong[field] = json!([]),
+        }
+        assert!(
+            regional_history(&tests, &mut [wrong], |_| panic!(
+                "Must reject before analysis"
+            ))
+            .is_err()
+        );
+    }
+    let mut stopped = tests[0].clone();
+    stopped.phase = Phase::Stopped;
+    let mut legacy = tests[1].clone();
+    legacy.appearance = None;
+    let skipped = vec![history_choice(&stopped), history_choice(&legacy)];
+    let mut unchanged = skipped.clone();
+    let history =
+        regional_history(&[stopped, legacy], &mut unchanged, |_| panic!("Must skip")).unwrap();
+    assert_eq!(unchanged, skipped);
+    assert_eq!(history["checked_test_ids"], json!([]));
+}
+
 fn prepare(t: &Test) -> Command {
     Command {
         action: "prepare_runtime_test".into(),
@@ -344,6 +464,7 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         result["regional_intervention_assessment"]
     );
     assert!(completion.get("trial_appearance_comparison").is_none());
+    assert_regional_history(&engine, &test, &result["regional_intervention_assessment"]);
     assert_eq!(result["test"], json!(test));
     assert!(
         !engine
@@ -356,6 +477,7 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
     drop(engine);
     let mut engine = Engine::load(state_path).unwrap();
     assert_eq!(read(&mut session, &mut engine), result);
+    assert_regional_history(&engine, &test, &result["regional_intervention_assessment"]);
 
     engine.runtime_trials.records.clear();
     let missing = read(&mut session, &mut engine);
@@ -367,6 +489,7 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         missing["trial_appearance_comparison"],
         result["trial_appearance_comparison"]
     );
+    assert_regional_history(&engine, &test, &missing["regional_intervention_assessment"]);
     engine.runtime_trials.records.push(restored.clone());
     let mut wrong = test.clone();
     wrong.conditions[1].runtime_evidence = Some(reading(&patch.expected));
@@ -394,6 +517,7 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
         "inconclusive"
     );
     assert!(corrupt["regional_intervention_assessment"]["intervention_error"].is_null());
+    assert_regional_history(&engine, &test, &corrupt["regional_intervention_assessment"]);
     std::fs::write(&frame, original).unwrap();
 
     // An unchanged image pattern must remain negative with the same receipts.
@@ -416,6 +540,11 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
     assert_eq!(
         negative["regional_intervention_assessment"]["status"],
         "regional_change_not_observed"
+    );
+    assert_regional_history(
+        &engine,
+        &similar,
+        &negative["regional_intervention_assessment"],
     );
     let report = reversebolt_vision::trial_appearance::analyze(
         &similar,

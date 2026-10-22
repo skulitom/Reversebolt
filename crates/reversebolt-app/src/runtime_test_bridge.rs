@@ -71,6 +71,123 @@ fn completed_regional_assessment(engine: &Engine, test: &Test, result: &mut Valu
     }
 }
 
+/// Add current regional outcomes to the exact prior tests selected by the core
+/// planner. Never relabel an untried choice or mutate the retained experiment.
+pub(crate) fn comparison_history(engine: &Engine, choices: &mut [Value]) -> Result<Value> {
+    regional_history(&engine.runtime_tests.records, choices, |test| {
+        let selection = test.appearance.as_ref().unwrap().selection.clone();
+        let (_, assessment) = compare_appearance(engine, test, selection)?;
+        Ok(json!(assessment))
+    })
+}
+
+fn regional_history(
+    tests: &[Test],
+    choices: &mut [Value],
+    mut evaluate: impl FnMut(&Test) -> Result<Value>,
+) -> Result<Value> {
+    let mut outcomes = std::collections::BTreeMap::<String, Result<Value>>::new();
+    let mut checked = vec![];
+    let mut unavailable = vec![];
+    let mut omitted = std::collections::BTreeSet::new();
+    for choice in choices {
+        let prior = &choice["previous_test"];
+        if prior.is_null() {
+            continue;
+        }
+        let id = prior["id"]
+            .as_str()
+            .ok_or("Previous comparison lacks its saved identity.")?;
+        let test = tests
+            .iter()
+            .find(|t| t.id == id)
+            .ok_or("Previous comparison is no longer available.")?;
+        if *prior != test.summary()
+            || choice["hypothesis_ref"]["selected_path_id"] != test.candidate.id
+            || choice["value"] != test.value
+            || choice["actions"] != json!(test.actions)
+        {
+            return Err(
+                "Previous comparison changed or belongs to a different proposed action/path."
+                    .into(),
+            );
+        }
+        if test.phase != Phase::Complete || test.appearance.is_none() {
+            continue;
+        }
+        let id = id.to_string();
+        for key in [
+            "regional_intervention_assessment",
+            "regional_intervention_error",
+            "status_basis",
+        ] {
+            choice
+                .as_object_mut()
+                .ok_or("Comparison choice must be an object.")?
+                .remove(key);
+        }
+        choice["whole_screen_status"] = json!(
+            test.assessment
+                .as_ref()
+                .map_or("inconclusive", |a| a.status.as_str())
+        );
+        if !outcomes.contains_key(&id) {
+            if outcomes.len() == runtime_tests::MAX_TESTS_PER_INVESTIGATION {
+                omitted.insert(id);
+                choice["status"] = json!("inconclusive");
+                choice["status_basis"] = json!("regional_not_checked");
+                choice["regional_intervention_error"] = json!(
+                    "The regional history review budget is exhausted; this result was not rechecked."
+                );
+                continue;
+            }
+            let result = evaluate(test).and_then(|assessment| {
+                if assessment["test_id"] != test.id
+                    || assessment["change_id"] != test.change_id
+                    || assessment["test_sha256"]
+                        != reversebolt_core::visual::digest(
+                            &serde_json::to_vec(test).map_err(|e| e.to_string())?,
+                        )
+                    || assessment["policy"] != reversebolt_vision::trial_intervention::POLICY
+                    || !matches!(
+                        assessment["status"].as_str(),
+                        Some(
+                            "regional_change_and_return_observed"
+                                | "regional_change_not_observed"
+                                | "inconclusive"
+                        )
+                    )
+                {
+                    return Err("Regional assessment does not match this comparison.".into());
+                }
+                Ok(assessment)
+            });
+            checked.push(id.clone());
+            if result.is_err() {
+                unavailable.push(id.clone());
+            }
+            outcomes.insert(id.clone(), result);
+        }
+        match &outcomes[&id] {
+            Ok(assessment) => {
+                choice["status"] = assessment["status"].clone();
+                choice["status_basis"] = json!("regional_intervention");
+                choice["regional_intervention_assessment"] = assessment.clone();
+            }
+            Err(error) => {
+                choice["status"] = json!("inconclusive");
+                choice["status_basis"] = json!("regional_unavailable");
+                choice["regional_intervention_error"] =
+                    json!(error.chars().take(512).collect::<String>());
+            }
+        }
+    }
+    Ok(json!({"policy":"regional_comparison_history_v1",
+        "maximum_tests":runtime_tests::MAX_TESTS_PER_INVESTIGATION,
+        "maximum_template_checks":runtime_tests::MAX_TESTS_PER_INVESTIGATION*18,
+        "checked_test_ids":checked,"analysis_error_test_ids":unavailable,"omitted_test_ids":omitted}))
+}
+
 /// Called only after the engine has saved all six baseline images/input windows.
 /// This also serves target-free protocol tests of the real post-capture path.
 fn review_baseline(engine: &mut Engine, test: &mut Test, abort: &AtomicBool) -> Result<()> {
