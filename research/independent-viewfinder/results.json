@@ -1,0 +1,47 @@
+{
+  "artifact_audit": "passed",
+  "native_trial": "failed_model_request",
+  "source_commit": "fca219982174402e943d7fbd16fecc4dfa44a370",
+  "release": "0.1.0-20261022-233909",
+  "app_id": "1382070",
+  "installed_build": "20950646",
+  "setup_images_reviewed": 3,
+  "automatic_images": 15,
+  "manually_reviewed_measurement_images": 0,
+  "input_holds": 4,
+  "types": 349,
+  "fields": 1716,
+  "reachable_paths": 31065,
+  "named_questions": 0,
+  "comparisons": 0,
+  "gameplay_edits": 0,
+  "failed_model_prompt_tokens": 36168,
+  "failed_model_request_seconds": 90,
+  "request_error": "error sending request for url (http://127.0.0.1:11434/api/chat)",
+  "helpers": [
+    {
+      "events_sha256": "7c93c105dd3284dba60caf437eaa3065d68e8dd8de7d1392c6ba694f50e4b974",
+      "graph_complete": false,
+      "root_scan_complete": true
+    }
+  ],
+  "pause_count": 218,
+  "max_stop_to_resume_us": 5912,
+  "save_and_backup_unchanged": true,
+  "normal_logs_and_analytics_changed": true,
+  "frozen_manifest_sha256": "7562c76578d44b3ac9925d84010ac4d5f73bd7b0729df9b64d29ba41800e91a5",
+  "receipt_sha256": "0ed8862ce8fcf13fdc05905d60f223756bdd6eb0cc57b099857532ab7a3ba03f",
+  "model_log_sha256": "58766be214ec0de443c980a1c1c8f0b25d2d0eba59d6de604759280cabf47783",
+  "cleanup": {
+    "timestamp_utc": "2026-10-22T22:55:49.9623470Z",
+    "owned_processes_exited": true,
+    "desktop_responsive": true,
+    "new_reversebolt_detections": 0,
+    "protection": {
+      "antivirus": true,
+      "realtime": true,
+      "tamper_protection": true
+    }
+  },
+  "limitation": "No named or verified gameplay control. Supports diagnosis of model request size, not generalization."
+}

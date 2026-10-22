@@ -917,6 +917,17 @@ questions in `state.live.runtime.naming`. Its status is `pending`, `complete`,
 `unavailable`, `cancelled` or `failed`, with a report hash, evidence ID, optional
 batch and error. Accepted hypotheses contain exact candidate paths, quotations,
 separate alternatives and a question; rejected proposals retain their reasons.
+Large metadata indexes use the `complete_type_pages_v1` selection policy.
+The saved observer receipt's optional `paged_selection` records rounds, page
+type IDs, stage references and selected IDs; a null selection marks an incomplete
+attempt. Selection prompts stay within 12,000 UTF-8 bytes, retaining complete
+type rows and field labels. Each page can nominate eight types; later rounds
+compare those nominees with the same full rows. At most four rounds and 24
+selection calls run. Oversized rows, invalid references, failure to narrow,
+cancellation or exhausted budgets publish no hypotheses. Existing small-index
+receipts omit this field. Object-sample omission counts on pages describe the
+original index, not counts to sum across pages. This changes processing limits,
+not semantic verification or write authority.
 Completed accepted primary paths are automatically included in the shared card
 list, even outside the initial 64-value discovery preview. The desktop labels
 their explanations “Possible effect”; alternatives do not inherit the name.

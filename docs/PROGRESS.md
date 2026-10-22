@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Independent Viewfinder trial and large-catalog correction (2026-10-22):
+**35% unchanged**. The unchanged published application collected fifteen images
+and runtime metadata from a new supported game (349 types, 1,716 fields, 31,065
+reachable paths), but its first model request timed out while reading a
+36,168-token catalog. It produced no named controls or gameplay edits. Three
+setup screenshots were viewed, zero measurement screenshots; the save and backup
+remained byte-identical. The helper unloaded and owned test processes exited.
+
+Large catalogs now use complete type pages capped at 12,000 prompt bytes,
+followed by bounded model selection among nominated types. All first-round type
+rows and field labels are retained. A local development replay of the same
+inventory completed fifteen model calls in a summed 64.365 seconds and retained
+six cited hypotheses, with no target access or new images. These are unverified
+questions, not an independent-game acceptance pass. All **449 workspace tests**,
+strict all-target Clippy and formatting pass. No game-specific labels, offsets
+or layouts were added. [Native failure and replay evidence](../research/independent-viewfinder/README.md).
+
 Desktop restored to availability with an authorized local allowance (2026-10-22):
 **35% unchanged**. Release `0.1.0-20261022-233909` is running on the main desktop
 and the existing shortcut opens it. A file-specific Defender exclusion was added

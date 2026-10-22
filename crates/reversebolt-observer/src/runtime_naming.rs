@@ -1,6 +1,8 @@
 //! Bounded text-only hypotheses from an engine-checked runtime inventory.
+mod selection;
 use crate::{Observer, Result, response_text};
 use reversebolt_core::{runtime_hypotheses as h, runtime_inventory::Inventory, visual::digest};
+pub use selection::PagedSelection;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::{
@@ -26,6 +28,8 @@ pub struct Stage {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub paged_selection: Option<PagedSelection>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_text_fallback: Option<ObjectTextFallback>,
     #[serde(default)]
@@ -145,6 +149,7 @@ impl Observer {
         cancel: &AtomicBool,
     ) -> Receipt {
         let mut receipt = Receipt {
+            paged_selection: None,
             object_text_fallback: None,
             activity: None,
             schema: 1,
@@ -195,21 +200,11 @@ impl Observer {
             inventory,
             PROMPT_BYTES.saturating_sub(prefix.len()),
         )?;
-        let schema = json!({"type":"object","additionalProperties":false,"required":["types"],"properties":{
-            "types":{"type":"array","maxItems":8,"uniqueItems":true,"items":{"type":"integer","minimum":0}}
-        }});
-        let stage = self
-            .naming_stage(format!("{prefix}{}", json!(types)), schema, 600, 49152)
-            .await?;
-        receipt.stages.push(stage);
-        #[derive(Deserialize)]
-        #[serde(deny_unknown_fields)]
-        struct Types {
-            types: Vec<usize>,
+        let selected = self.select_types(types, &prefix, cancel, receipt).await?;
+        if cancel.load(Ordering::SeqCst) {
+            return Ok(());
         }
-        let selected: Types = serde_json::from_str(naming_text(receipt.stages.last().unwrap())?)
-            .map_err(|e| e.to_string())?;
-        let selection = h::select(inventory, &selected.types)?;
+        let selection = h::select(inventory, &selected)?;
         receipt.selection = Some(selection);
         if cancel.load(Ordering::SeqCst) {
             return Ok(());
@@ -316,6 +311,7 @@ mod tests {
         let selection = h::select(&inventory, &[0]).unwrap();
         let batch = h::validate(&selection, h::Proposals { hypotheses: vec![] }).unwrap();
         let receipt = Receipt {
+            paged_selection: None,
             object_text_fallback: None,
             activity: None,
             schema: 1,

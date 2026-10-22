@@ -1,0 +1,61 @@
+{
+  "artifact_audit": "passed",
+  "native_trial": "unchanged_failed_baseline",
+  "development_replay": true,
+  "types_covered_once_in_first_round": 349,
+  "complete_field_labels": 1716,
+  "pages_per_round": [
+    11,
+    1
+  ],
+  "selection_model_calls": 12,
+  "total_model_calls": 15,
+  "summed_stage_ms": 64365,
+  "slowest_stage_ms": 18793,
+  "max_selection_prompt_bytes": 11994,
+  "selected_types": [
+    184,
+    319,
+    331
+  ],
+  "questions": [
+    {
+      "name": "capsule height",
+      "field": "CapsuleHeight",
+      "alternatives": 1
+    },
+    {
+      "name": "max stable slope angle",
+      "field": "MaxStableSlopeAngle",
+      "alternatives": 1
+    },
+    {
+      "name": "step distance",
+      "field": "stepDistance",
+      "alternatives": 1
+    },
+    {
+      "name": "fall wind min speed",
+      "field": "fallWindMinSpeed",
+      "alternatives": 1
+    },
+    {
+      "name": "max stable move speed",
+      "field": "MaxStableMoveSpeed",
+      "alternatives": 1
+    },
+    {
+      "name": "jump up speed",
+      "field": "JumpUpSpeed",
+      "alternatives": 1
+    }
+  ],
+  "rejected": 0,
+  "frozen_manifest_sha256": "39d569929b15e55bfa015cfb94665a5f93a90c54eab743b52ec5186bbcbe8911",
+  "receipt_sha256": "fa65cfa601f5c9c572172220a774b34fece7f9daeed5bdbd3d1dd2354adf2a0f",
+  "target_access": false,
+  "new_images": 0,
+  "gameplay_edits": 0,
+  "verified_controls": 0,
+  "limitation": "Six retained label-grounded hypotheses are not semantic or causal verification; no new independent game acceptance."
+}

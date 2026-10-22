@@ -387,18 +387,21 @@ async fn get(client: &reqwest::Client, path: &str) -> Result<Value> {
 }
 
 async fn post(client: &reqwest::Client, path: &str, body: Value, limit: usize) -> Result<Value> {
+    let seconds = if path == "/api/chat" { 90 } else { 5 };
     bounded(
         client
             .post(format!("{ENDPOINT}{path}"))
-            .timeout(Duration::from_secs(if path == "/api/chat" {
-                90
-            } else {
-                5
-            }))
+            .timeout(Duration::from_secs(seconds))
             .json(&body)
             .send()
             .await
-            .map_err(|e| e.to_string())?,
+            .map_err(|e| {
+                if e.is_timeout() {
+                    format!("The local model request exceeded its {seconds}-second time limit.")
+                } else {
+                    e.to_string()
+                }
+            })?,
         limit,
     )
     .await
