@@ -4,6 +4,36 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Live Viewfinder development validation (2026-10-23 local): **36%**.
+The unchanged paged preview produced six hypotheses automatically. Its first
+comparison was negative; a separately frozen four-comparison continuation of
+the product's planner found one positive response. Setting the proposed max
+stable move speed from 3.5 to 0 reduced the measured rendered response by 99.0%;
+restoring 3.5 returned it to 96.7% of baseline. The other four results remain
+negative for this input sequence. All five original values were restored.
+
+The offline audit checks 105 image hashes, 64 input holds, guarded readbacks,
+source/binary snapshots, complete type-page coverage and 31 helper unloads.
+An independent full-frame pixel metric confirms the positive reduction/return.
+Three setup images were manually viewed, zero measurement images. Save and
+backup bytes are unchanged, owned test processes exited, the user's connected
+desktop session remains responsive, and all evidence stays local.
+
+The outer discovery job nevertheless failed after publishing hypotheses because
+its final result exceeded the cumulative checkpoint budget. The retained failure
+led to a compact evidence-reference/count summary; full publication details are
+still archived. A complete 16-step regression fits in 1,571 bytes. These native
+comparisons precede that reporting correction. Live naming latency also remains
+too high: metadata stages took 215.380 seconds. [Evidence and limitations](../research/independent-viewfinder/README.md).
+All **450 workspace tests**, strict all-target Clippy, formatting and the saved
+native artifact audit pass after the reporting fix.
+
+Fixed weights: foundation 4/10, native access 6/10, observation 5/15, discovery
+8/20, validation **5/15**, intent 1/10, agent collaboration 7/10, generalization
+0/10. Total **36/100**. This is one known development game and one action-specific
+effect; semantic certainty, broader automatic investigation and withheld
+multi-game acceptance remain incomplete. The full goal stays active.
+
 Independent Viewfinder trial and large-catalog correction (2026-10-22):
 **35% unchanged**. The unchanged published application collected fifteen images
 and runtime metadata from a new supported game (349 types, 1,716 fields, 31,065

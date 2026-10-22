@@ -339,6 +339,38 @@ fn capture_receipt(value: &Value) -> Value {
     receipt
 }
 
+// Full publication paths are already archived with the naming evidence. Copying
+// them into the last checkpoint can exhaust the cumulative observation budget.
+fn runtime_receipt(value: &Value) -> Value {
+    let runtime = &value["data"]["runtime"];
+    let mut receipt = json!({"runtime":{}});
+    for key in [
+        "catalog_id",
+        "revision",
+        "cards",
+        "edit_authority",
+        "cancelled",
+    ] {
+        if let Some(field) = runtime.get(key) {
+            receipt["runtime"][key] = field.clone();
+        }
+    }
+    if let Some(naming) = runtime.get("naming") {
+        let mut summary = json!({"evidence_id":naming["evidence_id"],
+            "hypotheses":naming["hypotheses"],"cancelled":naming["cancelled"]});
+        if naming["card_publication"].is_object() {
+            let publication = &naming["card_publication"];
+            summary["card_publication"] = json!({
+                "revision":publication["revision"],"card_generation":publication["card_generation"]});
+            for key in ["shown", "added", "omitted", "removed_preview"] {
+                summary["card_publication"][key] = json!(publication[key].as_array().map(Vec::len));
+            }
+        }
+        receipt["runtime"]["naming"] = summary;
+    }
+    receipt
+}
+
 struct Flight {
     id: u64,
     response: mpsc::Receiver<Value>,
@@ -541,7 +573,7 @@ impl job::Executor for CaptureExecutor {
                             "Observation finished; see the shared investigation for evidence.",
                         ),
                         if value["data"]["runtime"].is_object() {
-                            value["data"].clone()
+                            runtime_receipt(&value)
                         } else if value["data"]["observations"].is_array() {
                             json!({"kind":"change_observation","change_id":value["data"]["id"],"phase":value["data"]["phase"],
                                 "observation":value["data"]["observations"].as_array().and_then(|o|o.len().checked_sub(1)),
@@ -3117,6 +3149,70 @@ mod tests {
         let step: CaptureStep = serde_json::from_str(legacy).unwrap();
         assert!(step.mode.is_full());
         assert_eq!(serde_json::to_string(&step).unwrap(), legacy);
+    }
+    #[test]
+    fn automatic_runtime_naming_keeps_evidence_within_the_whole_job_budget() {
+        let mut view = initial_view();
+        view.observer_model = Some("fixture:model".into());
+        view.live.as_mut().unwrap().runtime.available = true;
+        view.live.as_mut().unwrap().runtime.phase = "available".into();
+        let evidence_id = uuid::Uuid::new_v4().to_string();
+        let expected_id = evidence_id.clone();
+        let engine = EngineHandle::test_worker(view, move |command, view| {
+            if command.action == "inspect_runtime" {
+                let paths: Vec<_> = (0..12).map(|i| format!("{i:064x}")).collect();
+                return json!({"ok":true,"data":{"runtime":{
+                    "catalog_id":uuid::Uuid::new_v4().to_string(),"revision":0,"cards":64,"edit_authority":false,
+                    "naming":{"evidence_id":evidence_id,"hypotheses":12,"cancelled":false,
+                        "card_publication":{"shown":paths,"added":paths,"omitted":[],
+                            "removed_preview":(100..164).map(|i|format!("{i:064x}")).collect::<Vec<_>>(),
+                            "revision":1,"card_generation":1}}}},"state":view});
+            }
+            view.live.as_mut().unwrap().sample_count += 1;
+            let mut state = json!(view);
+            state["live"]["frames"] = json!([{"id":uuid::Uuid::new_v4().to_string()}]);
+            let data = if command.args["local_model"].is_string() {
+                json!({"local_observation":{"evidence_id":uuid::Uuid::new_v4().to_string(),"recorded":0,"cancelled":false}})
+            } else {
+                json!({})
+            };
+            json!({"ok":true,"data":data,"state":state})
+        });
+        let mut c = controller(engine);
+        let id = c.start_automatic_observation("agent".into()).unwrap()["ack"]["job"]
+            .as_u64()
+            .unwrap();
+        for _ in 0..2000 {
+            let job = &c.jobs.snapshot().jobs[&id];
+            if job.phase.terminal() {
+                break;
+            }
+            c.next_capture = Some((id, job.next_step, Instant::now()));
+            c.tick();
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let job = &c.jobs.snapshot().jobs[&id];
+        assert_eq!(job.phase, job::Phase::Completed);
+        assert_eq!(job.checkpoints.len(), 16);
+        let receipt: Value =
+            serde_json::from_slice(&job.checkpoints.last().unwrap().outcome.data).unwrap();
+        assert_eq!(receipt["runtime"]["naming"]["evidence_id"], expected_id);
+        assert_eq!(receipt["runtime"]["naming"]["hypotheses"], 12);
+        assert_eq!(
+            receipt["runtime"]["naming"]["card_publication"]["shown"],
+            12
+        );
+        assert_eq!(
+            receipt["runtime"]["naming"]["card_publication"]["removed_preview"],
+            64
+        );
+        assert_eq!(receipt["runtime"]["edit_authority"], false);
+        assert!(job.result_bytes() <= 4096);
+        println!("RUNTIME_NAMING_JOB_BYTES={}", job.result_bytes());
+        assert_eq!(
+            runtime_receipt(&json!({"data":{"runtime":{"cancelled":true}}})),
+            json!({"runtime":{"cancelled":true}})
+        );
     }
     #[test]
     fn final_memory_review_is_planned_and_its_reference_survives_the_full_job() {

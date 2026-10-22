@@ -1,0 +1,156 @@
+{
+  "artifact_audit": "passed",
+  "development_test": true,
+  "release": "0.1.0-20261022-235934",
+  "outer_discovery_job": "Failed: cumulative result budget exceeded after hypotheses were published",
+  "source_commit": "7818181f199d14bfd81cef1beb491864c7f56253",
+  "types": 349,
+  "fields": 1716,
+  "named_hypotheses": 6,
+  "rejected_hypotheses": 0,
+  "runtime_naming_model_calls": 16,
+  "metadata_stage_ms": 215380,
+  "pages_per_round": [
+    11,
+    1
+  ],
+  "comparisons": [
+    {
+      "name": "capsule height",
+      "role": "primary",
+      "test_id": "9c8f71ae-f3cc-481b-90f0-dae187dc5087",
+      "observed_value": "1.88",
+      "changed_value": "0",
+      "assessment": "suppression_not_observed",
+      "product_medians": [
+        14.346865869247626,
+        14.210232720051133,
+        14.288092357560263
+      ],
+      "independent_full_frame_medians": [
+        14.438084852430556,
+        14.309906141493055,
+        14.360850694444444
+      ],
+      "trial_restored": true,
+      "comparison_sha256": "4a96aca293557c297ab021947cac2f088b02e326fecd321d9d3f23dbecd80cad"
+    },
+    {
+      "name": "step distance",
+      "role": "primary",
+      "test_id": "2a7f2177-ea15-4b29-8874-1a45b585283a",
+      "observed_value": "2",
+      "changed_value": "0",
+      "assessment": "suppression_not_observed",
+      "product_medians": [
+        14.32430149744339,
+        14.32852732377648,
+        14.34176976807889
+      ],
+      "independent_full_frame_medians": [
+        14.338407118055557,
+        14.339295247395833,
+        14.322964409722221
+      ],
+      "trial_restored": true,
+      "comparison_sha256": "1a040a8622ced580c401611d31f4511f4300111d2ed02a80c2a743032605c2a6"
+    },
+    {
+      "name": "max stable move speed",
+      "role": "primary",
+      "test_id": "781ca1d9-005f-4994-843f-23383a823773",
+      "observed_value": "3.5",
+      "changed_value": "0",
+      "assessment": "suppression_observed",
+      "product_medians": [
+        14.518230117786706,
+        0.1396206172388605,
+        14.034188960920378
+      ],
+      "independent_full_frame_medians": [
+        14.547654622395832,
+        0.5702213541666667,
+        13.85082302517361
+      ],
+      "trial_restored": true,
+      "comparison_sha256": "ff2fc30019851a70cc34c088daacbcf01d3db95437fa13c7f65c4d121ef45dc9"
+    },
+    {
+      "name": "capsule height",
+      "role": "alternative",
+      "test_id": "ab656730-c7af-4636-a74b-b52cbac3d998",
+      "observed_value": "1.88",
+      "changed_value": "0",
+      "assessment": "suppression_not_observed",
+      "product_medians": [
+        14.431630638239591,
+        14.429342243425857,
+        14.428683117238862
+      ],
+      "independent_full_frame_medians": [
+        14.313995225694445,
+        14.31433865017361,
+        14.314520399305556
+      ],
+      "trial_restored": true,
+      "comparison_sha256": "886efc91521de529525131bd498753061602afa7464e9dc05432e7e9c67f2a3f"
+    },
+    {
+      "name": "fall wind min speed",
+      "role": "primary",
+      "test_id": "a22697d1-1356-4789-8de3-e1c0d0257fea",
+      "observed_value": "5",
+      "changed_value": "0",
+      "assessment": "suppression_not_observed",
+      "product_medians": [
+        14.47931028579255,
+        14.529238381117604,
+        14.527880181701972
+      ],
+      "independent_full_frame_medians": [
+        14.338546006944444,
+        14.332411566840278,
+        14.32216091579861
+      ],
+      "trial_restored": true,
+      "comparison_sha256": "37bf5990bafd6fa38790970b6b3b1784e6894cbd3db58067091507aa7aacfba5"
+    }
+  ],
+  "positive_comparisons": 1,
+  "automatic_images": 105,
+  "input_holds": 64,
+  "setup_images_reviewed": 3,
+  "manually_reviewed_measurement_images": 0,
+  "helper_runs": 31,
+  "pause_count": 260,
+  "max_stop_to_resume_us": 5793,
+  "save_bytes_unchanged": {
+    "viewfinder_0.sav": true,
+    "viewfinder_0.bak": true
+  },
+  "frozen_sha256": "678f24720497b0fc942639208e298d94078e42d25feee85e9c682863a9ec81e1",
+  "followup_frozen_sha256": "015c33b55292e7df96e943ef3a22871d0ec353b4849d2e0d54237b0bd500260d",
+  "receipt_sha256": "08a4eecb467af55a8f3e608bfec2ea398f2f998400caee1222d97ca04866e7a8",
+  "cleanup": {
+    "recorded_utc": "2026-10-22T23:16:58.6015861Z",
+    "owned_processes_exited": true,
+    "owned_pids": [
+      72432,
+      96148,
+      16872,
+      99136,
+      25288,
+      88136
+    ],
+    "desktop_pid": 98332,
+    "desktop_path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe",
+    "desktop_responsive": true,
+    "protection": {
+      "antivirus": true,
+      "realtime": true,
+      "tamper": true
+    },
+    "new_reversebolt_detections": 0
+  },
+  "limitation": "Known development target. One action-specific rendered suppression and return; no proof of exact gameplay semantics, units, complete world rollback, restart recovery or multi-game generalization."
+}

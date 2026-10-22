@@ -1,4 +1,74 @@
-# Viewfinder: native failure, then a saved-catalog correction
+# Viewfinder: native failure, correction and live development comparisons
+
+## Live effect evidence after paging (23 October 2026 local time)
+
+The published paged build `0.1.0-20261022-235934` now completes naming in the
+running game: six label-grounded hypotheses, none rejected. Viewfinder is a
+known development target following the earlier failure and replay. This does
+not replace the original held-out failure or pass multi-game acceptance.
+
+One predeclared comparison selected capsule height and found no suppression.
+After that run finished, a separately frozen continuation requested at most four
+more choices from the unchanged product planner. No candidate, path, name, value
+or input sequence was manually selected. All five trials completed through MCP:
+
+| Planner choice | Original → test → restored | Measured response: baseline / changed / recovered | Result |
+|---|---|---|---|
+| Capsule height, primary path | 1.88 → 0 → 1.88 | 14.347 / 14.210 / 14.288 | Suppression not observed |
+| Step distance | 2 → 0 → 2 | 14.324 / 14.329 / 14.342 | Suppression not observed |
+| Max stable move speed | 3.5 → 0 → 3.5 | 14.518 / 0.140 / 14.034 | Suppression and return observed |
+| Capsule height, alternative path | 1.88 → 0 → 1.88 | 14.432 / 14.429 / 14.429 | Suppression not observed |
+| Fall wind min speed | 5 → 0 → 5 | 14.479 / 14.529 / 14.528 | Suppression not observed |
+
+These numbers are the product's image-difference metric, not physical speed.
+The positive comparison reduced the response by 99.0% and recovered to 96.7%
+of baseline. A separate full-frame grayscale calculation from the hashed PNGs,
+without the product's resize/crop/blur, also finds a strong reduction and return
+(14.548 / 0.570 / 13.851). All twelve repeated input holds and the changed and
+restored bytes are recorded for each comparison. This supports a controlling
+effect in this context; exact semantics, units, actor identity, load/restart
+recovery and exclusive causality remain unproven. Negative results do not mean
+those fields are useless: the movement sequence does not test every property.
+
+The audit checks 105 automatic images, 64 input holds, source/binary snapshots,
+all type-page coverage, proposal citations, command choices, input receipts,
+readback chronology, five restorations and 31 helper completions/unloads.
+There were three setup screenshots and zero manually reviewed measurement
+images. The save and backup remained byte-identical. Normal logs/analytics can
+change. Owned applications and evaluators exited; the main editor remains
+responsive. Checked Windows protections stayed enabled, with no new Reversebolt
+detection in the interval. Nothing was uploaded.
+
+Discovery still took about 320 seconds before comparison preparation. Metadata
+model stages alone totalled 215.380 seconds, versus 64.365 seconds in the offline
+replay. The three proposal calls took 70.868, 46.522 and 60.893 seconds; type-page
+selection was much faster. This exposes a live responsiveness problem, not a
+reason to claim automatic discovery is finished.
+
+The outer observation job also ended **Failed** despite publishing the usable
+hypotheses: its last checkpoint exceeded the cumulative 4 KiB result budget.
+The frozen failed job is retained. The correction stores the naming evidence ID
+and publication counts in job summaries; full path lists remain archived and
+available through the shared state/API. A regression runs the complete automatic
+16-step job with twelve hypotheses and 64 removed preview paths; its successful
+checkpoints total 1,571 bytes. Native comparisons above used the pre-fix binary.
+All **450 workspace tests**, strict all-target Clippy and formatting pass after
+the correction, as does the offline native artifact audit. Logs are retained in
+`test-results/viewfinder-live-workspace.log`, `viewfinder-live-clippy.log` and
+`runtime-naming-job-budget-focused.log`.
+
+Artifacts: `test-results/viewfinder-live-paging-v1` and the separate
+`test-results/viewfinder-followup-v1`. See [live protocol](PROTOCOL-LIVE-PAGING.md),
+[follow-up protocol](PROTOCOL-FOLLOWUP.md), [continuation evaluator](continue.py),
+[offline audit](audit-live.py) and [audited results](live-results.json).
+
+Validation credit increases from 4/15 to 5/15 for automatically selected,
+input-matched live edit/effect/recovery evidence in an independently authored
+game. Other credits stay fixed: **36/100** overall, including 0/10 generalization.
+Next: test selection matched to the proposed effect, faster live naming, and a
+new unchanged independent-game evaluation. The broader goal remains active.
+
+## Original native failure
 
 The unchanged published build `0.1.0-20261022-233909` reached gameplay in
 Viewfinder (installed build 20950646) and collected fifteen images, four brief
