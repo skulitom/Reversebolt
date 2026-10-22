@@ -556,6 +556,7 @@ mod tests {
             input_experiments: vec![],
             memory_proposals: None,
             memory_proposal_error: None,
+            memory_followup: None,
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],

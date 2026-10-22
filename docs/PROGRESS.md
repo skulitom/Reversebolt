@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Prospective memory follow-up (2026-10-22): **35% unchanged**.
+The shared engine/MCP can now pin selected memory-proposal groups before a fresh
+recording, keep their type rivals and original expectations, and automatically
+collect twelve observations in a new, narrow memory batch. The final capture
+assesses those fixed expectations; contradictions, missing data and constant
+sequences remain explicit. There are no new unidentified cards or report UI.
+
+All **430 workspace tests**, strict all-target Clippy and formatting pass. Generated
+fixtures verify preparation without extra reads, source/fresh separation, gaps,
+invalid numbers, changed mappings, cancellation and historical replay after restart.
+The real job executor retains both evidence checksums within its 4 KiB limit.
+A separate offline replay exactly reproduces the frozen result from the saved
+plan and raw memory. No game, production app, native input or live model ran.
+This improves investigation orchestration; semantic controls, causal verification
+and independent-game validation remain incomplete. The desktop preview is still
+unavailable. The executable, review packet and all evidence remain local.
+[Workflow, verification and limits](../research/memory-followup/README.md).
+
 Shared memory proposal workflow (2026-10-22): **35% unchanged**.
 New Full/Visual observation jobs now review already-collected memory on their
 final capture when twelve memory samples are available. The shared engine exposes

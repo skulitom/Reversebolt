@@ -142,6 +142,7 @@ impl EngineHandle {
                         | "list_memory_processes"
                         | "read_capture"
                         | "read_memory_proposals"
+                        | "read_memory_followup"
                         | "read_sequence"
                         | "read_play_evidence"
                         | "read_activity_experiment"
@@ -177,6 +178,8 @@ impl EngineHandle {
                             | "export_memory_evidence"
                             | "analyze_memory_evidence"
                             | "read_memory_proposals"
+                            | "read_memory_followup"
+                            | "prepare_memory_followup"
                             | "read_capture"
                             | "submit_observation"
                             | "read_sequence"
@@ -244,6 +247,8 @@ impl EngineHandle {
                                 | "export_memory_evidence"
                                 | "analyze_memory_evidence"
                                 | "read_memory_proposals"
+                                | "read_memory_followup"
+                                | "prepare_memory_followup"
                                 | "list_memory_processes"
                                 | "capture"
                                 | "submit_observation"
@@ -401,6 +406,15 @@ pub(crate) fn native_command(
     }
     match command.action.as_str() {
         "read_memory_proposals" => return crate::memory_proposals::read(directory, &command.args),
+        "read_memory_followup" => {
+            return crate::memory_proposals::followup::read(directory, &command.args);
+        }
+        "prepare_memory_followup" => {
+            if analysis.busy() {
+                return Err("Wait for the current image review to finish".into());
+            }
+            return crate::memory_proposals::followup::prepare(engine, directory, &command.args);
+        }
         "analyze_memory_evidence" => {
             if analysis.busy() {
                 return Err("Wait for the current image review to finish".into());

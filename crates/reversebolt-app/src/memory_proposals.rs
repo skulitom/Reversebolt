@@ -12,6 +12,7 @@ use std::{
     path::Path,
     sync::atomic::{AtomicBool, Ordering},
 };
+pub mod followup;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -70,6 +71,9 @@ pub fn analyze(
     if cancel.load(Ordering::SeqCst) {
         return Err("Memory review cancelled".into());
     }
+    if session.view.memory_followup.is_some() {
+        return followup::finish(engine, directory, cancel);
+    }
     if session.view.memory_sample_count() < m::MIN_SAMPLES {
         return Err("Memory review needs twelve retained memory-sample attempts".into());
     }
@@ -115,6 +119,18 @@ pub fn finish(engine: &mut Engine, directory: &Path, owner: &OperationOwner) -> 
     };
     if owner.cancel.load(Ordering::SeqCst) {
         return json!({"status":"cancelled"});
+    }
+    if session.view.memory_followup.is_some() {
+        return match followup::finish(engine, directory, &owner.cancel) {
+            Ok(result) => result,
+            Err(error) => {
+                let error: String = error.chars().take(512).collect();
+                if !owner.cancel.load(Ordering::SeqCst) {
+                    engine.live.as_mut().unwrap().view.memory_proposal_error = Some(error.clone());
+                }
+                json!({"status":if owner.cancel.load(Ordering::SeqCst){"cancelled"}else{"unavailable"},"kind":"followup","error":error})
+            }
+        };
     }
     if session.view.memory_sample_count() < m::MIN_SAMPLES {
         return json!({"status":"skipped","reason":"Fewer than twelve memory samples"});

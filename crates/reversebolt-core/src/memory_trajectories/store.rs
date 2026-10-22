@@ -73,7 +73,7 @@ fn check(report: &Report, investigation: &str, batch: usize) -> Result<()> {
     }
     Ok(())
 }
-fn same_or_new(path: &Path, bytes: &[u8], limit: usize) -> Result<()> {
+pub(crate) fn same_or_new(path: &Path, bytes: &[u8], limit: usize) -> Result<()> {
     match fs::OpenOptions::new()
         .write(true)
         .create_new(true)

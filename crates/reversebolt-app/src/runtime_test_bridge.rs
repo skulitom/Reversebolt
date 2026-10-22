@@ -366,6 +366,7 @@ impl Session {
                     | "stop_runtime_test"
                     | "read_runtime_test"
                     | "read_memory_proposals"
+                    | "read_memory_followup"
                     | "status"
                     | "history"
                     | "list_processes"

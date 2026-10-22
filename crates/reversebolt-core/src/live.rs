@@ -22,6 +22,7 @@ const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
 mod change_search;
 mod memory_evidence;
+mod memory_followup;
 
 struct Recheck {
     checks: Vec<PredictionCheck>,
@@ -259,6 +260,8 @@ pub struct LiveView {
     pub memory_proposals: Option<crate::memory_trajectories::store::Summary>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub memory_proposal_error: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory_followup: Option<crate::memory_followup::Reference>,
     #[serde(default)]
     pub rule_checks: Vec<crate::rule_checks::Check>,
     #[serde(default)]
@@ -962,6 +965,7 @@ impl LiveSession {
             input_experiments: vec![],
             memory_proposals: None,
             memory_proposal_error: None,
+            memory_followup: None,
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
@@ -1991,6 +1995,7 @@ impl LiveSession {
         self.view.input_experiments.clear();
         self.view.memory_proposals = None;
         self.view.memory_proposal_error = None;
+        self.view.memory_followup = None;
         self.view.temporal_tracks.clear();
         self.view.prediction_checks.clear();
         self.image_epoch += 1;

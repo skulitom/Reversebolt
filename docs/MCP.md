@@ -71,6 +71,42 @@ coverage extends through a read. Matching mapping metadata proves neither an
 allocation's lifetime nor an atomic snapshot. Historical addresses, labels and
 correlations confer no current binding, semantic certainty or editing authority.
 
+### Prospective follow-up of memory proposals
+
+After reading a completed proposal page, call `reversebolt_prepare_memory_followup`
+with the current `investigation_id`, `batch`, `after_sample`, `report_sha256` and
+one to eight group indices in `groups`. All retained members of each chosen group
+are pinned, including numeric rivals. The source report must match the current
+capture count; restore any applied memory trial first. This archives the source
+batch and starts a fresh one containing at most 96 small memory windows. The
+immutable plan is written before any fresh sample, and selection makes no new
+memory read, image, input or model call.
+
+By default the controller starts twelve Visual captures with a final automatic
+assessment. It skips OCR, model interpretation, managed-runtime discovery and
+input actions. Set `auto_observe=false` for explicit `start_observation_job` control.
+At least four fresh memory samples are needed. `reversebolt_analyze_memory_evidence`
+also finishes/replays the follow-up when the current batch has a pinned plan.
+No editable card or report UI is created by this workflow.
+
+`state.live.memory_followup` holds `investigation_id`, `batch`, `plan_sha256`.
+Pass those fields to `reversebolt_read_memory_followup` for the completion checksum;
+then include `report_sha256`, `offset` and `limit` (1–8) to page candidates/outcomes.
+The final job receipt retains both plan/result checksums; its binding contains the
+investigation/batch. Reads survive detachment/restart and never contact a target.
+After uncertain preparation delivery, inspect the current batch/reference instead
+of repeating the operation with a new scope. Collection is not resumed on restart.
+
+Checks retain the original allowed levels or direction. They never compare across
+the old/fresh boundary or missing/invalid reads. Contradictions remain explicit;
+constant fresh values may satisfy a constraint, with changed-pair counts shown
+separately. This is descriptive evidence, without gameplay names, allocation
+continuity, causal validation or edit authority. Plan/result files each use at most
+256 KiB per batch plus a 64-byte result commit checksum. Files are create-only;
+identical retry can finish publication, while partial/different files remain errors.
+Reading checks the stored files; the offline `memory-followup-replay` example
+recomputes outcomes from the raw archive. [Details](../research/memory-followup/README.md).
+
 ### Automatic memory proposals and agent access
 
 The final Full or Visual step of a newly submitted observation job now reviews

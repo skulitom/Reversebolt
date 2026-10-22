@@ -1,0 +1,121 @@
+{
+  "method": "prospective_memory_followup_v1",
+  "goal_percent": 35,
+  "base_commit": "329230d5f754dc511946df0ac6e4a37fb2533512",
+  "scope": "Generated target fixtures, mock transport with real job executor/journal, and offline raw-evidence replay. No game, production application, live model, native input worker or upload.",
+  "workspace_tests_passed": 430,
+  "new_targeted_tests": 6,
+  "strict_clippy": "passed",
+  "formatting": "passed",
+  "fixture": {
+    "fresh_captures": 12,
+    "members": 3,
+    "reference": {
+      "batch": 2,
+      "investigation_id": "da0edf12-deef-4243-8746-f6c9c8690cfc",
+      "plan_sha256": "2fc2d1619f31ee7bf2257e7b86dfe907ca984eafca4e361bc13a8b8f1230789d"
+    },
+    "report_sha256": "0fd543b4148bdfd6f9687b926cbab3a982c18adab87042337aef12a48bfede59",
+    "root": "C:\\DEV\\Reversebolt\\crates\\reversebolt-app\\../../target/memory-proposal-tests\\357d9177-4bec-4aca-9929-eb13f88a2da2",
+    "selected_bytes": 64,
+    "source_captures": 12,
+    "source_report_sha256": "0b275453c5b5d43376c0f4bba71aaab048d0ef0c6fdce00da5b7d32933a90bcf",
+    "target_reads": 24,
+    "offline_replay_matches_saved_result": true,
+    "evidence_manifest_sha256": "3f875e6c660a710f848aadb92d5aaf639663aed2c7b2e3171437878a795d3188",
+    "payload_bytes": 768,
+    "job_result_bytes": 745
+  },
+  "frozen_directory": "test-results/memory-followup-v1",
+  "frozen_files": 284,
+  "manifest_sha256": "cc34581239ff3ec76bfda826cbf92d3f96363336d177db9f40a5cc63121818b3",
+  "prior_snapshot": {
+    "snapshot": "test-results\\memory-proposals-v1",
+    "files": 236,
+    "manifest_sha256": "4a8d662048a189f716b5db6664f91f4c7f7ab8832b7ab86bb6cce18dc6e537a6",
+    "unchanged": true
+  },
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "checks": [
+    "immutable plan before new batch/capture",
+    "complete selected groups retain type rivals",
+    "source and fresh samples never joined",
+    "third two-level state contradicts source",
+    "missing and invalid reads break monotonic comparison",
+    "changed mapping leaves unavailable evidence",
+    "constant values expose zero changed pairs",
+    "minimum four fresh memory samples",
+    "cancel before export leaves plan and no result",
+    "changed scope/hash/duplicate groups rejected",
+    "completed plan exact retry; different bytes refused",
+    "corrupt plan/result rejected",
+    "historical paging after engine restart",
+    "twelve visual samples despite available runtime/model",
+    "both checksums retained in bounded job receipt",
+    "offline replay exactly matches saved report"
+  ],
+  "limitations": [
+    "No meaningful gameplay naming or editing authority.",
+    "No causal effect, allocation lifetime or relocation established.",
+    "Chosen source groups may be biased; original sampling may be screen-guided.",
+    "No independent-game validation; native desktop launch remains unavailable.",
+    "Completed evidence can survive late cancellation; partial reservations are not overwritten."
+  ],
+  "logs": [
+    {
+      "path": "test-results/memory-followup-clippy-final.log",
+      "sha256": "681cbecbb3e7b19d17e61cde7d3fc0aa4f847824eff8a90ab7f14a197feb0763"
+    },
+    {
+      "path": "test-results/memory-followup-clippy.log",
+      "sha256": "a3305e0f2b2b4120d0bbe994c4530ea33a5cdd6a4e6969359d00fa539a0bd435"
+    },
+    {
+      "path": "test-results/memory-followup-compile.log",
+      "sha256": "c32c9df3ca83b3b46ea002452f93c630cdabec706a49d4806abae5a6fd4e95fb"
+    },
+    {
+      "path": "test-results/memory-followup-fixture.json",
+      "sha256": "63d6bae4f8b88db75d733cf891ee41a791f83106ce53bbd39bc2c47deca3543a"
+    },
+    {
+      "path": "test-results/memory-followup-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-followup-integration-first.log",
+      "sha256": "3840a8819aa79578ea7e28604dc51ea5eb47c21c62bead886add45a69964dc27"
+    },
+    {
+      "path": "test-results/memory-followup-integration-second.log",
+      "sha256": "863e0cc677bc9ccc58dd2c6ebb11743d9a8c7b78543a6b755196e5a1572716fa"
+    },
+    {
+      "path": "test-results/memory-followup-preview.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/memory-followup-prior-snapshot.json",
+      "sha256": "b5a681146855f7debcc0ca7eaccfd51e5ddbb15de8428d71a83842431878154a"
+    },
+    {
+      "path": "test-results/memory-followup-replay-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-followup-replay.json",
+      "sha256": "c803138838da59ba2a9fc4c67f5b84753c49f88de3c2a22ea649ddd2dcb28153"
+    },
+    {
+      "path": "test-results/memory-followup-workspace.log",
+      "sha256": "bb5ea9b63786af3ea5f1f070d4bbe98c1b03264a618b7aedace473e03cb79513"
+    }
+  ]
+}

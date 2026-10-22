@@ -132,6 +132,7 @@ fn read_only(action: &str) -> bool {
             | "job_events"
             | "read_capture"
             | "read_memory_proposals"
+            | "read_memory_followup"
             | "read_sequence"
             | "read_play_evidence"
             | "read_activity_experiment"
@@ -325,6 +326,11 @@ fn capture_receipt(value: &Value) -> Value {
     let memory = &value["data"]["memory_proposals"];
     if memory.is_object() {
         receipt["memory_proposals"] = json!({"status":memory["status"],"report_sha256":memory["summary"]["report_sha256"],"captures":memory["summary"]["captures"]});
+        if memory["kind"] == "followup" {
+            receipt["memory_proposals"]["kind"] = json!("followup");
+            receipt["memory_proposals"]["plan_sha256"] =
+                memory["summary"]["reference"]["plan_sha256"].clone();
+        }
     }
     receipt
 }
@@ -666,10 +672,14 @@ impl Controller {
     fn start_automatic_observation(&mut self, source: String) -> Result<Value> {
         let snapshot = self.jobs.snapshot();
         let state = self.engine.view.read().unwrap();
+        let followup = state
+            .live
+            .as_ref()
+            .is_some_and(|l| l.memory_followup.is_some());
         let runtime = state
             .live
             .as_ref()
-            .is_some_and(|l| l.runtime.available && l.runtime.phase == "available");
+            .is_some_and(|l| !followup && l.runtime.available && l.runtime.phase == "available");
         let changing = state.live.as_ref().is_some_and(|live| {
             live.change_searches.last().is_some_and(|s| {
                 s.status == "collecting" && s.selection_batch == live.coverage.batch
@@ -683,7 +693,7 @@ impl Controller {
                     .iter()
                     .any(|c| c.rechecked_from.is_some())
         });
-        let model = if recheck || changing {
+        let model = if recheck || changing || followup {
             None
         } else {
             state.observer_model.clone()
@@ -709,7 +719,8 @@ impl Controller {
             }
             .into(),
             source: source.clone(),
-            args: json!({"count":if runtime {1} else if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing,
+            args: json!({"count":if followup {12} else if runtime {1} else if recheck || changing {4} else {16},"interval_ms":1000,"compare":!recheck && !changing && !followup,
+                "mode":if followup {"visual"} else {"full"},
                 "local_model":model,"task":{"operation":"discover"},"observe_play":observe_play,
                 "request_id":snapshot.clients.get(client).map_or(1,|c|c.high_water+1),
                 "boot":snapshot.boot,"binding":snapshot.current}),
@@ -901,6 +912,7 @@ impl Controller {
             let automatic = match command.action.as_str() {
                 "attach_process"
                 | "recheck_findings"
+                | "prepare_memory_followup"
                 | "search_number"
                 | "start_change_search"
                 | "finish_change_search" => command.args["auto_observe"].as_bool().unwrap_or(true),
@@ -1574,6 +1586,7 @@ mod tests {
                 input_experiments: vec![],
                 memory_proposals: None,
                 memory_proposal_error: None,
+                memory_followup: None,
                 rule_checks: vec![],
                 rule_error: None,
                 action_patterns: vec![],
@@ -2966,6 +2979,8 @@ mod tests {
     fn final_memory_review_is_planned_and_its_reference_survives_the_full_job() {
         assert!(read_only("read_memory_proposals"));
         assert!(!read_only("analyze_memory_evidence"));
+        assert!(read_only("read_memory_followup"));
+        assert!(!read_only("prepare_memory_followup"));
         for mode in ["full", "visual", "play"] {
             let engine =
                 EngineHandle::test_worker(initial_view(), |_, v| json!({"ok":true,"state":v}));
@@ -3035,5 +3050,65 @@ mod tests {
         assert_eq!(receipt["memory_proposals"]["report_sha256"], "a".repeat(64));
         assert!(job.result_bytes() <= 4096);
         println!("MEMORY_REVIEW_JOB_BYTES={}", job.result_bytes());
+    }
+    #[test]
+    fn memory_followup_automatic_job_uses_only_fresh_visual_samples_and_keeps_its_reference() {
+        let mut view = initial_view();
+        view.observer_model = Some("fixture:model".into());
+        let live = view.live.as_mut().unwrap();
+        live.coverage.batch = 2;
+        live.runtime.available = true;
+        live.runtime.phase = "available".into();
+        live.memory_followup = Some(reversebolt_core::memory_followup::Reference {
+            investigation_id: live.investigation_id.clone(),
+            batch: 2,
+            plan_sha256: "b".repeat(64),
+        });
+        let (tx, rx) = mpsc::channel();
+        let engine = EngineHandle::test_worker(view, move |command, view| {
+            tx.send(command.clone()).unwrap();
+            assert_eq!(command.action, "capture");
+            view.live.as_mut().unwrap().sample_count += 1;
+            let data = if command.args["memory_review"] == true {
+                json!({"memory_proposals":{"status":"completed","kind":"followup","summary":{
+                    "report_sha256":"c".repeat(64),"captures":12,"reference":view.live.as_ref().unwrap().memory_followup}}})
+            } else {
+                json!({})
+            };
+            json!({"ok":true,"state":view,"data":data})
+        });
+        let mut c = controller(engine);
+        let id = c.start_automatic_observation("agent".into()).unwrap()["ack"]["job"]
+            .as_u64()
+            .unwrap();
+        let steps = c.jobs.snapshot().jobs[&id].steps.clone();
+        assert_eq!(steps.len(), 12);
+        for (i, s) in steps.iter().enumerate() {
+            let s: CaptureStep = serde_json::from_str(&s.payload).unwrap();
+            assert_eq!(s.mode, reversebolt_core::live::CaptureMode::Visual);
+            assert!(!s.compare);
+            assert!(s.runtime.is_none() && s.local_model.is_none());
+            assert_eq!(s.memory_review, i == 11);
+            assert_eq!(s.scope.batch, 2);
+        }
+        for _ in 0..1500 {
+            let job = &c.jobs.snapshot().jobs[&id];
+            if job.phase.terminal() {
+                break;
+            }
+            c.next_capture = Some((id, job.next_step, Instant::now()));
+            c.tick();
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let job = c.jobs.snapshot().jobs[&id].clone();
+        assert_eq!(job.phase, job::Phase::Completed);
+        assert_eq!(rx.try_iter().count(), 12);
+        let receipt: Value =
+            serde_json::from_slice(&job.checkpoints.last().unwrap().outcome.data).unwrap();
+        assert_eq!(receipt["memory_proposals"]["kind"], "followup");
+        assert_eq!(receipt["memory_proposals"]["plan_sha256"], "b".repeat(64));
+        assert_eq!(receipt["memory_proposals"]["report_sha256"], "c".repeat(64));
+        assert!(job.result_bytes() <= 4096);
+        println!("MEMORY_FOLLOWUP_JOB_BYTES={}", job.result_bytes());
     }
 }
