@@ -93,9 +93,10 @@ discards the partial analysis. The report binds the original manifest hash and c
 
 `memory_trajectories::analyze(&archive)` is the shared core API. The offline
 `memory-trajectories` example accepts the export directory and manifest hash and
-prints its JSON report. It never reconnects to a process. This experimental pass
-is not yet connected to automatic desktop discovery or a new MCP operation; the
-existing MCP export supplies the evidence it consumes.
+prints its JSON report. It never reconnects to a process. This milestone delivered
+the offline API/example. [Subsequent integration](../memory-proposals/README.md)
+adds automatic final observation review and paged MCP access to its research
+proposals, while keeping them separate from editable desktop controls.
 
 ## Remaining work
 

@@ -255,6 +255,10 @@ pub struct LiveView {
     /// Completed input-only reviews for this batch; never editable controls.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub input_experiments: Vec<crate::activity_experiment::Review>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory_proposals: Option<crate::memory_trajectories::store::Summary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory_proposal_error: Option<String>,
     #[serde(default)]
     pub rule_checks: Vec<crate::rule_checks::Check>,
     #[serde(default)]
@@ -956,6 +960,8 @@ impl LiveSession {
             memory_sources_error: None,
             local_observation_warnings: vec![],
             input_experiments: vec![],
+            memory_proposals: None,
+            memory_proposal_error: None,
             rule_checks: vec![],
             rule_error: None,
             action_patterns: vec![],
@@ -1983,6 +1989,8 @@ impl LiveSession {
         self.view.visual_tracks.clear();
         self.view.local_observation_warnings.clear();
         self.view.input_experiments.clear();
+        self.view.memory_proposals = None;
+        self.view.memory_proposal_error = None;
         self.view.temporal_tracks.clear();
         self.view.prediction_checks.clear();
         self.image_epoch += 1;

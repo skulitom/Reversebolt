@@ -71,14 +71,63 @@ coverage extends through a read. Matching mapping metadata proves neither an
 allocation's lifetime nor an atomic snapshot. Historical addresses, labels and
 correlations confer no current binding, semantic certainty or editing authority.
 
-The Rust core also has an experimental offline `memory-trajectories` example.
-It consumes this export and its manifest hash, selects temporal-order proposals
-from the first six memory samples, and assesses those patterns on later samples
-(at least twelve memory samples are required). It uses no visible numbers or
-semantic labels. Results retain type ambiguity, missing data and omission counts;
-they confer no editing authority and do not appear as desktop value cards. This
-research pass is not yet a separate MCP operation or an automatic discovery job.
-See [the policy and its limits](../research/memory-trajectories/README.md).
+### Automatic memory proposals and agent access
+
+The final Full or Visual step of a newly submitted observation job now reviews
+memory automatically when the batch has at least twelve memory-sample attempts.
+It freezes the existing local export and runs `memory_order_trajectories_v2` without
+another target read, image, input or model call. Play-only and runtime-inspection
+jobs do not request this pass. Short jobs skip it. An optional review failure keeps
+the captures and records `state.live.memory_proposal_error`; it does not fail the
+capture. No report or unidentified value card is added to the desktop.
+
+`reversebolt_analyze_memory_evidence` runs the same pass explicitly on already
+collected data. Supply `investigation_id`, `batch` and `after_sample`, matching the
+current live state. Normal ownership and human-hold checks apply. A completed
+summary appears in `state.live.memory_proposals` and the command response. It
+contains the policy, source export hash, report hash, capture count and coverage.
+
+There is one immutable review per batch. Exact explicit replay returns it; a later
+capture count cannot replace it. Later automatic runs reuse the earlier historical
+review, retaining its original capture count. Advancing the memory batch clears
+the live summary, while archived evidence remains readable. An export frozen too
+early can prevent this batch's review; its samples are not silently extended.
+
+`reversebolt_read_memory_proposals` needs a known investigation and batch. Omit
+`report_sha256` to retrieve the committed historical summary, including after
+detachment or restart. Then pin that hash to read pages:
+
+```json
+{"investigation_id":"<investigation>","batch":1,"report_sha256":"<summary hash>","offset":0,"limit":4}
+```
+
+Pages contain one to eight groups (default four), stable group indices,
+`next_offset`, the selection/assessment capture split, coverage and limitations.
+Each page verifies the report's hash and scope. It does not re-read the raw memory
+payload or attach to the old process. Missing/changed files are errors. Reading is
+allowed during a human hold and does not interrupt an active runtime test.
+
+Reports use at most 4 MiB plus a 4 KiB summary per batch, at most 24 batches per
+investigation, separately from the 512 MiB broad-memory evidence budget. Publication
+never overwrites different bytes; interrupted identical publication can finish.
+Owning-job cancellation is checked during automatic export, verification and
+analysis, and before publication. Explicit cached analysis uses the normal
+serialized command lane. A partial raw export retains its storage reservation. A complete
+file can survive a late cancellation without being published as a live summary.
+
+Capture job checkpoints now retain compact evidence references: capture number,
+frame ID, optional local-model receipt and optional memory-report hash/status.
+The immutable job binding supplies investigation/batch scope. Detailed results
+are read through the relevant evidence API. This keeps the full 31-capture
+automatic job within its existing 4 KiB result budget; limits are not increased.
+
+The producer selects temporal-order proposals from the first six memory samples
+and assesses those patterns on later samples. It uses no visible numbers or
+semantic labels. Type ambiguity, missing data and omissions remain explicit;
+neither a proposal nor later consistency grants editing authority. The offline
+`memory-trajectories` example remains available. See
+[the policy](../research/memory-trajectories/README.md) and
+[integration evidence](../research/memory-proposals/README.md).
 
 `capture` and `start_observation_job` support `mode: "play"`: images and sampled
 input without OCR or memory reads. Supported-runtime automatic attach collects

@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Shared memory proposal workflow (2026-10-22): **35% unchanged**.
+New Full/Visual observation jobs now review already-collected memory on their
+final capture when twelve memory samples are available. The shared engine exposes
+explicit analysis and paged historical reads to agents, with summary lookup after
+detach/restart. Exports and proposals remain bounded and immutable; cancellation,
+damaged files and optional review failures preserve the collected observations.
+The desktop receives no report or unidentified controls.
+
+Capture receipts now keep compact evidence references so a full automatic
+31-capture job can retain the proposal hash within the existing 4 KiB journal
+limit. The generated job uses 2,729 result bytes. The real final-capture handler
+produces a review with exactly twelve target reads/images, then supports sealed
+target replay and historical paging after engine reload. All **424 workspace
+tests**, strict all-target Clippy and formatting pass. No game, production app or
+live model ran. Semantic naming, causal verification and independent-game
+validation remain missing; the fixed weights stay **35/100**. Native launch is
+still unavailable and all artifacts stay local.
+[Workflow, verification and limits](../research/memory-proposals/README.md).
+
 Memory-only trajectory proposals (2026-10-22): **35% unchanged**.
 A Rust-core offline producer now selects changing, typed memory sequences without
 visible numbers, names, images or inputs. It groups their temporal order using six

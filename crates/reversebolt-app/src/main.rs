@@ -9,6 +9,7 @@ mod graphics;
 mod input_monitor;
 mod jobs;
 mod local_observer;
+mod memory_proposals;
 mod native;
 mod observation_pipeline;
 mod ocr;

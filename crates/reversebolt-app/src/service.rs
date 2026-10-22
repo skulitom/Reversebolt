@@ -141,6 +141,7 @@ impl EngineHandle {
                         | "list_processes"
                         | "list_memory_processes"
                         | "read_capture"
+                        | "read_memory_proposals"
                         | "read_sequence"
                         | "read_play_evidence"
                         | "read_activity_experiment"
@@ -174,6 +175,8 @@ impl EngineHandle {
                             | "finish_change_search"
                             | "detach_process"
                             | "export_memory_evidence"
+                            | "analyze_memory_evidence"
+                            | "read_memory_proposals"
                             | "read_capture"
                             | "submit_observation"
                             | "read_sequence"
@@ -239,6 +242,8 @@ impl EngineHandle {
                             command.action.as_str(),
                             "read_capture"
                                 | "export_memory_evidence"
+                                | "analyze_memory_evidence"
+                                | "read_memory_proposals"
                                 | "list_memory_processes"
                                 | "capture"
                                 | "submit_observation"
@@ -395,6 +400,21 @@ pub(crate) fn native_command(
         }
     }
     match command.action.as_str() {
+        "read_memory_proposals" => return crate::memory_proposals::read(directory, &command.args),
+        "analyze_memory_evidence" => {
+            if analysis.busy() {
+                return Err("Wait for the current image review to finish".into());
+            }
+            let request = serde_json::from_value(command.args.clone())
+                .map_err(|e| format!("Invalid memory review: {e}"))?;
+            let cancel = AtomicBool::new(false);
+            return crate::memory_proposals::analyze(
+                engine,
+                directory,
+                &request,
+                owner.map_or(&cancel, |o| o.cancel.as_ref()),
+            );
+        }
         "read_activity_experiment" => {
             let reference = command.args["experiment"]
                 .as_str()
@@ -891,6 +911,10 @@ pub(crate) fn native_command(
             engine.live = Some(session);
         }
         "capture" => {
+            let memory_review = command.args["memory_review"] == true;
+            if memory_review && owner.is_none() {
+                return Err("Automatic memory review requires the owning observation job".into());
+            }
             // Reconcile any result that arrived while the command queue was waiting.
             analysis.poll(engine, published);
             let model = command
@@ -945,13 +969,24 @@ pub(crate) fn native_command(
                     format!("Input context unavailable: {warning}"),
                 );
             }
+            let memory_proposals = if memory_review {
+                Some(crate::memory_proposals::finish(
+                    engine,
+                    directory,
+                    owner.unwrap(),
+                ))
+            } else {
+                None
+            };
             if let Some(model) = model {
                 let owner = owner.unwrap();
                 crate::observation_pipeline::checkpoint(engine, published)?;
                 // The final pass waits for any first pass, then uses the latest two images.
                 let previous = analysis.drain(engine, owner, published)?;
                 if owner.cancel.load(Ordering::SeqCst) {
-                    return Ok(json!({"local_observation":previous,"cancelled":true}));
+                    return Ok(
+                        json!({"local_observation":previous,"cancelled":true,"memory_proposals":memory_proposals}),
+                    );
                 }
                 let started = analysis.start(engine, model, owner, directory, published)?;
                 let result = if command.args["background_model"] == true {
@@ -959,7 +994,10 @@ pub(crate) fn native_command(
                 } else {
                     analysis.drain(engine, owner, published)?
                 };
-                return Ok(json!({"local_observation":result}));
+                return Ok(json!({"local_observation":result,"memory_proposals":memory_proposals}));
+            }
+            if memory_review {
+                return Ok(json!({"memory_proposals":memory_proposals}));
             }
         }
         "correlate" => {

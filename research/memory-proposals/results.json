@@ -1,0 +1,120 @@
+{
+  "method": "shared_memory_proposals_v1",
+  "goal_percent": 35,
+  "scope": "Generated native-target fixtures and mock job transport only. No game, production application, live model or upload.",
+  "base_commit": "feaf05885e1f32515dc5beb643cea5b039ec121c",
+  "workspace_test_executions": 424,
+  "targeted_integration_tests": 4,
+  "job_controller_tests": 1,
+  "new_core_tests": 2,
+  "strict_clippy": "passed",
+  "formatting": "passed",
+  "verified": {
+    "actual_final_capture_handler": true,
+    "target_reads_including_final_capture": 12,
+    "images_including_final_capture": 12,
+    "extra_reads_for_review": 0,
+    "sealed_target_replay": true,
+    "new_unidentified_ui_cards": false,
+    "historical_pages_after_engine_reload": true,
+    "summary_lookup_after_restart": true,
+    "page_hash_scope_and_argument_validation": true,
+    "corrupt_report_rejected": true,
+    "short_batch_skipped": true,
+    "optional_storage_failure_preserves_capture": true,
+    "cancel_before_export": true,
+    "cancel_after_reservation_preserves_partial_export": true,
+    "cancellation_between_analysis_and_verification_chunks": true,
+    "identical_publication_recovery": true,
+    "changed_summary_capture_count_rejected": true,
+    "oversized_report_rejected": true,
+    "later_captures_do_not_replace_frozen_review": true,
+    "editing_authority": false
+  },
+  "job": {
+    "captures": 31,
+    "result_bytes": 2729,
+    "result_budget_bytes": 4096,
+    "final_report_reference_retained": true,
+    "full_visual_only_final_review": true,
+    "play_only_has_no_memory_review": true
+  },
+  "fixture": {
+    "frames": 12,
+    "reads": 12,
+    "root": "C:\\DEV\\Reversebolt\\crates\\reversebolt-app\\../../target/memory-proposal-tests\\db4352e1-f9a8-44c8-b160-a9dd2db2a740",
+    "summary": {
+      "batch": 1,
+      "captures": 12,
+      "coverage": {
+        "complete_prefix_bytes": 128,
+        "distinct_groups": 2,
+        "fewer_than_two_changes": 0,
+        "invalid_numbers": 3,
+        "missing_prefix_bytes": 0,
+        "omitted_candidates": 0,
+        "omitted_groups": 0,
+        "planned_bytes": 128,
+        "qualifying_candidates": 3,
+        "retained_members": 3,
+        "typed_locations": 80,
+        "unchanged_bytes_locations": 74
+      },
+      "evidence_manifest_sha256": "36293678d971b495c355e76e13a8cb0224b3f9c2d108acc9a756be325ea01961",
+      "groups": 2,
+      "investigation_id": "ee40fb07-1c07-4000-b053-31de2ac14800",
+      "memory_samples": 12,
+      "policy": "memory_order_trajectories_v2",
+      "report_sha256": "ece82d7668f773a337b6f09e088b61b7a9101ad0ac77a5b50b4670d2ee0d92b9"
+    }
+  },
+  "checks": [
+    {
+      "path": "test-results/memory-proposals-check-first.log",
+      "sha256": "40caa64f1e47912ac82d20949acb0f0109bfcc96d0f3d276fd901fbae737a5b3"
+    },
+    {
+      "path": "test-results/memory-proposals-clippy-first.log",
+      "sha256": "5405adee50efca0337788e3e183125c4e64e0768db3ccef69fa289e700662343"
+    },
+    {
+      "path": "test-results/memory-proposals-format-first.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-proposals-integration-first.log",
+      "sha256": "4a7249d3a72c135a489db80fb07a3bfb525b0806b07880bf08ee987b20ab2d24"
+    },
+    {
+      "path": "test-results/memory-proposals-jobs-first.log",
+      "sha256": "e5c6940e64c260c1ed3b0c704d44f38a850fde8003b4824d3e91461df69c6d96"
+    },
+    {
+      "path": "test-results/memory-proposals-preview-check.json",
+      "sha256": "7c357e0398be81f8c9ee7c940925c5cc68bc6aa22e5798bbc4a8e21e64c6bc9d"
+    },
+    {
+      "path": "test-results/memory-proposals-workspace-first.log",
+      "sha256": "cb883034c06363492baf659fe7faffb3dd65b34f09a4d6f6df471525e315514a"
+    }
+  ],
+  "frozen_directory": "test-results/memory-proposals-v1",
+  "frozen_files": 236,
+  "manifest_sha256": "4a8d662048a189f716b5db6664f91f4c7f7ab8832b7ab86bb6cce18dc6e537a6",
+  "preceding_frozen_snapshot_changed": [],
+  "changed": [],
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "limitations": [
+    "Historical memory proposals do not establish semantics, causal control or a current binding.",
+    "One immutable review per batch; later automatic runs reuse the earlier capture count.",
+    "Explicit cached analysis uses the normal serialized command lane; owning-job cancellation applies to automatic reviews.",
+    "Native integration and independent-game generalization remain unverified."
+  ]
+}

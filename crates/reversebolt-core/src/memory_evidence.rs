@@ -227,11 +227,20 @@ impl Archive {
         Ok(bytes)
     }
     pub fn verify(&self) -> Result<()> {
+        self.verify_with_cancel(|| false)
+    }
+    pub fn verify_with_cancel(&self, cancelled: impl Fn() -> bool) -> Result<()> {
         let mut file = self.file()?;
         for read in self.manifest.samples.iter().flat_map(|s| &s.reads) {
+            if cancelled() {
+                return Err("Memory evidence verification cancelled".into());
+            }
             if let Some(segment) = &read.segment {
                 Self::bytes(&mut file, segment)?;
             }
+        }
+        if cancelled() {
+            return Err("Memory evidence verification cancelled".into());
         }
         Ok(())
     }

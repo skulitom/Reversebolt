@@ -28,6 +28,18 @@ impl LiveSession {
         batch: usize,
         after_sample: usize,
     ) -> Result<Export> {
+        self.export_memory_evidence_with_cancel(investigation, batch, after_sample, || false)
+    }
+    pub fn export_memory_evidence_with_cancel(
+        &self,
+        investigation: &str,
+        batch: usize,
+        after_sample: usize,
+        cancelled: impl Fn() -> bool,
+    ) -> Result<Export> {
+        if cancelled() {
+            return Err("Memory evidence export cancelled".into());
+        }
         if investigation != self.view.investigation_id
             || batch != self.view.coverage.batch
             || after_sample != self.view.sample_count
@@ -93,7 +105,7 @@ impl LiveSession {
             {
                 return Err("Frozen memory export scope changed".into());
             }
-            archive.verify()?;
+            archive.verify_with_cancel(&cancelled)?;
             return Ok(Export {
                 directory: directory.to_string_lossy().into(),
                 manifest_sha256: prior.manifest_sha256,
@@ -118,6 +130,9 @@ impl LiveSession {
         for (index, (snapshot, receipts)) in self.snapshots.iter().zip(&self.receipts).enumerate() {
             let mut reads = vec![];
             for receipt in receipts {
+                if cancelled() {
+                    return Err("Memory evidence export cancelled".into());
+                }
                 let bytes = snapshot.get(&m::address(&receipt.address)?);
                 let segment = bytes.map(|bytes| {
                     let segment = Segment {
@@ -159,6 +174,9 @@ impl LiveSession {
             return Err("The complete export does not fit the 512 MiB local evidence budget; no bytes were exported".into());
         }
         let reference = visual::digest(&bytes);
+        if cancelled() {
+            return Err("Memory evidence export cancelled".into());
+        }
         fs::create_dir_all(&directory).map_err(|e| e.to_string())?;
         write_new(
             &reservation,
@@ -177,11 +195,19 @@ impl LiveSession {
             .open(directory.join("bytes.bin"))
             .map_err(|e| e.to_string())?;
         for part in parts {
+            if cancelled() {
+                return Err(
+                    "Memory evidence export cancelled; partial export remains reserved".into(),
+                );
+            }
             payload.write_all(part).map_err(|e| e.to_string())?;
         }
         payload.sync_all().map_err(|e| e.to_string())?;
+        if cancelled() {
+            return Err("Memory evidence export cancelled; partial export remains reserved".into());
+        }
         write_new(&directory.join("manifest.json"), &bytes)?;
-        m::Archive::open(&directory, &reference)?.verify()?;
+        m::Archive::open(&directory, &reference)?.verify_with_cancel(cancelled)?;
         Ok(Export {
             directory: directory.to_string_lossy().into(),
             manifest_sha256: reference,

@@ -342,6 +342,92 @@ fn short_and_static_recordings_do_not_invent_candidates() {
 }
 
 #[test]
+fn analysis_and_verification_cancel_between_bounded_chunks() {
+    let (_, archive) = recording(fields(), BTreeSet::new(), "unused");
+    let checks = Cell::new(0);
+    let error = m::analyze_with_cancel(&archive, || {
+        checks.set(checks.get() + 1);
+        checks.get() >= 3
+    })
+    .unwrap_err();
+    assert!(error.contains("cancelled"));
+    assert_eq!(checks.get(), 3);
+    let checks = Cell::new(0);
+    assert!(
+        archive
+            .verify_with_cancel(|| {
+                checks.set(checks.get() + 1);
+                checks.get() >= 2
+            })
+            .unwrap_err()
+            .contains("cancelled")
+    );
+    assert_eq!(checks.get(), 2);
+}
+
+#[test]
+fn proposal_store_recovers_identical_publication_and_rejects_changed_or_oversized_files() {
+    use m::store;
+    let (export, archive) = recording(fields(), BTreeSet::new(), "unused");
+    let root = Path::new(&export.directory).join("proposal-store-test");
+    let report = m::analyze(&archive).unwrap();
+    let summary = store::save(&root, &report, report.capture_count).unwrap();
+    let folder = root
+        .join("memory-proposals")
+        .join(&report.investigation_id)
+        .join("batch-001");
+    let original = fs::read(folder.join("report.json")).unwrap();
+    let summary_bytes = fs::read(folder.join("summary.json")).unwrap();
+    assert!(store::save(&root, &report, report.capture_count + 1).is_err());
+    fs::remove_file(folder.join("summary.json")).unwrap();
+    assert!(
+        store::load_summary(&root, &report.investigation_id, 1)
+            .unwrap()
+            .is_none()
+    );
+    assert_eq!(
+        store::save(&root, &report, report.capture_count)
+            .unwrap()
+            .report_sha256,
+        summary.report_sha256
+    );
+    let mut changed = report.clone();
+    changed.groups[0].members[0].selection.values[0] += 1.;
+    assert!(store::save(&root, &changed, report.capture_count).is_err());
+    assert_eq!(fs::read(folder.join("report.json")).unwrap(), original);
+    let mut changed_summary = summary.clone();
+    changed_summary.captures += 1;
+    fs::write(
+        folder.join("summary.json"),
+        serde_json::to_vec(&changed_summary).unwrap(),
+    )
+    .unwrap();
+    assert!(store::load_summary(&root, &report.investigation_id, 1).is_err());
+    fs::write(folder.join("summary.json"), summary_bytes).unwrap();
+    assert!(
+        store::page(
+            &root,
+            &report.investigation_id,
+            1,
+            &summary.report_sha256,
+            usize::MAX,
+            8
+        )
+        .is_err()
+    );
+    let file = fs::OpenOptions::new()
+        .write(true)
+        .open(folder.join("report.json"))
+        .unwrap();
+    file.set_len(store::MAX_REPORT_BYTES as u64 + 1).unwrap();
+    assert!(
+        store::read(&root, &report.investigation_id, 1, &summary.report_sha256)
+            .unwrap_err()
+            .contains("limit")
+    );
+}
+
+#[test]
 fn missing_sample_does_not_bridge_a_monotonicity_check() {
     let mut frames = fields();
     for (i, bytes) in frames.iter_mut().enumerate().skip(7) {

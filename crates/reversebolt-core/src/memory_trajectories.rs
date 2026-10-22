@@ -3,6 +3,7 @@
 use crate::{Result, discovery::Kind, memory_evidence::Archive};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+pub mod store;
 
 pub const POLICY: &str = "memory_order_trajectories_v2";
 pub const PREFIX: usize = 6;
@@ -91,6 +92,8 @@ pub struct Report {
     pub manifest_sha256: String,
     pub investigation_id: String,
     pub batch: usize,
+    #[serde(default)]
+    pub capture_count: usize,
     pub selection_captures: Vec<usize>,
     pub assessment_captures: Vec<usize>,
     pub coverage: Coverage,
@@ -228,6 +231,13 @@ fn assess(selection: &Selection, later: &[Option<Vec<u8>>], offset: usize) -> As
 /// These are generic behavioral priors, not gameplay relevance. Later samples cannot
 /// change selection, group membership, ordering or candidate counts.
 pub fn analyze(archive: &Archive) -> Result<Report> {
+    analyze_with_cancel(archive, || false)
+}
+
+pub fn analyze_with_cancel(archive: &Archive, cancelled: impl Fn() -> bool) -> Result<Report> {
+    if cancelled() {
+        return Err("Memory analysis cancelled".into());
+    }
     let manifest = archive.manifest();
     let captures: Vec<_> = manifest
         .samples
@@ -245,6 +255,9 @@ pub fn analyze(archive: &Archive) -> Result<Report> {
     let mut counts: BTreeMap<Signature, usize> = BTreeMap::new();
     let mut retained: BTreeMap<GroupKey, Representatives> = BTreeMap::new();
     archive.visit_memory_chunks(|history| {
+        if cancelled() {
+            return Err("Memory analysis cancelled".into());
+        }
         let chunk = &history.chunk;
         coverage.planned_bytes += chunk.length;
         let Some(prefix) = history.bytes[..PREFIX]
@@ -320,6 +333,9 @@ pub fn analyze(archive: &Archive) -> Result<Report> {
         }
         Ok(())
     })?;
+    if cancelled() {
+        return Err("Memory analysis cancelled".into());
+    }
     coverage.distinct_groups = counts.len();
     coverage.omitted_groups = counts.len() - retained.len();
     let groups: Vec<_> = retained
@@ -345,6 +361,7 @@ pub fn analyze(archive: &Archive) -> Result<Report> {
         manifest_sha256: archive.manifest_sha256().into(),
         investigation_id: manifest.state.investigation_id.clone(),
         batch: manifest.state.coverage.batch,
+        capture_count: manifest.state.sample_count,
         selection_captures: captures[..PREFIX].to_vec(),
         assessment_captures: captures[PREFIX..].to_vec(),
         coverage,

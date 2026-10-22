@@ -131,6 +131,7 @@ fn read_only(action: &str) -> bool {
             | "history"
             | "job_events"
             | "read_capture"
+            | "read_memory_proposals"
             | "read_sequence"
             | "read_play_evidence"
             | "read_activity_experiment"
@@ -274,6 +275,8 @@ impl Scope {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct CaptureStep {
+    #[serde(default, skip_serializing_if = "is_false")]
+    memory_review: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     runtime: Option<String>,
     scope: Scope,
@@ -307,6 +310,23 @@ fn is_false(value: &bool) -> bool {
 
 fn is_zero(value: &usize) -> bool {
     *value == 0
+}
+
+// Scope already lives in the immutable job binding. Keep per-step evidence
+// references compact enough for the complete 31-capture automatic job.
+fn capture_receipt(value: &Value) -> Value {
+    let live = &value["state"]["live"];
+    let mut receipt = json!({"captured":if value["data"]["captured"]==false {Some(false)} else if value["ok"]==true {Some(true)} else {None},"capture":live["sample_count"],
+        "frame":live["frames"].as_array().and_then(|f|f.last()).map(|f|&f["id"])});
+    let local = &value["data"]["local_observation"];
+    if local.is_object() {
+        receipt["local_observation"] = json!({"evidence_id":local["evidence_id"],"recorded":local["recorded"],"cancelled":local["cancelled"]});
+    }
+    let memory = &value["data"]["memory_proposals"];
+    if memory.is_object() {
+        receipt["memory_proposals"] = json!({"status":memory["status"],"report_sha256":memory["summary"]["report_sha256"],"captures":memory["summary"]["captures"]});
+    }
+    receipt
 }
 
 struct Flight {
@@ -428,7 +448,7 @@ impl job::Executor for CaptureExecutor {
                 };
                 json!({"scope":step.scope,"change_id":cursor.change_id,"cursor":cursor})
             } else {
-                json!({"scope":step.scope,"compare":step.compare,"remaining":step.remaining,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model})
+                json!({"scope":step.scope,"compare":step.compare,"remaining":step.remaining,"mode":step.mode,"local_model":step.local_model,"background_model":step.background_model,"memory_review":step.memory_review})
             },
             source: step.source,
         };
@@ -505,7 +525,6 @@ impl job::Executor for CaptureExecutor {
                             effect:knowledge,data:serde_json::to_vec(&json!({"experiment":value["data"]["experiment"],"index":value["data"]["index"],"frame":value["data"]["frame_id"],"review_sha256":value["data"]["review"]["receipt_sha256"]})).unwrap_or_default(),
                             note:value["error"].as_str().or(value["data"]["error"].as_str()).unwrap_or(if effect {"Input sent and response captured; gameplay effect remains unverified."} else if value["data"]["review"].is_object() {"Input experiment analyzed; interpretation remains provisional."} else {"Quiet response image captured; gameplay effect remains unverified."}).into()});
                     }
-                    let live = &value["state"]["live"];
                     Self::outcome(
                         value["ok"] == true && value["data"]["success"] != false,
                         value["error"].as_str().unwrap_or(
@@ -518,10 +537,7 @@ impl job::Executor for CaptureExecutor {
                                 "observation":value["data"]["observations"].as_array().and_then(|o|o.len().checked_sub(1)),
                                 "image_sha256":value["data"]["observations"].as_array().and_then(|o|o.last()).map(|o|&o["image_sha256"])})
                         } else {
-                            json!({"captured":if value["data"]["captured"]==false {Some(false)} else if value["ok"]==true {Some(true)} else {None},"investigation_id":live["investigation_id"],
-                            "batch":live["coverage"]["batch"],"capture":live["sample_count"],
-                            "frame":live["frames"].as_array().and_then(|f| f.last()).map(|f|&f["id"]),
-                            "local_observation":value["data"]["local_observation"]})
+                            capture_receipt(&value)
                         },
                     )
                 } else {
@@ -1192,6 +1208,7 @@ impl Controller {
                     steps.push(job::Step {
                         kind: job::Kind::Observe,
                         payload: serde_json::to_string(&CaptureStep {
+                            memory_review: false,
                             runtime: None,
                             scope: scope.clone(),
                             delay_ms: if index == 0 { 0 } else { 500 },
@@ -1217,6 +1234,7 @@ impl Controller {
                         Ok(job::Step {
                             kind: job::Kind::Observe,
                             payload: serde_json::to_string(&CaptureStep {
+                                memory_review: false,
                                 runtime: Some(crate::runtime_bridge::store_plan(
                                     &self.runtime_directory,
                                     next_task,
@@ -1360,6 +1378,7 @@ impl Controller {
                 steps.push(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
+                        memory_review: false,
                         runtime: None,
                         scope: scope.clone(),
                         delay_ms: if index == 0 { 0 } else { 100 },
@@ -1378,6 +1397,8 @@ impl Controller {
                 steps.push(job::Step {
                     kind: job::Kind::Observe,
                     payload: serde_json::to_string(&CaptureStep {
+                        memory_review: index == count - 1
+                            && mode != reversebolt_core::live::CaptureMode::Play,
                         runtime: None,
                         scope: scope.clone(),
                         delay_ms: if (compare || !mode.is_full()) && index == 0 {
@@ -1551,6 +1572,8 @@ mod tests {
                 memory_sources_error: None,
                 local_observation_warnings: vec![],
                 input_experiments: vec![],
+                memory_proposals: None,
+                memory_proposal_error: None,
                 rule_checks: vec![],
                 rule_error: None,
                 action_patterns: vec![],
@@ -2358,6 +2381,7 @@ mod tests {
             serde_json::to_value(&task).unwrap()
         );
         let step = CaptureStep {
+            memory_review: false,
             runtime: Some(reference.clone()),
             scope: Scope {
                 investigation_id: uuid::Uuid::new_v4().to_string(),
@@ -2396,6 +2420,7 @@ mod tests {
         )
         .unwrap();
         let step = CaptureStep {
+            memory_review: false,
             runtime: Some(reference.clone()),
             scope: Scope {
                 investigation_id: uuid::Uuid::new_v4().to_string(),
@@ -2936,5 +2961,79 @@ mod tests {
         let step: CaptureStep = serde_json::from_str(legacy).unwrap();
         assert!(step.mode.is_full());
         assert_eq!(serde_json::to_string(&step).unwrap(), legacy);
+    }
+    #[test]
+    fn final_memory_review_is_planned_and_its_reference_survives_the_full_job() {
+        assert!(read_only("read_memory_proposals"));
+        assert!(!read_only("analyze_memory_evidence"));
+        for mode in ["full", "visual", "play"] {
+            let engine =
+                EngineHandle::test_worker(initial_view(), |_, v| json!({"ok":true,"state":v}));
+            let mut c = controller(engine);
+            let command = request(
+                &c,
+                "start_observation_job",
+                json!({"count":3,"mode":mode,"interval_ms":250}),
+            );
+            let id = c.job_command(&command).unwrap()["ack"]["job"]
+                .as_u64()
+                .unwrap();
+            let steps = &c.jobs.snapshot().jobs[&id].steps;
+            for (index, step) in steps.iter().enumerate() {
+                let step: CaptureStep = serde_json::from_str(&step.payload).unwrap();
+                assert_eq!(step.memory_review, index == 2 && mode != "play");
+            }
+        }
+        let (tx, rx) = mpsc::channel();
+        let engine = EngineHandle::test_worker(initial_view(), move |command, view| {
+            tx.send(command.clone()).unwrap();
+            view.live.as_mut().unwrap().sample_count += 1;
+            let mut state = json!(view);
+            state["live"]["frames"] = json!([{"id":uuid::Uuid::new_v4().to_string()}]);
+            let mut data = json!({});
+            if command.args["local_model"].is_string() {
+                data["local_observation"] = json!({"evidence_id":uuid::Uuid::new_v4().to_string(),"recorded":2,"cancelled":false,"warning":"detail".repeat(1000)});
+            }
+            if command.args["memory_review"] == true {
+                data["memory_proposals"] = json!({"status":"completed","summary":{"report_sha256":"a".repeat(64),"captures":31,"coverage":{"omitted_candidates":100000}}});
+            }
+            json!({"ok":true,"state":state,"data":data})
+        });
+        let mut c = controller(engine);
+        let command = request(
+            &c,
+            "start_observation_job",
+            json!({"count":16,"observe_play":true,"local_model":"fixture:model","interval_ms":250}),
+        );
+        let id = c.job_command(&command).unwrap()["ack"]["job"]
+            .as_u64()
+            .unwrap();
+        for _ in 0..2000 {
+            let job = &c.jobs.snapshot().jobs[&id];
+            if job.phase.terminal() {
+                break;
+            }
+            c.next_capture = Some((id, job.next_step, Instant::now()));
+            c.tick();
+            std::thread::sleep(Duration::from_millis(1));
+        }
+        let job = c.jobs.snapshot().jobs[&id].clone();
+        assert_eq!(job.phase, job::Phase::Completed);
+        assert_eq!(job.checkpoints.len(), 31);
+        let commands: Vec<_> = rx.try_iter().collect();
+        assert_eq!(commands.len(), 31);
+        assert_eq!(
+            commands
+                .iter()
+                .filter(|c| c.args["memory_review"] == true)
+                .count(),
+            1
+        );
+        assert_eq!(commands.last().unwrap().args["memory_review"], true);
+        let receipt: Value =
+            serde_json::from_slice(&job.checkpoints.last().unwrap().outcome.data).unwrap();
+        assert_eq!(receipt["memory_proposals"]["report_sha256"], "a".repeat(64));
+        assert!(job.result_bytes() <= 4096);
+        println!("MEMORY_REVIEW_JOB_BYTES={}", job.result_bytes());
     }
 }
