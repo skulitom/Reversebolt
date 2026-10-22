@@ -115,7 +115,7 @@ pub struct Evidence {
 
 /// A capture can select pixels from anywhere in its operation bounds. Inputs
 /// sampled inside those bounds cannot be assigned before or after that image.
-fn capture_input(
+pub(crate) fn capture_input(
     window: &inputs::Window,
     capture: &crate::visual::CaptureInterval,
 ) -> std::result::Result<(), &'static str> {

@@ -1,4 +1,5 @@
 //! Responsive job control around the sole engine-owning worker.
+mod activity;
 mod change_watch;
 #[cfg(test)]
 mod freeze_tests;
@@ -53,21 +54,30 @@ pub fn panel(ui: &mut eframe::egui::Ui, handle: &Handle, state: &job::View) {
             };
             let plan = job.steps.first().and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok());
             let watching = plan.as_ref().is_some_and(|s| s.change.is_some());
-            let title = if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
+            let activity=job.steps.first().and_then(|s|serde_json::from_str::<crate::activity_experiment::Step>(&s.payload).ok());
+            let title = if activity.is_some() { "Testing an input" } else if plan.as_ref().is_some_and(|s|s.runtime.is_some()) { "Reading internal values" } else if watching { "Watching effect" } else if plan.as_ref().is_some_and(|s| !s.mode.is_full()) { "Watching movement" } else { "Finding controls" };
             let model_step = job.steps.get(job.next_step).and_then(|s|serde_json::from_str::<CaptureStep>(&s.payload).ok()).is_some_and(|s|s.has_model());
             ui.horizontal_wrapped(|ui| {
                 if job.phase==job::Phase::Running { ui.spinner(); }
                 ui.label(RichText::new(if job.phase==job::Phase::Running {format!("{title}…")} else {phase.into()}).color(ACCENT))
                     .on_hover_text(format!("{} / {} moments. Keys sampled while the selected window is active.{}",job.next_step,job.steps.len(),if model_step {" Reading images locally."} else {""}));
-                if job.phase==job::Phase::Paused {
+                if activity.is_none() && job.phase==job::Phase::Paused {
                     if ui.button("Resume").clicked() {handle.submit("job_control",json!({"operation":"resume","job":job.id}));}
-                }else if matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish any active capture or model request, then pause.").clicked() {
+                }else if activity.is_none() && matches!(job.phase,job::Phase::Running|job::Phase::Queued) && ui.button("Pause").on_hover_text("Finish any active capture or model request, then pause.").clicked() {
                     handle.submit("job_control",json!({"operation":"pause","job":job.id}));
                 }
                 if ui.button("Stop").on_hover_text("Finish any active request; prevent later captures and model calls.").clicked() {handle.submit("job_control",json!({"operation":"cancel","job":job.id}));}
                 if state.history.human_hold.is_none() && job.controller.role==job::Role::Agent
                     && ui.button("Take control").clicked() {handle.submit("job_control",json!({"operation":"take_control"}));}
             });
+            if let Some(activity)=activity {
+                let key=reversebolt_core::inputs::key_name(activity.key);
+                ui.label(RichText::new(format!("Reversebolt will press {key} four times for 250 ms each, with quiet intervals. Return to the game within 3 seconds of starting.")).size(12.).color(MUTED));
+                if job.consent_boot!=Some(state.history.boot) && job.phase==job::Phase::Queued
+                    && ui.button(format!("Start {key} experiment")).clicked() {
+                    handle.submit("job_control",json!({"operation":"authorize","job":job.id}));
+                }
+            }
             if watching { ui.label(RichText::new("Keep playing to check for a delayed response.").size(12.).color(MUTED)); }
         }
         if let Some(analysis)=&analysis {
@@ -303,6 +313,7 @@ struct Flight {
     cancel: Arc<AtomicBool>,
     poll_interval: Duration,
     runtime: bool,
+    effect: bool,
 }
 struct CaptureExecutor {
     engine: EngineHandle,
@@ -364,6 +375,11 @@ impl CaptureExecutor {
 }
 impl job::Executor for CaptureExecutor {
     fn begin(&mut self, operation: &job::Operation) -> job::Poll {
+        if let Ok(step) =
+            serde_json::from_str::<crate::activity_experiment::Step>(&operation.instruction.payload)
+        {
+            return self.begin_activity(operation, step);
+        }
         if self.flight.is_some() || operation.instruction.kind != job::Kind::Observe {
             return Self::outcome(
                 false,
@@ -442,6 +458,7 @@ impl job::Executor for CaptureExecutor {
                     cancel,
                     poll_interval,
                     runtime: step.runtime.is_some() && !model_step,
+                    effect: false,
                 });
                 self.next_poll = Instant::now() + poll_interval;
                 job::Poll::Pending
@@ -468,12 +485,27 @@ impl job::Executor for CaptureExecutor {
                 cancel,
                 poll_interval,
                 runtime,
+                effect,
             }) if id == owned => {
                 let value = self.ready.take().or_else(|| response.try_recv().ok());
                 if let Some(value) = value {
+                    if effect || value["data"]["experiment"].is_string() {
+                        let knowledge = serde_json::from_value::<job::Knowledge>(
+                            value["data"]["effect"].clone(),
+                        )
+                        .unwrap_or(job::Knowledge::Unknown);
+                        let knowledge = if effect {
+                            knowledge
+                        } else {
+                            job::Knowledge::NotApplicable
+                        };
+                        return job::Poll::Ready(job::Outcome {success:value["ok"]==true && value["data"]["success"]==true,
+                            effect:knowledge,data:serde_json::to_vec(&json!({"experiment":value["data"]["experiment"],"index":value["data"]["index"],"frame":value["data"]["frame_id"]})).unwrap_or_default(),
+                            note:value["error"].as_str().or(value["data"]["error"].as_str()).unwrap_or(if effect {"Input sent and response captured; gameplay effect remains unverified."} else {"Quiet response image captured; gameplay effect remains unverified."}).into()});
+                    }
                     let live = &value["state"]["live"];
                     Self::outcome(
-                        value["ok"] == true,
+                        value["ok"] == true && value["data"]["success"] != false,
                         value["error"].as_str().unwrap_or(
                             "Observation finished; see the shared investigation for evidence.",
                         ),
@@ -497,6 +529,7 @@ impl job::Executor for CaptureExecutor {
                         cancel,
                         poll_interval,
                         runtime,
+                        effect,
                     });
                     job::Poll::Pending
                 }
@@ -786,6 +819,7 @@ impl Controller {
             if matches!(
                 command.action.as_str(),
                 "start_observation_job"
+                    | "start_activity_experiment"
                     | "start_change_watch"
                     | "start_runtime_job"
                     | "job_control"
@@ -875,6 +909,7 @@ impl Controller {
                 | "history"
                 | "job_events"
                 | "start_observation_job"
+                | "start_activity_experiment"
                 | "start_runtime_job"
                 | "start_change_watch"
                 | "job_control"
@@ -1037,8 +1072,25 @@ impl Controller {
                 "Wait for the paused image review to finish before resuming capture.".into(),
             );
         }
+        if command.action != "job_control"
+            && request
+                > snapshot
+                    .clients
+                    .get(&actor.client)
+                    .map_or(0, |c| c.high_water)
+            && snapshot.jobs.values().any(|j| {
+                !j.phase.terminal()
+                    && j.steps.first().is_some_and(|s| {
+                        serde_json::from_str::<crate::activity_experiment::Step>(&s.payload).is_ok()
+                    })
+            })
+        {
+            return Err("Finish or stop the input experiment before queuing other work.".into());
+        }
         let action = if command.action == "start_change_watch" {
             self.plan_change_watch(command, &binding, request, &actor.client)?
+        } else if command.action == "start_activity_experiment" {
+            self.plan_activity(command, &binding, request, boot, &actor)?
         } else if command.action == "start_runtime_job" {
             let local_model = command
                 .args
@@ -1349,8 +1401,9 @@ impl Controller {
                 Some("pause") => job::Action::Pause { job: id },
                 Some("resume") => job::Action::Resume {
                     job: id,
-                    renew_consent: false,
+                    renew_consent: human,
                 },
+                Some("authorize") if human => job::Action::Authorize { job: id },
                 Some("cancel") => job::Action::Cancel { job: id },
                 Some("take_control") => job::Action::TakeControl,
                 Some("release_control") => job::Action::ReleaseControl,
@@ -2639,7 +2692,16 @@ mod tests {
             );
         }
         assert_eq!(c.job_command(&command).unwrap()["duplicate"], true);
-        // Six more images exceed the total bound; five more memory samples
+        // Leave five image slots after the queued mixed pass; six exceed the bound.
+        c.engine
+            .view
+            .write()
+            .unwrap()
+            .live
+            .as_mut()
+            .unwrap()
+            .sample_count = reversebolt_core::live::MAX_SAMPLES - 31 - 5;
+        // Five more memory samples
         // exceed the independent memory bound, even though their image count fits.
         let images = request(
             &c,
@@ -2647,6 +2709,14 @@ mod tests {
             json!({"count":6,"mode":"play","interval_ms":50}),
         );
         assert!(c.job_command(&images).is_err());
+        c.engine
+            .view
+            .write()
+            .unwrap()
+            .live
+            .as_mut()
+            .unwrap()
+            .sample_count = 0;
         let memory = request(
             &c,
             "start_observation_job",

@@ -1,0 +1,86 @@
+{
+  "method": "input_only_investigation_generated_integration_v1",
+  "scope": "Generated images/input and mocked controller; no native game/input worker/model invocation.",
+  "goal_percent": 35,
+  "sequence": {
+    "images": 10,
+    "holds": 4,
+    "hold_ms": 250,
+    "memory_reads": 0,
+    "generated_bounded_episodes": 4
+  },
+  "limits": {
+    "images_per_batch": 48,
+    "memory_attempts_per_batch": 20,
+    "retained_memory_mib": 512,
+    "image_storage_mib": 512
+  },
+  "checks": [
+    {
+      "path": "test-results/activity-experiment-check-first.log",
+      "sha256": "6fa403f13e58129fde0cbe4bc405691796f6b5de364abac2ec4a6694a0e91bc0"
+    },
+    {
+      "path": "test-results/activity-experiment-clippy-final.log",
+      "sha256": "65e208c205c36bf7aed7ec4482dcdd3c78140523f12367e721aeb4716326ee46"
+    },
+    {
+      "path": "test-results/activity-experiment-clippy-first.log",
+      "sha256": "750f76420202d371cbc8001293b5b80633cde111a7fe7c19f12cd27c9effe682"
+    },
+    {
+      "path": "test-results/activity-experiment-fmt-complete.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-experiment-fmt-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/activity-experiment-input-worker-final.log",
+      "sha256": "4976d8cab02c12a8f6a388d38a969822824872c4e537f43c336eeac3199466cd"
+    },
+    {
+      "path": "test-results/activity-experiment-integration-first.log",
+      "sha256": "1121794d89469ed1bc1a72ce133f9abe306024ac976ce599634689e50135424e"
+    },
+    {
+      "path": "test-results/activity-experiment-integration-second.log",
+      "sha256": "63581ad25e0e73ceab8fdbefaf1ab3cdcc9a04b7b5c5d4a2a858c349c32ed9c3",
+      "failure": "New cancellation test waited before job dispatch; updated to drive ticks until the worker is in flight."
+    },
+    {
+      "path": "test-results/activity-experiment-preview-check.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/activity-experiment-tests-complete.log",
+      "sha256": "535438ccb4e822dc38d0ecfbfde78b89b0b1412c1d8a1e66b64e50e14cf512d5",
+      "passed": 397,
+      "failed": 0
+    },
+    {
+      "path": "test-results/activity-experiment-tests-final.log",
+      "sha256": "0329c2c27c90fccacb963731d2b3aff06d7e7790b77b41389ae1a2c13c8a812a",
+      "failure": "Older core regression filled 36 captures, not the new cap; updated to fill MAX_SAMPLES and retain the no-extra-memory-read assertion."
+    },
+    {
+      "path": "test-results/activity-experiment-tests-first.log",
+      "sha256": "3956a3dc34a0790334b9504e84d1f2cce6120523d4366588a3de637d32707718",
+      "failure": "Old controller test assumed a 36-image cap; corrected setup preserves independent capture and memory reservation checks."
+    },
+    {
+      "path": "test-results/activity-experiment-ui-schema-clippy.log",
+      "sha256": "29669ac68525bcc20a9f1c4cc8ee256e3e991f873cd7bf4fb8556e66975b0af1"
+    }
+  ],
+  "workspace_test_executions": 397,
+  "final_changes": "After the full suite, final input-worker receipt binding passed three targeted tests. Final UI and MCP schema updates passed targeted strict all-target Clippy; workspace Clippy and formatting also passed.",
+  "frozen_directory": "test-results/input-only-investigation-v1",
+  "manifest_sha256": "04e118b1ff07487b457004aac088b4fc006ab178ad959d942c1a7582b19235f9",
+  "frozen_files": 188,
+  "changed": [],
+  "preview": "unavailable: published executable missing; read-only check only",
+  "security_submission": "local only; no upload",
+  "generalization_claim": false
+}

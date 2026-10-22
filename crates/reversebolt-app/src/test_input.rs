@@ -91,7 +91,7 @@ fn save(path: &Path, value: &impl Serialize) -> Result<()> {
         .and_then(|()| f.sync_all())
         .map_err(|e| e.to_string())
 }
-fn read(path: &Path) -> Result<Value> {
+fn read_bytes(path: &Path) -> Result<Vec<u8>> {
     let mut bytes = vec![];
     fs::File::open(path)
         .map_err(|e| e.to_string())?
@@ -101,7 +101,10 @@ fn read(path: &Path) -> Result<Value> {
     if bytes.len() > 16_384 {
         return Err("Input receipt exceeds its budget.".into());
     }
-    serde_json::from_slice(&bytes).map_err(|e| e.to_string())
+    Ok(bytes)
+}
+fn read(path: &Path) -> Result<Value> {
+    serde_json::from_slice(&read_bytes(path)?).map_err(|e| e.to_string())
 }
 fn packet(key: u8, up: bool) -> Result<INPUT> {
     let scan = unsafe { MapVirtualKeyW(u32::from(key), MAPVK_VK_TO_VSC_EX) };
@@ -156,20 +159,36 @@ impl Drop for Held {
 pub fn worker(plan_path: &Path) -> Result<()> {
     let receipt_path = plan_path.with_extension("outcome.json");
     let cancel_path = plan_path.with_extension("cancel");
-    let plan: Plan = serde_json::from_value(read(plan_path)?).map_err(|e| e.to_string())?;
+    let plan_bytes = read_bytes(plan_path)?;
+    let plan: Plan = serde_json::from_slice(&plan_bytes).map_err(|e| e.to_string())?;
+    // A crash after this durable claim leaves an unknown outcome. Starting the
+    // same worker plan again must never repeat a possibly delivered key press.
+    claim_worker(plan_path)?;
     let mut receipt = json!({"started_unix_ms":now_ms(),"keydown_accepted":0,"keyup_accepted":0,"held_elapsed_us":0,"error":null,
         "limitation":"Windows accepted input records, not proof of delivered game actions. Sampling and image evidence must still pass the comparison checks."});
-    receipt["plan_sha256"] = json!(reversebolt_core::visual::digest(
-        &fs::read(plan_path).map_err(|e| e.to_string())?
-    ));
+    receipt["plan_sha256"] = json!(reversebolt_core::visual::digest(&plan_bytes));
     receipt["worker_pid"] = json!(std::process::id());
     let result = (|| -> Result<()> {
-        if plan.schema != 1
-            || plan.condition >= 3
-            || plan.frame >= 6
+        let shape = match plan.schema {
+            1 => plan.condition < 3 && plan.frame < 6 && (plan.frame < 2) == plan.action.is_none(),
+            2 => {
+                plan.condition == 0
+                    && plan.frame < reversebolt_core::activity_experiment::STEPS
+                    && plan.action
+                        == reversebolt_core::activity_experiment::action(
+                            plan.frame,
+                            plan.action
+                                .as_ref()
+                                .and_then(|a| a.keys.first())
+                                .copied()
+                                .unwrap_or(32),
+                        )
+            }
+            _ => false,
+        };
+        if !shape
             || plan.target.window == 0
             || uuid::Uuid::parse_str(&plan.test_id).is_err()
-            || (plan.frame < 2) != plan.action.is_none()
             || plan.action.as_ref().is_some_and(|a| !allowed(a))
         {
             return Err("Unsupported input plan. Automatic steps support letters, digits, arrows and Space only.".into());
@@ -276,6 +295,13 @@ pub fn worker(plan_path: &Path) -> Result<()> {
     result
 }
 
+fn claim_worker(plan_path: &Path) -> Result<()> {
+    save(
+        &plan_path.with_extension("claimed.json"),
+        &json!({"worker_pid":std::process::id(),"started_unix_ms":now_ms()}),
+    )
+}
+
 pub fn execute(
     info: &ProcessInfo,
     test: &reversebolt_core::runtime_tests::Test,
@@ -294,6 +320,75 @@ pub fn execute(
     if abort.load(Ordering::SeqCst) {
         return Err("The desktop stopped this comparison.".into());
     }
+    execute_plan(
+        info,
+        &test.id,
+        test.revision,
+        1,
+        condition,
+        index,
+        action,
+        image,
+        abort,
+    )
+}
+
+pub fn execute_activity(
+    info: &ProcessInfo,
+    reference: &str,
+    index: usize,
+    key: u8,
+    image: &Path,
+    abort: &AtomicBool,
+) -> Result<()> {
+    if reference.len() != 64
+        || !reference.bytes().all(|b| b.is_ascii_hexdigit())
+        || index >= reversebolt_core::activity_experiment::STEPS
+    {
+        return Err("Invalid input experiment step".into());
+    }
+    // Explicit desktop actions leave time to return to the selected game.
+    // Nothing changes focus; a cancellation remains responsive during this delay.
+    if index == 0 {
+        let deadline = Instant::now() + Duration::from_secs(3);
+        while Instant::now() < deadline {
+            if abort.load(Ordering::SeqCst) {
+                return Err("Input experiment stopped".into());
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    }
+    let id = uuid::Uuid::parse_str(&reference[..32])
+        .map_err(|e| e.to_string())?
+        .to_string();
+    execute_plan(
+        info,
+        &id,
+        0,
+        2,
+        0,
+        index,
+        reversebolt_core::activity_experiment::action(index, key),
+        image,
+        abort,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn execute_plan(
+    info: &ProcessInfo,
+    id: &str,
+    revision: u64,
+    schema: u32,
+    condition: usize,
+    index: usize,
+    action: Option<Action>,
+    image: &Path,
+    abort: &AtomicBool,
+) -> Result<()> {
+    if abort.load(Ordering::SeqCst) {
+        return Err("Input stopped before starting its worker".into());
+    }
     let parent = std::process::id();
     let h = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, parent) };
     if h.is_null() {
@@ -302,9 +397,9 @@ pub fn execute(
     let handle = Process(h);
     let parent_created = format!("{:016X}", crate::native::created(handle.0)?);
     let plan = Plan {
-        schema: 1,
-        test_id: test.id.clone(),
-        revision: test.revision,
+        schema,
+        test_id: id.into(),
+        revision,
         condition,
         frame: index,
         target: info.clone(),
@@ -314,6 +409,7 @@ pub fn execute(
     };
     let path = image.with_extension("action.json");
     save(&path, &plan)?;
+    let plan_sha = reversebolt_core::visual::digest(&fs::read(&path).map_err(|e| e.to_string())?);
     let mut child = Command::new(std::env::current_exe().map_err(|e| e.to_string())?)
         .arg("--runtime-test-input")
         .arg(&path)
@@ -325,9 +421,9 @@ pub fn execute(
         .map_err(|e| e.to_string())?;
     let deadline = Instant::now() + Duration::from_secs(5);
     let mut cancelled = false;
-    loop {
-        if child.try_wait().map_err(|e| e.to_string())?.is_some() {
-            break;
+    let status = loop {
+        if let Some(status) = child.try_wait().map_err(|e| e.to_string())? {
+            break status;
         }
         if !cancelled && (abort.load(Ordering::SeqCst) || Instant::now() >= deadline) {
             save(&path.with_extension("cancel"), &json!({"stop":true}))?;
@@ -337,7 +433,7 @@ pub fn execute(
             return Err("Input worker outcome is unsettled. Inspect its saved receipt; never replay this step.".into());
         }
         std::thread::sleep(Duration::from_millis(5));
-    }
+    };
     let receipt = read(&path.with_extension("outcome.json"))?;
     if let Some(error) = receipt["error"].as_str() {
         return Err(error.into());
@@ -345,12 +441,95 @@ pub fn execute(
     if cancelled || abort.load(Ordering::SeqCst) {
         return Err("The desktop stopped this comparison after input settled.".into());
     }
+    if !status.success() {
+        return Err("Input worker exited unsuccessfully".into());
+    }
+    validate_receipt(&receipt, &plan_sha, child.id(), plan.action.as_ref())?;
+    Ok(())
+}
+
+fn validate_receipt(
+    receipt: &Value,
+    plan_sha: &str,
+    worker: u32,
+    action: Option<&Action>,
+) -> Result<()> {
+    let expected = action.map_or(0, |a| a.keys.len()) as u64;
+    if receipt["plan_sha256"] != plan_sha
+        || receipt["worker_pid"].as_u64() != Some(u64::from(worker))
+        || receipt.get("error") != Some(&Value::Null)
+        || receipt["keydown_accepted"].as_u64() != Some(expected)
+        || receipt["keyup_accepted"].as_u64() != Some(expected)
+        || receipt["started_unix_ms"]
+            .as_u64()
+            .zip(receipt["completed_unix_ms"].as_u64())
+            .is_none_or(|(a, b)| b < a)
+        || receipt["held_elapsed_us"].as_u64().is_none_or(|t| {
+            if let Some(action) = action {
+                t < u64::from(action.hold_ms) * 1000 || t > 3_000_000
+            } else {
+                t != 0
+            }
+        })
+    {
+        return Err("Input worker receipt is incomplete or does not match its plan".into());
+    }
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn input_receipts_bind_the_plan_worker_and_complete_key_release() {
+        let action = Action {
+            keys: vec![65],
+            hold_ms: 250,
+        };
+        let receipt = json!({"plan_sha256":"hash","worker_pid":42,"error":null,"keydown_accepted":1,
+            "keyup_accepted":1,"started_unix_ms":10,"completed_unix_ms":1000,"held_elapsed_us":250_000});
+        validate_receipt(&receipt, "hash", 42, Some(&action)).unwrap();
+        for (key, value) in [
+            ("plan_sha256", json!("other")),
+            ("worker_pid", json!(43)),
+            ("keyup_accepted", json!(0)),
+            ("error", json!("cancelled")),
+            ("held_elapsed_us", json!(100)),
+            ("completed_unix_ms", json!(1)),
+        ] {
+            let mut changed = receipt.clone();
+            changed[key] = value;
+            assert!(
+                validate_receipt(&changed, "hash", 42, Some(&action)).is_err(),
+                "{key}"
+            );
+        }
+        assert!(validate_receipt(&json!({}), "hash", 42, None).is_err());
+    }
+    #[test]
+    fn input_worker_plan_cannot_be_claimed_twice_even_without_an_outcome() {
+        let directory = std::env::temp_dir()
+            .canonicalize()
+            .unwrap()
+            .join(format!("reversebolt-input-claim-{}", uuid::Uuid::new_v4()));
+        fs::create_dir(&directory).unwrap();
+        let plan = directory.join("input.action.json");
+        claim_worker(&plan).unwrap();
+        assert!(claim_worker(&plan).is_err());
+        assert!(!plan.with_extension("outcome.json").exists());
+        assert_eq!(
+            directory.parent(),
+            Some(std::env::temp_dir().canonicalize().unwrap().as_path())
+        );
+        assert!(
+            directory
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .starts_with("reversebolt-input-claim-")
+        );
+        fs::remove_dir_all(directory).unwrap();
+    }
     #[test]
     fn rejects_system_chords_mouse_and_unbounded_holds() {
         for keys in [

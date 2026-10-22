@@ -233,7 +233,9 @@ fn play_prefix_preserves_memory_fitting_references_and_fresh_checks() {
     let before = flags.reads.get();
     assert!(session.capture().is_err());
     assert_eq!(flags.reads.get(), before);
-    session.capture_mode(CaptureMode::Play).unwrap();
+    while session.view.sample_count < MAX_SAMPLES {
+        session.capture_mode(CaptureMode::Play).unwrap();
+    }
     assert_eq!(session.view.sample_count, MAX_SAMPLES);
     assert!(session.capture_mode(CaptureMode::Play).is_err());
     assert_eq!(flags.reads.get(), before);

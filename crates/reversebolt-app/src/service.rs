@@ -184,6 +184,7 @@ impl EngineHandle {
                             | "set_runtime_value"
                             | "set_runtime_freeze"
                             | "_tick_runtime_freeze"
+                            | "_activity_step"
                             | "prepare_runtime_change"
                             | "apply_runtime_change"
                             | "restore_runtime_change"
@@ -246,6 +247,7 @@ impl EngineHandle {
                                 | "set_runtime_value"
                                 | "set_runtime_freeze"
                                 | "_tick_runtime_freeze"
+                                | "_activity_step"
                                 | "prepare_runtime_change"
                                 | "apply_runtime_change"
                                 | "restore_runtime_change"
@@ -382,6 +384,18 @@ pub(crate) fn native_command(
         }
     }
     match command.action.as_str() {
+        "_activity_step" => {
+            let owner = owner.ok_or("Input experiments require an owning job")?;
+            analysis.check(owner)?;
+            let step = serde_json::from_value(command.args.clone())
+                .map_err(|e| format!("Invalid input experiment step: {e}"))?;
+            return crate::activity_experiment::run(
+                engine,
+                &step,
+                owner,
+                &directory.parent().unwrap_or(directory).join("runtime"),
+            );
+        }
         "plan_runtime_comparisons" | "read_runtime_inventory" | "submit_runtime_hypotheses" => {
             return crate::runtime_naming_bridge::command(
                 engine,

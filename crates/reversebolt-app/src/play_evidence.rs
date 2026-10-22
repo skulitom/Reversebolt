@@ -260,9 +260,9 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
         return Err("The observation batch changed.".into());
     }
     let ids: Vec<String> = serde_json::from_value(args["frame_ids"].clone())
-        .map_err(|_| "Supply 2–36 frame identities in chronological order.")?;
+        .map_err(|_| "Supply 2–48 frame identities in chronological order.")?;
     if !(2..=reversebolt_core::live::MAX_SAMPLES).contains(&ids.len()) {
-        return Err("Choose 2–36 captures.".into());
+        return Err("Choose 2–48 captures.".into());
     }
     let region: Option<Region> = args
         .get("region")
@@ -599,7 +599,7 @@ pub(crate) mod tests {
         let result = read(&session, &args).unwrap();
         assert_eq!(
             result["evidence"]["intervals"].as_array().unwrap().len(),
-            35
+            47
         );
         assert!(result["activity_source"].is_object());
         let search = &result["automatic_region_motion"]["regional_activity_search"];

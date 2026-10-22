@@ -470,6 +470,36 @@ impl LivePane {
         ui.horizontal_wrapped(|ui| {
             ui.heading("Controls");
             ui.label(RichText::new(&live.process.title).color(MUTED));
+            let idle = live.connected
+                && !busy
+                && handle
+                    .jobs
+                    .read()
+                    .unwrap()
+                    .history
+                    .jobs
+                    .values()
+                    .all(|j| j.phase.terminal());
+            ui.add_enabled_ui(idle, |ui| {
+                ui.menu_button("Explore an input", |ui| {
+                    let keys = reversebolt_core::activity_experiment::eligible_keys(live);
+                    if keys.is_empty() {
+                        ui.label("Play briefly while Reversebolt observes a key first.");
+                        return;
+                    }
+                    ui.label("Repeat an observed key four times, with quiet intervals.");
+                    ui.label("Return to the game within 3 seconds. This can change gameplay.");
+                    for key in keys {
+                        if ui
+                            .button(format!("Test {}", reversebolt_core::inputs::key_name(key)))
+                            .clicked()
+                        {
+                            handle.submit("start_activity_experiment", json!({"key":key}));
+                            ui.close();
+                        }
+                    }
+                });
+            });
             let frozen: Vec<_> = state.freezes.iter().filter(|f| f.active()).collect();
             if !frozen.is_empty()
                 && ui

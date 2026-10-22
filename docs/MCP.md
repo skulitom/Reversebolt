@@ -36,7 +36,7 @@ rechecks. `start_observation_job` exposes the same sequence with
 full captures. A configured model runs after play capture 2 in the background
 and after the final full capture. Delays do not guarantee useful input separation.
 
-Each batch permits at most 36 total captures, 20 attempts at memory sampling and
+Each batch permits at most 48 total captures, 20 attempts at memory sampling and
 512 MiB retained memory. Both budgets include queued jobs. Status exposes
 `memory_sample_numbers`, the exact one-based capture numbers that attempted
 memory sampling, including failed reads. Play captures remain on the image/input
@@ -56,7 +56,48 @@ visual pass. Missing input images, model rejection and obsolete image geometry
 produce unavailable-evidence notices; storage failures and replaced scope still
 fail. Appearance observations remain provisional and supply no write authority.
 
-`read_play_evidence` takes the exact `investigation_id`, `batch` and 2–36 ordered
+`start_activity_experiment` investigates one observed key before any gameplay
+field or isolated response has been identified. It requires the same exact
+`boot`, `binding` and monotonically increasing `request_id` as observation jobs,
+plus a Windows virtual-key `key` sampled in this batch. Supported keys are
+letters, digits, arrows and Space. The source must have complete foreground
+sampling and the current image geometry. A key sample establishes provenance,
+not its meaning or effect.
+
+The fixed sequence contains ten Play images: a seed, a quiet interval, then
+four 250 ms presses each followed by a quiet interval. It performs no memory
+read, OCR or model call. It reserves ten capture slots and ten worst-case image
+allowances; this fits after the usual 31-capture pass under the new 48-image cap.
+The independent 20-memory-sample and 512 MiB storage ceilings remain unchanged.
+
+The desktop's **Explore an input** menu starts this sequence explicitly. An
+agent proposal stays queued until the desktop's **Start** action grants the
+existing job effect authorization. Nothing sends input merely on attachment.
+There are three seconds to return to the selected game; the worker never changes
+focus. Keep keys and mouse buttons released while it runs. Input can change the
+game; stopping does not undo gameplay. Stop and takeover remain available.
+Once started, an interrupted or paused sequence cannot resume its input steps.
+Reissuing an identical request returns its receipt rather than repeating input.
+
+Each step durably records intent before dispatch and retains its outcome. The
+isolated input worker also claims its plan once before input and binds its
+receipt to the exact parsed plan bytes, worker identity and accepted key-down/
+key-up counts. Missing or inconsistent receipts leave the effect unknown.
+Sampling-generation changes, missing coverage, unexpected keys, focus loss,
+changed geometry, failed captures or cancellation stop subsequent steps.
+Accepted Windows input is not proof of a gameplay response. Capture and sampled
+hold checks retain the existing limits; a slow capture or scheduling gap can
+make an otherwise completed press unusable as evidence.
+
+Use job checkpoints and `live.frames` to obtain the ten new frame IDs, then
+`read_play_evidence` to measure their responses. Those images are available to
+the existing activity interpretation and naming workflow, but the experiment
+currently does not trigger a model review or publish controls automatically.
+No input receipt or image difference supplies a semantic name, numeric range,
+causal conclusion or memory-edit authority. Independent game validation remains
+outstanding; current verification uses generated images and sampled-input fixtures.
+
+`read_play_evidence` takes the exact `investigation_id`, `batch` and 2–48 ordered
 `frame_ids`. It reads retained, hash-checked images and input metadata, returning
 rendered differences, key episodes, quiet medians and explicit unknown intervals.
 When the existing activity-selection policy finds two eligible intervals,
@@ -660,7 +701,7 @@ described above before full memory observations.
 Visual jobs allow `interval_ms: 50` and start the first capture immediately.
 Full jobs require at least 250 ms; both allow up to 60,000 ms and 1–16 steps.
 Intervals are delays **after each completed capture**, not frame-rate promises.
-Both modes share the batch's 20 memory samples, 36 total moments, 512 MiB retained-memory ceiling and
+Both modes share the batch's 20 memory samples, 48 total moments, 512 MiB retained-memory ceiling and
 existing image/read budgets. `compare:true` is rejected with visual mode;
 submit any interpretations and compare separately when there is enough evidence.
 The mode is part of the immutable job plan, so a retry cannot switch modes.
@@ -1094,7 +1135,7 @@ The practice transport permits writes only within the owned child's advertised
 arena. Whole-arena rollback is an experiment convenience for that paused
 fixture, not a rollback strategy for a real game. Observation process handles
 request query/read access only; explicit trial operations temporarily request
-write access and use the guards described above. Each batch retains up to 36 moments, 20 memory samples and
+write access and use the guards described above. Each batch retains up to 48 moments, 20 memory samples and
 512 MiB of raw memory; images remain in the data directory. The optional attach
 budget is 1–32 MiB per moment. The desktop uses 16 MiB.
 

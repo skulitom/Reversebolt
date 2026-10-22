@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Input-only investigation implemented (2026-10-22): **35% unchanged**.
+The shared desktop/MCP engine can now collect response evidence before a gameplay
+field or isolated activity source exists. An explicit experiment repeats one
+previously sampled key four times for 250 ms, interleaving quiet observations
+across ten Play images. Agent proposals use existing desktop effect authorization.
+Durable plans, per-step/worker claims, receipt validation, foreground checks,
+input witnesses, cancellation and restart handling prevent automatic replay.
+Accepted input is kept separate from gameplay response and edit authority.
+
+A generated backend produces four bounded episodes through the shared evidence
+reader with zero memory reads. Eight added tests cover the bridge, ownership,
+replay, interruption, sampler restart and receipts. All 397 workspace tests pass;
+final worker tests, strict Clippy and formatting pass. Two old limit expectations
+and a new cancellation test's dispatch sequencing were corrected after retained
+failed runs. The image budget is now 48 captures so the normal 31-image pass and
+this ten-image experiment fit together; memory and disk limits remain unchanged.
+
+There is no native-game validation yet and no automatic post-experiment naming.
+Credits remain foundation 4/10, native 6/10, observation 5/15, discovery 8/20,
+validation 4/15, intent 1/10, agent 7/10 and generalization 0/10: **35/100**.
+The quarantined preview is still unavailable. No replacement app, game, native
+input or model ran; all security materials and new evidence stayed local.
+[Implementation, generated tests and remaining limits](../research/input-only-investigation/README.md).
+
 Mixed-input prediction evaluated (2026-10-22): **35% unchanged**.
 A frozen offline experiment tests whether elapsed time plus sampled key fractions
 predicts aggregate image differences across the two original runs of each browser

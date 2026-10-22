@@ -16,7 +16,7 @@ use std::{
 };
 
 /// Images/input may precede memory discovery without consuming its sample budget.
-pub const MAX_SAMPLES: usize = 36;
+pub const MAX_SAMPLES: usize = 48;
 pub const MAX_MEMORY_SAMPLES: usize = 20;
 const RETAINED_MEMORY_BUDGET: usize = 512 * 1024 * 1024;
 type PredictionReads = BTreeMap<(u64, usize), prediction::Witness>;
@@ -381,6 +381,13 @@ impl LiveSession {
     ) -> Result<()> {
         self.target
             .start_inputs(&self.view.investigation_id, self.capture_clock, cancel)
+    }
+    pub fn input_generation(&self) -> Option<String> {
+        let now = self.capture_clock.elapsed().as_micros() as u64;
+        self.target
+            .input_window(now, now)
+            .filter(|w| w.clock_id == self.view.investigation_id && !w.generation.is_empty())
+            .map(|w| w.generation)
     }
     pub fn change_scope(&self, track: usize) -> Result<crate::changes::Scope> {
         let check = self

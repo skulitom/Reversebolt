@@ -70,7 +70,7 @@ pub fn analyze(frames: &[FrameRef], measurements: Vec<Measurement>) -> Result<Ev
                 || (m.difference.is_some() == m.error.is_some())
         })
     {
-        return Err("Supply 2–36 ordered distinct frames with one valid measurement or failure per interval.".into());
+        return Err("Supply 2–48 ordered distinct frames with one valid measurement or failure per interval.".into());
     }
     let intervals: Vec<_> = frames
         .windows(2)
