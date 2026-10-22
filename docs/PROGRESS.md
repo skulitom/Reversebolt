@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Fixed-region motion query (2026-10-22): **35% unchanged**.
+The shared observation/MCP reader can now measure one specified image rectangle
+at higher spatial detail, with exact image/region/timing bindings and source-pixel
+scaling. A fixed region does not identify or follow an object. Automatic region
+selection and gameplay interpretation remain unfinished; no new card or edit
+authority is created.
+
+Three controlled local shifts have the expected regional consensus while their
+whole-image consensus is zero. Plain textures, oversized motion and invalid
+rectangles remain unresolved or errors. Both genuine retained game sequences
+still lack consensus during their action intervals, with unknown regional
+accuracy. All 28 previous whole-image reports/activity results and 47 frozen
+input files are unchanged. The 95 test executions across affected packages and
+strict Clippy pass. No game, capture, model, input or field write ran. The desktop
+remains unavailable after quarantine. [Protocol and limits](../research/region-motion/README.md).
+
 Retained trial displacement comparison (2026-10-22): **35% unchanged**.
 The shared history/MCP reader can now compare all four action indices across
 baseline, change and recovery using saved images, with no model or image payload

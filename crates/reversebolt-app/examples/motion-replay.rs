@@ -23,6 +23,8 @@ struct Case {
     name: String,
     frames: Vec<Frame>,
     expected_differences: Vec<f64>,
+    #[serde(default)]
+    region: Option<reversebolt_vision::region_motion::Region>,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,6 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut previous: Option<Vec<u8>> = None;
         let mut patches = vec![];
         let mut differences = vec![];
+        let mut regions = vec![];
         for (i, frame) in case.frames.iter().enumerate() {
             let image = visual::image_bytes(Path::new(&frame.file))?;
             if visual::digest(&image) != frame.reference.sha256 {
@@ -65,6 +68,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 );
                 patches.push(patch);
                 differences.push(difference);
+                if let Some(region) = case.region {
+                    regions.push(play_evidence::measure_region_pair(
+                        &case.frames[i - 1].reference,
+                        &frame.reference,
+                        prior,
+                        &image,
+                        region,
+                    ));
+                }
             }
             previous = Some(image);
         }
@@ -75,8 +87,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .collect();
         let references: Vec<_> = case.frames.iter().map(|f| f.reference.clone()).collect();
         let evidence = core_evidence::analyze(&references, differences)?;
-        results.push(json!({"name":case.name,"frame_metadata_sha256":visual::digest(&serde_json::to_vec(&references)?),
-            "evidence":evidence,"patch_motion":patches,"old_difference_exact_matches":unchanged}));
+        let mut result = json!({"name":case.name,"frame_metadata_sha256":visual::digest(&serde_json::to_vec(&references)?),
+            "evidence":evidence,"patch_motion":patches,"old_difference_exact_matches":unchanged});
+        if let Some(region) = case.region {
+            result["region_motion"] = play_evidence::region_evidence(&references, region, regions)?;
+        }
+        results.push(result);
     }
     let output = json!({"schema":1,"manifest_sha256":visual::digest(&bytes),"cases":results,
         "target_access":false,"input_sent":false,"new_model_calls":0,"field_writes":0,

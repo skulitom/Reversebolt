@@ -64,6 +64,24 @@ This measurement is not ready to validate movement. Existing play-context select
 comparison assessment, names and edit authority remain unchanged.
 See [measurement evidence and limits](../research/feature-motion/README.md).
 
+Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
+`region_motion`. Coordinates are integers in the original image, with width and
+height at least 32 pixels and area at most four million pixels. The same fixed
+rectangle is used for every selected pair; it does not follow an object. Invalid
+argument shapes are rejected. Out-of-image rectangles, epoch/geometry changes
+and inconsistent PNG metadata produce per-pair region errors while existing
+whole-image evidence is preserved. The initial saved-frame verification still
+rejects the whole request if a source capture is unavailable or corrupted.
+
+The region is normalized separately to 256×144. Its displacements cannot be
+directly compared with whole-screen normalized displacements. Each report gives
+`displacement_to_source_scale` for approximate source-pixel displacement, full
+source dimensions and the exact region. `source_sha256` binds the policy, metric,
+rectangle and complete frame metadata, including input/timing context. This is
+an explicit agent query; the automatic activity review still uses the full image.
+There is no automatic region selection, object tracking, new card or semantic
+promotion. Omit `region` to avoid its extra processing. [Evidence and limitations](../research/region-motion/README.md).
+
 Automatic activity interpretation now also receives compact correspondence
 measurements for its two selected image pairs. The resulting optional
 `activity_context.motion` retains the exact numeric evidence supplied to that

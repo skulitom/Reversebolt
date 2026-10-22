@@ -277,7 +277,7 @@ fn pyramid(image: GrayImage) -> [GrayImage; 2] {
     let coarse = imageops::resize(&image, 128, 72, FilterType::Triangle);
     [image, coarse]
 }
-fn prepared(a: GrayImage, b: GrayImage, dimensions: [u32; 2]) -> Report {
+pub(crate) fn prepared(a: GrayImage, b: GrayImage, dimensions: [u32; 2]) -> Report {
     debug_assert_eq!(a.dimensions(), (256, 144));
     debug_assert_eq!(b.dimensions(), (256, 144));
     let (chosen, selection) = select(&a);

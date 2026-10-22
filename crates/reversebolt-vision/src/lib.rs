@@ -3,6 +3,7 @@
 //! provisional: neither a model score nor a stable region verifies meaning.
 mod geometry;
 pub mod patch_motion;
+pub mod region_motion;
 pub mod response;
 pub mod trial_motion;
 

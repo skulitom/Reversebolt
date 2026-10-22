@@ -1,0 +1,297 @@
+{
+  "artifact_root": "test-results\\region-motion-v1",
+  "source_frozen_sha256": "5dcc442b3e2c30a2e7efbb7f6283dce0c34f04db888c1f3ea7629572db7faa2e",
+  "result_sha256": "5acf7c7b38eb9499764274e903523e63a30bc32218fc57bca8ea7a158377ecd7",
+  "source_files_verified": 139,
+  "input_files_unchanged": 47,
+  "process": {
+    "exit_code": 0,
+    "seconds": 4.610000000015134,
+    "stdout": "{\"cases\":8,\"target_access\":false}\n",
+    "stderr": ""
+  },
+  "cases": [
+    {
+      "name": "local-right",
+      "region": {
+        "height": 144,
+        "width": 256,
+        "x": 384,
+        "y": 216
+      },
+      "source_sha256": "56d421fecb2730f6e1bd86fee34b3233113415a025931535a9a57f5658f026f9",
+      "intervals": 1,
+      "errors": 0,
+      "consensus_displacements": [
+        [
+          8,
+          0
+        ]
+      ],
+      "matched_patches": [
+        44
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "local-left",
+      "region": {
+        "height": 144,
+        "width": 256,
+        "x": 384,
+        "y": 216
+      },
+      "source_sha256": "26ac5b5cbd6b0c5c0bc6a5145b33eb3de46fe85cdc67585a1b808c09368f160b",
+      "intervals": 1,
+      "errors": 0,
+      "consensus_displacements": [
+        [
+          -8,
+          0
+        ]
+      ],
+      "matched_patches": [
+        47
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "smaller-region",
+      "region": {
+        "height": 72,
+        "width": 128,
+        "x": 384,
+        "y": 216
+      },
+      "source_sha256": "01478c9f88f8a68c27e88b10c3ecfafcfa06caed63f05c61ab7f24ad9097484b",
+      "intervals": 1,
+      "errors": 0,
+      "consensus_displacements": [
+        [
+          8,
+          0
+        ]
+      ],
+      "matched_patches": [
+        45
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "plain-region",
+      "region": {
+        "height": 72,
+        "width": 128,
+        "x": 384,
+        "y": 216
+      },
+      "source_sha256": "06a9a110dfe9eb95f66154be5f048fb69c8c21c3a468e5240211e753f550b0af",
+      "intervals": 1,
+      "errors": 0,
+      "consensus_displacements": [
+        null
+      ],
+      "matched_patches": [
+        0
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "beyond-search-radius",
+      "region": {
+        "height": 144,
+        "width": 256,
+        "x": 384,
+        "y": 216
+      },
+      "source_sha256": "4225c1ecf32b5cda898928029098f68378d28407526d472fb58145b135dec248",
+      "intervals": 1,
+      "errors": 0,
+      "consensus_displacements": [
+        null
+      ],
+      "matched_patches": [
+        0
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "outside-image",
+      "region": {
+        "height": 144,
+        "width": 256,
+        "x": 1000,
+        "y": 216
+      },
+      "source_sha256": "6a8a8ee7c19aa1e69b5ce367d38a2016eb5ca0a190e149580cea46e8c1e51736",
+      "intervals": 1,
+      "errors": 1,
+      "consensus_displacements": [
+        null
+      ],
+      "matched_patches": [
+        null
+      ],
+      "accuracy_scope": "constructed image-shift regression only"
+    },
+    {
+      "name": "Hyperbolica retained discovery",
+      "region": {
+        "height": 300,
+        "width": 550,
+        "x": 275,
+        "y": 150
+      },
+      "source_sha256": "75c668bf4b439f79b0e236a39a405213638bbd8bd82d4b44577fb74796238da2",
+      "intervals": 14,
+      "errors": 0,
+      "consensus_displacements": [
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "matched_patches": [
+        17,
+        6,
+        16,
+        5,
+        18,
+        18,
+        18,
+        6,
+        16,
+        5,
+        17,
+        18,
+        18,
+        18
+      ],
+      "accuracy_scope": "unknown; no genuine region ground truth"
+    },
+    {
+      "name": "Manifold Garden retained discovery",
+      "region": {
+        "height": 360,
+        "width": 640,
+        "x": 320,
+        "y": 180
+      },
+      "source_sha256": "dddd56104fb2a2e43fdc257f7e3efe8a3786ba997397034833761449e49a4608",
+      "intervals": 14,
+      "errors": 0,
+      "consensus_displacements": [
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        null,
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "matched_patches": [
+        13,
+        3,
+        14,
+        4,
+        13,
+        13,
+        13,
+        4,
+        15,
+        4,
+        12,
+        11,
+        12,
+        12
+      ],
+      "accuracy_scope": "unknown; no genuine region ground truth"
+    }
+  ],
+  "full_image_comparisons_unchanged": 28,
+  "new_captures": 0,
+  "model_calls": 0,
+  "target_access": false,
+  "field_writes": 0,
+  "current_help_only_changes": [
+    "crates/reversebolt-mcp/src/main.rs"
+  ],
+  "limitation": "No object tracking, gameplay semantics, physical-speed accuracy or independent-game acceptance."
+}
