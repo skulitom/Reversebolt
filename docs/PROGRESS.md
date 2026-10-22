@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Memory/input associations (2026-10-22): **35% unchanged**.
+Captures now retain existing sampled input through memory-read completion,
+separately from the earlier screenshot window. Automatic memory follow-ups expose
+per-candidate key/no-key change counts and interval-level unknowns through the
+shared agent API. They use actual read bounds and preserve missing endpoints,
+focus loss, mixed keys, sampler changes and timing gaps. They add no memory reads,
+screenshots, model calls, input events or unnamed desktop cards.
+
+All **434 workspace tests**, strict all-target Clippy and formatting pass. A
+generated fixture retains three rising pairs with a key, six without a detected
+key and two pairs excluded by a missing memory sample; this is a drift
+counterexample, not a discovered key effect. New evidence and the frozen legacy
+follow-up both replay exactly offline. Reports with 96 members/twenty samples
+remain within the existing size cap. No game, native input worker, production app
+or live model ran. Meaningful names, causal controls and independent-game
+validation remain incomplete. The desktop is still unavailable and all artifacts
+stay local. [Implementation and limits](../research/memory-input/README.md).
+
 Prospective memory follow-up (2026-10-22): **35% unchanged**.
 The shared engine/MCP can now pin selected memory-proposal groups before a fresh
 recording, keep their type rivals and original expectations, and automatically

@@ -121,6 +121,9 @@ pub fn read(root: &Path, args: &Value) -> Result<Value> {
         "source_batch":plan.source_batch,"total_members":plan.candidates.len(),
         "report_sha256":result.as_ref().map(|(h,_)|h),"captures":result.as_ref().map(|(_,r)|r.captures),
         "memory_captures":result.as_ref().map(|(_,r)|&r.memory_captures),"members":rows,
+        "input_associations":result.as_ref().and_then(|(_,r)|r.input_associations.as_ref()),
+        "evidence_manifest_sha256":result.as_ref().map(|(_,r)|&r.evidence_manifest_sha256),
+        "source_manifest_sha256":plan.source_manifest_sha256,
         "next_offset":if p.report_sha256.is_some() && p.offset+limit<plan.candidates.len(){Some(p.offset+limit)}else{None},
         "limitation":f::LIMITATION}),
     )

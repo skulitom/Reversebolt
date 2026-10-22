@@ -203,6 +203,9 @@ pub struct CaptureSummary {
     pub changed_mapping_bytes: usize,
     #[serde(default)]
     pub memory_reads: Vec<MemoryRead>,
+    /// Existing sampler coverage through memory reads, separate from image timing.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory_input_context: Option<crate::inputs::Window>,
     /// Small candidate reads before the image, charged to the same read budget.
     #[serde(default)]
     pub prediction_reads: Vec<MemoryRead>,
@@ -319,6 +322,7 @@ pub struct LiveSession {
     root_directory: PathBuf,
     snapshots: Vec<BTreeMap<u64, Vec<u8>>>,
     receipts: Vec<Vec<MemoryRead>>,
+    memory_inputs: Vec<Option<crate::inputs::Window>>,
     directory: PathBuf,
     screen_size: Option<(u32, u32)>,
     image_epoch: usize,
@@ -1002,6 +1006,7 @@ impl LiveSession {
             root_directory: directory.clone(),
             snapshots: vec![],
             receipts: vec![],
+            memory_inputs: vec![],
             directory,
             screen_size: None,
             image_epoch: 0,
@@ -1273,6 +1278,20 @@ impl LiveSession {
         }
         let captured = snapshot.values().map(Vec::len).sum::<usize>();
         let memory_read_ms = prediction_read_ms + memory_start.elapsed().as_millis();
+        // Read the existing bounded sampler buffer before optional OCR can age
+        // it out. Include the preceding memory operation, not its image edge.
+        // Each chunk's own receipt later selects the relevant interval.
+        let memory_input_context = receipts.first().and_then(|first| {
+            let first = first.capture_interval.as_ref()?;
+            let last = receipts.last()?.capture_interval.as_ref()?;
+            let previous_begin = self
+                .receipts
+                .iter()
+                .rev()
+                .find_map(|r| r.first().and_then(|r| r.capture_interval.as_ref()))
+                .map_or(first.begin_us, |t| t.begin_us);
+            self.target.input_window(previous_begin, last.end_us)
+        });
         self.view.coverage.read_unique_bytes = self.read_ranges.bytes();
         self.view.coverage.changed_or_unavailable_bytes += (changed + unreadable) as u64;
         self.view.coverage.analyzed_current_bytes = 0;
@@ -1299,6 +1318,7 @@ impl LiveSession {
         };
         self.snapshots.push(snapshot);
         self.receipts.push(receipts.clone());
+        self.memory_inputs.push(memory_input_context.clone());
         if mode != CaptureMode::Play {
             self.view
                 .memory_sample_numbers
@@ -1388,6 +1408,7 @@ impl LiveSession {
             unreadable_bytes: unreadable,
             changed_mapping_bytes: changed,
             memory_reads: receipts,
+            memory_input_context,
             prediction_reads: before_image.values().map(|w| w.read.clone()).collect(),
             screen_error: screen.as_ref().err().cloned(),
             screen: screen.ok(),
@@ -1980,6 +2001,7 @@ impl LiveSession {
         self.directory = next_directory;
         self.snapshots.clear();
         self.receipts.clear();
+        self.memory_inputs.clear();
         self.invalid_chunks.clear();
         self.view.sample_count = 0;
         self.view.memory_sample_numbers = Some(vec![]);

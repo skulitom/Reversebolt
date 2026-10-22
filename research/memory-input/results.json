@@ -1,0 +1,300 @@
+{
+  "method": "memory_input_associations_v1",
+  "goal_percent": 35,
+  "base_commit": "b77e72dbb46e7c38c3e0b77f791decf15edf35d1",
+  "scope": "Generated target/sampler fixtures and local saved-evidence replay only. No game, production app, native input worker, live model or upload.",
+  "workspace_tests_passed": 434,
+  "new_tests": 4,
+  "final_integration": "passed after exposing source/fresh manifest hashes",
+  "strict_clippy": "passed",
+  "formatting": "passed",
+  "fixture": {
+    "evidence_manifest_sha256": "bbd19d09dcca1ee11d427ae9ac58f72f820e5c768ced7211aab40e99dab4a239",
+    "float_input": {
+      "intervals": [
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "unknown",
+          "value": "missing_value"
+        },
+        {
+          "kind": "unknown",
+          "value": "missing_value"
+        },
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        }
+      ],
+      "keys": [
+        {
+          "counts": {
+            "decreased": 0,
+            "increased": 3,
+            "unchanged": 0
+          },
+          "key": 65
+        }
+      ],
+      "no_keys_detected": {
+        "decreased": 0,
+        "increased": 6,
+        "unchanged": 0
+      },
+      "omitted_keys": [],
+      "unknown_pairs": 2
+    },
+    "fresh_captures": 12,
+    "offline_replay_identical": true,
+    "reads": 24,
+    "reference": {
+      "batch": 2,
+      "investigation_id": "edf6ed65-fd74-417b-a11f-e0d74f65c337",
+      "plan_sha256": "19cfa95cbe5b6ba9b9831846c460854e121ac0c0785f8b5dadea048042d84aaf"
+    },
+    "report_sha256": "1cf006bca012b40ef4c0ff98c463af31a9b1299540706f7c737a0bc26989fbe1",
+    "root": "C:\\DEV\\Reversebolt\\crates\\reversebolt-app\\../../target/memory-proposal-tests\\2ad54dae-81eb-45fb-986b-906c155087c8",
+    "sampler_windows": 48,
+    "source_captures": 12,
+    "standalone_replay_identical": true,
+    "report_bytes": 3752
+  },
+  "initial_fixture": {
+    "evidence_manifest_sha256": "b65b92af7e9a7b29188e627dbbdd29bf904bc62dd6b147f028e040b1d1310442",
+    "float_input": {
+      "intervals": [
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "unknown",
+          "value": "missing_value"
+        },
+        {
+          "kind": "unknown",
+          "value": "missing_value"
+        },
+        {
+          "kind": "key",
+          "value": 65
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        },
+        {
+          "kind": "no_keys_detected"
+        }
+      ],
+      "keys": [
+        {
+          "counts": {
+            "decreased": 0,
+            "increased": 3,
+            "unchanged": 0
+          },
+          "key": 65
+        }
+      ],
+      "no_keys_detected": {
+        "decreased": 0,
+        "increased": 6,
+        "unchanged": 0
+      },
+      "omitted_keys": [],
+      "unknown_pairs": 2
+    },
+    "fresh_captures": 12,
+    "offline_replay_identical": true,
+    "reads": 24,
+    "reference": {
+      "batch": 2,
+      "investigation_id": "b8e81913-0b1b-43b5-8453-cdc767b8a39b",
+      "plan_sha256": "74bc8c849bf5060e648ad609d67e3e1c3655c7e5b2b50e43f39d9050f87bef62"
+    },
+    "report_sha256": "e0bc8649a580c9b7cc5639b89766ee37d4d64f6674978eb1f593b65572a7e2cd",
+    "root": "C:\\DEV\\Reversebolt\\crates\\reversebolt-app\\../../target/memory-proposal-tests\\64791904-a05e-421a-a515-cc057f189df3",
+    "sampler_windows": 48,
+    "source_captures": 12
+  },
+  "replay_results": [
+    {
+      "recording": "legacy",
+      "identical": true,
+      "report_sha256": "0fd543b4148bdfd6f9687b926cbab3a982c18adab87042337aef12a48bfede59",
+      "report_bytes": 1669,
+      "input_associations_present": false
+    },
+    {
+      "recording": "current",
+      "identical": true,
+      "report_sha256": "e0bc8649a580c9b7cc5639b89766ee37d4d64f6674978eb1f593b65572a7e2cd",
+      "report_bytes": 3752,
+      "input_associations_present": true
+    }
+  ],
+  "bounds": {
+    "members": 96,
+    "memory_samples": 20,
+    "aggregate_keys": 8,
+    "report_bytes_cap": 262144,
+    "large_generated_reports_fit_existing_cap": true
+  },
+  "frozen_directory": "test-results/memory-input-v1",
+  "frozen_files": 354,
+  "manifest_sha256": "066b5abb24363a0ec094a851e2aa0a3657c4b33dcf394c1cd3c6dd66e2dbbe75",
+  "prior_snapshot": {
+    "directory": "test-results\\memory-followup-v1",
+    "files": 284,
+    "manifest_sha256": "cc34581239ff3ec76bfda826cbf92d3f96363336d177db9f40a5cc63121818b3",
+    "unchanged": true
+  },
+  "desktop_status": {
+    "status": "unavailable",
+    "version": "0.1.0-20261022-010125",
+    "missing": [
+      "Reversebolt.exe"
+    ],
+    "message": "Some preview files are unavailable. If Windows Security removed them, resolve that alert before trying again. Your saved session has not been changed."
+  },
+  "verified": [
+    "separate image/memory input windows",
+    "memory context ends at last retained-sample read attempt",
+    "fresh batch does not bridge source history",
+    "no extra target reads/images/input events/model calls",
+    "positive key association and quiet drift both retained",
+    "missing memory sample excludes both adjacent pairs",
+    "real read times rather than screenshot times",
+    "abstention on focus/clocks/generations/gaps/mixed keys/malformed polls",
+    "sampler gaps recomputed from polls",
+    "omitted key aggregates preserve interval classes",
+    "aggregate count validation",
+    "source/fresh evidence hashes returned to agents",
+    "new and legacy saved results reproduce exactly"
+  ],
+  "limitations": [
+    "Descriptive post-hoc associations, not prospective input hypotheses or independent trials.",
+    "No game delivery, gameplay name, causal effect, allocation lifetime or edit authority established.",
+    "No independent-game or native validation; desktop preview remains unavailable.",
+    "Input metadata is limited to the existing foreground key sampler and its bounded retention."
+  ],
+  "logs": [
+    {
+      "path": "test-results/memory-input-clippy-final.log",
+      "sha256": "58a8f85a849d13d607c02c06b3edb40627a5c5732fc424ddad499fdc81927f7b"
+    },
+    {
+      "path": "test-results/memory-input-clippy.log",
+      "sha256": "b0dc3827ad440f56ebfae4607335524cfff3d153bf5ae6880eb8d291691a334d"
+    },
+    {
+      "path": "test-results/memory-input-compile.log",
+      "sha256": "ccaafa0dbbee87e1566246b410e501e66fb1712ea6835788276c46cbe8cf84c1"
+    },
+    {
+      "path": "test-results/memory-input-final-integration.log",
+      "sha256": "97296c748113dcbf8f874ae21ece2dbb2ff575a7ec04e77210d9fc9345bfcc00"
+    },
+    {
+      "path": "test-results/memory-input-fixture-final.json",
+      "sha256": "fd7f97fcefb30c817aaeeaf91b68dc2aac8cbd04cc8f6caef78ca51bd8588971"
+    },
+    {
+      "path": "test-results/memory-input-fixture.json",
+      "sha256": "90e0b259400384e83d2af17542e70069e727017fb3941656d9e18a0c5ca21161"
+    },
+    {
+      "path": "test-results/memory-input-focused-first.log",
+      "sha256": "7a632f1e1f746ebfceb3684206603489f11c2b68ca905bdb1d02b1af96debef0"
+    },
+    {
+      "path": "test-results/memory-input-format-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-input-format.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-input-preview.json",
+      "sha256": "9704d83dc9f06e9b108adf4ab9a7c584fcf2f27b3fb12bedbbecfb54652d1236"
+    },
+    {
+      "path": "test-results/memory-input-prior-snapshot.json",
+      "sha256": "9cef684edb23d908059e7b85adc6c53c68347374537d38751c0d85d9ea0adf47"
+    },
+    {
+      "path": "test-results/memory-input-replay-current-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-input-replay-current.json",
+      "sha256": "0718529b666e267ddb027dbf32d7e88b20ffe711def03fb6c4c73f55104b0c08"
+    },
+    {
+      "path": "test-results/memory-input-replay-final-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-input-replay-final.json",
+      "sha256": "23da0a952479677565151df5307793d4b6efe2b3e7ff397d07a6cbd2a7c64753"
+    },
+    {
+      "path": "test-results/memory-input-replay-legacy-build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "test-results/memory-input-replay-legacy.json",
+      "sha256": "c803138838da59ba2a9fc4c67f5b84753c49f88de3c2a22ea649ddd2dcb28153"
+    },
+    {
+      "path": "test-results/memory-input-replay-results.json",
+      "sha256": "354360bfc5c24989f499977868a4f292e9aa11f56116ec27a553e5871b81e495"
+    },
+    {
+      "path": "test-results/memory-input-workspace.log",
+      "sha256": "ea0c6e038795c5455f7ce3243cec0e345efcf136bf3ebc546cf5d2b74f012669"
+    }
+  ]
+}

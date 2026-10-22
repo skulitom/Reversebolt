@@ -116,7 +116,10 @@ impl LiveSession {
                 historical: true,
             });
         }
-        if self.snapshots.len() != after_sample || self.receipts.len() != after_sample {
+        if self.snapshots.len() != after_sample
+            || self.receipts.len() != after_sample
+            || self.memory_inputs.len() != after_sample
+        {
             return Err("Memory capture history is incomplete".into());
         }
         let memory = self
@@ -153,6 +156,7 @@ impl LiveSession {
                 number: index + 1,
                 memory_sample: memory.contains(&(index + 1)),
                 reads,
+                input_context: self.memory_inputs[index].clone(),
             });
         }
         let manifest = Manifest {

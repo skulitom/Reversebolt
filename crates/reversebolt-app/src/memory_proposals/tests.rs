@@ -1,12 +1,21 @@
 use super::*;
 use reversebolt_core::{Command, live::*, memory_trajectories::store};
 use std::{
-    cell::Cell,
+    cell::{Cell, RefCell},
     fs,
     path::PathBuf,
     rc::Rc,
     sync::{Arc, RwLock},
 };
+
+#[derive(Default)]
+struct InputFixture {
+    enabled: Cell<bool>,
+    key: Cell<Option<u8>>,
+    buffer: RefCell<Option<reversebolt_core::inputs::Buffer>>,
+    until: Cell<u64>,
+    requests: RefCell<Vec<(u64, u64)>>,
+}
 
 struct Target {
     info: ProcessInfo,
@@ -16,6 +25,7 @@ struct Target {
     values: Rc<Cell<Option<(i32, f32)>>>,
     missing: Rc<Cell<bool>>,
     changed_mapping: Rc<Cell<bool>>,
+    inputs: Rc<InputFixture>,
 }
 impl Target {
     fn check(&self) {
@@ -23,6 +33,47 @@ impl Target {
     }
 }
 impl NativeTarget for Target {
+    fn start_inputs(&self, clock: &str, _: std::time::Instant, _: Arc<AtomicBool>) -> Result<()> {
+        self.check();
+        if self.inputs.enabled.get() && self.inputs.buffer.borrow().is_none() {
+            *self.inputs.buffer.borrow_mut() = Some(reversebolt_core::inputs::Buffer::new(
+                clock.into(),
+                "generated-sampler".into(),
+                0,
+            ));
+        }
+        Ok(())
+    }
+    fn input_window(&self, begin: u64, end: u64) -> Option<reversebolt_core::inputs::Window> {
+        use reversebolt_core::inputs::{Focus, Poll};
+        self.check();
+        if !self.inputs.enabled.get() {
+            return None;
+        }
+        self.inputs.requests.borrow_mut().push((begin, end));
+        let mut buffer = self.inputs.buffer.borrow_mut();
+        let buffer = buffer.as_mut()?;
+        let until = self.inputs.until.get();
+        if end > until {
+            // Generated polls, not real keyboard access. Repeated windows reuse
+            // the same timeline, including their overlapping read intervals.
+            let step = ((end - until) / 16).max(2);
+            let mut t = until + 2;
+            while t < end {
+                buffer
+                    .push(Poll {
+                        begin_us: t,
+                        end_us: t + 1,
+                        focus: Focus::SelectedForeground,
+                        down: self.inputs.key.get().into_iter().collect(),
+                    })
+                    .unwrap();
+                t += step;
+            }
+            self.inputs.until.set(end);
+        }
+        buffer.window(begin, end)
+    }
     fn info(&self) -> &ProcessInfo {
         self.check();
         &self.info
@@ -91,6 +142,7 @@ struct Case {
     values: Rc<Cell<Option<(i32, f32)>>>,
     missing: Rc<Cell<bool>>,
     changed_mapping: Rc<Cell<bool>>,
+    inputs: Rc<InputFixture>,
 }
 impl Case {
     fn followup_request(&mut self) -> Value {
@@ -142,6 +194,7 @@ impl Case {
         let values = Rc::new(Cell::new(None));
         let missing = Rc::new(Cell::new(false));
         let changed_mapping = Rc::new(Cell::new(false));
+        let inputs = Rc::new(InputFixture::default());
         let mut session = LiveSession::attach(
             Box::new(Target {
                 info: ProcessInfo::default(),
@@ -151,6 +204,7 @@ impl Case {
                 values: values.clone(),
                 missing: missing.clone(),
                 changed_mapping: changed_mapping.clone(),
+                inputs: inputs.clone(),
             }),
             1,
             root.join("captures/source-folder"),
@@ -169,6 +223,7 @@ impl Case {
             values,
             missing,
             changed_mapping,
+            inputs,
             owner: OperationOwner {
                 job: 7,
                 cancel: Arc::new(AtomicBool::new(false)),
@@ -296,6 +351,126 @@ fn memory_followup_pins_before_capture_and_replays_after_restart_without_target_
     println!(
         "MEMORY_FOLLOWUP_FIXTURE={}",
         json!({"root":c.root,"reference":reference,"report_sha256":page["report_sha256"],"source_report_sha256":plan.source_report_sha256,"members":plan.candidates.len(),"selected_bytes":64,"source_captures":12,"fresh_captures":12,"target_reads":c.reads.get()})
+    );
+}
+
+#[test]
+fn memory_input_context_reaches_fresh_followup_and_preserves_quiet_drift_and_gaps() {
+    use reversebolt_core::memory_followup as f;
+    let mut c = Case::new(0);
+    c.inputs.enabled.set(true);
+    for _ in 0..12 {
+        c.command("capture", json!({"mode":"visual"})).unwrap();
+    }
+    let args = c.followup_request();
+    c.command("prepare_memory_followup", args).unwrap();
+    assert_eq!(c.inputs.requests.borrow().len(), 24); // No selection/analysis sampler query.
+    let reference = c
+        .engine
+        .live
+        .as_ref()
+        .unwrap()
+        .view
+        .memory_followup
+        .clone()
+        .unwrap();
+    for i in 0..12 {
+        c.inputs.key.set((i < 6).then_some(65));
+        c.missing.set(i == 3);
+        c.command("capture", json!({"mode":"visual","memory_review":i==11}))
+            .unwrap();
+    }
+    c.sealed.set(true);
+    let page = c.followup_page();
+    assert_eq!(page["input_associations"]["policy"], f::input::POLICY);
+    let rows = page["members"].as_array().unwrap();
+    let float = rows
+        .iter()
+        .find(|r| r["candidate"]["selection"]["kind"] == "F32")
+        .unwrap();
+    let evidence = &float["outcome"]["input"];
+    assert_eq!(evidence["intervals"].as_array().unwrap().len(), 11);
+    assert_eq!(
+        evidence["intervals"][2],
+        json!({"kind":"unknown","value":"missing_value"})
+    );
+    assert_eq!(
+        evidence["intervals"][3],
+        json!({"kind":"unknown","value":"missing_value"})
+    );
+    assert!(evidence["keys"][0]["counts"]["increased"].as_u64().unwrap() >= 2);
+    assert!(evidence["no_keys_detected"]["increased"].as_u64().unwrap() >= 3);
+    assert_eq!(evidence["keys"][0]["key"], 65);
+    assert!(c.engine.live.as_ref().unwrap().view.tracks.is_empty());
+    let export = c
+        .engine
+        .live
+        .as_ref()
+        .unwrap()
+        .export_memory_evidence(&reference.investigation_id, 2, 12)
+        .unwrap();
+    let archive = Archive::open(Path::new(&export.directory), &export.manifest_sha256).unwrap();
+    assert_eq!(page["evidence_manifest_sha256"], export.manifest_sha256);
+    let samples = &archive.manifest().samples;
+    for (i, s) in samples.iter().enumerate() {
+        let w = s.input_context.as_ref().unwrap();
+        let first = s
+            .reads
+            .first()
+            .unwrap()
+            .receipt
+            .capture_interval
+            .as_ref()
+            .unwrap();
+        let last = s
+            .reads
+            .last()
+            .unwrap()
+            .receipt
+            .capture_interval
+            .as_ref()
+            .unwrap();
+        assert_eq!(w.requested_end_us, last.end_us);
+        assert_eq!(
+            w.requested_begin_us,
+            if i == 0 {
+                first.begin_us
+            } else {
+                samples[i - 1]
+                    .reads
+                    .first()
+                    .unwrap()
+                    .receipt
+                    .capture_interval
+                    .as_ref()
+                    .unwrap()
+                    .begin_us
+            }
+        );
+        let image = &archive.manifest().state.frames[i];
+        assert!(w.requested_end_us >= image.capture_interval.as_ref().unwrap().end_us);
+        assert_eq!(
+            image.input_context.as_ref().unwrap().requested_end_us,
+            image.capture_interval.as_ref().unwrap().end_us
+        );
+    }
+    let plan = f::read_plan(&c.root.join("captures"), &reference).unwrap();
+    let replay = f::assess(&plan, &archive, || false).unwrap();
+    let original = f::read_report(&c.root.join("captures"), &reference)
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        serde_json::to_vec(&replay).unwrap(),
+        serde_json::to_vec(&original.1).unwrap()
+    );
+    assert_eq!(c.inputs.requests.borrow().len(), 48);
+    assert_eq!((c.frames.get(), c.reads.get()), (24, 24));
+    println!(
+        "MEMORY_INPUT_FIXTURE={}",
+        json!({"root":c.root,"reference":reference,"report_sha256":original.0,
+        "evidence_manifest_sha256":export.manifest_sha256,"source_captures":12,"fresh_captures":12,
+        "reads":c.reads.get(),"sampler_windows":c.inputs.requests.borrow().len(),"float_input":evidence,
+        "offline_replay_identical":true})
     );
 }
 

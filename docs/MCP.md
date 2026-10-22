@@ -89,6 +89,26 @@ At least four fresh memory samples are needed. `reversebolt_analyze_memory_evide
 also finishes/replays the follow-up when the current batch has a pinned plan.
 No editable card or report UI is created by this workflow.
 
+New Full/Visual captures also retain `memory_input_context` through the last memory
+read, separately from the earlier image input window. Exports preserve it in each
+memory sample's optional `input_context`. This only reads the existing bounded
+sampler buffer; it starts no additional sampler and adds no screenshots, target
+memory reads, OCR or input events. Older archives without this field remain valid.
+
+Follow-up outcomes include optional `input` associations under policy
+`memory_input_associations_v1`. Each interval corresponds to adjacent entries in
+`memory_captures`, using that candidate's actual read bounds and complete input
+coverage across both operations. Results separate increases/decreases/holds with
+one sampled key from intervals with no keys detected. Up to eight keys receive
+aggregate counts; other keys remain in the interval list and `omitted_keys`.
+Missing values, mixed keys, focus loss, clock/generation changes, sampling gaps and
+inadequate coverage remain unknown. Held keys may be described while reads occur;
+this does not establish when a value changed or whether a game received that key.
+These associations are derived after capture, independently of the pinned memory
+expectations. Quiet drift can explain a correlation. No gameplay name or editing
+authority follows. Legacy results with no memory input context retain no input
+association rather than substituting their image context.
+
 `state.live.memory_followup` holds `investigation_id`, `batch`, `plan_sha256`.
 Pass those fields to `reversebolt_read_memory_followup` for the completion checksum;
 then include `report_sha256`, `offset` and `limit` (1–8) to page candidates/outcomes.

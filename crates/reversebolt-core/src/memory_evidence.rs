@@ -16,7 +16,7 @@ use std::{
 pub const SCHEMA: u32 = 1;
 pub const MAX_STORE_BYTES: u64 = 512 * 1024 * 1024;
 pub const MAX_MANIFEST_BYTES: usize = 32 * 1024 * 1024;
-pub const LIMITATION: &str = "Historical retained memory from the existing sampling plan, not whole-process coverage. Range selection may already depend on screen values; consult state.value_searches and state.change_searches. Missing reads stay missing. Mapping metadata does not prove allocation identity or atomic snapshots. Image/input clocks describe separate operations and may not cover memory reads. No current address, semantic meaning or edit authority is established.";
+pub const LIMITATION: &str = "Historical retained memory from the existing sampling plan, not whole-process coverage. Range selection may already depend on screen values; consult state.value_searches and state.change_searches. Missing reads stay missing. Mapping metadata does not prove allocation identity or atomic snapshots. Image input contexts may end before memory reads; optional sample input_context retains separate memory-operation coverage. Input samples are not game-delivered events or causal evidence. No current address, semantic meaning or edit authority is established.";
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Segment {
@@ -34,6 +34,8 @@ pub struct Sample {
     pub number: usize,
     pub memory_sample: bool,
     pub reads: Vec<ReadRecord>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_context: Option<crate::inputs::Window>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Manifest {
@@ -124,6 +126,14 @@ impl Manifest {
             if sample.number != index + 1
                 || sample.memory_sample != memory
                 || sample.reads.len() != if memory { plan.len() } else { 0 }
+                || sample.input_context.as_ref().is_some_and(|w| {
+                    !memory
+                        || w.polls.len() > crate::inputs::MAX_WINDOW_POLLS
+                        || w.polls.iter().any(|p| p.down.len() > 254)
+                        || w.clock_id.len() > 128
+                        || w.generation.len() > 128
+                        || w.limitation.len() > 4096
+                })
             {
                 return Err("Memory evidence sample membership changed".into());
             }

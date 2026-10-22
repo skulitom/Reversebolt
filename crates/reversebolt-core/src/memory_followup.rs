@@ -11,6 +11,7 @@ use std::{
     collections::BTreeSet,
     path::{Path, PathBuf},
 };
+pub mod input;
 
 pub const POLICY: &str = "memory_followup_v1";
 pub const MAX_GROUPS: usize = 8;
@@ -54,6 +55,8 @@ pub struct Outcome {
     pub assessment: Assessment,
     pub changed_pairs: usize,
     pub mapping_invalidated_in_recording: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input: Option<input::Evidence>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Report {
@@ -63,6 +66,8 @@ pub struct Report {
     pub memory_captures: Vec<usize>,
     pub outcomes: Vec<Outcome>,
     pub limitation: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_associations: Option<input::Description>,
 }
 
 fn hash(s: &str) -> bool {
@@ -262,6 +267,7 @@ pub fn assess(plan: &Plan, archive: &Archive, cancelled: impl Fn() -> bool) -> R
                 member: c.member,
                 changed_pairs,
                 mapping_invalidated_in_recording: manifest.invalid_chunks.contains(&c.window),
+                input: input::analyze(manifest, c.window, &captures, &values[i]),
                 assessment: Assessment {
                     values: values[i].clone(),
                     missing_reads: missing[i],
@@ -283,6 +289,11 @@ pub fn assess(plan: &Plan, archive: &Archive, cancelled: impl Fn() -> bool) -> R
         memory_captures: captures,
         outcomes,
         limitation: LIMITATION.into(),
+        input_associations: manifest
+            .samples
+            .iter()
+            .any(|s| s.input_context.is_some())
+            .then(input::Description::default),
     })
 }
 pub fn save_report(root: &Path, report: &Report) -> Result<String> {
@@ -332,6 +343,11 @@ fn check_report(plan: &Plan, report: &Report) -> Result<()> {
             .any(|n| *n == 0 || *n > report.captures)
         || report.memory_captures.windows(2).any(|p| p[0] >= p[1])
         || report.outcomes.len() != plan.candidates.len()
+        || report
+            .input_associations
+            .as_ref()
+            .is_some_and(|d| d.policy != input::POLICY)
+        || report.input_associations.is_some() != report.outcomes.iter().any(|o| o.input.is_some())
         || report.outcomes.iter().zip(&plan.candidates).any(|(o, c)| {
             let a = &o.assessment;
             (o.group, o.member) != (c.group, c.member)
@@ -344,6 +360,7 @@ fn check_report(plan: &Plan, report: &Report) -> Result<()> {
                 || a.checked > n
                 || a.violations > a.checked
                 || o.changed_pairs >= n
+                || o.input.as_ref().is_some_and(|e| !e.valid(&a.values))
         })
     {
         return Err("Invalid memory follow-up result scope, counts or members".into());
