@@ -154,6 +154,10 @@ trial's original, changed and recovered conditions. The bounded comparison keeps
 the original template, checks each action separately and stops on unresolved
 matches. It remains a retrospective image observation, not a verified gameplay
 effect. See [regional trial comparisons](research/trial-appearance/README.md).
+An agent or desktop controller can lock that region after baseline collection
+and before the linked edit. The choice remains bound to the original baseline,
+target, value and action sequence, survives restart, and is used automatically
+by the shared history reader. See [saved appearance choices](research/appearance-plan/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

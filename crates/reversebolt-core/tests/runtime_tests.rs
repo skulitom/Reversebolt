@@ -94,6 +94,7 @@ fn fixture() -> (Test, Trial, Trial) {
         value: "0".into(),
         hypothesis: "Changing this field may suppress the rendered response".into(),
         origin: None,
+        appearance: None,
         actions: vec![
             Action {
                 keys: vec![68],
@@ -213,6 +214,61 @@ fn ready(changed: f64) -> (Test, Trial) {
     t.conditions[2].runtime_evidence = Some(reading(&write.patch, &write.patch.expected));
     t.conditions[2].runtime_checked_unix_ms = Some(31000);
     (t, restored)
+}
+
+#[test]
+fn appearance_choice_is_bound_before_edit_and_retained_through_recovery() {
+    use reversebolt_core::{runtime_tests::AppearanceSelection, visual_regions::Region};
+    let (mut t, write, restored) = fixture();
+    let selection = AppearanceSelection {
+        baseline_sha256: "a".repeat(64),
+        region: Region {
+            x: 64,
+            y: 64,
+            width: 64,
+            height: 64,
+        },
+    };
+    assert!(
+        t.lock_appearance(selection.clone(), t.revision, 16000)
+            .is_err()
+    );
+    assert!(t.appearance.is_none());
+    condition(&mut t, 6.);
+    let cursor = t.revision;
+    assert!(
+        t.lock_appearance(selection.clone(), cursor - 1, 16000)
+            .is_err()
+    );
+    assert!(t.lock_appearance(selection.clone(), cursor, 14000).is_err());
+    assert!(t.lock_appearance(selection.clone(), cursor, 16000).unwrap());
+    let plan = t.appearance.clone().unwrap();
+    assert_eq!(plan.selected_revision, cursor + 1);
+    assert!(!t.lock_appearance(selection.clone(), cursor, 17000).unwrap());
+    let mut other = selection.clone();
+    other.region.x += 1;
+    assert!(t.lock_appearance(other, t.revision, 17000).is_err());
+    let mut rebound = t.clone();
+    rebound.conditions[0].frames[3].input_sha256 = "f".repeat(64);
+    assert!(rebound.validate_plan().is_err());
+    let mut rebound = t.clone();
+    rebound.actions[0].hold_ms += 1;
+    assert!(rebound.validate_plan().is_err());
+    t.sync_trial(&write).unwrap();
+    condition(&mut t, 0.3);
+    t.conditions[1].runtime_evidence = Some(reading(&write.patch, &write.patch.replacement));
+    t.conditions[1].runtime_checked_unix_ms = Some(23000);
+    t.sync_trial(&restored).unwrap();
+    condition(&mut t, 6.);
+    t.conditions[2].runtime_evidence = Some(reading(&write.patch, &write.patch.expected));
+    t.conditions[2].runtime_checked_unix_ms = Some(31000);
+    t.complete(&restored, t.revision).unwrap();
+    assert_eq!(t.appearance, Some(plan.clone()));
+    assert!(!t.lock_appearance(selection, cursor, 32000).unwrap());
+    assert_eq!(t.summary()["appearance"], json!(plan));
+    let roundtrip: Test = serde_json::from_slice(&serde_json::to_vec(&t).unwrap()).unwrap();
+    roundtrip.validate_plan().unwrap();
+    assert_eq!(roundtrip.appearance, t.appearance);
 }
 
 #[test]

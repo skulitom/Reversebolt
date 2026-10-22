@@ -8,20 +8,15 @@ use reversebolt_core::{
     inputs::Window,
     runtime_tests::{InputWitness, Test},
     visual,
-    visual_regions::Region,
 };
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
 
 pub const POLICY: &str = "trial_baseline_appearance_displacement_v1";
 pub const LIMITATION: &str = "Retrospective comparison of one caller-selected rectangle from baseline frame 0. Every match uses that original image and rectangle; each condition is an independent branch and stops on its first unresolved image. No template update or reacquisition within a condition. At most eighteen template checks. Visually identical replacements, matching background and camera motion can mislead; cross-condition matches do not prove persistent identity. Normalized image displacement is not physical speed, input delivery, gameplay meaning, causality or complete recovery. A region chosen after seeing results can bias the comparison. No saved assessment or edit authority is changed.";
+pub const PLANNED_LIMITATION: &str = "Retrospective image comparison using the region saved after baseline and before Reversebolt prepared or applied the linked edit. The complete baseline and selection are immutable in this trial. Each condition independently matches the original template and stops on its first unresolved image, with at most eighteen checks total. This does not control external edits, remove baseline-selection bias or establish persistent identity across conditions. Matching background, identical replacements and camera motion can mislead. Displacement is not physical speed, input delivery, gameplay meaning, causality or complete recovery. No saved assessment or edit authority is changed.";
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Selection {
-    pub baseline_sha256: String,
-    pub region: Region,
-}
+pub use reversebolt_core::runtime_tests::AppearanceSelection as Selection;
 
 #[derive(Debug, Serialize)]
 pub struct Frame {
@@ -69,6 +64,8 @@ pub struct Report {
     pub record_sha256: String,
     pub source_sha256: String,
     pub selection: Selection,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub retained_plan: Option<reversebolt_core::runtime_tests::AppearancePlan>,
     pub measurement_dimensions: [u32; 2],
     pub attempted_frames: usize,
     pub maximum_attempted_frames: usize,
@@ -175,6 +172,13 @@ pub fn analyze(
     read_input: impl FnMut(usize, usize) -> Result<Option<Window>>,
 ) -> Result<Report> {
     trial_evidence::validate(test)?;
+    if test
+        .appearance
+        .as_ref()
+        .is_some_and(|p| p.selection != selection)
+    {
+        return Err("The requested appearance differs from the retained plan.".into());
+    }
     let first = test.conditions[0]
         .frames
         .first()
@@ -295,6 +299,7 @@ pub fn analyze(
         record_sha256,
         source_sha256,
         selection,
+        retained_plan: test.appearance.clone(),
         measurement_dimensions: [512, 288],
         attempted_frames: attempts,
         maximum_attempted_frames: 18,
@@ -302,6 +307,10 @@ pub fn analyze(
         actions,
         status,
         description,
-        limitation: LIMITATION,
+        limitation: if test.appearance.is_some() {
+            PLANNED_LIMITATION
+        } else {
+            LIMITATION
+        },
     })
 }

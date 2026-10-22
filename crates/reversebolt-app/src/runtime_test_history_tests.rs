@@ -261,6 +261,204 @@ fn retained_trial_motion_checks_images_inputs_and_recovery_after_restart() {
 }
 
 #[test]
+fn locked_appearance_survives_history_and_cannot_be_added_after_an_edit_record() {
+    use reversebolt_core::{
+        changes::Phase as ChangePhase,
+        runtime_tests::AppearanceSelection,
+        runtime_trials::{Context, Evidence, Trial},
+        visual_regions::Region,
+    };
+    let (directory, state_path, mut engine, complete) = motion_fixture(true);
+    let mut baseline = complete.clone();
+    baseline.conditions[1..].fill(Default::default());
+    baseline.phase = Phase::ReadyToApply;
+    engine.runtime_tests.record(baseline.clone()).unwrap();
+    let selection = AppearanceSelection {
+        baseline_sha256: baseline.conditions[0].frames[0].sha256.clone(),
+        region: Region {
+            x: 64,
+            y: 80,
+            width: 64,
+            height: 64,
+        },
+    };
+    let request = Command {
+        action: "lock_runtime_test_appearance".into(),
+        source: "agent".into(),
+        args: json!({"test_id":baseline.id,"after_revision":baseline.revision,"appearance":selection}),
+    };
+    let published = Arc::new(RwLock::new(engine.view.clone()));
+    let mut session = Session::new(Arc::new(AtomicBool::new(false)));
+    session.before(&mut engine, &request).unwrap();
+    assert_eq!(
+        engine.runtime_tests.get(&baseline.id).unwrap().phase,
+        Phase::ReadyToApply
+    );
+    for (actor, revision) in [
+        ("other-agent", baseline.revision),
+        ("agent", baseline.revision - 1),
+    ] {
+        let mut bad = request.clone();
+        bad.source = actor.into();
+        bad.args["after_revision"] = json!(revision);
+        assert!(
+            session
+                .command(&mut engine, &bad, &directory, &published)
+                .is_err()
+        );
+        assert!(
+            engine
+                .runtime_tests
+                .get(&baseline.id)
+                .unwrap()
+                .appearance
+                .is_none()
+        );
+    }
+    // Even a prepared record (no write attempt yet) prevents a new selection.
+    let patch = Patch {
+        path: baseline.candidate.locator.clone(),
+        type_code: 8,
+        expected: 8i32.to_le_bytes().to_vec(),
+        replacement: 0i32.to_le_bytes().to_vec(),
+        field_address: 0x2000,
+        object_addresses: vec![0x1000],
+        prepared_unix_ms: now_ms(),
+    };
+    let evidence=Evidence::new("fixture.json".into(),json!({"operation":"refresh_runtime_paths","scope":baseline.scope,
+        "checks":[{"path_id":patch.path.id(),"status":"read","type_code":8,"bytes":patch.expected,"value":8,
+        "field_address":"0x2000","snapshot_object_addresses":["0x1000"]}]})).unwrap();
+    let mut trial = Trial::prepare(
+        Context {
+            investigation: baseline.investigation.clone(),
+            catalog_id: baseline.catalog_id.clone(),
+            revision: 1,
+            process: baseline.scope.clone(),
+        },
+        "Fixture".into(),
+        "agent".into(),
+        patch,
+        evidence,
+    )
+    .unwrap();
+    trial.id = baseline.change_id.clone();
+    assert_eq!(trial.phase, ChangePhase::Prepared);
+    engine.runtime_trials.records.push(trial);
+    assert!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .unwrap_err()
+            .contains("before preparing")
+    );
+    assert!(
+        engine
+            .runtime_tests
+            .get(&baseline.id)
+            .unwrap()
+            .appearance
+            .is_none()
+    );
+    engine.runtime_trials.records.clear(); // Test fixture only: no trial file or operation was created.
+    let receipt = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(receipt["replayed"], false);
+    let locked = engine.runtime_tests.get(&baseline.id).unwrap().clone();
+    assert_eq!(locked.appearance.as_ref().unwrap().selection, selection);
+    let bytes_before = std::fs::read(
+        directory
+            .join("runtime-tests")
+            .join(format!("{}.json", baseline.id)),
+    )
+    .unwrap();
+    let replay = session
+        .command(&mut engine, &request, &directory, &published)
+        .unwrap();
+    assert_eq!(replay["appearance"], receipt["appearance"]);
+    assert_eq!(replay["replayed"], true);
+    assert_eq!(
+        std::fs::read(
+            directory
+                .join("runtime-tests")
+                .join(format!("{}.json", baseline.id))
+        )
+        .unwrap(),
+        bytes_before
+    );
+    let mut changed = request.clone();
+    changed.args["appearance"]["region"]["x"] = json!(65);
+    assert!(
+        session
+            .command(&mut engine, &changed, &directory, &published)
+            .is_err()
+    );
+    let mut erased = locked.clone();
+    erased.appearance = None;
+    assert!(engine.runtime_tests.record(erased).is_err());
+    // Retain generated later observations without native input or a field write.
+    let mut finished = locked;
+    finished.conditions = complete.conditions.clone();
+    finished.stop("Synthetic retained comparison.");
+    engine.runtime_tests.record(finished.clone()).unwrap();
+    checkpoint(&mut engine, &published).unwrap();
+    let read = Command {
+        action: "read_runtime_test".into(),
+        source: "agent".into(),
+        args: json!({"test_id":baseline.id}),
+    };
+    let compared = session
+        .command(&mut engine, &read, &directory, &published)
+        .unwrap();
+    assert_eq!(
+        compared["trial_appearance_comparison"]["status"],
+        "appearance_displacement_changed_and_returned"
+    );
+    assert_eq!(
+        compared["trial_appearance_comparison"]["retained_plan"],
+        receipt["appearance"]
+    );
+    assert!(compared["test"]["assessment"].is_null());
+    assert!(compared.get("png_base64").is_none());
+    let mut conflict = read.clone();
+    conflict.args["appearance"] = changed.args["appearance"].clone();
+    assert!(
+        session
+            .command(&mut engine, &conflict, &directory, &published)
+            .is_err()
+    );
+    drop(engine);
+    let mut engine = Engine::load(state_path).unwrap();
+    assert_eq!(
+        session
+            .command(&mut engine, &read, &directory, &published)
+            .unwrap(),
+        compared
+    );
+    assert_eq!(
+        session
+            .command(&mut engine, &request, &directory, &published)
+            .unwrap()["appearance"],
+        receipt["appearance"]
+    );
+    std::fs::write(
+        directory
+            .join("runtime-tests")
+            .join(&baseline.id)
+            .join("0-0.png"),
+        b"corrupted",
+    )
+    .unwrap();
+    let unavailable = session
+        .command(&mut engine, &read, &directory, &published)
+        .unwrap();
+    assert_eq!(unavailable["test"], json!(finished));
+    assert!(unavailable["trial_appearance_comparison"].is_null());
+    assert!(unavailable["trial_appearance_error"].is_string());
+    drop(engine);
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
 fn local_appearance_comparison_distinguishes_small_subject_from_static_background() {
     use reversebolt_core::{visual, visual_regions::Region};
     use reversebolt_vision::trial_appearance::{self, Selection};

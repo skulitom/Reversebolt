@@ -194,6 +194,7 @@ impl EngineHandle {
                             | "submit_runtime_hypotheses"
                             | "prepare_runtime_test"
                             | "observe_runtime_test"
+                            | "lock_runtime_test_appearance"
                             | "stop_runtime_test"
                             | "read_runtime_test"
                     ) {
@@ -254,6 +255,7 @@ impl EngineHandle {
                                 | "submit_runtime_hypotheses"
                                 | "prepare_runtime_test"
                                 | "observe_runtime_test"
+                                | "lock_runtime_test_appearance"
                                 | "stop_runtime_test"
                                 | "read_runtime_test"
                         ) {
@@ -393,6 +395,7 @@ pub(crate) fn native_command(
         }
         "prepare_runtime_test"
         | "observe_runtime_test"
+        | "lock_runtime_test_appearance"
         | "stop_runtime_test"
         | "read_runtime_test" => {
             return tests.command(

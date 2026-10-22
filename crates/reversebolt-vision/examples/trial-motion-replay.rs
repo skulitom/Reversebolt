@@ -43,8 +43,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     let mut output = json!({"record_file_sha256":visual::digest(&bytes),"original_assessment":test.assessment,
         "trial_motion_comparison":motion,"target_access":false,"new_captures":0,"input_sent":false,"field_writes":0,"model_calls":0});
-    if let Some(selection) = args.get(2) {
-        let selection = serde_json::from_slice(&bounded(Path::new(selection), 65536)?)?;
+    let selection = args
+        .get(2)
+        .map(
+            |path| -> Result<
+                reversebolt_vision::trial_appearance::Selection,
+                Box<dyn std::error::Error>,
+            > { Ok(serde_json::from_slice(&bounded(Path::new(path), 65536)?)?) },
+        )
+        .transpose()?
+        .or_else(|| test.appearance.as_ref().map(|plan| plan.selection.clone()));
+    if let Some(selection) = selection {
         let report = reversebolt_vision::trial_appearance::analyze(
             &test,
             selection,

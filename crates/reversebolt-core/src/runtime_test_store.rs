@@ -234,7 +234,35 @@ impl Store {
             if self.records[i].investigation != t.investigation {
                 return Err("A saved comparison cannot move to a different investigation.".into());
             }
+            let previous = &self.records[i];
+            match (&previous.appearance, &t.appearance) {
+                (Some(a), Some(b)) if a == b => {}
+                (Some(_), _) => {
+                    return Err(
+                        "A retained appearance choice cannot be replaced or removed.".into(),
+                    );
+                }
+                (None, Some(plan)) => {
+                    let mut expected = previous.clone();
+                    expected.lock_appearance(
+                        plan.selection.clone(),
+                        previous.revision,
+                        plan.selected_unix_ms,
+                    )?;
+                    if serde_json::to_value(&expected).map_err(|e| e.to_string())?
+                        != serde_json::to_value(&t).map_err(|e| e.to_string())?
+                    {
+                        return Err(
+                            "Save the appearance choice as its own baseline transition.".into()
+                        );
+                    }
+                }
+                (None, None) => {}
+            }
         } else {
+            if t.appearance.is_some() {
+                return Err("Save the baseline before locking an appearance choice.".into());
+            }
             self.ensure_room(&t.investigation)?;
         }
         if let Err(error) = self.write(&t) {

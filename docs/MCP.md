@@ -1128,7 +1128,36 @@ and the saved trial assessment. It neither validates a gameplay name nor grants
 edit authority. No target, input, capture or model is used by this read. See the
 [policy and retained regression](../research/trial-motion/README.md).
 
-Alternatively, supply `appearance: {baseline_sha256, region: {x, y, width, height}}`
+To save a region before the linked edit, call `lock_runtime_test_appearance`
+with `test_id`, the exact current test `after_revision`, and
+`appearance: {baseline_sha256, region: {x, y, width, height}}`. The test must have
+all six baseline captures and be `ready_to_apply`, with no pending capture and
+no changed/recovered observations. Its owner or the desktop may make the choice.
+Any existing linked runtime edit record, including a merely prepared one, prevents
+a new choice; unresolved edit history also blocks it. The engine verifies the
+baseline PNG hash and dimensions and durably records the choice before replying.
+No target access, input, model call or field write occurs.
+
+The optional `test.appearance` plan contains the selection, its revision/time,
+`baseline_record_sha256` and `comparison_plan_sha256`. The first digest binds the
+complete baseline condition. The second binds immutable trial metadata, including
+target, planned value, actions, scope and provenance, with dynamic capture/result
+state normalized away. Both use typed Rust/Serde serialization, not raw JSON-file
+bytes. Changing the baseline or immutable plan invalidates the saved choice.
+It cannot be replaced or removed through the store.
+
+Retry the identical selection and original `after_revision` after uncertain
+delivery. The result returns the saved `appearance` and `replayed: true` without
+writing or resuming a stopped trial. Use status/read for the current revision
+before a subsequent operation. A successful lock advances the test revision once.
+Restart/stop retains the choice. `read_runtime_test` automatically analyzes that
+region and includes `retained_plan` in its comparison. A conflicting explicit
+selection is rejected. If saved pixels later become unavailable, the response
+keeps the test metadata and exposes `trial_appearance_error` with a null comparison.
+This ordering concerns the linked Reversebolt edit; it cannot rule out external
+changes or remove bias from choosing a region after observing baseline behavior.
+
+For a trial without a saved choice, supply `appearance: {baseline_sha256, region: {x, y, width, height}}`
 to `read_runtime_test` for `trial_appearance_comparison`. The rectangle must refer
 to baseline condition 0 frame 0, with its exact SHA-256 and integer original-image
 coordinates. Width/height must be at least 32 pixels and area at most four million.
@@ -1156,8 +1185,9 @@ The optional region can be chosen retrospectively, which can bias the result.
 Identical replacements, background matches and camera movement can also confound
 it. It does not establish gameplay meaning, physical speed, causality or complete
 recovery, and changes no saved assessment or write permission. It does not run a
-model or interact with the target. Omitting `appearance` retains the existing
-read behavior. See [regional comparison evidence](../research/trial-appearance/README.md).
+model or interact with the target. Without a saved choice, omitting `appearance`
+retains the existing read behavior. See [regional comparison evidence](../research/trial-appearance/README.md)
+and [choice persistence and compatibility](../research/appearance-plan/README.md).
 
 Only one test can be active; the limit is eight saved tests **per investigation**,
 128 retained records per data directory and 15 minutes per active test. Closed

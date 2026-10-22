@@ -1844,6 +1844,7 @@ mod tests {
             "restore_runtime_change",
             "prepare_runtime_test",
             "observe_runtime_test",
+            "lock_runtime_test_appearance",
         ] {
             for held in [false, true] {
                 let engine = EngineHandle::test_worker(initial_view(), |_, _| {

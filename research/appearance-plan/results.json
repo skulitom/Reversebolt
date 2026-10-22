@@ -1,0 +1,32 @@
+{
+  "frozen_manifest_sha256": "ba886dbf4770936b557f488a4cd8d0c57788ebeda2fadaa1b452a9fb43949410",
+  "source_files": 152,
+  "bound_input_files": 53,
+  "provenance": "OwnedPathFixture",
+  "new_plans_added_to_old_records": 0,
+  "native_target_access": false,
+  "model_calls": 0,
+  "results": [
+    {
+      "test_id": "02c71c32-0047-407d-82cd-61b227745943",
+      "exact_previous_result": true,
+      "appearance_status": null,
+      "appearance_error": "Retain baseline frame 0 before selecting an appearance.",
+      "output_sha256": "91d5163dc38e0bb8be355532eef28699fff6323cbe98931002711e0423a55aef"
+    },
+    {
+      "test_id": "080b5643-5718-494f-9ed6-751bf8059402",
+      "exact_previous_result": true,
+      "appearance_status": "unresolved_appearance",
+      "appearance_error": null,
+      "output_sha256": "105e50249b18d5d022e86b7b90f73f284b3660476e0b37d83a8b4e1d74a3c0b5"
+    },
+    {
+      "test_id": "517f5cdc-a4d2-4b48-8091-218f249451b9",
+      "exact_previous_result": true,
+      "appearance_status": "incomplete",
+      "appearance_error": null,
+      "output_sha256": "f1ac2568f5658c6428b93d67b466e2884804d1d2a382aaa88bbb17357e753ed1"
+    }
+  ]
+}

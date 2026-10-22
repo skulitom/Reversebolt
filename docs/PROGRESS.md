@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Appearance choice before editing (2026-10-22): **35% unchanged**.
+The shared command/MCP can lock a region after six baseline captures and before
+any linked runtime edit record exists. Its immutable saved plan binds the full
+baseline, target/value/action metadata, selection revision and time. Exact request
+replay is read-only; changed choices are rejected. History automatically uses the
+saved region after stop/restart, and source failure preserves readable metadata.
+No desktop report or semantic/edit authority is added.
+
+All 360 workspace test executions, strict Clippy and formatting pass. Core and
+dispatcher/store tests cover recovery/restart, wrong actor/cursor, a prepared
+linked edit, changed baseline/action metadata, selection conflicts, unchanged
+retry bytes and unavailable saved pixels. Frozen replays produce exactly the
+previous complete JSON results for all three OwnedPathFixture records. No plan
+was added to those old records. All 152 frozen source files and 53 bound inputs
+pass audit. No game, capture, model call, input or memory operation ran. Automatic
+meaningful subject selection and real-game causal evidence remain unverified;
+desktop publication remains unavailable after quarantine.
+[Method and results](../research/appearance-plan/README.md).
+
 Regional trial comparison (2026-10-22): **35% unchanged**.
 The shared retained-test reader and MCP can compare one exact baseline appearance
 across baseline/changed/recovered images. Each condition independently uses the

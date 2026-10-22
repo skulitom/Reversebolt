@@ -157,6 +157,7 @@ impl Session {
             && !matches!(
                 c.action.as_str(),
                 "prepare_runtime_test"
+                    | "lock_runtime_test_appearance"
                     | "observe_runtime_test"
                     | "stop_runtime_test"
                     | "read_runtime_test"
@@ -240,18 +241,41 @@ impl Session {
                     )?)
                     .map_err(|e| e.to_string())?;
             }
-            if let Some(selection) = c.args.get("appearance") {
-                let selection = serde_json::from_value(selection.clone()).map_err(|_| {
-                    "Supply the baseline frame 0 SHA-256 and an integer image region.".to_string()
-                })?;
-                result["trial_appearance_comparison"] =
-                    serde_json::to_value(reversebolt_vision::trial_appearance::analyze(
-                        &test,
-                        selection,
-                        |condition, frame| engine.runtime_tests.read_image(&test, condition, frame),
-                        |condition, frame| engine.runtime_tests.read_input(&test, condition, frame),
-                    )?)
-                    .map_err(|e| e.to_string())?;
+            let requested: Option<runtime_tests::AppearanceSelection> = c
+                .args
+                .get("appearance")
+                .map(|selection| {
+                    serde_json::from_value(selection.clone()).map_err(|_| {
+                        "Supply the baseline frame 0 SHA-256 and an integer image region."
+                            .to_string()
+                    })
+                })
+                .transpose()?;
+            let selection = test
+                .appearance
+                .as_ref()
+                .map(|p| p.selection.clone())
+                .or_else(|| requested.clone());
+            if let Some(selection) = selection {
+                if requested.as_ref().is_some_and(|r| *r != selection) {
+                    return Err("The requested appearance differs from the retained plan.".into());
+                }
+                match reversebolt_vision::trial_appearance::analyze(
+                    &test,
+                    selection,
+                    |condition, frame| engine.runtime_tests.read_image(&test, condition, frame),
+                    |condition, frame| engine.runtime_tests.read_input(&test, condition, frame),
+                ) {
+                    Ok(report) => {
+                        result["trial_appearance_comparison"] =
+                            serde_json::to_value(report).map_err(|e| e.to_string())?
+                    }
+                    Err(error) if test.appearance.is_some() => {
+                        result["trial_appearance_comparison"] = Value::Null;
+                        result["trial_appearance_error"] = json!(error);
+                    }
+                    Err(error) => return Err(error),
+                }
             }
             if c.args.get("condition").is_some() || c.args.get("frame").is_some() {
                 let condition = c.args["condition"]
@@ -303,6 +327,36 @@ impl Session {
         let revision = c.args["after_revision"]
             .as_u64()
             .ok_or("Supply the exact current experiment revision.")?;
+        if c.action == "lock_runtime_test_appearance" {
+            let selection: runtime_tests::AppearanceSelection =
+                serde_json::from_value(c.args["appearance"].clone()).map_err(|_| {
+                    "Supply the baseline frame 0 SHA-256 and an integer image region.".to_string()
+                })?;
+            let changed = test.lock_appearance(selection, revision, now_ms())?;
+            if changed {
+                if engine.runtime_trials.get(&test.change_id).is_ok()
+                    || engine.runtime_trials.holds(&test.scope)
+                {
+                    return Err(
+                        "Choose the appearance before preparing or applying the linked edit."
+                            .into(),
+                    );
+                }
+                let bytes = engine.runtime_tests.read_image(&test, 0, 0)?;
+                let image = image::ImageReader::new(std::io::Cursor::new(bytes))
+                    .with_guessed_format()
+                    .map_err(|e| e.to_string())?
+                    .into_dimensions()
+                    .map_err(|e| e.to_string())?;
+                let source = &test.conditions[0].frames[0];
+                if image != (source.width, source.height) {
+                    return Err("The baseline PNG dimensions disagree with its record.".into());
+                }
+                engine.runtime_tests.record(test.clone())?;
+                checkpoint(engine, published)?;
+            }
+            return Ok(json!({"test_id":test.id,"appearance":test.appearance,"replayed":!changed}));
+        }
         let perform_action = match c.args.get("perform_action") {
             None => false,
             Some(v) => v
@@ -457,6 +511,7 @@ impl Session {
             value: p.value,
             hypothesis,
             origin,
+            appearance: None,
             actions: p.actions,
             prepared_revision: p.after_revision,
             created_unix_ms: now_ms(),

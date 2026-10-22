@@ -199,6 +199,24 @@ pub struct Condition {
     pub runtime_checked_unix_ms: Option<u128>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AppearanceSelection {
+    pub baseline_sha256: String,
+    pub region: crate::visual_regions::Region,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AppearancePlan {
+    pub selection: AppearanceSelection,
+    pub comparison_plan_sha256: String,
+    /// Typed serialization of the complete baseline condition at selection.
+    pub baseline_record_sha256: String,
+    pub selected_revision: u64,
+    pub selected_unix_ms: u128,
+}
+
 impl Condition {
     pub fn median(&self) -> Option<f64> {
         if self.frames.len() != FRAMES_PER_CONDITION {
@@ -242,6 +260,8 @@ pub struct Test {
     /// Evidence for the question, not proof of its gameplay meaning.
     #[serde(default)]
     pub origin: Option<crate::runtime_hypotheses::TestOrigin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub appearance: Option<AppearancePlan>,
     pub actions: Vec<Action>,
     pub prepared_revision: u64,
     pub created_unix_ms: u128,
@@ -278,6 +298,33 @@ impl Test {
             || self.actions.iter().any(|a| !a.valid())
         {
             return Err("Supply one bounded four-action test with distinct identities and a short hypothesis.".into());
+        }
+        if let Some(plan) = &self.appearance {
+            let baseline = &self.conditions[0];
+            if baseline.frames.len() != FRAMES_PER_CONDITION
+                || plan.selected_revision == 0
+                || plan.selected_revision > self.revision
+                || plan.selected_unix_ms < self.created_unix_ms
+                || baseline
+                    .frames
+                    .iter()
+                    .any(|f| f.completed_unix_ms > plan.selected_unix_ms)
+                || plan.baseline_record_sha256
+                    != crate::visual::digest(
+                        &serde_json::to_vec(baseline).map_err(|e| e.to_string())?,
+                    )
+                || plan.comparison_plan_sha256 != self.comparison_plan_digest()?
+                || self.phase == Phase::Baseline
+            {
+                return Err("The retained appearance plan or baseline changed.".into());
+            }
+            let first = &baseline.frames[0];
+            if plan.selection.baseline_sha256 != first.sha256 {
+                return Err("The selected baseline image changed.".into());
+            }
+            plan.selection
+                .region
+                .validate([first.width, first.height])?;
         }
         self.candidate.locator.validate(&self.scope)?;
         if self.candidate.id != self.candidate.locator.id() {
@@ -329,6 +376,67 @@ impl Test {
         }
         Ok(())
     }
+    /// Records a one-time choice before the linked edit. The caller must also
+    /// check its edit store before accepting a new choice. Identical replay is read-only.
+    pub fn lock_appearance(
+        &mut self,
+        selection: AppearanceSelection,
+        revision: u64,
+        now: u128,
+    ) -> Result<bool> {
+        self.validate_plan()?;
+        if let Some(plan) = &self.appearance {
+            if plan.selection == selection
+                && Some(plan.selected_revision) == revision.checked_add(1)
+            {
+                return Ok(false);
+            }
+            return Err("The saved appearance choice is immutable. Read the current test.".into());
+        }
+        self.check_cursor(revision)?;
+        if self.phase != Phase::ReadyToApply
+            || self.conditions[0].frames.len() != FRAMES_PER_CONDITION
+            || self.conditions[1..]
+                .iter()
+                .any(|c| !c.frames.is_empty() || c.runtime_evidence.is_some())
+            || self.assessment.is_some()
+        {
+            return Err(
+                "Choose the appearance after the complete baseline and before the linked edit."
+                    .into(),
+            );
+        }
+        let mut next = self.clone();
+        next.revision += 1;
+        next.appearance = Some(AppearancePlan {
+            selection,
+            comparison_plan_sha256: self.comparison_plan_digest()?,
+            baseline_record_sha256: crate::visual::digest(
+                &serde_json::to_vec(&self.conditions[0]).map_err(|e| e.to_string())?,
+            ),
+            selected_revision: next.revision,
+            selected_unix_ms: now,
+        });
+        next.reason = "Appearance choice saved. The planned edit can now be applied.".into();
+        next.validate_plan()?;
+        *self = next;
+        Ok(true)
+    }
+
+    fn comparison_plan_digest(&self) -> Result<String> {
+        let mut plan = self.clone();
+        plan.appearance = None;
+        plan.revision = 0;
+        plan.phase = Phase::Baseline;
+        plan.pending_capture = false;
+        plan.conditions = Default::default();
+        plan.assessment = None;
+        plan.reason.clear();
+        Ok(crate::visual::digest(
+            &serde_json::to_vec(&plan).map_err(|e| e.to_string())?,
+        ))
+    }
+
     pub fn active(&self) -> bool {
         !matches!(self.phase, Phase::Complete | Phase::Stopped)
     }
@@ -649,11 +757,15 @@ impl Test {
         .is_ok_and(|actual| actual.id() == expected.id())
     }
     pub fn summary(&self) -> Value {
-        serde_json::json!({"id":self.id,"change_id":self.change_id,"hypothesis":self.hypothesis,
+        let mut summary = serde_json::json!({"id":self.id,"change_id":self.change_id,"hypothesis":self.hypothesis,
             "hypothesis_ref":self.origin.as_ref().map(|o|&o.reference),
             "candidate_id":self.candidate.id,"phase":self.phase,"revision":self.revision,"pending_capture":self.pending_capture,
             "frames":self.conditions.each_ref().map(|c|c.frames.len()),"reason":self.reason,"assessment":self.assessment,
             "actor":self.actor,"investigation_id":self.investigation,"catalog_id":self.catalog_id,
-            "actions":self.actions,"created_unix_ms":self.created_unix_ms,"active":self.active()})
+            "actions":self.actions,"created_unix_ms":self.created_unix_ms,"active":self.active()});
+        if let Some(plan) = &self.appearance {
+            summary["appearance"] = serde_json::json!(plan);
+        }
+        summary
     }
 }
