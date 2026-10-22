@@ -169,7 +169,7 @@ fn exposure(
     classify(a, b, old, window, clock)
 }
 
-fn classify(
+pub(super) fn classify(
     a: &CaptureInterval,
     b: &CaptureInterval,
     old: &Window,
@@ -254,6 +254,23 @@ pub fn analyze(
     if !manifest.samples.iter().any(|s| s.input_context.is_some()) {
         return None;
     }
+    let classes: Vec<_> = captures
+        .windows(2)
+        .map(|pair| {
+            pair[0]
+                .checked_sub(1)
+                .and_then(|a| manifest.samples.get(a))
+                .zip(pair[1].checked_sub(1).and_then(|b| manifest.samples.get(b)))
+                .ok_or(Unknown::MissingRead)
+                .and_then(|(a, b)| exposure(a, b, address, &manifest.state.investigation_id))
+                .unwrap_or_else(Exposure::Unknown)
+        })
+        .collect();
+    Some(from_exposures(&classes, values))
+}
+
+/// Apply per-member availability to a chunk's cached timing classifications.
+pub(super) fn from_exposures(classes: &[Exposure], values: &[Option<f64>]) -> Evidence {
     let mut evidence = Evidence {
         intervals: vec![],
         no_keys_detected: Counts::default(),
@@ -262,7 +279,7 @@ pub fn analyze(
         unknown_pairs: 0,
     };
     let mut by_key: BTreeMap<u8, Counts> = BTreeMap::new();
-    for (i, pair) in captures.windows(2).enumerate() {
+    for (i, class) in classes.iter().enumerate() {
         let result = match values
             .get(i)
             .copied()
@@ -270,20 +287,15 @@ pub fn analyze(
             .zip(values.get(i + 1).copied().flatten())
         {
             Some((a, b)) if a.is_finite() && b.is_finite() => {
-                let class = pair[0]
-                    .checked_sub(1)
-                    .and_then(|a| manifest.samples.get(a))
-                    .zip(pair[1].checked_sub(1).and_then(|b| manifest.samples.get(b)))
-                    .ok_or(Unknown::MissingRead)
-                    .and_then(|(a, b)| exposure(a, b, address, &manifest.state.investigation_id));
-                if let Ok(class) = class {
-                    match class {
-                        Exposure::Key(key) => by_key.entry(key).or_default().add(a, b),
-                        Exposure::NoKeysDetected => evidence.no_keys_detected.add(a, b),
-                        Exposure::Unknown(_) => (),
-                    }
+                match class {
+                    Exposure::Key(key) => by_key.entry(*key).or_default().add(a, b),
+                    Exposure::NoKeysDetected => evidence.no_keys_detected.add(a, b),
+                    Exposure::Unknown(_) => (),
                 }
-                class
+                match class {
+                    Exposure::Unknown(reason) => Err(*reason),
+                    _ => Ok(*class),
+                }
             }
             _ => Err(Unknown::MissingValue),
         };
@@ -302,7 +314,7 @@ pub fn analyze(
             evidence.omitted_keys.push(key);
         }
     }
-    Some(evidence)
+    evidence
 }
 
 #[cfg(test)]

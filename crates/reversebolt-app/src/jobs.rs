@@ -4,6 +4,8 @@ mod change_watch;
 #[cfg(test)]
 mod freeze_tests;
 #[cfg(test)]
+mod memory_followup_tests;
+#[cfg(test)]
 mod runtime_watch_tests;
 #[cfg(test)]
 mod watch_tests;
@@ -133,6 +135,7 @@ fn read_only(action: &str) -> bool {
             | "read_capture"
             | "read_memory_proposals"
             | "read_memory_followup"
+            | "plan_memory_followup"
             | "read_sequence"
             | "read_play_evidence"
             | "read_activity_experiment"
@@ -197,6 +200,7 @@ impl Handle {
                 draining: false,
                 next_capture: None,
                 change_continuation: None,
+                memory_continuation: None,
                 change_child: None,
                 freeze_stops: VecDeque::new(),
             };
@@ -580,6 +584,10 @@ struct ChangeContinuation {
     scope: Scope,
     source: String,
 }
+struct MemoryContinuation {
+    parent: ChangeContinuation,
+    preparing: bool,
+}
 struct Controller {
     runtime_directory: PathBuf,
     jobs: job::Jobs<FileJournal>,
@@ -591,6 +599,7 @@ struct Controller {
     draining: bool,
     next_capture: Option<(u64, usize, Instant)>,
     change_continuation: Option<ChangeContinuation>,
+    memory_continuation: Option<MemoryContinuation>,
     change_child: Option<(u64, u64)>,
     freeze_stops: VecDeque<Request>,
 }
@@ -633,26 +642,44 @@ impl Controller {
             Ok(mut value) => {
                 self.refresh_binding();
                 if value["ok"] == true
+                    && value["data"]["prepared"] != false
                     && let Some(source) = manual.automatic
                 {
                     match self.start_automatic_observation(source) {
                         Ok(receipt) => {
-                            if let Some(parent) = self.change_continuation.as_ref()
-                                && Scope::from_view(&self.engine.view.read().unwrap())
-                                    .is_some_and(|s| s.key() != parent.scope.key())
+                            if let Some(parent) = self.change_continuation.as_ref().or_else(|| {
+                                self.memory_continuation
+                                    .as_ref()
+                                    .filter(|p| p.preparing)
+                                    .map(|p| &p.parent)
+                            }) && Scope::from_view(&self.engine.view.read().unwrap())
+                                .is_some_and(|s| s.key() != parent.scope.key())
                                 && let Some(child) = receipt["ack"]["job"].as_u64()
                             {
                                 self.change_child = Some((parent.job, child));
                             }
-                            value["data"] = json!({"automatic_observation":receipt});
+                            if !value["data"].is_object() {
+                                value["data"] = json!({});
+                            }
+                            value["data"]["automatic_observation"] = receipt;
                         }
                         Err(error) => {
                             self.error(format!(
                                 "Connected, but automatic observation could not start: {error}"
                             ));
-                            value["data"] = json!({"automatic_observation_error":error});
+                            if !value["data"].is_object() {
+                                value["data"] = json!({});
+                            }
+                            value["data"]["automatic_observation_error"] = json!(error);
                         }
                     }
+                }
+                if self
+                    .memory_continuation
+                    .as_ref()
+                    .is_some_and(|p| p.preparing)
+                {
+                    self.memory_continuation = None;
                 }
                 value["jobs"] = json!(self.jobs.view());
                 if let Some(reply) = manual.reply {
@@ -661,6 +688,13 @@ impl Controller {
             }
             Err(mpsc::TryRecvError::Empty) => self.manual = Some(manual),
             Err(mpsc::TryRecvError::Disconnected) => {
+                if self
+                    .memory_continuation
+                    .as_ref()
+                    .is_some_and(|p| p.preparing)
+                {
+                    self.memory_continuation = None;
+                }
                 let error = "The engine worker ended while handling a command.".to_string();
                 self.error(error.clone());
                 if let Some(reply) = manual.reply {
@@ -693,6 +727,17 @@ impl Controller {
                     .iter()
                     .any(|c| c.rechecked_from.is_some())
         });
+        let memory_scope = (!followup
+            && !runtime
+            && !changing
+            && !recheck
+            && self.change_continuation.is_none()
+            && state
+                .live
+                .as_ref()
+                .is_some_and(|l| l.coverage.batch == 1 && l.sample_count == 0))
+        .then(|| Scope::from_view(&state))
+        .flatten();
         let model = if recheck || changing || followup {
             None
         } else {
@@ -735,10 +780,93 @@ impl Controller {
                     .as_u64()
                     .ok_or("Missing change-search job receipt")?,
                 scope,
-                source,
+                source: source.clone(),
+            });
+        }
+        if let Some(scope) = memory_scope {
+            self.memory_continuation = Some(MemoryContinuation {
+                parent: ChangeContinuation {
+                    job: receipt["ack"]["job"]
+                        .as_u64()
+                        .ok_or("Missing memory observation job receipt")?,
+                    scope,
+                    source,
+                },
+                preparing: false,
             });
         }
         Ok(receipt)
+    }
+    fn continue_memory_followup(&mut self) {
+        let Some(mut pending) = self.memory_continuation.take() else {
+            return;
+        };
+        let snapshot = self.jobs.snapshot();
+        if snapshot.human_hold.is_some()
+            || self.draining
+            || self.jobs.view().fence.is_some()
+            || snapshot
+                .current
+                .as_ref()
+                .is_none_or(|b| b.target != pending.parent.scope.key())
+        {
+            return;
+        }
+        let Some(parent) = snapshot.jobs.get(&pending.parent.job) else {
+            return;
+        };
+        if !parent.phase.terminal() {
+            self.memory_continuation = Some(pending);
+            return;
+        }
+        if parent.phase != job::Phase::Completed || parent.invalidated {
+            return;
+        }
+        if self.executor.flight.is_some() || self.engine.view.read().unwrap().analysis.is_some() {
+            self.memory_continuation = Some(pending);
+            return;
+        }
+        // One initial-batch continuation; do not displace findings or another operation.
+        if snapshot.jobs.values().any(|j| !j.phase.terminal()) {
+            return;
+        }
+        let state = self.engine.view.read().unwrap();
+        let Some(live) = state.live.as_ref() else {
+            return;
+        };
+        let Some(report) = live
+            .memory_proposals
+            .as_ref()
+            .filter(|s| s.captures == live.sample_count)
+        else {
+            return;
+        };
+        if !live.prediction_checks.is_empty()
+            || live.memory_followup.is_some()
+            || state.freezes.iter().any(|f| f.active())
+        {
+            return;
+        }
+        let args = json!({"investigation_id":pending.parent.scope.investigation_id,"batch":pending.parent.scope.batch,
+            "after_sample":report.captures,"report_sha256":report.report_sha256});
+        drop(state);
+        let source = if parent.controller.role == job::Role::Human {
+            "desktop".into()
+        } else {
+            pending.parent.source.clone()
+        };
+        self.command((
+            Command {
+                action: "prepare_memory_followup".into(),
+                source,
+                args,
+            },
+            None,
+        ));
+        if self.manual.is_some() {
+            pending.preparing = true;
+            self.memory_continuation = Some(pending);
+        }
     }
     fn continue_change_search(&mut self) {
         let Some(pending) = self.change_continuation.take() else {
@@ -804,17 +932,23 @@ impl Controller {
             return;
         }
 
-        // The selection worker is read-only and may already be settling after
+        // Preparation may already be settling after
         // its parent job completed. A human stop/pause takes control so that
         // its future capture job cannot start after the click is acknowledged.
         if command.source == "desktop"
             && command.action == "job_control"
             && matches!(command.args["operation"].as_str(), Some("cancel" | "pause"))
-            && self.manual.is_some()
-            && self
-                .change_continuation
-                .as_ref()
-                .is_some_and(|p| command.args["job"].as_u64() == Some(p.job))
+            && (self.change_continuation.as_ref().is_some_and(|p| {
+                self.manual.is_some() && command.args["job"].as_u64() == Some(p.job)
+            }) || self.memory_continuation.as_ref().is_some_and(|p| {
+                command.args["job"].as_u64() == Some(p.parent.job)
+                    && self
+                        .jobs
+                        .snapshot()
+                        .jobs
+                        .get(&p.parent.job)
+                        .is_some_and(|j| j.phase.terminal())
+            }))
         {
             command.args["operation"] = json!("take_control");
         }
@@ -965,9 +1099,14 @@ impl Controller {
                                 && self
                                     .change_continuation
                                     .as_ref()
-                                    .is_some_and(|p| command.args["job"].as_u64() == Some(p.job))))
+                                    .is_some_and(|p| command.args["job"].as_u64() == Some(p.job)))
+                            || (command.args["operation"] == "cancel"
+                                && self.memory_continuation.as_ref().is_some_and(|p| {
+                                    command.args["job"].as_u64() == Some(p.parent.job)
+                                })))
                     {
                         self.change_continuation = None;
+                        self.memory_continuation = None;
                         if let Some(manual) = &mut self.manual {
                             manual.automatic = None;
                         }
@@ -1481,6 +1620,9 @@ impl Controller {
             return;
         }
         self.continue_change_search();
+        if self.manual.is_none() {
+            self.continue_memory_followup();
+        }
         if self.manual.is_some() {
             return;
         }
@@ -1638,6 +1780,7 @@ mod tests {
             draining: false,
             next_capture: None,
             change_continuation: None,
+            memory_continuation: None,
             change_child: None,
             freeze_stops: VecDeque::new(),
         };

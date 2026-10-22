@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Automatic memory follow-up selection (2026-10-22): **35% unchanged**.
+Initial automatic broad observation can now select up to four retained memory
+patterns for one fresh check without manual group selection. It requires repeated
+key episodes with readable quiet boundaries and no quiet drift, pins expectations
+before fresh capture, and preserves contradictions and missing coverage. An empty
+selection leaves the batch intact. Stop during preparation prevents collection.
+The shared read-only planner and automatic/manual preparation use the same core;
+no unidentified cards or report UI were added.
+
+All **442 workspace tests**, strict all-target Clippy and formatting pass. The
+24-capture generated end-to-end example retains two numeric rivals in one 64-byte
+window: both agree during key episodes but are contradicted by later quiet drift.
+Planning adds no target reads or images. Fresh and legacy archives replay exactly.
+Two full-suite failures exposed insufficient fixture polling, which was corrected
+without weakening production uncertainty rules; their logs and evidence remain.
+No game, native input worker, production app, live model or upload ran. Semantic
+naming, causal controls and independent-game validation remain incomplete. The
+desktop preview is still unavailable. Everything remains local.
+[Implementation and limits](../research/memory-selection/README.md).
+
 Memory/input associations (2026-10-22): **35% unchanged**.
 Captures now retain existing sampled input through memory-read completion,
 separately from the earlier screenshot window. Automatic memory follow-ups expose

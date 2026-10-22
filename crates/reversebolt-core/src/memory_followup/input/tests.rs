@@ -196,6 +196,25 @@ fn memory_input_keeps_omitted_key_classes_and_fits_the_existing_report_budget() 
                 changed_pairs: 19,
                 mapping_invalidated_in_recording: false,
                 input: Some(evidence.clone()),
+                input_check: Some(f::selection::Check {
+                    verdict: Verdict::Insufficient,
+                    agreeing_episodes: vec![
+                        [1, 1],
+                        [3, 3],
+                        [5, 5],
+                        [7, 7],
+                        [9, 9],
+                        [11, 11],
+                        [13, 13],
+                        [15, 15],
+                        [17, 17],
+                    ],
+                    disagreeing_episodes: vec![],
+                    quiet_unchanged_pairs: (0..19).step_by(2).collect(),
+                    quiet_changed_pairs: vec![],
+                    unbounded_episodes: 1,
+                    unknown_pairs: 19,
+                }),
             })
             .collect();
         let report = f::Report {
@@ -210,6 +229,7 @@ fn memory_input_keeps_omitted_key_classes_and_fits_the_existing_report_budget() 
             outcomes,
             limitation: f::LIMITATION.into(),
             input_associations: Some(Description::default()),
+            input_expectations: Some(f::selection::Description::default()),
         };
         let bytes = serde_json::to_vec(&report).unwrap();
         assert!(bytes.len() < f::MAX_FILE_BYTES);

@@ -15,6 +15,35 @@ struct InputFixture {
     buffer: RefCell<Option<reversebolt_core::inputs::Buffer>>,
     until: Cell<u64>,
     requests: RefCell<Vec<(u64, u64)>>,
+    origin: RefCell<Option<std::time::Instant>>,
+    sample_read_keys: Cell<bool>,
+}
+
+impl InputFixture {
+    fn advance(&self, end: u64) {
+        let mut buffer = self.buffer.borrow_mut();
+        let Some(buffer) = buffer.as_mut() else {
+            return;
+        };
+        let until = self.until.get();
+        if end > until {
+            // Generated polls on one shared timeline; never actual keyboard input.
+            let step = ((end - until) / if self.sample_read_keys.get() { 64 } else { 16 }).max(2);
+            let mut t = until + 2;
+            while t < end {
+                buffer
+                    .push(reversebolt_core::inputs::Poll {
+                        begin_us: t,
+                        end_us: t + 1,
+                        focus: reversebolt_core::inputs::Focus::SelectedForeground,
+                        down: self.key.get().into_iter().collect(),
+                    })
+                    .unwrap();
+                t += step;
+            }
+            self.until.set(end);
+        }
+    }
 }
 
 struct Target {
@@ -33,9 +62,15 @@ impl Target {
     }
 }
 impl NativeTarget for Target {
-    fn start_inputs(&self, clock: &str, _: std::time::Instant, _: Arc<AtomicBool>) -> Result<()> {
+    fn start_inputs(
+        &self,
+        clock: &str,
+        origin: std::time::Instant,
+        _: Arc<AtomicBool>,
+    ) -> Result<()> {
         self.check();
         if self.inputs.enabled.get() && self.inputs.buffer.borrow().is_none() {
+            *self.inputs.origin.borrow_mut() = Some(origin);
             *self.inputs.buffer.borrow_mut() = Some(reversebolt_core::inputs::Buffer::new(
                 clock.into(),
                 "generated-sampler".into(),
@@ -45,34 +80,13 @@ impl NativeTarget for Target {
         Ok(())
     }
     fn input_window(&self, begin: u64, end: u64) -> Option<reversebolt_core::inputs::Window> {
-        use reversebolt_core::inputs::{Focus, Poll};
         self.check();
         if !self.inputs.enabled.get() {
             return None;
         }
         self.inputs.requests.borrow_mut().push((begin, end));
-        let mut buffer = self.inputs.buffer.borrow_mut();
-        let buffer = buffer.as_mut()?;
-        let until = self.inputs.until.get();
-        if end > until {
-            // Generated polls, not real keyboard access. Repeated windows reuse
-            // the same timeline, including their overlapping read intervals.
-            let step = ((end - until) / 16).max(2);
-            let mut t = until + 2;
-            while t < end {
-                buffer
-                    .push(Poll {
-                        begin_us: t,
-                        end_us: t + 1,
-                        focus: Focus::SelectedForeground,
-                        down: self.inputs.key.get().into_iter().collect(),
-                    })
-                    .unwrap();
-                t += step;
-            }
-            self.inputs.until.set(end);
-        }
-        buffer.window(begin, end)
+        self.inputs.advance(end);
+        self.inputs.buffer.borrow().as_ref()?.window(begin, end)
     }
     fn info(&self) -> &ProcessInfo {
         self.check();
@@ -96,6 +110,35 @@ impl NativeTarget for Target {
     fn read(&self, address: u64, n: usize) -> Result<Vec<u8>> {
         self.check();
         self.reads.set(self.reads.get() + 1);
+        if self.inputs.sample_read_keys.get() {
+            // Explicit generated polls inside each actual read bound. Without
+            // these, interpolation may leave exactly one pressed endpoint poll
+            // at release; production correctly classifies that as unknown.
+            let origin = self.inputs.origin.borrow().unwrap();
+            self.inputs.advance(origin.elapsed().as_micros() as u64);
+            for _ in 0..2 {
+                let t = loop {
+                    let t = origin.elapsed().as_micros() as u64;
+                    if t > self.inputs.until.get() {
+                        break t;
+                    }
+                    std::hint::spin_loop();
+                };
+                self.inputs
+                    .buffer
+                    .borrow_mut()
+                    .as_mut()
+                    .unwrap()
+                    .push(reversebolt_core::inputs::Poll {
+                        begin_us: t,
+                        end_us: t,
+                        focus: reversebolt_core::inputs::Focus::SelectedForeground,
+                        down: self.inputs.key.get().into_iter().collect(),
+                    })
+                    .unwrap();
+                self.inputs.until.set(t);
+            }
+        }
         if self.missing.get() {
             return Err("Injected missing read".into());
         }
@@ -849,6 +892,126 @@ fn partial_export_cancellation_remains_reserved_without_repeating_target_reads()
         session
             .export_memory_evidence(&session.view.investigation_id, 1, 12)
             .is_err()
+    );
+    assert_eq!(c.reads.get(), 12);
+}
+
+#[test]
+fn automatic_memory_selection_pins_before_fresh_data_and_retains_quiet_contradiction() {
+    use reversebolt_core::{memory_evidence::Archive, memory_followup as f};
+    let mut c = Case::new(0);
+    c.inputs.enabled.set(true);
+    c.inputs.sample_read_keys.set(true);
+    let values = [
+        100., 100., 101., 102., 102., 102., 102., 103., 104., 104., 104., 104.,
+    ];
+    for (i, v) in values.iter().enumerate() {
+        c.inputs.key.set(matches!(i, 2 | 3 | 7 | 8).then_some(65));
+        c.values.set(Some((0, *v)));
+        c.command("capture", json!({"mode":"visual"})).unwrap();
+    }
+    let mut args = c.followup_request();
+    args.as_object_mut().unwrap().remove("groups");
+    let mut planning = args.clone();
+    planning.as_object_mut().unwrap().remove("auto_observe");
+    c.sealed.set(true);
+    let selection = c.command("plan_memory_followup", planning.clone()).unwrap();
+    assert!(
+        !selection["groups"].as_array().unwrap().is_empty(),
+        "{selection}"
+    );
+    assert_eq!(c.reads.get(), 12);
+    planning["after_sample"] = json!(11);
+    assert!(c.command("plan_memory_followup", planning).is_err());
+    c.sealed.set(false);
+    let prepared = c.command("prepare_memory_followup", args).unwrap();
+    assert_eq!(prepared["prepared"], true);
+    assert_eq!(c.reads.get(), 12);
+    let reference: f::Reference = serde_json::from_value(prepared["reference"].clone()).unwrap();
+    let root = c.root.join("captures");
+    let plan = f::read_plan(&root, &reference).unwrap();
+    assert!(
+        plan.candidates
+            .iter()
+            .any(|c| c.input_expectation.is_some())
+    );
+    let mut malformed = plan.clone();
+    malformed
+        .candidates
+        .iter_mut()
+        .find_map(|c| c.input_expectation.as_mut())
+        .unwrap()
+        .key = 255;
+    assert!(malformed.validate().is_err());
+    let pinned = serde_json::to_vec(&plan).unwrap();
+    for (i, v) in values.iter().enumerate() {
+        c.inputs.key.set(matches!(i, 2 | 3 | 7 | 8).then_some(65));
+        c.values.set(Some((0, if i == 11 { 200. } else { *v })));
+        c.command("capture", json!({"mode":"visual","memory_review":i==11}))
+            .unwrap();
+    }
+    c.sealed.set(true);
+    let page = c.followup_page();
+    assert!(
+        page["members"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r["outcome"]["input_check"]["verdict"] == "contradicted"),
+        "{page}"
+    );
+    assert_eq!(
+        serde_json::to_vec(&f::read_plan(&root, &reference).unwrap()).unwrap(),
+        pinned
+    );
+    let (_, saved) = f::read_report(&root, &reference).unwrap().unwrap();
+    let mut tampered = saved.clone();
+    tampered
+        .outcomes
+        .iter_mut()
+        .find_map(|o| o.input_check.as_mut())
+        .unwrap()
+        .verdict = reversebolt_core::memory_trajectories::Verdict::Consistent;
+    assert!(
+        f::save_report(&root, &tampered)
+            .unwrap_err()
+            .contains("Invalid memory follow-up result")
+    );
+    let archive = Archive::open(
+        &root.join("source-folder/memory-evidence/batch-002"),
+        &saved.evidence_manifest_sha256,
+    )
+    .unwrap();
+    assert_eq!(
+        serde_json::to_vec(&f::assess(&plan, &archive, || false).unwrap()).unwrap(),
+        serde_json::to_vec(&saved).unwrap()
+    );
+    assert_eq!(c.reads.get(), 24);
+    assert_eq!(c.frames.get(), 24);
+    println!(
+        "AUTOMATIC_MEMORY_SELECTION_FIXTURE={} REPORT={}",
+        c.root.display(),
+        page["report_sha256"]
+    );
+}
+#[test]
+fn automatic_memory_selection_abstains_without_input_or_target_access() {
+    let mut c = Case::new(12);
+    let mut args = c.followup_request();
+    args.as_object_mut().unwrap().remove("groups");
+    c.sealed.set(true);
+    let result = c.command("prepare_memory_followup", args).unwrap();
+    assert_eq!(result["prepared"], false);
+    assert_eq!(result["selection"]["groups"], json!([]));
+    assert_eq!(c.engine.live.as_ref().unwrap().view.coverage.batch, 1);
+    assert!(
+        c.engine
+            .live
+            .as_ref()
+            .unwrap()
+            .view
+            .memory_followup
+            .is_none()
     );
     assert_eq!(c.reads.get(), 12);
 }

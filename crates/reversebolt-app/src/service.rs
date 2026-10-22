@@ -143,6 +143,7 @@ impl EngineHandle {
                         | "read_capture"
                         | "read_memory_proposals"
                         | "read_memory_followup"
+                        | "plan_memory_followup"
                         | "read_sequence"
                         | "read_play_evidence"
                         | "read_activity_experiment"
@@ -179,6 +180,7 @@ impl EngineHandle {
                             | "analyze_memory_evidence"
                             | "read_memory_proposals"
                             | "read_memory_followup"
+                            | "plan_memory_followup"
                             | "prepare_memory_followup"
                             | "read_capture"
                             | "submit_observation"
@@ -248,6 +250,7 @@ impl EngineHandle {
                                 | "analyze_memory_evidence"
                                 | "read_memory_proposals"
                                 | "read_memory_followup"
+                                | "plan_memory_followup"
                                 | "prepare_memory_followup"
                                 | "list_memory_processes"
                                 | "capture"
@@ -406,6 +409,9 @@ pub(crate) fn native_command(
     }
     match command.action.as_str() {
         "read_memory_proposals" => return crate::memory_proposals::read(directory, &command.args),
+        "plan_memory_followup" => {
+            return crate::memory_proposals::followup::recommend(engine, directory, &command.args);
+        }
         "read_memory_followup" => {
             return crate::memory_proposals::followup::read(directory, &command.args);
         }

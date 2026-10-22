@@ -2,18 +2,11 @@ use super::*;
 use crate::{memory_followup as f, memory_trajectories as m};
 
 impl LiveSession {
-    /// Pin a report's complete selected groups before releasing the source batch.
-    /// Selection never reads fresh bytes or uses a screen label. Only future
-    /// captures touch the selected windows; original mappings remain unverified.
-    pub fn prepare_memory_followup(
-        &mut self,
-        root: &Path,
+    fn memory_followup_source(
+        &self,
         report: &m::Report,
         report_hash: &str,
-        groups: &[usize],
-        changes: &crate::changes::Store,
-    ) -> Result<f::Reference> {
-        // Reject stale requests before any target access.
+    ) -> Result<crate::memory_evidence::Archive> {
         if report.investigation_id != self.view.investigation_id
             || report.batch != self.view.coverage.batch
             || report.capture_count != self.view.sample_count
@@ -28,6 +21,37 @@ impl LiveSession {
         {
             return Err("Pin the current completed proposal report and exact capture count".into());
         }
+        crate::memory_evidence::Archive::open(
+            &self
+                .root_directory
+                .join("memory-evidence")
+                .join(format!("batch-{:03}", report.batch)),
+            &report.manifest_sha256,
+        )
+    }
+    /// Read-only planning from the checksum-pinned report and archived timing metadata.
+    pub fn recommend_memory_followup(
+        &self,
+        report: &m::Report,
+        report_hash: &str,
+    ) -> Result<f::selection::Recommendation> {
+        let archive = self.memory_followup_source(report, report_hash)?;
+        f::selection::recommend(report, archive.manifest(), report_hash)
+    }
+    /// Pin a report's complete selected groups before releasing the source batch.
+    /// Selection never reads fresh bytes or uses a screen label. Only future
+    /// captures touch the selected windows; original mappings remain unverified.
+    pub fn prepare_memory_followup(
+        &mut self,
+        root: &Path,
+        report: &m::Report,
+        report_hash: &str,
+        groups: &[usize],
+        changes: &crate::changes::Store,
+    ) -> Result<f::Reference> {
+        // Reject stale requests before any target access; pin source-derived expectations.
+        let archive = self.memory_followup_source(report, report_hash)?;
+        let source = f::selection::Source::new(report, archive.manifest());
         if groups.is_empty()
             || groups.len() > f::MAX_GROUPS
             || groups.iter().copied().collect::<BTreeSet<_>>().len() != groups.len()
@@ -80,6 +104,7 @@ impl LiveSession {
                     source_verdict: c.assessment.verdict,
                     source_mapping_invalidated: c.chunk_invalidated_in_recording,
                     window: start,
+                    input_expectation: source.expectation(c),
                 });
             }
         }

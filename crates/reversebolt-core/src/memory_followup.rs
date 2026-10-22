@@ -12,6 +12,7 @@ use std::{
     path::{Path, PathBuf},
 };
 pub mod input;
+pub mod selection;
 
 pub const POLICY: &str = "memory_followup_v1";
 pub const MAX_GROUPS: usize = 8;
@@ -33,6 +34,8 @@ pub struct Candidate {
     pub source_verdict: Verdict,
     pub source_mapping_invalidated: bool,
     pub window: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_expectation: Option<selection::Expectation>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Plan {
@@ -57,6 +60,8 @@ pub struct Outcome {
     pub mapping_invalidated_in_recording: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub input: Option<input::Evidence>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_check: Option<selection::Check>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Report {
@@ -68,6 +73,8 @@ pub struct Report {
     pub limitation: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub input_associations: Option<input::Description>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_expectations: Option<selection::Description>,
 }
 
 fn hash(s: &str) -> bool {
@@ -114,6 +121,11 @@ impl Plan {
             if c.group >= m::MAX_GROUPS
                 || c.member >= m::MAX_MEMBERS
                 || !keys.insert((c.group, c.member))
+                || c.input_expectation.as_ref().is_some_and(|e| {
+                    !e.valid()
+                        || e.source_memory_samples > self.source_captures
+                        || c.source_mapping_invalidated
+                })
                 || s.address % s.kind.width() as u64 != 0
                 || s.values.iter().any(|v| !v.is_finite())
                 || s.address < w.address
@@ -262,12 +274,18 @@ pub fn assess(plan: &Plan, archive: &Archive, cancelled: impl Fn() -> bool) -> R
             } else {
                 Verdict::Consistent
             };
+            let input = input::analyze(manifest, c.window, &captures, &values[i]);
+            let input_check = c
+                .input_expectation
+                .as_ref()
+                .map(|e| selection::check(e, input.as_ref(), &values[i]));
             Outcome {
                 group: c.group,
                 member: c.member,
                 changed_pairs,
                 mapping_invalidated_in_recording: manifest.invalid_chunks.contains(&c.window),
-                input: input::analyze(manifest, c.window, &captures, &values[i]),
+                input,
+                input_check,
                 assessment: Assessment {
                     values: values[i].clone(),
                     missing_reads: missing[i],
@@ -289,6 +307,11 @@ pub fn assess(plan: &Plan, archive: &Archive, cancelled: impl Fn() -> bool) -> R
         memory_captures: captures,
         outcomes,
         limitation: LIMITATION.into(),
+        input_expectations: plan
+            .candidates
+            .iter()
+            .any(|c| c.input_expectation.is_some())
+            .then(selection::Description::default),
         input_associations: manifest
             .samples
             .iter()
@@ -348,6 +371,15 @@ fn check_report(plan: &Plan, report: &Report) -> Result<()> {
             .as_ref()
             .is_some_and(|d| d.policy != input::POLICY)
         || report.input_associations.is_some() != report.outcomes.iter().any(|o| o.input.is_some())
+        || report
+            .input_expectations
+            .as_ref()
+            .is_some_and(|d| d.policy != selection::POLICY)
+        || report.input_expectations.is_some()
+            != plan
+                .candidates
+                .iter()
+                .any(|c| c.input_expectation.is_some())
         || report.outcomes.iter().zip(&plan.candidates).any(|(o, c)| {
             let a = &o.assessment;
             (o.group, o.member) != (c.group, c.member)
@@ -361,6 +393,10 @@ fn check_report(plan: &Plan, report: &Report) -> Result<()> {
                 || a.violations > a.checked
                 || o.changed_pairs >= n
                 || o.input.as_ref().is_some_and(|e| !e.valid(&a.values))
+                || o.input_check
+                    != c.input_expectation
+                        .as_ref()
+                        .map(|e| selection::check(e, o.input.as_ref(), &a.values))
         })
     {
         return Err("Invalid memory follow-up result scope, counts or members".into());

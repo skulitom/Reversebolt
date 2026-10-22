@@ -71,9 +71,45 @@ coverage extends through a read. Matching mapping metadata proves neither an
 allocation's lifetime nor an atomic snapshot. Historical addresses, labels and
 correlations confer no current binding, semantic certainty or editing authority.
 
+### Automatic selection for memory follow-ups
+
+The initial automatic broad observation may continue once into twelve fresh,
+visual-only memory samples. This requires a completed current proposal report,
+no visible prediction checks, no active freeze or other job, and no human hold,
+cancellation, changed scope or pending analysis. It does not run after runtime
+inspection, a recheck, a change search, an explicit observation job, or a follow-up.
+Stop/Pause on the completed parent also prevents its pending continuation or
+stops its active child. Restart does not resume this extra continuation.
+
+`reversebolt_plan_memory_followup` takes `investigation_id`, `batch`, `after_sample`
+and `report_sha256` for the exact current saved proposal report. It is read-only:
+it checks the report and source manifest checksums and plans from saved numeric
+values and memory-read input timing; it does not reverify all raw payload bytes
+or contact the target. Up to four groups qualify under `memory_input_contrast_v1`:
+at least two separated episodes of one sampled key, readable no-key intervals
+on both sides, numeric change during every bounded episode, and no change during
+any readable no-key interval. Missing/focus/gap evidence remains unknown. Groups
+are ranked by their strongest member's episode and quiet-pair counts, then index;
+numeric rivals do not multiply the score. Eligible/omitted counts remain explicit.
+
+Omit `groups` from `reversebolt_prepare_memory_followup` to use that selection.
+An empty selection returns `prepared:false`, preserves the current batch and
+starts no job. Explicit groups still select one to eight complete groups. Both
+routes preserve all retained type rivals and pin any qualifying source-derived
+input expectation before fresh collection. `auto_observe:false` remains available.
+
+The fresh report's `input_check` compares that fixed expectation with new bounded
+key episodes and quiet intervals. Quiet drift, an opposite direction or a constant
+bounded key episode contradicts it. Two agreeing episodes and two unchanged quiet
+pairs are needed for consistency; absent coverage remains insufficient. These
+checks are separate from the original numeric-order constraints and post-hoc input
+counts. They do not establish causality, key meaning, allocation identity, gameplay
+names or editing authority. No unidentified desktop cards or report panel is added.
+[Generated verification and limits](../research/memory-selection/README.md).
+
 ### Prospective follow-up of memory proposals
 
-After reading a completed proposal page, call `reversebolt_prepare_memory_followup`
+For explicit selection after reading a completed proposal page, call `reversebolt_prepare_memory_followup`
 with the current `investigation_id`, `batch`, `after_sample`, `report_sha256` and
 one to eight group indices in `groups`. All retained members of each chosen group
 are pinned, including numeric rivals. The source report must match the current

@@ -8,7 +8,7 @@ struct Prepare {
     batch: usize,
     after_sample: usize,
     report_sha256: String,
-    groups: Vec<usize>,
+    groups: Option<Vec<usize>>,
     #[serde(default)]
     auto_observe: Option<bool>,
 }
@@ -28,12 +28,61 @@ pub fn prepare(engine: &mut Engine, root: &Path, args: &Value) -> Result<Value> 
         return Err("Supply the exact current investigation, batch and capture count".into());
     }
     let report = store::read(root, &p.investigation_id, p.batch, &p.report_sha256)?;
+    let selection = if p.groups.is_none() {
+        Some(
+            engine
+                .live
+                .as_ref()
+                .unwrap()
+                .recommend_memory_followup(&report, &p.report_sha256)?,
+        )
+    } else {
+        None
+    };
+    let groups = p.groups.unwrap_or_else(|| {
+        selection
+            .as_ref()
+            .unwrap()
+            .groups
+            .iter()
+            .map(|g| g.group)
+            .collect()
+    });
+    if selection.is_some() && groups.is_empty() {
+        return Ok(
+            json!({"prepared":false,"selection":selection,"reason":"No retained pattern has repeated bounded key episodes with stable quiet intervals"}),
+        );
+    }
     let reference = engine
         .live
         .as_mut()
         .ok_or("Connect an application first")?
-        .prepare_memory_followup(root, &report, &p.report_sha256, &p.groups, &engine.changes)?;
-    Ok(json!({"prepared":true,"reference":reference,"limitation":f::LIMITATION}))
+        .prepare_memory_followup(root, &report, &p.report_sha256, &groups, &engine.changes)?;
+    Ok(
+        json!({"prepared":true,"reference":reference,"selection":selection,"limitation":f::LIMITATION}),
+    )
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Recommend {
+    investigation_id: String,
+    batch: usize,
+    after_sample: usize,
+    report_sha256: String,
+}
+pub fn recommend(engine: &Engine, root: &Path, args: &Value) -> Result<Value> {
+    let p: Recommend = serde_json::from_value(args.clone())
+        .map_err(|e| format!("Invalid memory selection: {e}"))?;
+    let session = engine.live.as_ref().ok_or("Connect an application first")?;
+    if p.investigation_id != session.view.investigation_id
+        || p.batch != session.view.coverage.batch
+        || p.after_sample != session.view.sample_count
+    {
+        return Err("Supply the exact current investigation, batch and capture count".into());
+    }
+    let report = store::read(root, &p.investigation_id, p.batch, &p.report_sha256)?;
+    serde_json::to_value(session.recommend_memory_followup(&report, &p.report_sha256)?)
+        .map_err(|e| e.to_string())
 }
 pub fn finish(engine: &mut Engine, root: &Path, cancel: &AtomicBool) -> Result<Value> {
     let session = engine.live.as_ref().ok_or("The investigation ended")?;
@@ -122,6 +171,7 @@ pub fn read(root: &Path, args: &Value) -> Result<Value> {
         "report_sha256":result.as_ref().map(|(h,_)|h),"captures":result.as_ref().map(|(_,r)|r.captures),
         "memory_captures":result.as_ref().map(|(_,r)|&r.memory_captures),"members":rows,
         "input_associations":result.as_ref().and_then(|(_,r)|r.input_associations.as_ref()),
+        "input_expectations":result.as_ref().and_then(|(_,r)|r.input_expectations.as_ref()),
         "evidence_manifest_sha256":result.as_ref().map(|(_,r)|&r.evidence_manifest_sha256),
         "source_manifest_sha256":plan.source_manifest_sha256,
         "next_offset":if p.report_sha256.is_some() && p.offset+limit<plan.candidates.len(){Some(p.offset+limit)}else{None},

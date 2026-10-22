@@ -1,0 +1,174 @@
+{
+  "method": "memory_input_contrast_v1",
+  "base_commit": "3f0e636a299bf76e2e1b6c3fe214619e02dea25d",
+  "goal_percent": 35,
+  "scope": "Generated target/input fixtures and offline replay only; no game, production app, native sampler worker, live model or upload.",
+  "workspace_tests_passed": 442,
+  "new_tests": 8,
+  "strict_clippy": "passed",
+  "formatting": "passed",
+  "fixture": {
+    "fixture": "C:\\DEV\\Reversebolt\\target\\memory-proposal-tests\\0e11df3c-79e6-44f6-bb6f-3be9851b0410",
+    "reference": {
+      "investigation_id": "fee339b9-8d2f-4e33-ba0b-a1ab19ee97e4",
+      "batch": 2,
+      "plan_sha256": "a5dfb88f9eff6a3428e1e01dbf4acaadd3f3cf5c0dbb030e65d450bf971b578b"
+    },
+    "report_sha256": "1909b4e501a646406612d33d37c3506aa851eca74b48f9fc4921e19abc483051",
+    "report_bytes": 3904,
+    "evidence_manifest_sha256": "2d571b9cf53d5d4a80eb645aca6af7233b9553a40e9a780a098ceb39a84eff7c",
+    "source_manifest_sha256": "cda7f5e6a61fe62068096220471105a368a15569e2644b19c181117111745c46",
+    "source_report_sha256": "18189af0e55b9ea8f58a76d989f14e3ba4fb82957b0409438b9a9ff4d6c2f2eb",
+    "members": 2,
+    "windows": 1,
+    "selected_bytes": 64,
+    "expectations": [
+      {
+        "policy": "memory_input_contrast_v1",
+        "key": 65,
+        "direction": "increased",
+        "source_memory_samples": 12,
+        "source_episodes": [
+          [
+            1,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "source_quiet_pairs": [
+          0,
+          4,
+          5,
+          9,
+          10
+        ],
+        "source_unbounded_episodes": 0,
+        "source_unknown_pairs": 0
+      },
+      {
+        "policy": "memory_input_contrast_v1",
+        "key": 65,
+        "direction": "increased",
+        "source_memory_samples": 12,
+        "source_episodes": [
+          [
+            1,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "source_quiet_pairs": [
+          0,
+          4,
+          5,
+          9,
+          10
+        ],
+        "source_unbounded_episodes": 0,
+        "source_unknown_pairs": 0
+      }
+    ],
+    "checks": [
+      {
+        "verdict": "contradicted",
+        "agreeing_episodes": [
+          [
+            1,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "disagreeing_episodes": [],
+        "quiet_unchanged_pairs": [
+          0,
+          4,
+          5,
+          9
+        ],
+        "quiet_changed_pairs": [
+          10
+        ],
+        "unbounded_episodes": 0,
+        "unknown_pairs": 0
+      },
+      {
+        "verdict": "contradicted",
+        "agreeing_episodes": [
+          [
+            1,
+            3
+          ],
+          [
+            6,
+            8
+          ]
+        ],
+        "disagreeing_episodes": [],
+        "quiet_unchanged_pairs": [
+          0,
+          4,
+          5,
+          9
+        ],
+        "quiet_changed_pairs": [
+          10
+        ],
+        "unbounded_episodes": 0,
+        "unknown_pairs": 0
+      }
+    ],
+    "offline_replay_identical": true
+  },
+  "legacy_replay": [
+    {
+      "fixture": "test-results/memory-followup-v1/fixture",
+      "bytes": 1669,
+      "sha256": "0fd543b4148bdfd6f9687b926cbab3a982c18adab87042337aef12a48bfede59",
+      "exact": true
+    },
+    {
+      "fixture": "test-results/memory-input-v1/fixture",
+      "bytes": 3752,
+      "sha256": "1cf006bca012b40ef4c0ff98c463af31a9b1299540706f7c737a0bc26989fbe1",
+      "exact": true
+    }
+  ],
+  "report_budget_bytes": [
+    172918,
+    205846,
+    188566
+  ],
+  "report_limit_bytes": 262144,
+  "failures_retained": [
+    "Full suite: generated single pressed endpoint poll caused correct abstention.",
+    "Full suite: adding endpoint polls without filling the intervening timeline left a >100 ms gap, causing correct abstention.",
+    "Strict Clippy: type complexity, fixed with Episode alias."
+  ],
+  "fixture_repair": "One shared generated timeline, filled before each read, with two explicit in-read polls. Production uncertainty rules unchanged.",
+  "previous_snapshot": {
+    "path": "test-results/memory-input-v1",
+    "files_verified": 354,
+    "manifest_sha256": "066b5abb24363a0ec094a851e2aa0a3657c4b33dcf394c1cd3c6dd66e2dbbe75"
+  },
+  "snapshot": {
+    "path": "test-results/memory-selection-v1",
+    "files": 475,
+    "manifest_sha256": "367a9c111a1357976f6f19a6e4cc48a0932e921356da5bbbb478d7b9ca8abb2a"
+  },
+  "desktop": "unavailable: existing quarantined Reversebolt.exe remains absent; no replacement or relaunch.",
+  "limitations": [
+    "Retained proposals only; earlier range/type/group omissions persist.",
+    "Observed key episodes are not independent trials, confirmed delivery or action meaning.",
+    "Strict quiet rule misses idle drift/regeneration; short follow-ups may abstain.",
+    "No semantic labels, causal effects, allocation identity, edit authority or independent-game performance established."
+  ]
+}
