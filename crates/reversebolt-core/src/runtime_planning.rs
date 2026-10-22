@@ -290,6 +290,7 @@ mod tests {
             basis: Default::default(),
             interpretation_source: None,
             motion: None,
+            appearances: None,
             source: crate::play_context::select(&frames, &evidence, "clock", 1)
                 .unwrap()
                 .unwrap(),

@@ -82,6 +82,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .file;
                 visual::image_bytes(Path::new(file))
             },
+            None,
         );
         results.push(json!({"name":case.name,"selection":selection,"measurements":measurements,"appearance_sequences":sequences}));
     }

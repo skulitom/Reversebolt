@@ -102,6 +102,7 @@ pub(crate) fn automatic_sequences(
     frames: &[reversebolt_core::visual::FrameRef],
     tracks: &[reversebolt_core::visual::VisualTrack],
     read_image: impl FnMut(&reversebolt_core::visual::FrameRef) -> Result<Vec<u8>>,
+    activity: Option<&reversebolt_core::play_context::Source>,
 ) -> Value {
     match reversebolt_vision::appearance_sequence::analyze(
         investigation,
@@ -109,7 +110,18 @@ pub(crate) fn automatic_sequences(
         tracks,
         read_image,
     ) {
-        Ok(report) => json!({"report":report,"error":null}),
+        Ok(report) => {
+            let mut value = json!({"report":report,"error":null});
+            if let Some(source) = activity {
+                value["activity"] = match reversebolt_vision::appearance_activity::summarize(
+                    &report, source, frames,
+                ) {
+                    Ok(summary) => json!({"summary":summary,"error":null}),
+                    Err(error) => json!({"summary":null,"error":error}),
+                };
+            }
+            value
+        }
         Err(error) => json!({"report":null,"error":error}),
     }
 }
@@ -252,7 +264,13 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     if let Some(automatic) = automatic {
         result["automatic_region_motion"] = match automatic {
             Ok(selection) => {
-                let sequences = automatic_sequences(
+                let activity = reversebolt_core::play_context::select(
+                    &frames,
+                    &evidence,
+                    investigation,
+                    session.view.coverage.batch,
+                );
+                let mut sequences = automatic_sequences(
                     investigation,
                     &frames,
                     &session.view.visual_tracks,
@@ -261,7 +279,11 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
                             .read_frame(investigation, &frame.id)
                             .map(|(_, bytes)| bytes)
                     },
+                    activity.as_ref().ok().and_then(Option::as_ref),
                 );
+                if let Err(error) = activity {
+                    sequences["activity"] = json!({"summary":null,"error":error});
+                }
                 json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"error":null})
             }
             Err(error) => json!({"selection":null,"measurements":[],"error":error}),

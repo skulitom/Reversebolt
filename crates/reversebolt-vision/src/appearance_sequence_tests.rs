@@ -100,6 +100,145 @@ fn run(frames: &[FrameRef], tracks: &[VisualTrack], images: &[Vec<u8>]) -> Repor
     analyze("inv", frames, tracks, |f| Ok(images[f.number - 1].clone())).unwrap()
 }
 
+fn activity_source(
+    frames: &[FrameRef],
+    indices: [usize; 2],
+) -> reversebolt_core::play_context::Source {
+    use reversebolt_core::play_context::{Frame, Pair, Source};
+    let cite = |f: &FrameRef| Frame {
+        id: f.id.clone(),
+        sha256: f.sha256.clone(),
+        number: f.number,
+        width: f.width,
+        height: f.height,
+        interval: f.capture_interval.clone().unwrap(),
+    };
+    Source {
+        investigation_id: frames[0]
+            .capture_interval
+            .as_ref()
+            .unwrap()
+            .clock_id
+            .clone(),
+        batch: 1,
+        key: 68,
+        quiet_difference: 0.,
+        frame_metadata_sha256: visual::digest(&serde_json::to_vec(frames).unwrap()),
+        pairs: indices.map(|i| Pair {
+            episode: i,
+            before: cite(&frames[i]),
+            after: cite(&frames[i + 1]),
+            difference: 20.,
+            input_sha256: visual::digest(
+                &serde_json::to_vec(&frames[i + 1].input_context).unwrap(),
+            ),
+        }),
+    }
+}
+
+fn activity_fixture(images: &[Vec<u8>]) -> (Vec<FrameRef>, Vec<VisualTrack>) {
+    let (mut frames, tracks) = fixture(images);
+    for frame in &mut frames {
+        frame.capture_interval.as_mut().unwrap().clock_id = "inv".into();
+        frame.input_context.as_mut().unwrap().clock_id = "inv".into();
+    }
+    (frames, tracks)
+}
+
+#[test]
+fn activity_projection_uses_selected_intervals_not_origin_delta_and_preserves_missing() {
+    use reversebolt_core::appearance_activity::Status;
+    let patch = texture(17);
+    let images: Vec<_> = [
+        [64, 80],
+        [224, 144],
+        [100, 80],
+        [132, 80],
+        [96, 80],
+        [96, 80],
+        [96, 80],
+        [96, 80],
+    ]
+    .iter()
+    .map(|at| png(&patch, *at))
+    .collect();
+    let (frames, tracks) = activity_fixture(&images);
+    let report = run(&frames, &tracks, &images);
+    let source = activity_source(&frames, [0, 2]);
+    let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+    assert_eq!(
+        summary.appearances[0].pairs[0].displacement,
+        Some([160., 64.])
+    );
+    assert_eq!(
+        summary.appearances[0].pairs[1].displacement,
+        Some([32., 0.])
+    );
+    assert_eq!(
+        summary.appearances[0].pairs[1].before_region,
+        Some([100., 80., 64., 64.])
+    );
+    assert_eq!(
+        summary.appearances[0].pairs[1].after_region,
+        Some([132., 80., 64., 64.])
+    );
+    summary.validate(&source).unwrap();
+    let source = activity_source(&frames, [0, 6]);
+    let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+    assert_eq!(summary.appearances[0].pairs[1].status, Status::NotMeasured);
+    assert_eq!(summary.appearances[0].pairs[1].displacement, None);
+    let mut failures = vec![];
+    let mut bad = summary.clone();
+    bad.appearances[0].pairs[1].displacement = Some([0., 0.]);
+    failures.push(bad);
+    let mut bad = summary.clone();
+    bad.appearances[0].pairs[0].displacement = Some([f64::NAN, 0.]);
+    failures.push(bad);
+    let mut bad = summary.clone();
+    bad.appearances[0].origin.image_sha256 = "f".repeat(64);
+    failures.push(bad);
+    let mut bad = summary.clone();
+    bad.appearances.push(bad.appearances[0].clone());
+    failures.push(bad);
+    let mut bad = summary.clone();
+    bad.matcher_policy.push_str("changed");
+    failures.push(bad);
+    for bad in failures {
+        assert!(bad.validate(&source).is_err());
+    }
+    let mut changed = source.clone();
+    changed.key = 65;
+    assert!(summary.validate(&changed).is_err());
+    assert!(crate::appearance_activity::summarize(&report, &changed, &frames).is_err());
+    let mut changed = frames.clone();
+    changed[0].started_unix_ms += 1;
+    assert!(crate::appearance_activity::summarize(&report, &source, &changed).is_err());
+}
+
+#[test]
+fn unresolved_appearance_never_becomes_zero_or_fills_a_later_selected_pair() {
+    use reversebolt_core::appearance_activity::Status;
+    let patch = texture(17);
+    let images = vec![
+        png(&patch, [64, 80]),
+        png(&texture(999), [224, 144]),
+        png(&patch, [64, 80]),
+        png(&patch, [64, 80]),
+    ];
+    let (frames, tracks) = activity_fixture(&images);
+    let report = run(&frames, &tracks, &images);
+    let source = activity_source(&frames, [0, 2]);
+    let summary = crate::appearance_activity::summarize(&report, &source, &frames).unwrap();
+    assert_eq!(summary.appearances[0].pairs[0].status, Status::PoorMatch);
+    assert_eq!(summary.appearances[0].pairs[1].status, Status::NotMeasured);
+    assert!(
+        summary.appearances[0]
+            .pairs
+            .iter()
+            .all(|p| p.displacement.is_none())
+    );
+}
+
 #[test]
 fn sequence_keeps_origin_signed_changes_timing_inputs_and_full_source_bindings() {
     let patch = texture(17);

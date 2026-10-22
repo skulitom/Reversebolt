@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Regional interpretation context (2026-10-22): **35% unchanged**.
+The automatic reader projects appearance traces onto the exact two activity
+intervals, preserving missing/failed results and original-image rectangles and
+signed displacement. The bounded source-bound summary reaches the image
+interpreter and is retained in shared context without changing its uncertainty,
+metadata questions, comparison eligibility or write authority.
+
+All 354 workspace test executions and strict workspace Clippy pass. Frozen
+cached-observation replays kept all prior appearance reports/base evidence equal.
+Four local activity calls compared baseline/augmented context on the same saved
+Hyperbolica/Garden images. Each case supplies one measured interval and explicitly
+lacks regional coverage of the second. All four consistency flags remain false;
+some prose conflicts with the flag or measured area. No accuracy improvement or
+verified control is claimed. All 151 source files and 37 original inputs pass
+the audit. No game, new capture, input, field write or new object-observation call
+ran; desktop publication remains unavailable after quarantine.
+[Method and results](../research/appearance-context/README.md).
+
 Runtime appearance integration (2026-10-22): **35% unchanged**.
 Automatic runtime discovery now starts one existing background image-observation
 pass after capture 2, and settles it before runtime inspection/naming archives

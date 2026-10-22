@@ -8,6 +8,8 @@ use std::{fs, io::Read, path::PathBuf};
 struct Manifest {
     source: reversebolt_core::play_context::Source,
     frames: Vec<PathBuf>,
+    #[serde(default)]
+    appearances: Option<reversebolt_core::appearance_activity::Summary>,
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
@@ -44,6 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let input = Input {
         source: manifest.source,
         frames,
+        appearances: manifest.appearances,
     };
     input.validate()?;
     let output = fs::OpenOptions::new()

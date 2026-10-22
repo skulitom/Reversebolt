@@ -38,6 +38,15 @@ fail. Appearance observations remain provisional and supply no write authority.
 `read_play_evidence` takes the exact `investigation_id`, `batch` and 2–20 ordered
 `frame_ids`. It reads retained, hash-checked images and input metadata, returning
 rendered differences, key episodes, quiet medians and explicit unknown intervals.
+When the existing activity-selection policy finds two eligible intervals,
+`automatic_region_motion.appearance_sequences.activity` contains a bounded
+`summary` or explicit `error`. Its outcomes follow those same two intervals;
+`not_measured` has no displacement or rectangles. Accepted displacement and
+`before_region`/`after_region` use original image pixels, unlike normalized
+global patch measurements. The summary is retained as optional `appearances`
+in the activity interpretation receipt and shared activity context. It does not
+change interpretation flags, comparison eligibility, semantic names or write
+authority. Historical records without this field remain supported.
 It returns no pixels or executable plan and performs no capture, target read,
 model call, input or write. Use the cited frames through `read_capture` or
 `read_sequence` when interpreting what changed; then link a grounded hypothesis

@@ -661,6 +661,7 @@ fn hypothesis_provenance_survives_restart_and_rejects_changed_question_or_path()
         basis: Default::default(),
         interpretation_source: None,
         motion: None,
+        appearances: None,
         source: reversebolt_core::play_context::Source {
             investigation_id: test.investigation.clone(),
             batch: 1,

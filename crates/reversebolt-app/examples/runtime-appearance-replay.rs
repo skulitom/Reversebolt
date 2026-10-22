@@ -70,8 +70,8 @@ struct Case {
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 3 {
-        return Err("usage: runtime-appearance-replay CASE_JSON MODEL NEW_OUTPUT_DIRECTORY".into());
+    if args.len() != 3 && !(args.len() == 5 && args[3] == "--observations") {
+        return Err("usage: runtime-appearance-replay CASE_JSON MODEL NEW_OUTPUT_DIRECTORY [--observations PRIOR_RESULT_JSON]".into());
     }
     let mut bytes = vec![];
     fs::File::open(&args[0])?
@@ -121,13 +121,17 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         .collect();
     session.view.sample_count = 2;
     let cancel = Arc::new(AtomicBool::new(false));
-    let mut worker = local_observer::Worker::start(
-        local_observer::Prepared::from_session(&session)?,
-        args[1].clone(),
-        1,
-        cancel.clone(),
-        output.to_owned(),
-    )?;
+    let mut worker = if args.len() == 3 {
+        Some(local_observer::Worker::start(
+            local_observer::Prepared::from_session(&session)?,
+            args[1].clone(),
+            1,
+            cancel.clone(),
+            output.to_owned(),
+        )?)
+    } else {
+        None
+    };
     // Simulate completed later captures without acquiring any new evidence.
     session.view.frames = case.frames.iter().map(|f| f.reference.clone()).collect();
     session.view.sample_count = case.frames.len();
@@ -135,16 +139,43 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let request = json!({"investigation_id":session.view.investigation_id,"batch":case.batch,"frame_ids":ids});
     let without_observations = play_evidence::read(&session, &request)?;
     let started = Instant::now();
-    let completed = loop {
-        if let Some(result) = worker.poll() {
-            break result?;
+    let publication = if let Some(worker) = &mut worker {
+        let completed = loop {
+            if let Some(result) = worker.poll() {
+                break result?;
+            }
+            std::thread::sleep(Duration::from_millis(25));
+        };
+        completed.publish(&mut session, &cancel)?
+    } else {
+        let mut cached = vec![];
+        fs::File::open(&args[4])?
+            .take(8 * 1024 * 1024 + 1)
+            .read_to_end(&mut cached)?;
+        if cached.len() > 8 * 1024 * 1024 {
+            return Err("Observation receipt exceeds budget".into());
         }
-        std::thread::sleep(Duration::from_millis(25));
+        let data: serde_json::Value = serde_json::from_slice(&cached)?;
+        let tracks: Vec<visual::VisualTrack> =
+            serde_json::from_value(data["visual_tracks"].clone())?;
+        if tracks.len() > visual::MAX_TRACKS {
+            return Err("Too many retained tracks".into());
+        }
+        let mut observations = vec![];
+        for track in tracks {
+            for observation in track.observations.into_iter().flatten() {
+                if observation.submitted_by != "local-model" {
+                    return Err("Only retained local-model observations are accepted".into());
+                }
+                observations.push(observation.input);
+            }
+        }
+        let recorded = session.submit_observations(observations, "local-model")?;
+        json!({"recorded":recorded,"replayed_observations":true,"new_model_calls":0,"receipt_sha256":visual::digest(&cached)})
     };
-    let publication = completed.publish(&mut session, &cancel)?;
     let evidence = play_evidence::read(&session, &request)?;
     let result = json!({"schema":1,"name":case.name,"manifest_sha256":visual::digest(&bytes),
-        "model":args[1],"seconds":started.elapsed().as_secs_f64(),"publication":publication,
+        "model":if worker.is_some() {Some(&args[1])} else {None},"seconds":started.elapsed().as_secs_f64(),"publication":publication,
         "visual_tracks":session.view.visual_tracks,"request":request,"evidence":evidence,
         "without_observations":without_observations,
         "native_target_access":false,"new_captures":0,"inputs_sent":0,"field_writes":0,

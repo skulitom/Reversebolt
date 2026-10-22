@@ -1,0 +1,210 @@
+{
+  "source_manifest_sha256": "0a9553faada9c3e442eb42b7597515aa80845095f08f83cb95fc9e7b8ebafe36",
+  "source_files": 151,
+  "input_files": 37,
+  "image_interpretation_calls": 4,
+  "new_object_observation_calls": 0,
+  "native_target_access": false,
+  "cases": [
+    {
+      "case": 0,
+      "selected_frame_numbers": [
+        [
+          2,
+          3
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "outcomes": [
+        [
+          {
+            "after_region": [
+              429.6875,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "before_region": [
+              487.6953125,
+              289.58333333333337,
+              113.8671875,
+              118.75000000000001
+            ],
+            "displacement": [
+              -58.0078125,
+              0.0
+            ],
+            "status": "matched"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "poor_match"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "poor_match"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "ambiguous"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ]
+      ],
+      "baseline": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot shifts slightly left and the foreground red plants disappear. The camera angle appears to change slightly, altering the view of the horizon and background elements. The desk and chair remain central but their perspective shifts marginally.",
+        "uncertainty": "The changes are subtle and could be attributed to minor camera adjustments or rendering variations rather than a specific control action. The sparse and inconsistent match data makes it difficult to confirm a consistent, significant change driven by a single input."
+      },
+      "augmented": {
+        "consistent_visible_change": false,
+        "description": "In both pairs, the cyan robot on the right shifts slightly leftward and the left-side red/teal spires disappear from view. The central desk and tree remain largely stable. The second pair shows a similar leftward shift of the robot but the spires are already absent in its 'before' frame, making the change pattern inconsistent between pairs.",
+        "uncertainty": "High. The robot's movement is subtle and could be camera drift rather than object motion. The spire disappearance is only clearly visible in one pair. Sparse patch matches and poor/ambiguous statuses prevent confident attribution of a single consistent change."
+      },
+      "baseline_error": null,
+      "augmented_error": null,
+      "baseline_receipt_sha256": "14091642816976c1f11ccf89b656dd4396bf22570e05b17a17c38c73d9b5b3f4",
+      "augmented_receipt_sha256": "5b1caaf3f096b8d6e4658fee6b80fadb4fb285144519eead0ab9dd7b1e29bd7a",
+      "global_motion_unchanged": true,
+      "accuracy": "unknown"
+    },
+    {
+      "case": 1,
+      "selected_frame_numbers": [
+        [
+          4,
+          5
+        ],
+        [
+          10,
+          11
+        ]
+      ],
+      "outcomes": [
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": [
+              682.5,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "before_region": [
+              642.5,
+              5.0,
+              215.0,
+              107.5
+            ],
+            "displacement": [
+              40.0,
+              0.0
+            ],
+            "status": "matched"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ],
+        [
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          },
+          {
+            "after_region": null,
+            "before_region": null,
+            "displacement": null,
+            "status": "not_measured"
+          }
+        ]
+      ],
+      "baseline": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a static room with a central trapezoidal floor and a small staircase. The only apparent difference is a slight horizontal shift of the floor's internal line pattern and the staircase's position relative to the frame edges, suggesting a minor camera pan or rendering variance. No new objects, color changes, or structural alterations are visible.",
+        "uncertainty": "The measured displacements are small (2-11px) and sparse (3-4 matches out of 12 selected), with many unresolved matches. The changes are subtle and could be due to rendering artifacts, minor camera drift, or measurement noise rather than a deliberate scene change. The consistency between pairs is weak due to low match counts."
+      },
+      "augmented": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a rightward shift of the upper-right colored shapes (peach/pink) and slight horizontal movement of the central floor pattern. The staircase and overall room layout remain stable. The shift is consistent in direction across both intervals.",
+        "uncertainty": "The change is subtle and could be due to camera panning or minor rendering variation rather than a discrete control action. No clear object identity or causal link is established. The consistency is moderate but not definitive."
+      },
+      "baseline_error": null,
+      "augmented_error": null,
+      "baseline_receipt_sha256": "316335394ae60d9cd4402b1fa520cb2e3275fad50f09c2b3f1096813d1a10e87",
+      "augmented_receipt_sha256": "7b0a9592bc62e236c3c608ba7f7f2c502897b81a82ff1ccb6c15fdd53a16125f",
+      "global_motion_unchanged": true,
+      "accuracy": "unknown"
+    }
+  ]
+}

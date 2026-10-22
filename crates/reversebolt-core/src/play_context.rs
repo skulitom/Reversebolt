@@ -229,6 +229,9 @@ pub struct Context {
     /// Correspondences actually supplied to this interpretation, never semantic proof.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub motion: Option<crate::activity_motion::Summary>,
+    /// Original-appearance evidence for these exact pairs; missing stays explicit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub appearances: Option<crate::appearance_activity::Summary>,
     pub source: Source,
     pub observation: Observation,
 }
@@ -251,6 +254,7 @@ impl Context {
             basis,
             interpretation_source: None,
             motion: None,
+            appearances: None,
             source,
             observation,
         };
@@ -275,6 +279,9 @@ impl Context {
         self.observation.validate()?;
         if let Some(motion) = &self.motion {
             motion.validate(&self.source)?;
+        }
+        if let Some(appearances) = &self.appearances {
+            appearances.validate(&self.source)?;
         }
         if let Some(source) = &self.interpretation_source
             && (!uuid::Uuid::parse_str(&source.review_id)

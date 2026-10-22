@@ -482,7 +482,21 @@ pub(crate) fn prepare_activity(
             .map_err(|e| e.to_string())?;
         frames.push(frame);
     }
-    let input = reversebolt_observer::runtime_activity::Input { source, frames };
+    let appearances =
+        evidence["automatic_region_motion"]["appearance_sequences"]["activity"]["summary"].clone();
+    let appearances = if appearances.is_null() {
+        None
+    } else {
+        Some(
+            serde_json::from_value::<reversebolt_core::appearance_activity::Summary>(appearances)
+                .map_err(|e| e.to_string())?,
+        )
+    };
+    let input = reversebolt_observer::runtime_activity::Input {
+        source,
+        frames,
+        appearances,
+    };
     input.validate()?;
     Ok(Some(input))
 }

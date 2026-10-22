@@ -139,6 +139,11 @@ assembling runtime evidence. Missing images, rejected model responses and obsole
 geometry are retained as unavailable visual evidence. Metadata discovery remains
 independent of whether any appearance is found. See [integration and saved-game
 replays](research/runtime-appearances/README.md).
+Regional measurements now also accompany the activity interpretation for its
+exact selected image pairs. Missing intervals stay explicit; the interpreter's
+uncertainty is retained with the measurements. A four-call saved-image comparison
+verified this connection, but did not establish better accuracy. See [regional
+interpretation context](research/appearance-context/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

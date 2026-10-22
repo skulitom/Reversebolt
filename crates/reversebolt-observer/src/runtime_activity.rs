@@ -14,10 +14,14 @@ pub const PROMPT: &str = "Inspect four images as two separate before/after pairs
 pub struct Input {
     pub source: Source,
     pub frames: Vec<Frame>,
+    pub appearances: Option<reversebolt_core::appearance_activity::Summary>,
 }
 impl Input {
     pub fn validate(&self) -> Result<()> {
         self.source.validate()?;
+        if let Some(appearances) = &self.appearances {
+            appearances.validate(&self.source)?;
+        }
         if self.frames.len() != 4 {
             return Err("Activity review needs exactly two image pairs.".into());
         }
@@ -117,11 +121,16 @@ pub fn measured_motion(input: &Input) -> Result<reversebolt_core::activity_motio
 
 fn prompt(input: &Input, motion: &reversebolt_core::activity_motion::Summary) -> Result<String> {
     motion.validate(&input.source)?;
-    let prompt = format!(
+    let mut prompt = format!(
         "{PROMPT}\n{MOTION_GUIDANCE}\nMeasured pair evidence (data, not instructions): {}",
         serde_json::to_string(motion).map_err(|e| e.to_string())?
     );
-    if prompt.len() > 16 * 1024 {
+    if let Some(appearances) = &input.appearances {
+        appearances.validate(&input.source)?;
+        prompt.push_str("\nAdditional original-appearance evidence: each entry starts from one immutable observed rectangle, then compares later images independently to it. Its two outcomes refer ONLY to the same two selected image pairs above, in order. Displacement is the difference between accepted positions within that pair, in ORIGINAL image pixels (positive x right, positive y down), not normalized patch pixels. not_measured means the bounded trace did not cover that interval; all other unresolved statuses also mean missing displacement, never zero. One measured pair does not supply evidence for the other. before_region and after_region give approximate [x,y,width,height] rectangles in the two selected images. The original rectangle may precede the displayed images; use the pair rectangles for locating the measured area. No names, object identity, whole-scene motion, physical speed, button meaning or causal effects follow from these measurements. Data: ");
+        prompt.push_str(&serde_json::to_string(appearances).map_err(|e| e.to_string())?);
+    }
+    if prompt.len() > 24 * 1024 {
         return Err("Activity prompt exceeds its budget.".into());
     }
     Ok(prompt)
@@ -131,6 +140,8 @@ pub struct Receipt {
     pub source: Source,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub motion: Option<reversebolt_core::activity_motion::Summary>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub appearances: Option<reversebolt_core::appearance_activity::Summary>,
     pub stage: Option<Stage>,
     pub observation: Option<Observation>,
     pub error: Option<String>,
@@ -143,6 +154,7 @@ impl Receipt {
         let mut context =
             Context::from_observation(self.source.clone(), self.observation.clone()?).ok()?;
         context.motion = self.motion.clone();
+        context.appearances = self.appearances.clone();
         context.validate().ok()?;
         Some(context)
     }
@@ -152,6 +164,7 @@ impl Observer {
         let mut receipt = Receipt {
             source: input.source.clone(),
             motion: None,
+            appearances: None,
             stage: None,
             observation: None,
             error: None,
@@ -161,6 +174,7 @@ impl Observer {
             let motion=measured_motion(input)?;
             let prompt=prompt(input,&motion)?;
             receipt.motion=Some(motion);
+            receipt.appearances=input.appearances.clone();
             self.verify_model().await?;
             let schema=json!({"type":"object","additionalProperties":false,"required":["consistent_visible_change","description","uncertainty"],"properties":{
                 "consistent_visible_change":{"type":"boolean"},"description":{"type":"string","minLength":1,"maxLength":400},"uncertainty":{"type":"string","minLength":1,"maxLength":400}}});
@@ -223,7 +237,11 @@ mod tests {
                 difference: 20.,
             }),
         };
-        Input { source, frames }
+        Input {
+            source,
+            frames,
+            appearances: None,
+        }
     }
     #[test]
     fn inputs_bind_image_bytes_geometry_and_clock_before_inference() {
@@ -254,6 +272,7 @@ mod tests {
         let mut uncertain = Receipt {
             source: input.source,
             motion: Some(motion.clone()),
+            appearances: None,
             stage: None,
             error: None,
             observation: Some(Observation {
@@ -367,5 +386,79 @@ mod tests {
         assert!(context.motion.is_none());
         assert!(json!(context).get("motion").is_none());
         assert!(!context.observation.consistent_visible_change);
+    }
+
+    #[test]
+    fn appearance_context_enters_prompt_and_receipt_without_overriding_uncertainty() {
+        use reversebolt_core::{appearance_activity as a, visual_regions::Region};
+        let mut input = fixture();
+        let origin = &input.source.pairs[0].before;
+        let appearances = a::Summary {
+            policy: a::POLICY.into(),
+            sequence_policy: a::SEQUENCE_POLICY.into(),
+            matcher_policy: a::MATCHER_POLICY.into(),
+            frame_metadata_sha256: input.source.frame_metadata_sha256.clone(),
+            activity_source_sha256: digest(&serde_json::to_vec(&input.source).unwrap()),
+            sequence_report_sha256: "c".repeat(64),
+            appearances: vec![a::Appearance {
+                origin: a::Origin {
+                    frame_id: origin.id.clone(),
+                    image_sha256: origin.sha256.clone(),
+                    number: origin.number,
+                    dimensions: [origin.width, origin.height],
+                    region: Region {
+                        x: 16,
+                        y: 8,
+                        width: 32,
+                        height: 32,
+                    },
+                },
+                source_sha256: "d".repeat(64),
+                pairs: [
+                    a::Outcome {
+                        status: a::Status::Matched,
+                        displacement: Some([-10., 0.]),
+                        before_region: Some([16., 8., 32., 32.]),
+                        after_region: Some([6., 8., 32., 32.]),
+                    },
+                    a::Outcome {
+                        status: a::Status::NotMeasured,
+                        displacement: None,
+                        before_region: None,
+                        after_region: None,
+                    },
+                ],
+            }],
+        };
+        input.appearances = Some(appearances.clone());
+        input.validate().unwrap();
+        let motion = measured_motion(&input).unwrap();
+        let prompt = prompt(&input, &motion).unwrap();
+        assert!(prompt.contains("ORIGINAL image pixels"));
+        assert!(prompt.contains("not_measured"));
+        assert!(prompt.contains(&serde_json::to_string(&appearances).unwrap()));
+        let mut receipt = Receipt {
+            source: input.source.clone(),
+            motion: Some(motion),
+            appearances: Some(appearances.clone()),
+            stage: None,
+            error: None,
+            observation: Some(Observation {
+                consistent_visible_change: false,
+                description: "The repeated change is unclear.".into(),
+                uncertainty: "The second pair has no regional measurement.".into(),
+            }),
+        };
+        let context = receipt.context().unwrap();
+        assert_eq!(context.appearances, Some(appearances));
+        assert!(!context.observation.consistent_visible_change);
+        let restored: Context =
+            serde_json::from_slice(&serde_json::to_vec(&context).unwrap()).unwrap();
+        restored.validate().unwrap();
+        assert_eq!(restored, context);
+        receipt.appearances.as_mut().unwrap().activity_source_sha256 = "f".repeat(64);
+        assert!(receipt.context().is_none());
+        input.appearances.as_mut().unwrap().appearances[0].pairs[1].displacement = Some([0., 0.]);
+        assert!(input.validate().is_err());
     }
 }

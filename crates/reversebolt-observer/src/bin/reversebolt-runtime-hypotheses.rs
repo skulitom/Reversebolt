@@ -5,6 +5,8 @@ use std::{io::Read, path::PathBuf, sync::atomic::AtomicBool};
 struct ActivityManifest {
     source: reversebolt_core::play_context::Source,
     frames: Vec<PathBuf>,
+    #[serde(default)]
+    appearances: Option<reversebolt_core::appearance_activity::Summary>,
 }
 fn activity(
     path: &str,
@@ -39,6 +41,7 @@ fn activity(
     let input = reversebolt_observer::runtime_activity::Input {
         source: manifest.source,
         frames,
+        appearances: manifest.appearances,
     };
     input.validate()?;
     Ok(input)
