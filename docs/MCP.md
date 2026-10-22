@@ -104,10 +104,35 @@ fixed-region measurement. The two results remain independent.
 
 This assumes stable appearance and size. It does not fit rotation, deformation,
 scale changes or occlusion, and visually identical objects can mislead it. A match
-does not establish identity, physical speed or gameplay meaning. It is never
-propagated to a third frame or used to authorize an edit. No new image/model call
-is needed. `auto_regions: false` skips both automatic measurements.
+does not establish identity, physical speed or gameplay meaning. A returned
+rectangle never replaces the original template or authorizes an edit. No new
+capture/model call is needed. `auto_regions: false` skips the automatic analyses.
 See [controlled and saved-game correspondence checks](../research/region-appearance/README.md).
+
+`automatic_region_motion.appearance_sequences` also follows each selected original
+appearance through consecutive requested captures. Its `report` compares the
+unchanged original image and rectangle independently with each later image. It
+never uses the previous match as a new template. At most six following captures
+per source and twelve attempted pairs are shared in rounds across sources; these
+are additional to the existing first-pair measurements. No new observation or
+editable card is published. Results are also retained in automatic discovery's
+evidence archive.
+
+Each series retains its source plan, accepted count, attempted steps, stopping
+reason and `stopped_before` frame. Reasons distinguish requested-frame exhaustion,
+per-source/shared limits, unresolved appearance, source error, omitted capture and
+geometry/epoch change. A failed match is the last attempted step; no later match
+is reacquired. A gap or limit is reported without inventing a measurement there.
+Independent later source observations can still be analyzed.
+
+Accepted steps give `displacement_from_origin` and `displacement_from_previous`
+in approximate source-image pixels. Failed steps have null displacements, never
+zero. Capture-time bounds and sampled-key `exposure` refer to the previous/current
+interval; unknown timing/input has an explicit error/classification. This is not
+speed, key meaning or causal attribution. Series/step hashes bind the original
+source, requested frame metadata, algorithm versions, limits and relevant prefixes.
+Original and target pixels are rehashed on each attempt under the existing image
+size limits. See [sequence checks and limitations](../research/appearance-sequence/README.md).
 
 Optionally pass `region: {x, y, width, height}` to `read_play_evidence` to add
 `region_motion`. Coordinates are integers in the original image, with width and

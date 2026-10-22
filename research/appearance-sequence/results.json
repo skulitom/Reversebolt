@@ -1,0 +1,571 @@
+{
+  "source_manifest_sha256": "59220d69217e210534d57932b5099b2114513835db7af87b07d5163ec33fa7e0",
+  "result_sha256": "4f046fa1c81140a94ccb384ffaa412b27463bcf21c415ee1238d59d44eea94d6",
+  "frozen_sources": 148,
+  "unchanged_inputs": 24,
+  "previous_three_cases_unchanged": true,
+  "analytic_passed": 5,
+  "analytic_total": 5,
+  "game_accuracy": "unknown",
+  "process": {
+    "exit_code": 0,
+    "seconds": 2.672000000020489,
+    "stdout": "{\"cases\":8,\"target_access\":false}\n",
+    "stderr": ""
+  },
+  "analytic": [
+    {
+      "expected": {
+        "name": "sequence-0",
+        "accepted": [
+          3
+        ],
+        "attempts": 3,
+        "stop": "end_of_requested_frames",
+        "deltas": [
+          [
+            160,
+            64
+          ],
+          [
+            -160,
+            -64
+          ],
+          [
+            0,
+            0
+          ]
+        ]
+      },
+      "passed": true,
+      "attempted_pairs": 3,
+      "series": [
+        {
+          "accepted": 3,
+          "stop": "end_of_requested_frames",
+          "deltas": [
+            [
+              160.0,
+              64.0
+            ],
+            [
+              -160.0,
+              -64.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "expected": {
+        "name": "sequence-1",
+        "accepted": [
+          1
+        ],
+        "attempts": 2,
+        "stop": "unresolved_appearance"
+      },
+      "passed": true,
+      "attempted_pairs": 2,
+      "series": [
+        {
+          "accepted": 1,
+          "stop": "unresolved_appearance",
+          "deltas": [
+            [
+              160.0,
+              64.0
+            ],
+            null
+          ]
+        }
+      ]
+    },
+    {
+      "expected": {
+        "name": "sequence-2",
+        "accepted": [
+          1
+        ],
+        "attempts": 1,
+        "stop": "omitted_capture"
+      },
+      "passed": true,
+      "attempted_pairs": 1,
+      "series": [
+        {
+          "accepted": 1,
+          "stop": "omitted_capture",
+          "deltas": [
+            [
+              160.0,
+              64.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "expected": {
+        "name": "sequence-3",
+        "accepted": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "attempts": 12,
+        "stop": "analysis_budget"
+      },
+      "passed": true,
+      "attempted_pairs": 12,
+      "series": [
+        {
+          "accepted": 3,
+          "stop": "analysis_budget",
+          "deltas": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "accepted": 3,
+          "stop": "analysis_budget",
+          "deltas": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "accepted": 3,
+          "stop": "analysis_budget",
+          "deltas": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "accepted": 3,
+          "stop": "analysis_budget",
+          "deltas": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "expected": {
+        "name": "sequence-4",
+        "accepted": [
+          6
+        ],
+        "attempts": 6,
+        "stop": "step_limit"
+      },
+      "passed": true,
+      "attempted_pairs": 6,
+      "series": [
+        {
+          "accepted": 6,
+          "stop": "step_limit",
+          "deltas": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "game": [
+    {
+      "name": "Retained Tetris observations",
+      "source_sha256": "3127e8fc727cfb3c9d80210ce51f57e40e23fc4010ca6d75ea2d5167355d6919",
+      "attempted_pairs": 6,
+      "series": [
+        {
+          "origin": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+          "source_sha256": "3f030c424bca426be1f0c96d7901e78f12350acc6be22ae20232740a07dce6b7",
+          "claims": [
+            "Orange L-shaped block piece"
+          ],
+          "accepted": 2,
+          "stop": "unresolved_appearance",
+          "stopped_before": "db4536c0-9843-40a8-95a0-56d4975e5109",
+          "reason": "The appearance could not be matched unambiguously.",
+          "steps": [
+            {
+              "before_id": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+              "after_id": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+              "source_sha256": "e2ee9f4d1860e6d1f6c226e85235d4138a16e35f2ccb39223281e4e9d10c4a48",
+              "elapsed_us": [
+                2820012,
+                3205409
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "e4257ac9f3368162e03ab97e97abaf70025a04423fc88753edb944ebd1c5e060",
+              "displacement_from_origin": [
+                0.0,
+                0.0
+              ],
+              "displacement_from_previous": [
+                0.0,
+                0.0
+              ],
+              "error": null,
+              "measurement_status": "matched"
+            },
+            {
+              "before_id": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+              "after_id": "1f77a16e-e500-4129-8919-96eaa33b7963",
+              "source_sha256": "19f4b6cffdbe6edca9f8e5142591bef057e9943b9aae826fdc80b09cb653ff90",
+              "elapsed_us": [
+                2818664,
+                3212641
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "b38231116fecf3c417ad28fa1a1a9ba9a801d0e5a754da59356219aaf6309e9a",
+              "displacement_from_origin": [
+                0.0,
+                0.0
+              ],
+              "displacement_from_previous": [
+                0.0,
+                0.0
+              ],
+              "error": null,
+              "measurement_status": "matched"
+            },
+            {
+              "before_id": "1f77a16e-e500-4129-8919-96eaa33b7963",
+              "after_id": "db4536c0-9843-40a8-95a0-56d4975e5109",
+              "source_sha256": "378b7d14c9ccf54788c3c93689b93c71ad6b4dc0c404891d99efc23a3b8173d3",
+              "elapsed_us": [
+                2796911,
+                3199174
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "9a5c116329a3201ad8e4e2de3a365ec462810f05c5a0ac5c3d2e4f307c3a6004",
+              "displacement_from_origin": null,
+              "displacement_from_previous": null,
+              "error": null,
+              "measurement_status": "poor_match"
+            }
+          ]
+        },
+        {
+          "origin": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+          "source_sha256": "406fc56cdb7e1a0c45db18dde8f1b0a70cc390a086d9d2078cd8f83490868cd2",
+          "claims": [
+            "green tetromino piece"
+          ],
+          "accepted": 1,
+          "stop": "unresolved_appearance",
+          "stopped_before": "1f77a16e-e500-4129-8919-96eaa33b7963",
+          "reason": "The appearance could not be matched unambiguously.",
+          "steps": [
+            {
+              "before_id": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+              "after_id": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+              "source_sha256": "fa4018e965a4dc78b5ee37c69f2244a00819e96b963279f6f57eb1f5e291c12d",
+              "elapsed_us": [
+                2820012,
+                3205409
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "e4257ac9f3368162e03ab97e97abaf70025a04423fc88753edb944ebd1c5e060",
+              "displacement_from_origin": [
+                19.40625,
+                120.37499999999999
+              ],
+              "displacement_from_previous": [
+                19.40625,
+                120.37499999999999
+              ],
+              "error": null,
+              "measurement_status": "matched"
+            },
+            {
+              "before_id": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+              "after_id": "1f77a16e-e500-4129-8919-96eaa33b7963",
+              "source_sha256": "eb1ab38c40ced7f78a48046f8f0abe17f3bd6268c8ccb97338d542faf9350db0",
+              "elapsed_us": [
+                2818664,
+                3212641
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "b38231116fecf3c417ad28fa1a1a9ba9a801d0e5a754da59356219aaf6309e9a",
+              "displacement_from_origin": null,
+              "displacement_from_previous": null,
+              "error": null,
+              "measurement_status": "poor_match"
+            }
+          ]
+        },
+        {
+          "origin": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+          "source_sha256": "85089ed879b019aff02b5a2b17a5c54d415db86d758a4425b7d1411dc269a90e",
+          "claims": [
+            "Game Board"
+          ],
+          "accepted": 0,
+          "stop": "unresolved_appearance",
+          "stopped_before": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+          "reason": "The appearance could not be matched unambiguously.",
+          "steps": [
+            {
+              "before_id": "76e2b1c4-c327-4a87-a9bd-d5e4ae204c76",
+              "after_id": "74d1e2d5-acba-4a1b-8291-a37e0aa64475",
+              "source_sha256": "cf220d3cbe0a955cfa76bf624e63463d19a8066c4f160db6235131c91c147705",
+              "elapsed_us": [
+                2820012,
+                3205409
+              ],
+              "timing_error": null,
+              "exposure": {
+                "kind": "unknown",
+                "value": "Several controls sampled; individual effects are ambiguous"
+              },
+              "input_sha256": "e4257ac9f3368162e03ab97e97abaf70025a04423fc88753edb944ebd1c5e060",
+              "displacement_from_origin": null,
+              "displacement_from_previous": null,
+              "error": null,
+              "measurement_status": "unsupported_size"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "No retained observations (ablation)",
+      "source_sha256": "0642ae0b5546027a3afac432c9b7d57b4c0ef7ac1d37fa733bdb8d892b8ed7f5",
+      "attempted_pairs": 0,
+      "series": []
+    },
+    {
+      "name": "Capture 3 omitted (ablation)",
+      "source_sha256": "1f41b3e342fe52ba576cc7cf70d208e59bdd83f05d48e308d0095f8f8c3f5813",
+      "attempted_pairs": 0,
+      "series": []
+    }
+  ],
+  "stop_diagnostic": {
+    "result_sha256": "372ee4ad9b0c5c2ac2389caef9eef75db0cec91a20329d6aa2bc8310c3c187f4",
+    "scope": "Post-hoc known-case stop diagnostic; no identity or causal validation, no failed match reclassified.",
+    "oracle_sent_to_product": false,
+    "algorithm_changed": false,
+    "recorded_states": [
+      {
+        "frame": 2,
+        "capture_ms": [
+          1792560055326,
+          1792560055514
+        ],
+        "oracle_bracket": [
+          45,
+          49
+        ],
+        "stable_recorded_geometry": true,
+        "current": {
+          "x": 2,
+          "y": 4,
+          "dir": 1,
+          "color": "green",
+          "shape": 35904
+        },
+        "next": {
+          "color": "orange",
+          "shape": 17504
+        },
+        "landed_cells": 0
+      },
+      {
+        "frame": 3,
+        "capture_ms": [
+          1792560058335,
+          1792560058531
+        ],
+        "oracle_bracket": [
+          94,
+          98
+        ],
+        "stable_recorded_geometry": true,
+        "current": {
+          "x": 3,
+          "y": 10,
+          "dir": 1,
+          "color": "green",
+          "shape": 35904
+        },
+        "next": {
+          "color": "orange",
+          "shape": 17504
+        },
+        "landed_cells": 0
+      },
+      {
+        "frame": 4,
+        "capture_ms": [
+          1792560061350,
+          1792560061547
+        ],
+        "oracle_bracket": [
+          143,
+          147
+        ],
+        "stable_recorded_geometry": true,
+        "current": {
+          "x": 2,
+          "y": 15,
+          "dir": 2,
+          "color": "green",
+          "shape": 27648
+        },
+        "next": {
+          "color": "orange",
+          "shape": 17504
+        },
+        "landed_cells": 0
+      },
+      {
+        "frame": 5,
+        "capture_ms": [
+          1792560064344,
+          1792560064549
+        ],
+        "oracle_bracket": [
+          192,
+          196
+        ],
+        "stable_recorded_geometry": true,
+        "current": {
+          "x": 2,
+          "y": 2,
+          "dir": 0,
+          "color": "orange",
+          "shape": 17504
+        },
+        "next": {
+          "color": "cyan",
+          "shape": 3840
+        },
+        "landed_cells": 4
+      }
+    ],
+    "stationary_pixel_checks": [
+      {
+        "source_sha256": "3f030c424bca426be1f0c96d7901e78f12350acc6be22ae20232740a07dce6b7",
+        "origin": 2,
+        "target": 3,
+        "region": {
+          "height": 66,
+          "width": 44,
+          "x": 418,
+          "y": 191
+        },
+        "identical_rgb_bytes": true,
+        "maximum_channel_difference": 0
+      },
+      {
+        "source_sha256": "3f030c424bca426be1f0c96d7901e78f12350acc6be22ae20232740a07dce6b7",
+        "origin": 2,
+        "target": 4,
+        "region": {
+          "height": 66,
+          "width": 44,
+          "x": 418,
+          "y": 191
+        },
+        "identical_rgb_bytes": true,
+        "maximum_channel_difference": 0
+      }
+    ],
+    "inputs_sha256": "c5986da1f8d859f964807b3abe30f11322befbc7a787a011d61870ac8fb2584a"
+  }
+}

@@ -97,6 +97,23 @@ pub(crate) fn automatic_interval(
     ).collect()
 }
 
+pub(crate) fn automatic_sequences(
+    investigation: &str,
+    frames: &[reversebolt_core::visual::FrameRef],
+    tracks: &[reversebolt_core::visual::VisualTrack],
+    read_image: impl FnMut(&reversebolt_core::visual::FrameRef) -> Result<Vec<u8>>,
+) -> Value {
+    match reversebolt_vision::appearance_sequence::analyze(
+        investigation,
+        frames,
+        tracks,
+        read_image,
+    ) {
+        Ok(report) => json!({"report":report,"error":null}),
+        Err(error) => json!({"report":null,"error":error}),
+    }
+}
+
 pub(crate) fn measure_pair(
     before: &reversebolt_core::visual::FrameRef,
     after: &reversebolt_core::visual::FrameRef,
@@ -235,7 +252,17 @@ pub fn read(session: &LiveSession, args: &Value) -> Result<Value> {
     if let Some(automatic) = automatic {
         result["automatic_region_motion"] = match automatic {
             Ok(selection) => {
-                json!({"selection":selection,"measurements":automatic_measurements,"error":null})
+                let sequences = automatic_sequences(
+                    investigation,
+                    &frames,
+                    &session.view.visual_tracks,
+                    |frame| {
+                        session
+                            .read_frame(investigation, &frame.id)
+                            .map(|(_, bytes)| bytes)
+                    },
+                );
+                json!({"selection":selection,"measurements":automatic_measurements,"appearance_sequences":sequences,"error":null})
             }
             Err(error) => json!({"selection":null,"measurements":[],"error":error}),
         };
@@ -360,6 +387,14 @@ pub(crate) mod tests {
             measured["appearance_match"]["before_sha256"],
             measured["result"]["before_sha256"]
         );
+        let sequences = &automatic["appearance_sequences"];
+        assert!(sequences["error"].is_null());
+        assert_eq!(sequences["report"]["attempted_pairs"], 1);
+        assert_eq!(
+            sequences["report"]["series"][0]["stop"],
+            "unresolved_appearance"
+        );
+        assert_eq!(sequences["report"]["series"][0]["accepted_steps"], 0);
         args["auto_regions"] = json!(false);
         let disabled = read(&session, &args).unwrap();
         assert!(disabled.get("automatic_region_motion").is_none());

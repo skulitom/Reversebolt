@@ -513,6 +513,11 @@ mod tests {
             automatic["measurements"][0]["appearance_match"]["measurement"]["status"],
             "unsupported_size"
         );
+        assert_eq!(
+            automatic["appearance_sequences"]["report"]["series"][0]["stop"],
+            "unresolved_appearance"
+        );
+        assert!(automatic["appearance_sequences"]["error"].is_null());
         drop(session);
         std::fs::remove_dir_all(directory).unwrap();
     }

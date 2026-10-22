@@ -113,7 +113,8 @@ pub struct Evidence {
     pub limitation: String,
 }
 
-pub(crate) fn exposure(a: &FrameRef, b: &FrameRef) -> std::result::Result<Exposure, &'static str> {
+/// Classify one consecutive, bounded input interval without assigning key meaning.
+pub fn exposure(a: &FrameRef, b: &FrameRef) -> std::result::Result<Exposure, &'static str> {
     if a.number.checked_add(1) != Some(b.number)
         || a.epoch != b.epoch
         || a.width != b.width

@@ -126,6 +126,10 @@ Selected regions also receive a bounded appearance search in the next image,
 with duplicate-match rejection and a reverse check. This can follow a translated
 appearance beyond its original rectangle; identity and gameplay meaning remain
 unverified. See [controlled and saved-game checks](research/region-appearance/README.md).
+Bounded appearance sequences keep the original template fixed, retain signed
+movement with capture/input context, and stop on uncertainty or missing images.
+They do not reacquire an appearance after a failure or create verified controls.
+See [sequence evidence and limits](research/appearance-sequence/README.md).
 
 Repeated input/value contrasts can add a short tentative card description.
 **Inspect → Observed control patterns** shows later agreements, counterexamples,

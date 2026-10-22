@@ -69,7 +69,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             previous = Some(image);
         }
-        results.push(json!({"name":case.name,"selection":selection,"measurements":measurements}));
+        let sequences = play_evidence::automatic_sequences(
+            &case.investigation_id,
+            &references,
+            &case.visual_tracks,
+            |frame| {
+                let file = &case
+                    .frames
+                    .iter()
+                    .find(|f| f.reference.id == frame.id)
+                    .ok_or("Unknown replay frame")?
+                    .file;
+                visual::image_bytes(Path::new(file))
+            },
+        );
+        results.push(json!({"name":case.name,"selection":selection,"measurements":measurements,"appearance_sequences":sequences}));
     }
     let output = json!({"schema":1,"manifest_sha256":visual::digest(&bytes),"cases":results,
         "target_access":false,"input_sent":false,"new_model_calls":0,"field_writes":0,

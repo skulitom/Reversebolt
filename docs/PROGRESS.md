@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Immutable appearance sequences (2026-10-22): **35% unchanged**.
+The shared reader/MCP and automatic evidence archive now compare selected original
+appearances with consecutive later captures, keeping templates unchanged. Signed
+origin/previous displacements carry exact source hashes and capture/input context.
+Uncertainty, source errors, gaps and scene changes stop a series without reacquisition;
+six steps per source and twelve shared attempts bound the work.
+
+All five frozen control sequences pass, including failure/no-reacquisition, gaps
+and shared-budget behavior. The saved Tetris run accepts two stationary preview
+steps and one moving-piece step, then stops. Independent saved-state diagnostics
+show a rotation and a preview replacement at those stops; both accepted stationary
+regions have identical raw pixels. Mixed sampled keys remain unknown. This is
+exposed-case evidence, not persistent identity, learned input meaning or causal
+control. All prior pair results and 24 input files remain unchanged. All 347
+workspace test executions and strict Clippy pass. No new game, capture, model or
+input ran; desktop publication remains unavailable after quarantine.
+[Method and results](../research/appearance-sequence/README.md).
+
 Appearance correspondence beyond a fixed rectangle (2026-10-22): **35% unchanged**.
 Automatically selected regions now receive a bounded full-image template search,
 dense winner verification and an unambiguous reverse check. Explicit unresolved
