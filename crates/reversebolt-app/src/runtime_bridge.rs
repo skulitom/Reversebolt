@@ -473,6 +473,7 @@ pub fn command(
             view.revision = 0;
             view.card_generation = 0;
             view.selected_cards.clear();
+            view.recovered_controls.clear();
             view.search = None;
             view.naming = None;
             view.catalog_source = Some(reversebolt_core::runtime::CatalogSource {
@@ -509,6 +510,18 @@ pub fn command(
         &command.source,
         "Inspected internal values. Gameplay meaning and effects remain unverified.",
     );
+    if matches!(task, Task::Discover) {
+        match crate::runtime_recovery_bridge::automatic(engine, &report, &owner.cancel) {
+            Ok(recovery) => result["runtime"]["recovery"] = recovery,
+            Err(error) => {
+                result["runtime"]["recovery_error"] =
+                    json!(error.chars().take(256).collect::<String>())
+            }
+        }
+        let view = &engine.live.as_ref().unwrap().view.runtime;
+        result["runtime"]["revision"] = json!(view.revision);
+        result["runtime"]["cards"] = json!(view.cards.len());
+    }
     if matches!(task, Task::Discover)
         && let Some(model) = local_model.as_deref()
     {

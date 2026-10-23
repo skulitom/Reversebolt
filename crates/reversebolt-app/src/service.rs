@@ -207,6 +207,7 @@ impl EngineHandle {
                             | "restore_runtime_change"
                             | "search_runtime_values"
                             | "show_runtime_values"
+                            | "recover_runtime_control"
                             | "inspect_runtime_investigation"
                             | "plan_runtime_comparisons"
                             | "read_runtime_inventory"
@@ -279,6 +280,7 @@ impl EngineHandle {
                                 | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
+                                | "recover_runtime_control"
                                 | "inspect_runtime_investigation"
                                 | "plan_runtime_comparisons"
                                 | "read_runtime_inventory"
@@ -516,6 +518,9 @@ pub(crate) fn native_command(
                 &directory.parent().unwrap_or(directory).join("runtime"),
                 published,
             );
+        }
+        "recover_runtime_control" => {
+            return crate::runtime_recovery_bridge::command(engine, command);
         }
         "search_runtime_values" | "show_runtime_values" => {
             let session = engine

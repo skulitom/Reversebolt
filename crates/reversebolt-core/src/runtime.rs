@@ -242,6 +242,8 @@ pub struct View {
     /// Explicit selections survive automatic card discovery within this catalogue.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub selected_cards: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub recovered_controls: Vec<crate::runtime_recovery::RecoveredControl>,
     /// Naming hypotheses for investigation. The UI may use explicitly tentative
     /// copy for an existing exact-path card; this grants no bounds or edit authority.
     #[serde(default)]

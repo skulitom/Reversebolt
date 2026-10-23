@@ -178,6 +178,20 @@ fn runtime_presentation(
     view: &reversebolt_core::runtime::View,
     candidate: &reversebolt_core::runtime::Candidate,
 ) -> Option<(String, String)> {
+    if let Some(hint) = view.recovered_controls.iter().find(|h| {
+        h.candidate_id == candidate.id
+            && h.catalog_id == view.catalog_id
+            && h.needs_revalidation
+            && view
+                .catalog_source
+                .as_ref()
+                .is_some_and(|s| s.document_sha256 == h.report_sha256)
+            && candidate.id == candidate.locator.id()
+    }) && identified_name(&hint.name)
+        && let Some(description) = observation_description(&hint.description)
+    {
+        return Some((runtime_name(&hint.name), description));
+    }
     // A readable field name alone does not explain what changing it does. Use
     // only the current review's exact primary path, never a nearby alternative.
     // This is provisional presentation; it grants no new editing authority.
@@ -1752,6 +1766,27 @@ mod card_copy_tests {
                 runtime_presentation(&stale, &candidate).is_none(),
                 "defect {defect}"
             );
+        }
+        view.naming = None;
+        view.recovered_controls.push(reversebolt_core::runtime_recovery::RecoveredControl {
+            source_test_id:"test".into(),source_test_sha256:"c".repeat(64),recipe_sha256:"d".repeat(64),
+            catalog_id:view.catalog_id.clone(),report_sha256:"b".repeat(64),candidate_id:candidate.id.clone(),
+            name:"Walk speed".into(),description:"Needs a fresh check: previously changed the response to a recorded action sequence.".into(),needs_revalidation:true,
+        });
+        let recovered = runtime_presentation(&view, &candidate).unwrap();
+        assert_eq!(recovered.0, "Walk speed");
+        assert!(recovered.1.starts_with("Needs a fresh check"));
+        for defect in 0..5 {
+            let mut stale = view.clone();
+            let hint = &mut stale.recovered_controls[0];
+            match defect {
+                0 => hint.catalog_id = "other".into(),
+                1 => hint.report_sha256 = "e".repeat(64),
+                2 => hint.candidate_id = "f".repeat(64),
+                3 => hint.name = "Unidentified value".into(),
+                _ => hint.needs_revalidation = false,
+            }
+            assert!(runtime_presentation(&stale, &candidate).is_none());
         }
         candidate.locator.scope.created = "0000000000000002".into();
         assert!(runtime_presentation(&view, &candidate).is_none());

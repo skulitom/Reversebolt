@@ -137,6 +137,89 @@ fn recovery_report(ids: usize, pid: u32, created: &str, value: i32) -> Value {
 }
 
 #[test]
+fn remembered_recipe_roundtrips_without_source_report_and_matches_declared_policy() {
+    use reversebolt_core::runtime_recovery::{Recipe, propose, reacquire};
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let original = runtime::candidates(&old, 1).unwrap().remove(0);
+    let recipe = Recipe::capture(&old, &original.id).unwrap();
+    recipe.check_candidate(&original).unwrap();
+    let bytes = serde_json::to_vec(&recipe).unwrap();
+    assert!(bytes.len() < 4096);
+    let recipe: Recipe = serde_json::from_slice(&bytes).unwrap();
+    let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+    current["root_catalog_sha256"] = json!("e".repeat(64));
+    current["classes"][2]["key"]["layout_sha256"] = json!("c".repeat(64));
+    let fields = current["classes"][2]["fields"].as_array_mut().unwrap();
+    let mut unrelated = fields[0].clone();
+    unrelated["name"] = json!("Other");
+    fields[0]["id"] = json!(1);
+    fields[0]["offset"] = json!(80);
+    fields.insert(0, unrelated);
+    current["snapshots"][0]["reads"][1]["field"] = json!(1);
+    let expected = propose(&old, &original.id, &current).unwrap();
+    drop(old);
+    let result = reacquire(std::slice::from_ref(&recipe), &current)
+        .unwrap()
+        .remove(0);
+    assert_eq!(result.strict_status, expected.strict.status);
+    assert_eq!(result.status, expected.status);
+    assert_eq!(json!(result.candidate), json!(expected.candidate));
+    assert_eq!(result.recipe_sha256, recipe.id().unwrap());
+    assert!(!result.edit_authority);
+    assert!(
+        recipe
+            .check_candidate(result.candidate.as_ref().unwrap())
+            .is_err()
+    );
+    let mut invalid = recipe.clone();
+    invalid.route["steps"][0]["owner"]["type_name"] = json!("Other");
+    assert!(invalid.validate().is_err());
+    assert!(reacquire(&[invalid], &current).is_err());
+    assert!(reacquire(&vec![recipe; 9], &current).is_err());
+}
+
+#[test]
+fn remembered_batch_rejects_ambiguous_missing_and_late_invalid_graphs() {
+    use reversebolt_core::runtime_recovery::{Recipe, reacquire};
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let source = runtime::candidates(&old, 1).unwrap().remove(0);
+    let recipe = Recipe::capture(&old, &source.id).unwrap();
+    let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+    let mut different = recipe.clone();
+    different.route["steps"][1]["member"]["field"]["name"] = json!("Missing");
+    let batch = reacquire(&[recipe.clone(), different], &current).unwrap();
+    assert!(batch[0].candidate.is_some());
+    assert!(batch[1].candidate.is_none());
+    let mut extra = recovery_report(80, 88, "fedcba9876543210", 91);
+    for c in extra["classes"].as_array_mut().unwrap() {
+        c["key"]["layout_sha256"] = json!("d".repeat(64));
+    }
+    extra["snapshots"][0]["snapshot_id"] = json!(1);
+    current["classes"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["classes"].as_array().unwrap().clone());
+    current["snapshots"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["snapshots"].as_array().unwrap().clone());
+    let result = reacquire(std::slice::from_ref(&recipe), &current)
+        .unwrap()
+        .remove(0);
+    assert_eq!(result.status, "ambiguous");
+    assert_eq!(result.matching_routes, 2);
+    assert!(result.candidate.is_none());
+    current["runtime"] = json!("C:/Other/Runtime.dll");
+    let result = reacquire(std::slice::from_ref(&recipe), &current)
+        .unwrap()
+        .remove(0);
+    assert_eq!(result.status, "runtime_changed");
+    assert!(result.candidate.is_none());
+    current["snapshots"][1]["reads"][0]["node"] = json!(9999);
+    assert!(reacquire(&[recipe], &current).is_err());
+}
+
+#[test]
 fn recovery_reacquires_from_the_new_graph_without_old_scope_address_or_value() {
     use reversebolt_core::runtime_recovery::find;
     let old = recovery_report(0, 77, "0123456789abcdef", 50);

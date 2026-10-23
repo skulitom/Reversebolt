@@ -48,6 +48,10 @@ try:
     assert inspection["annotations"]["readOnlyHint"] is True
     assert inspection["inputSchema"]["required"] == ["catalog_id", "review_id"]
     assert inspection["inputSchema"]["additionalProperties"] is False
+    recovery = next(t for t in definitions if t["name"] == "reversebolt_recover_runtime_control")
+    assert recovery["annotations"]["readOnlyHint"] is False
+    assert recovery["inputSchema"]["required"] == ["test_id", "catalog_id", "after_revision"]
+    assert recovery["inputSchema"]["additionalProperties"] is False
     process.stdin.close()
     code = process.wait(timeout=15)
     assert code == 0

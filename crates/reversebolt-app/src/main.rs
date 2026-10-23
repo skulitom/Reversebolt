@@ -16,6 +16,7 @@ mod ocr;
 mod play_evidence;
 mod runtime_bridge;
 mod runtime_naming_bridge;
+mod runtime_recovery_bridge;
 mod runtime_test_bridge;
 mod runtime_test_review;
 mod runtime_trial_bridge;

@@ -8,6 +8,231 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
 
+pub const MAX_RECOVERY_RECIPES: usize = 8;
+
+/// Compact metadata saved with a test, not an address or permission to edit.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Recipe {
+    pub version: u32,
+    pub runtime: String,
+    pub root_catalog_sha256: String,
+    pub report_sha256: String,
+    pub source: runtime::Locator,
+    pub route: Value,
+}
+
+impl Recipe {
+    pub fn capture(report: &Value, path_id: &str) -> Result<Self> {
+        let candidate = runtime::candidate(report, path_id)?;
+        let (runtime, root_catalog_sha256, _) = identity(report)?;
+        let recipe = Self {
+            version: 1,
+            runtime,
+            root_catalog_sha256,
+            report_sha256: digest(&serde_json::to_vec(report).map_err(|e| e.to_string())?),
+            route: Metadata::new(report)?.route(&candidate)?,
+            source: candidate.locator,
+        };
+        recipe.validate()?;
+        Ok(recipe)
+    }
+
+    pub fn validate(&self) -> Result<()> {
+        self.source.validate(&self.source.scope)?;
+        if self.version != 1
+            || self.runtime.is_empty()
+            || self.runtime.len() > 32768
+            || [&self.root_catalog_sha256, &self.report_sha256]
+                .iter()
+                .any(|s| s.len() != 64 || !s.bytes().all(|b| b.is_ascii_hexdigit()))
+            || serde_json::to_vec(self).map_err(|e| e.to_string())?.len() > 32768
+            || self.route.as_object().is_none_or(|o| o.len() != 4)
+            || self.route["steps"]
+                .as_array()
+                .is_none_or(|s| s.len() != self.source.steps.len())
+            || self.route["scalar_type"].as_i64().is_none()
+            || self.route["scalar_width"]
+                .as_u64()
+                .is_none_or(|n| n == 0 || n > 8)
+        {
+            return Err("Invalid remembered runtime route.".into());
+        }
+        let matches_type = |v: &Value, k: &runtime::TypeKey| {
+            v["image"] == k.image && v["type_name"] == k.type_name
+        };
+        if !matches_type(
+            &self.route["root"]["declaring"],
+            &self.source.root.declaring,
+        ) {
+            return Err("Remembered root descriptor changed.".into());
+        }
+        for (descriptor, step) in self.route["steps"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(&self.source.steps)
+        {
+            let member_matches = match &step.member {
+                runtime::Member::Field { field } => matches_type(
+                    &descriptor["member"]["field"]["declaring"],
+                    &field.declaring,
+                ),
+                runtime::Member::Element { index } => descriptor["member"]["element"] == *index,
+            };
+            if !matches_type(&descriptor["owner"], &step.owner) || !member_matches {
+                return Err("Remembered member descriptor changed.".into());
+            }
+        }
+        Ok(())
+    }
+
+    pub fn id(&self) -> Result<String> {
+        self.validate()?;
+        Ok(digest(
+            &serde_json::to_vec(self).map_err(|e| e.to_string())?,
+        ))
+    }
+
+    pub fn check_candidate(&self, candidate: &Candidate) -> Result<()> {
+        self.validate()?;
+        if self.source != candidate.locator
+            || self.source.id() != candidate.id
+            || self.route["scalar_type"] != candidate.type_code
+            || self.route["scalar_width"] != candidate.bytes.len()
+        {
+            return Err("Remembered route belongs to another test candidate.".into());
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Reacquisition {
+    pub recipe_sha256: String,
+    pub current_report_sha256: String,
+    pub current_scope: Scope,
+    pub status: String,
+    pub strict_status: String,
+    pub matching_routes: usize,
+    pub candidate: Option<Candidate>,
+    pub edit_authority: bool,
+}
+
+/// Presentation for an exact candidate in one current catalogue. Historical
+/// evidence stays separate from current value, meaning and editing authority.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RecoveredControl {
+    pub source_test_id: String,
+    pub source_test_sha256: String,
+    pub recipe_sha256: String,
+    pub catalog_id: String,
+    pub report_sha256: String,
+    pub candidate_id: String,
+    pub name: String,
+    pub description: String,
+    pub needs_revalidation: bool,
+}
+
+/// One complete graph traversal for a bounded batch of previously saved routes.
+pub fn reacquire(recipes: &[Recipe], report: &Value) -> Result<Vec<Reacquisition>> {
+    if recipes.len() > MAX_RECOVERY_RECIPES {
+        return Err("Too many remembered routes in one recovery.".into());
+    }
+    let (module, roots, scope) = identity(report)?;
+    let hash = digest(&serde_json::to_vec(report).map_err(|e| e.to_string())?);
+    let metadata = Metadata::new(report)?;
+    let mut results = recipes
+        .iter()
+        .map(|r| {
+            Ok(Reacquisition {
+                recipe_sha256: r.id()?,
+                current_report_sha256: hash.clone(),
+                current_scope: scope.clone(),
+                status: "not_observed".into(),
+                strict_status: "not_observed".into(),
+                matching_routes: 0,
+                candidate: None,
+                edit_authority: false,
+            })
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let mut strict = vec![false; recipes.len()];
+    runtime::visit_candidates(report, "", 0, 1, &mut |candidate| {
+        let mut descriptor = None;
+        for (i, recipe) in recipes.iter().enumerate() {
+            if candidate.locator.root == recipe.source.root
+                && candidate.locator.steps == recipe.source.steps
+                && recipe.route["scalar_type"] == candidate.type_code
+            {
+                strict[i] = true;
+            }
+            if recipe.runtime != module
+                || !similar_route(&candidate.locator, &recipe.source)
+                || recipe.route["scalar_type"] != candidate.type_code
+            {
+                continue;
+            }
+            let route = match &descriptor {
+                Some(v) => v,
+                None => descriptor.insert(metadata.route(candidate)?),
+            };
+            if *route == recipe.route {
+                results[i].matching_routes += 1;
+                results[i].candidate = Some(candidate.clone());
+            }
+        }
+        Ok(())
+    })?;
+    for (i, (recipe, result)) in recipes.iter().zip(&mut results).enumerate() {
+        result.strict_status = if recipe.runtime != module {
+            "runtime_changed"
+        } else if recipe.root_catalog_sha256 != roots {
+            "catalog_changed"
+        } else if strict[i] {
+            "matched"
+        } else {
+            "not_observed"
+        }
+        .into();
+        result.status = if recipe.runtime != module {
+            "runtime_changed"
+        } else {
+            match result.matching_routes {
+                0 => "not_observed",
+                1 => "candidate_for_revalidation",
+                _ => "ambiguous",
+            }
+        }
+        .into();
+        if result.status != "candidate_for_revalidation" {
+            result.candidate = None;
+        }
+    }
+    Ok(results)
+}
+
+fn similar_route(a: &runtime::Locator, b: &runtime::Locator) -> bool {
+    let same_type = |a: &runtime::TypeKey, b: &runtime::TypeKey| {
+        a.image == b.image && a.type_name == b.type_name
+    };
+    same_type(&a.root.declaring, &b.root.declaring)
+        && a.steps.len() == b.steps.len()
+        && a.steps.iter().zip(&b.steps).all(|(a, b)| {
+            same_type(&a.owner, &b.owner)
+                && match (&a.member, &b.member) {
+                    (runtime::Member::Field { field: a }, runtime::Member::Field { field: b }) => {
+                        same_type(&a.declaring, &b.declaring)
+                    }
+                    (
+                        runtime::Member::Element { index: a },
+                        runtime::Member::Element { index: b },
+                    ) => a == b,
+                    _ => false,
+                }
+        })
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Recovery {
     pub policy: String,

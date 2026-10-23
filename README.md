@@ -9,16 +9,18 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-063356` passed packaged headless
-startup/MCP checks and is selected by the desktop shortcut for the next launch.
-All 490 workspace tests pass. The existing desktop window remains on its earlier
-build. This release buffers native report output to avoid excessive small file
-writes. [Evidence and limitations](research/runtime-recovery/README.md).
+**Local preview status:** preview `0.1.0-20261023-070135` passed packaged headless
+startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
+the next launch; the existing editor window stays open. All 494 workspace tests,
+strict Clippy and formatting pass.
 
-The development core can propose a fresh route after reader/layout changes while
-retaining strict mismatches. One restarted-game comparison reproduced the earlier
-rendered effect and restored the original value; automatic desktop/MCP recovery
-remains unfinished. All 490 development tests pass. [Recovery evidence](research/runtime-recovery/README.md).
+New comparisons retain route metadata with their evidence. After discovery,
+checked remembered controls can reappear automatically with a "Needs a fresh
+check" explanation; agents use `reversebolt_recover_runtime_control` through the
+same engine. A retrospective native-evidence replay verifies both paths without
+new gameplay or model calls. Older tests without recipes require a new comparison.
+Progress remains **37%**; this is not new independent-game generalization.
+[Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime

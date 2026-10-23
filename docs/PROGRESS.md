@@ -4,6 +4,25 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Product recovery integration (2026-10-23): **37% unchanged**. New comparisons
+retain compact route metadata in their existing durable history. Runtime discovery
+now rechecks up to eight latest remembered routes and shows unique fresh candidates
+with a short "Needs a fresh check" explanation. Agents can use the same recovery
+through `reversebolt_recover_runtime_control`, which returns a new comparison
+preparation template. Old addresses, current effect claims and edit authority do
+not transfer. Newer stopped/negative/unavailable results block automatic fallback.
+
+All **494** workspace tests, strict Clippy and formatting pass. The opt-in archive
+replay separately passes both explicit and automatic recovery using all 36 retained
+image/input files and the restored native edit. The old comparison receives a
+recipe only in an isolated research copy; this is retrospective evidence, not
+production migration or a new game test. Preview `0.1.0-20261023-070135` passes
+packaged headless startup and the 65-tool MCP catalogue check and is selected by
+the desktop shortcut. The user's open editor remains running. Capability weights
+and generalization credit remain unchanged. Next: test newly retained routes in
+fresh native use and broaden independent-game evidence.
+[Implementation, checks and limits](../research/runtime-recovery/PRODUCT.md).
+
 Fresh restart revalidation (2026-10-23): **37%**. A separate declared-route policy
 found one fresh candidate despite changed reader/layout fingerprints, retained
 the strict mismatch, and enabled a newly prepared MCP comparison in a restarted

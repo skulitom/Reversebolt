@@ -263,6 +263,9 @@ pub struct Test {
     pub origin: Option<crate::runtime_hypotheses::TestOrigin>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub appearance: Option<AppearancePlan>,
+    /// Learned from this test's own discovery, never from caller-supplied offsets.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovery_recipe: Option<crate::runtime_recovery::Recipe>,
     pub actions: Vec<Action>,
     pub prepared_revision: u64,
     pub created_unix_ms: u128,
@@ -328,6 +331,9 @@ impl Test {
                 .validate([first.width, first.height])?;
         }
         self.candidate.locator.validate(&self.scope)?;
+        if let Some(recipe) = &self.recovery_recipe {
+            recipe.check_candidate(&self.candidate)?;
+        }
         if self.candidate.id != self.candidate.locator.id() {
             return Err("Test candidate identity changed.".into());
         }
@@ -776,6 +782,29 @@ impl Test {
     /// Image bytes and sampled-input files still need independent verification.
     /// This establishes recorded ordering/readbacks, not gameplay causality.
     pub fn check_recorded_intervention(&self, trial: &Trial) -> Result<()> {
+        if self.appearance.is_none() {
+            return Err("No region was saved before the edit.".into());
+        }
+        self.check_recorded_comparison(trial)
+    }
+
+    /// Recheck the recorded whole-screen outcome. The caller must independently
+    /// verify image bytes/measurements and input windows before reusing evidence.
+    pub fn check_recorded_response(&self, trial: &Trial) -> Result<()> {
+        self.check_recorded_comparison(trial)?;
+        let assessment = self.assess(trial);
+        if assessment.status != "suppression_observed"
+            || serde_json::to_value(&self.assessment).map_err(|e| e.to_string())?
+                != serde_json::to_value(&assessment).map_err(|e| e.to_string())?
+        {
+            return Err(
+                "The retained comparison does not establish suppression and return.".into(),
+            );
+        }
+        Ok(())
+    }
+
+    fn check_recorded_comparison(&self, trial: &Trial) -> Result<()> {
         let mut linked = self.clone();
         linked.sync_trial(trial)?;
         if self.phase != Phase::Complete
@@ -789,10 +818,11 @@ impl Test {
         {
             return Err("Complete the comparison and restore the recorded edit first.".into());
         }
-        let plan = self
+        let baseline_end = self.conditions[0].frames.last().unwrap().completed_unix_ms;
+        let selected_at = self
             .appearance
             .as_ref()
-            .ok_or("No region was saved before the edit.")?;
+            .map_or(baseline_end, |p| p.selected_unix_ms);
         if self.preparation.is_none() {
             return Err("The original value was not checked before baseline collection.".into());
         }
@@ -811,7 +841,8 @@ impl Test {
         let write_end = write.completed_ms.ok_or("The edit did not finish.")?;
         let restore_end = restore.completed_ms.ok_or("Restoration did not finish.")?;
         if self.created_unix_ms > self.conditions[0].frames[0].started_unix_ms
-            || plan.selected_unix_ms > trial.patch.prepared_unix_ms
+            || baseline_end > trial.patch.prepared_unix_ms
+            || selected_at > trial.patch.prepared_unix_ms
             || trial.patch.prepared_unix_ms > write.started_ms
             || write.started_ms > write_end
             || write_end > self.conditions[1].frames[0].started_unix_ms
@@ -909,6 +940,10 @@ impl Test {
         if let Some(plan) = &self.appearance {
             summary["appearance"] = serde_json::json!(plan);
         }
+        summary["remembered_route"] = self.recovery_recipe.as_ref().map_or(Value::Null, |r| {
+            serde_json::json!({"recipe_sha256":r.id().ok(),
+                "needs_evidence_recheck":true,"edit_authority":false})
+        });
         summary
     }
 }

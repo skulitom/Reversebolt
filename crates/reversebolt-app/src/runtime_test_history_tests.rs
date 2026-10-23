@@ -2,6 +2,9 @@
 use super::*;
 use reversebolt_core::runtime::{FieldRef, Locator, Member, Scope, Step, TypeKey};
 
+#[path = "runtime_recovery_tests.rs"]
+mod recovery;
+
 fn id() -> String {
     uuid::Uuid::new_v4().to_string()
 }
@@ -333,13 +336,29 @@ fn collect_saved_baseline(engine: &Engine, complete: &Test) -> Test {
     t
 }
 
-#[test]
-fn regional_intervention_joins_exact_edit_records_without_promoting_the_control() {
+fn complete_motion_fixture(
+    local: bool,
+) -> (
+    std::path::PathBuf,
+    std::path::PathBuf,
+    Engine,
+    Test,
+    reversebolt_core::runtime_trials::Trial,
+) {
     use reversebolt_core::{
         changes::Phase as TrialPhase,
         runtime_trials::{Attempt, Context, Evidence, Trial},
     };
-    let (directory, state_path, mut engine, mut images) = motion_fixture(true);
+    let (directory, state_path, mut engine, mut images) = motion_fixture(local);
+    images.candidate.locator.root.declaring.type_name = "Roots".into();
+    images.candidate.id = images.candidate.locator.id();
+    images.recovery_recipe = Some(
+        reversebolt_core::runtime_recovery::Recipe::capture(
+            &recovery::report(&images),
+            &images.candidate.id,
+        )
+        .unwrap(),
+    );
     let patch = Patch {
         path: images.candidate.locator.clone(),
         type_code: 8,
@@ -374,15 +393,17 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
     images.preparation = Some(reading(&patch.expected));
     let mut test = collect_saved_baseline(&engine, &images);
     engine.runtime_tests.record(test.clone()).unwrap();
-    let proposals = reversebolt_vision::trial_appearance_suggestions::analyze(
-        &test,
-        |c, i| engine.runtime_tests.read_image(&test, c, i),
-        |c, i| engine.runtime_tests.read_input(&test, c, i),
-    )
-    .unwrap();
-    test.finish_baseline_review(proposals.recommended, test.revision, 4000)
+    if local {
+        let proposals = reversebolt_vision::trial_appearance_suggestions::analyze(
+            &test,
+            |c, i| engine.runtime_tests.read_image(&test, c, i),
+            |c, i| engine.runtime_tests.read_input(&test, c, i),
+        )
         .unwrap();
-    engine.runtime_tests.record(test.clone()).unwrap();
+        test.finish_baseline_review(proposals.recommended, test.revision, 4000)
+            .unwrap();
+        engine.runtime_tests.record(test.clone()).unwrap();
+    }
     let written = Trial {
         id: test.change_id.clone(),
         direct: true,
@@ -439,8 +460,10 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
     test.conditions[2].runtime_evidence = Some(reading(&patch.expected));
     test.conditions[2].runtime_checked_unix_ms = Some(17000);
     test.complete(&restored, test.revision).unwrap();
-    test.check_recorded_intervention(&restored).unwrap();
-    assert_eq!(test.assessment.as_ref().unwrap().status, "inconclusive");
+    if local {
+        test.check_recorded_intervention(&restored).unwrap();
+        assert_eq!(test.assessment.as_ref().unwrap().status, "inconclusive");
+    }
     engine.runtime_tests.record(test.clone()).unwrap();
     // Persist the generated receipt to exercise strict history loading on restart.
     std::fs::write(
@@ -452,6 +475,20 @@ fn regional_intervention_joins_exact_edit_records_without_promoting_the_control(
     )
     .unwrap();
     engine.runtime_trials.records.push(restored.clone());
+    (directory, state_path, engine, test, restored)
+}
+
+#[test]
+fn regional_intervention_joins_exact_edit_records_without_promoting_the_control() {
+    let (directory, state_path, mut engine, test, restored) = complete_motion_fixture(true);
+    let patch = restored.patch.clone();
+    let reading = |bytes: &[u8]| {
+        reversebolt_core::runtime_trials::Evidence::new("synthetic-read.json".into(),
+            json!({"operation":"refresh_runtime_paths","scope":patch.path.scope,"checks":[{
+                "path_id":patch.path.id(),"status":"read","type_code":patch.type_code,"bytes":bytes,
+                "value":scalar_value(patch.type_code,bytes).unwrap(),"field_address":format!("0x{:x}",patch.field_address),
+                "snapshot_object_addresses":patch.object_addresses.iter().map(|a|format!("0x{a:x}")).collect::<Vec<_>>() }]})).unwrap()
+    };
     let published = Arc::new(RwLock::new(engine.view.clone()));
     let mut session = Session::new(Arc::new(AtomicBool::new(false)));
     let command = Command {

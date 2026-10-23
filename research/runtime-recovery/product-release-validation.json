@@ -1,0 +1,82 @@
+{
+  "version": "0.1.0-20261023-070135",
+  "workspace_tests": 494,
+  "archive_replays_passed": 1,
+  "strict_clippy_passed": true,
+  "formatting_passed": true,
+  "published_binaries": [
+    {
+      "name": "reversebolt_runtime.dll",
+      "sha256": "2E8732A24BA95D10200CE4E5B818D05DD0DB6B364B7E876F240D94A1FC29E48F"
+    },
+    {
+      "name": "reversebolt-mcp.exe",
+      "sha256": "3732B2E37ABBA1C0D5A404007ECD28DF61A955504337793C3FDAB4A4DDA23892"
+    },
+    {
+      "name": "reversebolt-runtime-loader.exe",
+      "sha256": "0D51D6453C2071F32CD866A3C6C138368E9533269C097FF7AA4A973B2F4F3F5E"
+    },
+    {
+      "name": "Reversebolt.exe",
+      "sha256": "F31A51E2138C888CA1E9A6172DB8812A25345420843C36CBAB48464BC8C47FED"
+    }
+  ],
+  "catalog": {
+    "passed": true,
+    "pid": 91992,
+    "exit_code": 0,
+    "tool_count": 65,
+    "protocol": "2025-11-25",
+    "binary_sha256": "3732b2e37abba1c0d5a404007ecd28df61a955504337793c3fdab4a4dda23892",
+    "tools_sha256": "e30079026c21911c754cf11ec964d2011669c388e22ac926185bbcea20531c5e",
+    "engine_connected": false,
+    "target_access": false
+  },
+  "headless_smoke": {
+    "passed": true,
+    "target_attached": false,
+    "model_calls": 0,
+    "writes": 0,
+    "missing_application_rejected": true,
+    "binaries": {
+      "Reversebolt.exe": "f31a51e2138c888ca1e9a6172db8812a25345420843c36cbab48464bc8c47fed",
+      "reversebolt-mcp.exe": "3732b2e37abba1c0d5a404007ecd28df61a955504337793c3fdab4a4dda23892"
+    },
+    "cleanup": [
+      {
+        "pid": 24084,
+        "exit_code": 0
+      },
+      {
+        "pid": 90388,
+        "exit_code": 1
+      }
+    ]
+  },
+  "archive_replay": {
+    "passed": true,
+    "type": "retrospective_shared_engine_replay",
+    "research_backfill": true,
+    "target_access": false,
+    "model_calls": 0,
+    "elapsed_ms": 4168,
+    "source_test_id": "781ca1d9-005f-4994-843f-23383a823773",
+    "source_recipe_sha256": "55ede74219bb0d3735d832bbdc6f690fbee785d37e82090977234e4faa6c6a32",
+    "current_candidate_id": "0cccec42269c8556a3627e8619cadf3535b2c6be5ac35563875f00c8aeff69f0",
+    "strict_status": "catalog_changed",
+    "manual_shown": true,
+    "automatic": {
+      "checked": 1,
+      "edit_authority": false,
+      "shown": 1,
+      "unavailable": 0
+    },
+    "evidence_files_checked": 36,
+    "manifest_sha256": "5f1efde8582062576145f57001fe4f9dee6820ba6886e2704cf3c69779c57346",
+    "result_sha256": "f2e132e9ac6bcdc4f156001f1c5c2f349fa4c6e9f28ec738cb5613fa1727c1d0"
+  },
+  "new_native_game_test": false,
+  "main_desktop_preserved_pid": 98332,
+  "progress_percent": 37
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "type": "retrospective_shared_engine_replay",
+  "research_backfill": true,
+  "target_access": false,
+  "model_calls": 0,
+  "elapsed_ms": 4168,
+  "source_test_id": "781ca1d9-005f-4994-843f-23383a823773",
+  "source_recipe_sha256": "55ede74219bb0d3735d832bbdc6f690fbee785d37e82090977234e4faa6c6a32",
+  "current_candidate_id": "0cccec42269c8556a3627e8619cadf3535b2c6be5ac35563875f00c8aeff69f0",
+  "strict_status": "catalog_changed",
+  "manual_shown": true,
+  "automatic": {
+    "checked": 1,
+    "edit_authority": false,
+    "shown": 1,
+    "unavailable": 0
+  },
+  "evidence_files_checked": 36,
+  "manifest_sha256": "5f1efde8582062576145f57001fe4f9dee6820ba6886e2704cf3c69779c57346",
+  "result_sha256": "f2e132e9ac6bcdc4f156001f1c5c2f349fa4c6e9f28ec738cb5613fa1727c1d0"
+}

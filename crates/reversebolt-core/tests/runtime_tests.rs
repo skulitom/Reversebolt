@@ -95,6 +95,7 @@ fn fixture() -> (Test, Trial, Trial) {
         hypothesis: "Changing this field may suppress the rendered response".into(),
         origin: None,
         appearance: None,
+        recovery_recipe: None,
         actions: vec![
             Action {
                 keys: vec![68],

@@ -36,7 +36,7 @@ fn appearance_suggestions(engine: &Engine, test: &Test, result: &mut Value) {
     }
 }
 
-fn compare_appearance(
+pub(crate) fn compare_appearance(
     engine: &Engine,
     test: &Test,
     selection: runtime_tests::AppearanceSelection,
@@ -373,6 +373,7 @@ impl Session {
                     | "list_processes"
                     | "list_memory_processes"
                     | "search_runtime_values"
+                    | "recover_runtime_control"
                     | "inspect_runtime_investigation"
                     | "plan_runtime_comparisons"
                     | "read_runtime_inventory"
@@ -736,6 +737,11 @@ impl Session {
             hypothesis,
             origin,
             appearance: None,
+            recovery_recipe: reversebolt_core::runtime_recovery::Recipe::capture(
+                &runtime_bridge::catalog_report(&staged)?,
+                &candidate_id,
+            )
+            .ok(),
             actions: p.actions,
             prepared_revision: p.after_revision,
             created_unix_ms: now_ms(),

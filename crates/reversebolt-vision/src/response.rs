@@ -52,6 +52,60 @@ pub fn difference(before: &[u8], after: &[u8]) -> Result<f64> {
     Ok(sum as f64 / f64::from(a.width() * a.height()))
 }
 
+/// Reproduce the whole-screen metric and sampled-input evidence before reusing a
+/// completed comparison. No target access, input replay or semantic promotion.
+pub fn verify_recorded_response(
+    test: &reversebolt_core::runtime_tests::Test,
+    trial: &reversebolt_core::runtime_trials::Trial,
+    mut read_image: impl FnMut(usize, usize) -> Result<Vec<u8>>,
+    mut read_input: impl FnMut(usize, usize) -> Result<Option<reversebolt_core::inputs::Window>>,
+) -> Result<()> {
+    use reversebolt_core::visual;
+    test.check_recorded_response(trial)?;
+    for (c, condition) in test.conditions.iter().enumerate() {
+        let input = read_input(c, 0)?;
+        if visual::digest(&serde_json::to_vec(&input).map_err(|e| e.to_string())?)
+            != condition.frames[0].input_sha256
+        {
+            return Err("Initial sampled-input checksum changed.".into());
+        }
+    }
+    let mut failure = None;
+    let mut pairs = 0;
+    let checked_image = |c: usize, i: usize| {
+        let bytes = read_image(c, i)?;
+        let dimensions =
+            image::ImageReader::with_format(std::io::Cursor::new(&bytes), image::ImageFormat::Png)
+                .into_dimensions()
+                .map_err(|e| e.to_string())?;
+        let frame = &test.conditions[c].frames[i];
+        if dimensions != (frame.width, frame.height) {
+            return Err("Retained image dimensions differ from the capture record.".into());
+        }
+        Ok(bytes)
+    };
+    crate::trial_evidence::visit(test, checked_image, read_input, |pair| {
+        pairs += 1;
+        let result = (|| -> Result<()> {
+            let (before, after) = pair.images?;
+            if !pair.input?.matches || pair.after.difference != Some(difference(before, after)?) {
+                return Err("Retained response differs from its images or sampled inputs.".into());
+            }
+            Ok(())
+        })();
+        if let Err(error) = result {
+            failure.get_or_insert(error);
+        }
+    })?;
+    if let Some(error) = failure {
+        return Err(error);
+    }
+    if pairs != 15 {
+        return Err("A remembered response needs all three complete conditions.".into());
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -235,6 +235,11 @@ impl Store {
                 return Err("A saved comparison cannot move to a different investigation.".into());
             }
             let previous = &self.records[i];
+            if serde_json::to_value(&previous.recovery_recipe).map_err(|e| e.to_string())?
+                != serde_json::to_value(&t.recovery_recipe).map_err(|e| e.to_string())?
+            {
+                return Err("Retained recovery metadata cannot be replaced or removed.".into());
+            }
             match (&previous.appearance, &t.appearance) {
                 (Some(a), Some(b)) if a == b => {}
                 (Some(_), _) => {

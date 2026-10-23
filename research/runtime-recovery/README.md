@@ -14,8 +14,9 @@ type names and array indices. It does not use offsets, field ordinals, layout
 hashes or old values as identity. Only one matching fresh candidate can become a
 proposal for revalidation; zero or multiple matches publish no candidate.
 
-These are shared Rust APIs and an offline CLI, not automatic desktop/MCP recovery.
-All 490 workspace tests and strict workspace Clippy pass. New regressions cover
+These shared APIs now also support durable recipes, automatic desktop discovery
+and explicit MCP recovery. See [the product integration and its evidence](PRODUCT.md).
+All 494 ordinary workspace tests and strict workspace Clippy pass. New regressions cover
 fresh process/address/value identity, changed catalogues/layouts, absent routes
 and invalid graphs after an apparent early match, plus changed ordinals, duplicate
 routes/names, array positions and representations. Formatting also passes.
