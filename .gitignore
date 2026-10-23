@@ -7,3 +7,23 @@
 /models/**/*.onnx
 /models/**/*.download
 __pycache__/
+
+# Local sessions, credentials and independent scratch work are not source.
+/experiments/
+**/endpoint.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/.venv/
+/.vs/
+
+# Generated executables and optional model/checkpoint downloads.
+*.exe
+*.dll
+*.pdb
+/models/**/*.pt
+/models/**/*.pth
+/models/**/*.safetensors
+/models/**/*.rten

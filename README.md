@@ -1,439 +1,171 @@
 # Reversebolt
 
-An open-source Rust workbench for discovering what controls an unfamiliar game.
-Part of the Bolt family. Humans and agents use the same engine and session.
+An open-source Rust workbench for discovering and changing what controls a game.
+Part of the Bolt family, with a desktop interface and an MCP interface sharing
+one engine, session and history.
 
-Agents can inspect accepted questions alongside independently checked activity
-with `reversebolt_inspect_runtime_investigation`. Missing observations or an
-unsupported replay no longer prevent inspecting what to investigate next. The
-response retains separate alternative paths and timing failures; it performs no
-input, inference, target access or edits.
+The goal is to connect an unfamiliar game and discover useful, named controls
+such as health, movement or damage without shipping game-specific offsets or
+handwritten trainers. Observation should include internal state, actions,
+movement and appearance, including properties that never appear as HUD numbers.
+See the [full vision](docs/VISION.md).
 
-**Local preview status:** preview `0.1.0-20261023-104538` passed packaged headless
-startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
-the next launch; the existing editor window stays open. All 511 ordinary workspace tests,
-strict Clippy and formatting pass.
+**Development preview — the end goal is not achieved.** This repository publishes
+intermediate source, experiments and recorded failures. It does **not** reliably
+turn an arbitrary game into a panel of health, ammo and damage controls. Current
+progress is approximately **40/100** on our [capability rubric](docs/PROGRESS.md),
+including **0/10 for the withheld-game generalization gate**. This is an internal
+milestone estimate, not a compatibility rate or a release-readiness score.
 
-Agents can now request bounded response exploration through the shared planner:
-continue after a checked, restored negative test; stop on positive, inconclusive
-or unresolved evidence, or the comparison limit. The actual response question
-is kept separate from a provisional gameplay label. Thirty retained-native
-checks pass. A fresh game run stopped before editing because capture timing left
-an insufficient replay sequence; live continuation still needs verification.
-Progress remains **40%**.
-[Bounded exploration and the observation gap](research/bounded-exploration/README.md).
+## What works today
 
-Automatic naming now selects explicit evidence entries; the engine resolves each
-to its exact label/source and retains the existing naming checks. Candidate
-alternatives are restricted to their group in both generation and validation.
-The earlier object-text attribution failure is resolved in saved-data tests;
-an intermediate ID-confusion regression is retained with its separate fix.
-Vampire naming now retains six provisional questions, including move speed and
-max HP. Menu results still mix rendering, interaction and input settings, so
-relevance and effects remain unverified. Manual MCP submissions retain their
-canonical citation contract. The package passes the owned native regression.
-[Evidence references, failures and follow-up](research/evidence-references/README.md).
+- A dark Windows desktop with an application picker. Connecting starts bounded
+  discovery automatically; named findings appear as cards with short descriptions.
+  Supported internal values have direct numeric entry, step buttons, toggles,
+  guarded edits and a Freeze checkbox. Sliders require known small bounds.
+  Unidentified readings stay off the main board.
+- Native runtime inspection of supported IL2CPP applications, plus a fallback
+  that compares captured screen numbers with sampled process memory. Discovery
+  uses runtime evidence rather than a built-in list of game addresses.
+- Optional local-model interpretation of runtime labels, screenshots and
+  activity. Proposed names retain their evidence and uncertainty; a plausible
+  name is not proof of a gameplay effect.
+- A shared engine with durable jobs, edit history, restoration checks and human
+  takeover. The stdio MCP server currently exposes 65 tools to the same session.
+- Bounded before/change/restoration experiments and recovery of a previously
+  tested control across a restart in a known development game. Agent workflows
+  can request these experiments; connecting in the desktop does not start writes.
 
-The current preview now completes automatic discovery → comparison → restoration
-in Hyperbolica. It chose the walking-speed hypothesis itself, changed 2.25 to 0,
-measured a 93% reduction in rendered response, restored the original bytes, and
-observed the response return. A separate image metric confirms the direction.
-The save is unchanged. This supports a reversible behavioral effect, not exact
-physical units or unseen-game generalization.
-[Native Hyperbolica evidence and limits](research/hyperbolica-effects/README.md).
+## Known gaps
 
-After a full game/engine restart, automatic discovery recovers this control from
-its genuine saved recipe. A fresh comparison again observes suppression and
-return, with exact restoration, zero model calls and an unchanged save.
-Progress is **40%**; scene/load transitions and withheld-game acceptance remain.
-[Hyperbolica restart recovery and revalidation](research/hyperbolica-recovery/README.md).
+| Area | What is still missing or unreliable |
+| --- | --- |
+| Generalization | No passed evaluation across multiple withheld, independently implemented games. Known development successes and practice fixtures do not satisfy this gate. Arbitrary engines, Linux/macOS, protected games and online play are not established targets. |
+| Names and relevance | Runtime labels and model suggestions can be misleading, irrelevant or inconsistent. Citation checks do not establish actor identity, units, scope or actual gameplay meaning. Important values may be missed; a named card can still be unverified or unavailable for editing. |
+| Hidden behavior and appearance | Motion and appearance measurements are partial. General inference of damage, collision, cooldowns, sound, animations and derived rules is unfinished. A screen change alone cannot prove those meanings. |
+| Experiment selection | The first chosen field can be unrelated to the measured outcome. The Electrician trial selected an interaction flag for a movement-response test and found no suppression. Better selection and outcome measurements remain open work. |
+| Capture timing | Recorded input is not always bounded by sufficiently consistent images. The latest native attempt stopped before editing because only three of four required response episodes qualified. Automatically collecting the missing evidence is unfinished. |
+| Exploration | The bounded continuation policy passes saved-evidence checks, but continuing through multiple live comparisons after a negative result remains unverified. This workflow is currently exposed to agents and research runners, rather than being a complete autonomous desktop investigation. |
+| Coverage and performance | Catalogues and memory samples are bounded and can be incomplete; paths may alias the same state. Model-assisted discovery can take several minutes, exhaust budgets or produce no useful controls. |
+| Editing and restoration | Supported writes have fresh checks and narrow limits. Freeze is periodic, not a per-frame guarantee. Restoring selected bytes does not rewind the game world or all downstream effects. General natural-language edits and composed behavior changes are unfinished. |
+| Recovery | One known control has been recovered and revalidated after a full restart. Reliable recovery across arbitrary scene loads, object replacements and game updates is not established. |
+| Distribution and reproduction | This is a source preview, without a public binary release or installer. Earlier local builds triggered Windows Security detection; vendor clearance has not been established. Raw game captures, saves, memory archives, model weights and local binaries are excluded, so some historical audits cannot be rerun from this checkout alone. A complete binary dependency-notice audit remains part of the release work. |
 
-An unchanged first evaluation on Electrician Simulator found seven provisional
-questions and completed one restored native comparison, but measured no effect
-on rendered response. The planner chose an interaction flag for its first
-suppression test. This leaves a concrete experiment-selection gap; it is not a
-passed generalization result. Saves were unchanged, and progress remains **40%**.
-[Withheld Electrician trial, failures and evidence](research/independent-electrician/README.md).
+## Evidence, including failures
 
-Runtime discovery now loads full layouts for root holders and encountered types,
-instead of exhausting its budget on every declared type. A seven-case native
-fixture regression preserves typed paths, guarded edits and restoration with
-200,001 unrelated fields. A fresh Vampire Survivors run now produces a partial
-catalogue in 5.043 seconds. Its saved inventory now passes revised automatic naming,
-yielding four provisional questions. No gameplay effect was established.
-[Metadata scaling and limits](research/runtime-metadata-scaling/README.md).
+These are recorded local development results, not a game compatibility list.
+Research directories retain methods, machine-readable summaries and limitations.
 
-New comparisons retain route metadata with their evidence. After discovery,
-checked remembered controls can reappear automatically with a "Needs a fresh
-check" explanation; agents use `reversebolt_recover_runtime_control` through the
-same engine. Two new native comparisons now verify automatic recovery and fresh
-effect revalidation across a full game/engine restart, with exact restoration and
-unchanged save bytes. Older tests without recipes require a new comparison.
-That recovery evidence does not establish independent-game generalization.
-[Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
+| Experiment | Observed result | Limit |
+| --- | --- | --- |
+| [Hyperbolica: automatic comparison](research/hyperbolica-effects/README.md) | The planner chose a walking-speed hypothesis, changed 2.25 to 0, measured about 93% less rendered response, restored the bytes and observed response return. | Establishes an action-specific visual effect in a known development game; not physical units or generalization. |
+| [Hyperbolica: restart recovery](research/hyperbolica-recovery/README.md) | Automatically recovered the learned route in fresh game/engine processes and repeated an effect/restoration comparison with no model calls. | One control and restart scenario; scene transitions and game updates remain untested. |
+| [Electrician Simulator: first evaluation](research/independent-electrician/README.md) | Found seven provisional questions and completed one restored comparison. No suppression was observed. | A negative result, not a passed generalization test. No preferred replacement field was manually selected. |
+| [Bounded exploration follow-up](research/bounded-exploration/README.md) | Thirty saved-native policy checks passed. A fresh game run stopped at the input/image timing gate with zero edits. | Live continuation after a negative comparison remains unverified. |
 
-The original independent Vampire Survivors trial stopped at the native metadata
-budget. A separately frozen rerun with the revised reader gets past that failure,
-then stops at automatic type-selection convergence: 364 → 30 → 18 → 12 → 10,
-above the eight-type proposal limit. Both runs' image interpretations report a
-level-up menu, so movement effects remain unestablished. Failures and storage
-changes are retained; progress remains **38%**.
-[Independent baseline, reader rerun and limits](research/independent-vampire-survivors/README.md).
+The latest local validation recorded **511 passing workspace tests**, one ignored
+archive-dependent test, formatting and strict Clippy checks, a release build,
+packaged headless startup and the 65-tool MCP catalogue check. Those checks
+exercise implementation and protocol behavior; they do not measure universal
+semantic accuracy. Historical notes retain earlier counts and failures.
 
-The updated selector gives complete pages explicit shares of the shortlist budget.
-Five saved-report replays now finish within the existing limits. Vampire selection
-reaches eight types in two rounds and proposes four label-supported questions,
-including `maxHp` and `moveSpeed`. The menu still suggests device settings, and
-opaque labels still yield no questions. Convergence is improved; usefulness and
-gameplay effects remain unverified.
-[Selection replay and remaining limitations](research/bounded-type-selection/README.md).
+## Build and try it on Windows
 
-A research-only relevance review can separate the known device-setting proposals
-from plausible gameplay candidates while leaving ambiguous labels uncertain.
-It sees raw observed labels rather than the generator's explanation. Reordered
-and opaque-label checks pass, but this is not independent semantic validation and
-does not filter production cards.
-[Raw-label review and limits](research/runtime-relevance/README.md).
-A broader authored challenge found an order-sensitive misclassification of aim
-sensitivity, so this review remains advisory and cannot hide candidates.
-[False-exclusion challenge](research/runtime-relevance/CHALLENGE.md).
-
-**Research preview:** connect a running application to start discovery automatically.
-Supported IL2CPP applications provide internal-value candidates through runtime
-inspection without screenshots. Other applications use the existing window and
-bounded-memory observations to compare screen numbers with memory trajectories.
-Values appear as simple cards; their gameplay meaning remains unverified.
-Unnamed readings stay off the board. Named cards have short descriptions;
-runtime descriptions are provisional metadata labels, not verified game meanings.
-An installed local model can retain evidence-linked questions and competing
-fields after runtime discovery. Accepted primary paths appear automatically as
-cards, including paths beyond the first discovery preview. Their descriptions
-say “Possible effect”; named hypotheses remain unverified investigation hints.
-Selected, refreshed and edited controls are preserved within the 64-card limit.
-See [automatic metadata hypotheses](research/runtime-hypotheses/README.md).
-Metadata discovery considers hidden and inactive properties before separately
-interpreting the current clip. See [the saved-evidence comparison](research/metadata-independence/README.md).
-Bounded same-object text examples now reach type selection with exact path
-bindings and explicit omissions. [The replay](research/object-label-selection/README.md)
-fixes a context-routing gap but also retains semantic-selection regressions.
-Agents can also submit their own cited hypotheses through MCP and connect an exact
-candidate or alternative directly to a durable response comparison. Its question
-and evidence remain attached to the result; gameplay meaning stays unverified.
-See [hypothesis-to-comparison workflow](research/hypothesis-tests/README.md).
-Source builds expose a read-only comparison planner using retained play timing
-and cited field hypotheses. It keeps eligible alternatives and separate paths
-available, with exact question references and unresolved aliasing visible.
-See [the saved-case planning regression](research/path-planning/README.md).
-An earlier build passed a limited window/picker check and a native discovery run,
-but was subsequently quarantined by Windows. The current build's native test
-completed without a new detection; this does not establish vendor clearance.
-See [comparison planning and its limits](research/comparison-planner/README.md)
-and [the earlier preview check](research/desktop-preview-ui/README.md).
-An independent Hyperbolica run found two metadata hypotheses but no eligible
-comparison. A later offline revision separates measured contrast from the
-model's ambiguous interpretation without promoting either to a verified control.
-See [the native baseline and revised planning evidence](research/independent-runtime/README.md).
-Editable numbers use a large direct-entry field with −/+ buttons; booleans use an
-On/Off checkbox. Sliders require known small domain bounds, rather than an invented
-range around the current number. Press Enter or leave the number field to apply.
-Use the up/down keys while editing to adjust the displayed draft by one.
-Known bounds also apply to typed values and the number buttons; buttons stop at
-the limits. Unidentified names and placeholder observation explanations stay off
-the control board while discovery continues.
-**Freeze** periodically holds a supported internal value using fresh guarded
-checks. Uncheck it to stop and leave the last value in place. It stops on reference
-changes and never resumes automatically after restart; it is not a per-frame lock.
-Other observation types show an unavailable Freeze control until supported.
-**Undo** restores a confirmed edit when its original guards still hold. Each edit
-freshly checks its target and saves its intent/result behind the single gesture.
-Numeric runtime trials remain limited to adjustments of 20; gameplay effects
-remain unverified. Screen-number controls need an eligible mapping first.
-**Add controls** searches the retained runtime catalogue. **Show card** brings a
-result onto the board. The small **i** button opens reading history, refresh/watch
-actions and detailed evidence. Object labels are clues, not verified descriptions
-or persistent identity. See [current controls](research/friendly-controls/PROTOCOL.md)
-and [durable runtime trials](research/runtime-trials/README.md).
-When a numeric finding has matches early enough in the observation pass,
-Reversebolt automatically freezes its predictions and checks later readings.
-It chooses by investigation effort and reading coverage, not an invented gameplay
-meaning. Discovery never initiates edits; an explicitly enabled Freeze can reapply
-its chosen value. Findings can remain uncertain or fail.
-The main view keeps names, short descriptions and relevant actions together.
-Drag a card's arrange handle to reorder it, or click the handle for accessible
-move actions. Editable trial values can be dragged or typed. Detailed evidence
-opens through the **i** button; application diagnostics and activity are separate
-views. Card arrangement belongs to the current observation batch.
-An image-reading agent can contribute provisional observations through MCP;
-the desktop shows their sources and uncertainty alongside OCR.
-Agents can also read ordered image sequences and contribute appearance or
-behavior interpretations spanning several moments. Timing bounds and gaps stay
-with the evidence; these interpretations do not establish editable controls.
-For shorter sequences, agents can use visual capture mode to skip text
-recognition while retaining images and memory. Actual cadence is measured;
-skipped screen numbers stay missing.
-An optional installed local vision model can now add provisional character,
-held-item and object cards automatically, including discrete pieces and structures.
-These describe visible appearance; general game understanding is not implemented.
-See the [selected-object evaluation](research/visual-objects/README.md).
-Some screen-number findings can now support explicit experimental memory edits;
-these do not establish what the value controls in gameplay.
-The disposable practice environment supports tested edits. The destination is
-documented in [the full vision](docs/VISION.md), with an explicit
-[progress rubric](docs/PROGRESS.md).
-
-## Try it on Windows
-
-Requires stable Rust and the Microsoft C++ build tools.
+Use Windows x64, stable Rust with the MSVC toolchain, and Microsoft C++ Build
+Tools with a Windows SDK. Build the **whole workspace** so the runtime loader,
+runtime helper and MCP adapter are available beside the desktop executable.
 
 ```powershell
-cargo run -p reversebolt-app --bin Reversebolt
+git clone https://github.com/skulitom/Reversebolt.git
+cd Reversebolt
+cargo build --workspace --locked
+.\target\debug\Reversebolt.exe
 ```
 
-Choose **Connect to application**, search by name, title or PID, select a window,
-then **Connect**. Discovery starts immediately. Supported runtimes first produce
-internal-value cards. The visual/memory fallback uses a bounded 16-moment pass
-while you play; comparisons begin after 12 moments. Each card
-has a name, short description and current value. **Learning** means its effect
-and controlling state are still unverified; the **i** button opens its details.
-Use **Pause** or **Stop** at any time. **Keep looking** starts another pass over
-different memory. Screenshots, activity and manual tools are collapsed behind
-details. Results are unverified correlations. This preview
-samples up to 16 MiB per moment, not the whole process. Capture support varies
-by renderer; image/OCR failures are shown explicitly. **Disconnect** leaves the
-application running. The connection invalidates when the original process exits.
+Choose **Connect to application**, select a running window and connect. Play
+normally while observation runs. A **Learning** or **Possible effect** card is an
+investigation hint; only eligible values offer edits. Pause, Stop and Disconnect
+remain available. **Practice** opens the disposable test fixture for trying the
+basic workflow. Its supplied observations and arena make it easier than a real
+game. See the [desktop preview guide](docs/PREVIEW_GUIDE.md) for detailed controls.
 
-For applications that keep state in another process, **Inspect application →
-Memory source** lists accessible child processes. Choosing a source keeps watching
-the same window and starts automatic observation in a fresh investigation.
-Agents can use the same selection through MCP. The source's role in gameplay
-is still unknown; automatic source selection is not implemented. See the
-[process-scope checks](research/memory-sources/README.md).
+Optional local vision uses a model already installed in local Ollama; select it
+in **Local vision**. The app does not download that model. The optional neural
+text reader uses separately licensed, hash-pinned weights obtained explicitly
+with `scripts/get-models.ps1`; see [model attribution](models/NOTICE.md). With no
+neural text models, Windows OCR remains available where supported.
 
-Observation jobs also sample pressed keys and mouse buttons while the selected
-window is active. **Inspect → Capture input context** shows a short summary;
-agents receive the same timed samples with recorded frames. Pausing, stopping,
-completion and disconnect stop sampling. These samples do not tell us which
-inputs the game accepted or what they mean. See [input scope and evidence](docs/research/INPUT_CONTEXT.md).
-
-The shared evidence reader also chooses up to four image regions from retained
-visual observations and measures them against their next consecutive capture.
-It needs no manually supplied coordinates and skips missing or uncertain sources.
-Automatic discovery archives these measurements; region labels remain unverified
-and motion results do not enable edits. See [the saved-observation regression](research/observed-regions/README.md).
-Selected regions also receive a bounded appearance search in the next image,
-with duplicate-match rejection and a reverse check. This can follow a translated
-appearance beyond its original rectangle; identity and gameplay meaning remain
-unverified. See [controlled and saved-game checks](research/region-appearance/README.md).
-Bounded appearance sequences keep the original template fixed, retain signed
-movement with capture/input context, and stop on uncertainty or missing images.
-They do not reacquire an appearance after a failure or create verified controls.
-See [sequence evidence and limits](research/appearance-sequence/README.md).
-With a configured local model, runtime discovery now starts one background
-appearance pass after its second play capture, then settles that pass before
-assembling runtime evidence. Missing images, rejected model responses and obsolete
-geometry are retained as unavailable visual evidence. Metadata discovery remains
-independent of whether any appearance is found. See [integration and saved-game
-replays](research/runtime-appearances/README.md).
-Regional measurements now also accompany the activity interpretation for its
-exact selected image pairs. Missing intervals stay explicit; the interpreter's
-uncertainty is retained with the measurements. A four-call saved-image comparison
-verified this connection, but did not establish better accuracy. See [regional
-interpretation context](research/appearance-context/README.md).
-Traces now aim for the last selected activity image within the same twelve-match
-budget. Both exposed saved-game cases consequently supply a regional measurement
-for each interval; augmented interpretations flag a repeated visible change.
-Object meaning and causal control remain unverified. See [activity horizon
-results](research/activity-horizon/README.md).
-Agents can also compare one selected baseline appearance across a retained edit
-trial's original, changed and recovered conditions. The bounded comparison keeps
-the original template, checks each action separately and stops on unresolved
-matches. It remains a retrospective image observation, not a verified gameplay
-effect. See [regional trial comparisons](research/trial-appearance/README.md).
-An agent or desktop controller can lock that region after baseline collection
-and before the linked edit. The choice remains bound to the original baseline,
-target, value and action sequence, survives restart, and is used automatically
-by the shared history reader. See [saved appearance choices](research/appearance-plan/README.md).
-The completed baseline also proposes a region automatically, using source
-texture and quiet stability before bounded matching. A weak whole-screen
-baseline can now proceed when this regional check succeeds; the engine saves
-the region before any edit. Read-time proposals remain optional choices. See
-[baseline region selection and its limits](research/stable-baseline-regions/README.md).
-The [regional baseline flow](research/regional-baseline-flow/README.md) covers
-this integration and its automated regression checks.
-The completion response and shared history now also join the regional pattern
-to recorded edit/restoration receipts and fresh value checks. Missing evidence
-stays inconclusive; a supported image pattern still does not establish gameplay
-meaning. See [regional intervention assessment](research/regional-intervention/README.md).
-
-Repeated input/value contrasts can add a short tentative card description.
-**Inspect → Observed control patterns** shows later agreements, counterexamples,
-and changes without detected keys. Agents receive the same evidence and suggested
-follow-up through MCP. These are associations, not verified button meanings;
-see [the method and limits](docs/research/ACTION_PATTERNS.md).
-
-When outcomes differ, Reversebolt can also freeze competing starting-state and
-action-history explanations, predict before a later sampled press, and rule out
-contradicted predictions. **Inspect** keeps those details; surviving explanations
-remain provisional. See [conditional predictions](docs/research/CONDITIONAL_PREDICTIONS.md).
-
-Open **Local vision**, enter the name of a vision model already installed in
-local Ollama, and choose **Use model**. Future connections and **Keep looking**
-review image pairs after moments 2 and 16. The first review runs while capture
-continues; each pass uses full images followed by crop checks and can still
-misidentify things. Short named cards appear automatically and show when they
-were seen. **Earlier** distinguishes an old image finding from
-a current reading; **Inspect** retains its full explanation. No models are
-downloaded and no images are uploaded. **Disable** turns this off for future
-jobs. Stop or pause waits for the active request and prevents subsequent model
-calls. An unavailable or rejected model pass contributes no findings and leaves
-a warning under **Inspect application**; other capture continues. Evidence-save
-or scope failures still stop the job. See
-[integration evidence and limits](docs/research/BACKGROUND_OBSERVER.md).
-
-For a series with matches, **Challenge these matches** freezes its predictions
-and checks them against fresh observations. Agreement is limited evidence;
-contradictions rule out that mapping. Neither outcome verifies a gameplay control.
-Small reads bracket each fresh image. If the candidate bytes change across the
-capture, that comparison stays uncertain; it counts neither for nor against the
-match. Later stable captures can supply the missing evidence. Equal endpoints
-still cannot rule out changes between reads or a delayed display copy.
-Initial matching requires repeated value differences in both halves of the
-observations, including the readings each mapping explains. A single unusual
-reading cannot certify a match; rare changes may need more observation. See
-[automated game checks and remaining limits](research/process-scope-study/README.md).
-
-When a screen number has sufficient fresh evidence, its card offers **Try value**.
-Drag or type a nearby value, then **Review edit**. Preparation does not write.
-If every remaining interpretation proposes the same byte change, **Try edit**
-explicitly attempts that experimental change and checks the screen number.
-**Restore bytes** checks the complete interpretations before restoring the changed
-bytes; it cannot undo all downstream gameplay effects. **Check effect** records
-another reading. Details stay behind **Inspect**. Trial changes are limited to
-20 from the latest observation and expire after 60 seconds. Ambiguity, changed
-memory or an uncertain earlier write can prevent a trial. Connecting never
-starts writes automatically. See [trial behavior and limits](docs/research/LIVE_TRIAL_EDITS.md).
-
-When several separate locations remain plausible, **Inspect → Test a possibility**
-can prepare a test of one location. Overlapping interpretations still have to
-agree. The card offers **Try test** only after review; competing predictions and
-their observed outcomes stay in Inspect and the shared agent API. A response
-does not automatically turn the finding into a verified gameplay control.
-
-Reviewing an edit now saves a fresh before-image and checks the selected number.
-Subsequent checks also compare up to 31 other observed numbers. A card flags
-other values that changed, and their cards show the fresh readings. **Inspect**
-shows the comparison; agents can retrieve the original before/after images.
-Changes can come from ordinary gameplay or recognition errors as well as the
-edit. Unseen effects remain unknown, even when all observed numbers match.
-See [effect-observation evidence](docs/research/EFFECT_OBSERVATIONS.md).
-
-**Search more memory** archives the current batch's evidence and moves to other
-eligible addresses. Collect fresh changing observations for each batch. The
-coverage display distinguishes addresses read from those with complete memory
-histories; neither means a gameplay control was found. Earlier findings remain
-historical and unverified.
-
-**Observe over time** collects up to 12 moments at one-second intervals while
-you interact with the application. **Pause**, **Resume** and **Stop** remain
-available during capture. An agent can start the same job through MCP; **Take
-control** pauses its work and holds further agent changes. A capture already in
-progress may finish. Jobs interrupted by restart remain in history and never
-resume automatically.
-
-For the editable demo, choose **Practice → Open practice → Observe changes →
-Find matches → Test effects**.
-Each practice process has new random offsets and a numeric encoding. Discovery
-receives synchronized bytes and observations, not the true field locations.
-Testing separates controlling fields from misleading display/telemetry copies.
-When a unique candidate passes, drag the numeric field or click it to type a
-value, then choose **Apply**.
-**Restore last edit** checks the bytes have not changed before restoring them.
-
-The two labels and observations come from the practice adapter. Twenty random
-state changes, a supplied arena boundary, and paused whole-arena rollback make
-this an intentionally easier problem than a real game.
-
-Session history is saved under `%LOCALAPPDATA%\Reversebolt`. Previous process
-addresses are invalidated on restart. `--data-dir <folder>` runs an isolated
-test session; `--headless` runs the same engine without the window.
+Session history is local under `%LOCALAPPDATA%\Reversebolt`.
+`--data-dir <folder>` creates an isolated session and `--headless` runs the same
+engine without the window. Native runtime inspection loads a helper into the
+selected process. Use the preview with offline applications you can experiment
+with, and retain your own saves.
 
 ## Agent interface
 
-`reversebolt-mcp` is a stdio MCP server using the official Rust SDK. It connects
-to the running desktop's authenticated loopback API. Agent edits and desktop
-edits appear in the same history. See [MCP setup](docs/MCP.md).
+Start the desktop or headless engine, then configure an MCP client to launch
+`target\debug\reversebolt-mcp.exe` using the absolute path on your machine.
+The adapter connects to the engine's authenticated loopback API. Both processes
+must use the same data directory; `--data-dir` is also accepted by the adapter.
+See [MCP setup, tools and contracts](docs/MCP.md).
 
-Agents can also run a bounded before/change/recovery comparison through the
-shared engine. It retains images, sampled input and checked values while the
-desktop offers **Stop test** and **Take control**. This compares an explicitly
-chosen hypothesis; it does not yet plan experiments or confirm gameplay names
-automatically. [Workflow and evidence](research/runtime-tests-live/README.md).
+Agents share the desktop's observations, jobs, guarded changes and restoration
+history. The person can stop a test or take control. An explicit MCP image-read
+request sends that image to the requesting client; subsequent processing depends
+on that client's configuration. Local processing does not imply that an external
+agent client is local.
 
-## Develop and verify
+## Development
 
 ```powershell
 cargo fmt --all -- --check
-cargo test --workspace
-cargo clippy --workspace --all-targets -- -D warnings
-cargo build --workspace
+cargo test --workspace --locked
+cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+cargo build --workspace --locked
 python scripts/smoke.py
 ```
 
-For the optional local neural text reader, run `scripts/get-models.ps1` before
-publishing. The approximately 139 MB of weights are pinned by hash and included
-in previews when available. See [model attribution](models/NOTICE.md).
-Development builds look for `models/` in their data directory or beside the
-executable. The desktop does not download models or upload screenshots.
-An explicit MCP `read_capture` request returns the selected image to that
-client; its subsequent processing is controlled by the client.
+Python is needed for the integration/research scripts, not the Rust desktop.
+The smoke check launches an isolated engine and owned practice process.
+Some research runners require a separately installed game, local model, Anode
+or archived inputs, and may need local paths adjusted; read their protocols
+before running them. Missing local
+artifacts are not passing results. Do not commit endpoint credentials, saves,
+screenshots, raw process memory, model weights or generated executables.
 
-`scripts/publish-preview.ps1` builds versioned preview binaries, updates the
-desktop launcher, and can launch the preview. Existing running versions are not
-overwritten. No global MCP client settings are changed.
-Use `-StageOnly` to prepare a build without updating the launcher. After testing,
-`scripts/activate-preview.ps1 -Version <staged-version>` checks all four binary
-hashes and points the shortcut at that exact tested directory. It does not
-restart an existing connected session.
+`scripts/publish-preview.ps1 -StageOnly` prepares a local versioned build.
+Activating a preview updates the local desktop launcher; these scripts do not
+publish a GitHub release. Existing connected sessions are not overwritten.
 
-## Architecture
+| Component | Responsibility |
+| --- | --- |
+| `reversebolt-core` | Evidence, matching, session state, comparison planning and guarded edit contracts. |
+| `reversebolt-app` | Native process access, capture, engine service and egui desktop. |
+| `reversebolt-runtime` | Bounded IL2CPP runtime inspection, loader and helper. |
+| `reversebolt-mcp` | Stdio MCP adapter to the shared engine. |
+| `reversebolt-jobs` | Durable jobs, interruption and human takeover (`reversebolt-session-jobs` package). |
+| `reversebolt-vision` | Local text recognition, geometry and temporal regions. |
+| `reversebolt-observer` | Local-model interpretation and experimental appearance/activity analysis. |
 
-- `reversebolt-core`: general numeric matching, evidence, shared commands,
-  serialized session model, verified practice edits and restoration.
-- `reversebolt-app`: Windows native process transport, engine worker, local API,
-  egui desktop and isolated practice fixture.
-- `reversebolt-mcp`: official MCP protocol adapter to the same engine.
-- `reversebolt-session-jobs`: durable observation jobs, receipts, interruption
-  and human takeover; captures can include bounded local visual interpretation.
-- `reversebolt-vision`: local PP-OCRv6 inference, word geometry and bounded
-  temporal regions through the Rust RTen runtime.
-- `reversebolt-observer`: experimental image-only local model adapter and
-  crop reviewer, shared by automatic desktop/MCP jobs and offline replay. See its
-  [measured results and limits](docs/research/LOCAL_OBSERVER.md).
+Useful contributions include reliable evidence collection, better experiment
+selection, hidden-state and appearance measurements, portable access backends,
+and reproducible evaluations that retain negative results. Keep reusable
+inference separate from game-specific test setup. Adding a hardcoded trainer is
+not evidence that discovery generalizes.
 
-The current practice adapter is deliberately separate from the discovery
-algorithm. Native capture uses Windows Graphics Capture with a PrintWindow
-compatibility path. Windows OCR and the optional PP-OCRv6/RTen reader produce
-source-tagged readings. Conflicting numbers remain gaps in the matching data;
-the desktop exposes their alternatives. Screen tracking is spatial, without
-semantic gameplay labels.
-An unsupported text region is skipped with a warning while other recognized
-regions are retained. See [saved-image regression and failure isolation](research/observation-resilience/README.md).
-General motion, appearance, object and rule inference,
-live-game experiments, broader investigation jobs, and restart revalidation are
-future milestones, not advertised capabilities.
+## License and provenance
 
-## Research and license
+Original Reversebolt code is released under the **[MIT License](LICENSE)**.
+The independent MIT GameDiscoveryLab prototype contributed the original numeric
+discovery and practice fixture; its notice is retained.
 
-Original source: MIT. Current optional PP-OCRv6 weights and dictionary are
-Apache-2.0. Legacy Ocrs model installations remain separately CC-BY-SA-4.0.
-Ocrs/RTen and object are MIT OR Apache-2.0; windows-capture is MIT. Object 0.40.0
-provides bounded PE export parsing under its MIT license. Attribution is retained
-under `models/` and `licenses/`. Independent code originated in the MIT
-GameDiscoveryLab research prototype.
-Its measured failure cases and Squalr study are preserved under `docs/research/`.
-An unchanged-product [independent browser-game baseline](research/independent-games/README.md)
-records automatic 2048 and Tetris runs, including missing controls and retained
-failures. These first-exposure runs do not satisfy the independent-game release gate.
-Squalr was evaluated as a reference/backend candidate. It is GPL-3.0; no Squalr
-source has been copied into this MIT implementation. Any future integration must
-make its licensing implications explicit.
+Third-party material keeps its own license: the PaddleOCR dictionary and optional
+PP-OCRv6 weights are Apache-2.0; the vendored offline TAPIR research files are
+Apache-2.0; the causal-validation research snapshot is MIT. Dependencies retain
+their upstream licenses. Legacy Ocrs weights, if obtained separately, are
+CC-BY-SA-4.0. See [source provenance](NOTICE.md), [model notices](models/NOTICE.md)
+and the license files beside the included third-party material.
+
+Squalr was studied as a reference. Its GPL-3.0 source is not included or linked
+into this MIT implementation. The public repository contains source and compact
+research summaries, not commercial game assets or the local evidence archives.

@@ -26,6 +26,7 @@ Legacy Ocrs model installations remain supported when neither PP-OCRv6 model
 directory is present. `ocrs-manifest.json` preserves their original hashes and
 URLs. These unmodified weights are by Robert Knight and the Ocrs project,
 licensed CC-BY-SA-4.0: https://huggingface.co/robertknight/ocrs and
-https://github.com/robertknight/ocrs-models. The license copy remains in
-`licenses/`. Current previews ship the PP-OCRv6 weights only. The two neural
+https://github.com/robertknight/ocrs-models. Those legacy weights are not distributed
+in this source release; retain their upstream license and attribution if
+redistributing them. Current previews ship the PP-OCRv6 weights only. The two neural
 versions never run as independent votes in the same observation.
