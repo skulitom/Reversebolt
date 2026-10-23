@@ -29,6 +29,7 @@ pub mod runtime;
 pub mod runtime_cards;
 pub mod runtime_hypotheses;
 pub mod runtime_inventory;
+pub mod runtime_location;
 pub mod runtime_neighbors;
 pub mod runtime_object_questions;
 pub mod runtime_patch;

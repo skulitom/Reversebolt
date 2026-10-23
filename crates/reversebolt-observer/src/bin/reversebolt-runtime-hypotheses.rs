@@ -52,7 +52,7 @@ fn activity(
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 3 {
-        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--activity MANIFEST] [--replay RECEIPT]".into());
+        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only] [--activity MANIFEST] [--replay RECEIPT]".into());
     }
     let bytes = std::fs::read(&args[0])?;
     if bytes.len() > 64 * 1024 * 1024 {
@@ -63,10 +63,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut opaque = false;
     let mut activity_path = None;
     let mut replay_path = None;
+    let mut selection_only = false;
     let mut options = args[3..].iter();
     while let Some(option) = options.next() {
         match option.as_str() {
             "--opaque" if !opaque => opaque = true,
+            "--select-only" if !selection_only => selection_only = true,
             "--activity" if activity_path.is_none() => {
                 activity_path = Some(options.next().ok_or("Missing activity manifest")?)
             }
@@ -78,6 +80,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if replay_path.is_some() && activity_path.is_some() {
         return Err("Metadata replay cannot add new activity inference".into());
+    }
+    if selection_only && (replay_path.is_some() || activity_path.is_some()) {
+        return Err("Type selection alone cannot add activity or replay naming.".into());
     }
     let activity = activity_path.map(|p| activity(p)).transpose()?;
     if opaque {
@@ -119,15 +124,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         tokio::runtime::Runtime::new()?.block_on(async {
             let observer = reversebolt_observer::Observer::connect(&args[2]).await?;
-            Ok::<_, String>(
+            Ok::<_, String>(if selection_only {
+                observer
+                    .runtime_type_selection(&inventory, &AtomicBool::new(false))
+                    .await
+            } else {
                 observer
                     .runtime_hypotheses_with_activity(
                         &inventory,
                         activity.as_ref(),
                         &AtomicBool::new(false),
                     )
-                    .await,
-            )
+                    .await
+            })
         })?
     };
     std::fs::write(
@@ -142,7 +151,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     println!(
         "{}",
-        serde_json::json!({"output":output,"error":receipt.error,"cancelled":receipt.cancelled,
+        serde_json::json!({"output":output,"selection_only":selection_only,"error":receipt.error,"cancelled":receipt.cancelled,
         "elapsed_ms_is_retained":replay_path.is_some(),
         "question_source":receipt.question_source(),"question_policy":receipt.question_policy(),"metadata_model_calls":if replay_path.is_some(){0}else{receipt.stages.len()},
         "accepted":receipt.batch.as_ref().map(|b|b.accepted.len()),"rejected":receipt.batch.as_ref().map(|b|b.rejected.len()),

@@ -5,10 +5,10 @@ use crate::{
     visual::digest,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
-pub const POLICY: &str = "rooted_role_sibling_sampling_v2";
+pub const POLICY: &str = "rooted_role_sibling_sampling_v3";
 pub const LIMITATION: &str = "Neighbouring values share a rooted object path in this discovery, not persistent actor identity. Paths can alias or change occupants. Changing siblings may help investigate activity but do not establish meaning, control or causal relevance. Names and values do not determine selection; omitted fields remain unknown.";
 pub const MAX_PATHS: usize = 128;
 // The loader has a 32K UTF-16 request limit as well as a 64KiB file limit.
@@ -34,6 +34,8 @@ pub struct Plan {
     pub seed_ids: Vec<String>,
     pub roles: Vec<Role>,
     pub candidates: Vec<Candidate>,
+    #[serde(default)]
+    pub locations: Vec<crate::runtime_location::Location>,
     pub batches: Vec<Vec<Locator>>,
     pub omitted_fields: usize,
     pub limitation: String,
@@ -55,10 +57,11 @@ pub fn select_seeds(report: &Value, paths: &[String]) -> Result<SeedSelection> {
         return Err("Select one to 512 distinct report-bound paths.".into());
     }
     let requested: BTreeSet<_> = paths.iter().collect();
+    let metadata = crate::runtime_location::Index::new(report)?;
     let mut found = BTreeMap::new();
     runtime::visit_candidates(report, "", 0, 1, &mut |c| {
         if requested.contains(&c.id) && eligible(c) {
-            found.insert(c.id.clone(), role_id(&c.locator)?);
+            found.insert(c.id.clone(), metadata.locate(&c.locator)?.role_id);
         }
         Ok(())
     })?;
@@ -80,13 +83,13 @@ pub fn select_seeds(report: &Value, paths: &[String]) -> Result<SeedSelection> {
     })
 }
 pub fn role_id(path: &Locator) -> Result<String> {
-    path.validate(&path.scope)?;
-    let terminal = path.steps.last().ok_or("Empty runtime path")?;
-    Ok(digest(
-        &serde_json::to_vec(&json!({"scope":path.scope,"root":path.root,
-        "references":&path.steps[..path.steps.len()-1],"owner":terminal.owner}))
-        .map_err(|e| e.to_string())?,
-    ))
+    crate::runtime_location::role_id_at(
+        path,
+        path.steps
+            .len()
+            .checked_sub(1)
+            .ok_or("Empty runtime path")?,
+    )
 }
 fn eligible(candidate: &Candidate) -> bool {
     matches!(candidate.type_code, 2 | 4..=13)
@@ -113,6 +116,7 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
         return Err("Select one to 32 distinct seed paths and a one to 128 field budget.".into());
     }
     let mut found = BTreeMap::new();
+    let metadata = crate::runtime_location::Index::new(report)?;
     runtime::visit_candidates(report, "", 0, 1, &mut |c| {
         if seeds.contains(&c.id) && eligible(c) {
             found.insert(c.id.clone(), c.clone());
@@ -125,7 +129,7 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
     let scope = found.values().next().unwrap().locator.scope.clone();
     let mut roles: Vec<Role> = vec![];
     for seed in seeds {
-        let id = role_id(&found[seed].locator)?;
+        let id = metadata.locate(&found[seed].locator)?.role_id;
         if let Some(role) = roles.iter_mut().find(|r| r.id == id) {
             role.seed_ids.push(seed.clone());
         } else {
@@ -137,16 +141,19 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
             });
         }
     }
-    let mut queues: BTreeMap<String, VecDeque<Candidate>> = roles
+    let mut queues: BTreeMap<String, [VecDeque<Candidate>; 2]> = roles
         .iter()
-        .map(|r| (r.id.clone(), VecDeque::new()))
+        .map(|r| (r.id.clone(), [VecDeque::new(), VecDeque::new()]))
         .collect();
     let mut counts: BTreeMap<String, usize> = roles.iter().map(|r| (r.id.clone(), 0)).collect();
     runtime::visit_candidates(report, "", 0, 1, &mut |c| {
-        if eligible(c)
-            && let Some(queue) = queues.get_mut(&role_id(&c.locator)?)
-        {
-            *counts.get_mut(&role_id(&c.locator)?).unwrap() += 1;
+        if !eligible(c) {
+            return Ok(());
+        }
+        let location = metadata.locate(&c.locator)?;
+        if let Some(queues) = queues.get_mut(&location.role_id) {
+            *counts.get_mut(&location.role_id).unwrap() += 1;
+            let queue = &mut queues[usize::from(location.members.len() > 1)];
             if queue.len() < limit {
                 queue.push_back(c.clone());
             }
@@ -157,15 +164,20 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
         role.available_fields = counts[&role.id];
     }
     let available: usize = roles.iter().map(|r| r.available_fields).sum();
-    // Keep report traversal order within each role, interleaving roles so one
-    // large object cannot consume the entire observation budget.
+    // Interleave roles and alternate direct/embedded leaves within each role.
+    // Preserve traversal order in each storage group; no label/value ranking.
     let mut candidates = vec![];
     while candidates.len() < limit && candidates.len() < available {
         for role in &mut roles {
             if candidates.len() == limit {
                 break;
             }
-            if let Some(c) = queues.get_mut(&role.id).unwrap().pop_front() {
+            let groups = queues.get_mut(&role.id).unwrap();
+            let preferred = role.selected_fields % 2;
+            if let Some(c) = groups[preferred]
+                .pop_front()
+                .or_else(|| groups[1 - preferred].pop_front())
+            {
                 candidates.push(c);
                 role.selected_fields += 1;
             }
@@ -192,6 +204,10 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
             batches.push(vec![path]);
         }
     }
+    let locations = candidates
+        .iter()
+        .map(|c| metadata.locate(&c.locator))
+        .collect::<Result<Vec<_>>>()?;
     Ok(Plan {
         policy: POLICY.into(),
         limit,
@@ -201,6 +217,7 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
         omitted_fields: available - candidates.len(),
         roles,
         candidates,
+        locations,
         batches,
         limitation: LIMITATION.into(),
     })

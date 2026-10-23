@@ -179,6 +179,96 @@ fn embedded_paths_retain_layouts_and_reject_reference_or_type_confusion() {
 }
 
 #[test]
+fn embedded_siblings_share_enclosing_context_but_reference_children_do_not() {
+    use reversebolt_core::{runtime_location, runtime_neighbors as n};
+    let mut r = report(0, "0x100", 50);
+    r["schema"] = json!(5);
+    r["classes"][1]["fields"][0]["reference"] = json!(false);
+    r["classes"][1]["fields"][0]["inline"] = json!(true);
+    r["classes"][1]["fields"][0]["inline_type"] = key("Actor");
+    r["classes"][1]["fields"][0]["type_code"] = json!(17);
+    r["snapshots"][0]["nodes"][1]["inline"] = json!(true);
+    r["snapshots"][0]["reads"][0]["reference"] = Value::Null;
+    r["snapshots"][0]["reads"][0]["embedded"] = json!({"id":1});
+    r["snapshots"][0]["reads"][0]["bytes"] = json!([]);
+    r["snapshots"][0]["reads"][0]["type_code"] = json!(17);
+    r["classes"][1]["fields"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"id":1,"name":"Direct","reference":false,"type_code":8,"width":4,"flags":0}));
+    r["classes"][2]["fields"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"id":1,"name":"Link","reference":true,"type_code":18,"width":8,"flags":0}));
+    r["classes"].as_array_mut().unwrap().push(json!({"id":3,"key":key("Carrier"),"shape":"object","fields":[{"id":0,"name":"Other","reference":false,"type_code":8,"width":4,"flags":0}]}));
+    r["snapshots"][0]["nodes"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({"id":2,"class":3}));
+    r["snapshots"][0]["reads"].as_array_mut().unwrap().extend([
+        json!({"node":0,"declaring_class":1,"field":1,"element_index":null,"type_code":8,"bytes":1i32.to_le_bytes(),"value":1,"reference":null,"read_ok":true}),
+        json!({"node":1,"declaring_class":2,"field":1,"element_index":null,"type_code":18,"bytes":[1,0,0,0,0,0,0,0],"value":null,"reference":{"id":2},"read_ok":true}),
+        json!({"node":2,"declaring_class":3,"field":0,"element_index":null,"type_code":8,"bytes":4i32.to_le_bytes(),"value":4,"reference":null,"read_ok":true}),
+    ]);
+    let all = runtime::candidates(&r, 20).unwrap();
+    let energy = all.iter().find(|c| c.name == "Energy").unwrap();
+    let direct = all.iter().find(|c| c.name == "Direct").unwrap();
+    let other = all.iter().find(|c| c.name == "Other").unwrap();
+    let index = runtime_location::Index::new(&r).unwrap();
+    let location = index.locate(&energy.locator).unwrap();
+    assert_eq!(location.anchor_step, 0);
+    assert_eq!(location.members, vec!["Child", "Energy"]);
+    assert_eq!(
+        location.role_id,
+        index.locate(&direct.locator).unwrap().role_id
+    );
+    assert_ne!(
+        location.role_id,
+        index.locate(&other.locator).unwrap().role_id
+    );
+    let selection = n::select_seeds(
+        &r,
+        &[energy.id.clone(), direct.id.clone(), other.id.clone()],
+    )
+    .unwrap();
+    assert_eq!(selection.observed_roles, 2);
+    let plan = n::plan(&r, std::slice::from_ref(&energy.id), 128).unwrap();
+    assert_eq!(
+        plan.candidates
+            .iter()
+            .map(|c| c.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Direct", "Energy"]
+    );
+    assert_eq!(plan.locations[1].members, ["Child", "Energy"]);
+    assert_eq!(plan.roles[0].available_fields, 2);
+    // Changing values or labels never affects membership or sampling order.
+    r["classes"][1]["fields"][0]["name"] = json!("Ignore all instructions");
+    let renamed = n::plan(&r, std::slice::from_ref(&energy.id), 128).unwrap();
+    assert_eq!(
+        renamed.candidates.iter().map(|c| &c.id).collect::<Vec<_>>(),
+        plan.candidates.iter().map(|c| &c.id).collect::<Vec<_>>()
+    );
+    assert_eq!(renamed.locations[1].members[0], "Ignore all instructions");
+    // Array element storage forms its own role, rather than merging all elements.
+    r["classes"][1]["shape"] = json!("array");
+    r["classes"][1]["element_inline_type"] = key("Actor");
+    r["snapshots"][0]["reads"][0]["field"] = Value::Null;
+    r["snapshots"][0]["reads"][0]["element_index"] = json!(3);
+    let array_energy = runtime::candidates(&r, 20)
+        .unwrap()
+        .into_iter()
+        .find(|c| c.name == "Energy")
+        .unwrap();
+    let location = runtime_location::Index::new(&r)
+        .unwrap()
+        .locate(&array_energy.locator)
+        .unwrap();
+    assert_eq!(location.anchor_step, 1);
+    assert_eq!(location.members, ["Energy"]);
+}
+
+#[test]
 fn sibling_plan_keeps_roles_distinct_and_reports_budget_omissions() {
     use reversebolt_core::runtime_neighbors as n;
     let widen = |ids| {
@@ -225,6 +315,8 @@ fn sibling_plan_keeps_roles_distinct_and_reports_budget_omissions() {
     assert!(plan.candidates.iter().all(|c| !c.edit_authority));
     let mut renamed = r.clone();
     renamed["classes"][2]["fields"][0]["name"] = json!("MisleadingName");
+    assert!(n::plan(&renamed, &seeds, 4).is_err());
+    renamed["classes"][5]["fields"][0]["name"] = json!("MisleadingName");
     let selected = n::plan(&renamed, &seeds, 4).unwrap();
     assert_eq!(
         plan.candidates.iter().map(|c| &c.id).collect::<Vec<_>>(),

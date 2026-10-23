@@ -4,6 +4,32 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Embedded sibling activity and catalog paging (2026-10-23): **36% unchanged**.
+The shared sampler now groups structured scalar leaves with their enclosing
+object and preserves the complete member context. Type selection can run before
+control naming. A catalog-size bug is fixed without increasing the 12,000-byte
+per-request or 24-request selection budgets.
+
+The bounded Sable development run completed 18 model requests and 112 native
+refresh calls after one discovery. All 1,288 readings across 92 paths succeeded,
+including 16 embedded paths; six paths changed but none passed the repeated-input
+association rule. Every helper unloaded, and all 490 observed pauses had zero
+helper Rust heap operations. The 518 unselected and 36 selected-but-unmeasured
+paths remain unknown. Input/focus coverage was checked, but actual game movement
+was not independently measured. No gameplay meaning, edit or generalization is
+verified, so no milestone credit is added.
+
+The two pre-measurement failures and their frozen continuation are retained. The
+saved evidence audit, 474 all-feature workspace tests, strict all-target/all-feature
+Clippy and formatting pass. Preview `0.1.0-20261023-034437` passes normal Anode
+startup/accessibility and a separate twelve-path check of its exact rebuilt
+reader. The desktop shortcut selects it for the next launch; the user's running
+editor is preserved. The owned game and preview exited, the lease was released,
+and the main game save is unchanged. Next: independently verify the game response
+to an action and separate changing actor state from configuration or unrelated
+drift before expanding the sample again.
+[Result, retained failures and limits](../research/runtime-embedded-activity/README.md).
+
 Generic embedded runtime state (2026-10-23): **36% unchanged**.
 The reader now follows nested structures, closed generic value types, arrays of
 structures/enums and static structures using runtime metadata, with exact scalar

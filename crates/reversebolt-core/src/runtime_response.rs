@@ -1,13 +1,9 @@
 //! Input-associated field changes, not actor identity, semantics or edit authority.
-use crate::{
-    Result, runtime,
-    runtime_neighbors::{Plan, role_id},
-    visual::digest,
-};
+use crate::{Result, runtime, runtime_neighbors::Plan, visual::digest};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-pub const POLICY: &str = "bracketed_sibling_input_response_v2";
+pub const POLICY: &str = "bracketed_sibling_input_response_v3";
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Poll {
@@ -124,6 +120,19 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
                 .ok_or_else(|| "Batch path is absent from sibling plan".to_owned())
         })
         .collect::<Result<Vec<_>>>()?;
+    if plan.locations.len() != plan.candidates.len() {
+        return Err("Missing enclosing field context".into());
+    }
+    for (candidate, location) in plan.candidates.iter().zip(&plan.locations) {
+        if location.path_id != candidate.id
+            || location.role_id
+                != crate::runtime_location::role_id_at(&candidate.locator, location.anchor_step)?
+            || location.members.len() != candidate.locator.steps.len() - location.anchor_step
+            || !plan.roles.iter().any(|r| r.id == location.role_id)
+        {
+            return Err("Invalid enclosing field context".into());
+        }
+    }
     let references: Vec<_> = candidates.iter().collect();
     let mut readings: Vec<Vec<runtime::RefreshedValue>> = vec![vec![]; candidates.len()];
     let mut previous_end = None;
@@ -209,8 +218,13 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
                 }
             }
         }
-        fields.push(json!({"path_id":candidate.id,"role_id":role_id(&candidate.locator)?,
-            "field_name":candidate.name,"all_read":complete,"locations_stable":locations_stable,
+        let location = plan
+            .locations
+            .iter()
+            .find(|l| l.path_id == candidate.id)
+            .ok_or("Missing field context")?;
+        fields.push(json!({"path_id":candidate.id,"role_id":location.role_id,
+            "field_name":candidate.name,"member_path":location.members,"all_read":complete,"locations_stable":locations_stable,
             "quiet_stable_pulses":quiet_stable,"state_associated_pulses":state_pulses,"step_associated_pulses":step_pulses,
             "repeated_association":state_pulses==4 || step_pulses==4,
             "values":readings.iter().map(|r|&r.value).collect::<Vec<_>>()}));

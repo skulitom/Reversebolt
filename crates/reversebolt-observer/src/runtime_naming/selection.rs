@@ -6,6 +6,8 @@ use std::collections::BTreeSet;
 pub const PAGE_PROMPT_BYTES: usize = 12_000;
 const MAX_ROUNDS: usize = 4;
 const MAX_STAGES: usize = 24;
+// The catalog is paged. Its aggregate budget must not equal one request's cap.
+pub(super) const INDEX_BYTES: usize = PAGE_PROMPT_BYTES * MAX_STAGES;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct PagedSelection {
@@ -119,6 +121,9 @@ impl Observer {
             .ok_or("Type selection instructions exceed the page budget.")?;
         for _ in 0..MAX_ROUNDS {
             let partition = pages(&index, budget)?;
+            if partition.len() > MAX_STAGES.saturating_sub(receipt.stages.len()) {
+                return Err("Complete type pages exceed the remaining request budget.".into());
+            }
             receipt
                 .paged_selection
                 .as_mut()
@@ -224,6 +229,32 @@ mod tests {
         }
         let exact = serde_json::to_vec(&index).unwrap().len();
         assert_eq!(pages(&index, exact).unwrap(), vec![index]);
+    }
+
+    #[test]
+    fn aggregate_catalog_can_exceed_one_prompt_without_enlarging_any_page() {
+        let mut large = index();
+        let prototype = large.types.clone();
+        for copy in 1..7 {
+            large.types.extend(prototype.iter().cloned().map(|mut row| {
+                row.id += copy * 111;
+                row
+            }));
+        }
+        let encoded = serde_json::to_vec(&large).unwrap().len();
+        assert!(encoded > PROMPT_BYTES && encoded < INDEX_BYTES);
+        let prefix = format!("{SELECT_PROMPT}{OBJECT_TEXT_GUIDANCE}{INDEX_INTRO}");
+        let divided = pages(&large, PAGE_PROMPT_BYTES - prefix.len()).unwrap();
+        assert!(divided.len() < MAX_STAGES);
+        assert_eq!(
+            divided.iter().map(|p| p.types.len()).sum::<usize>(),
+            large.types.len()
+        );
+        assert!(
+            divided
+                .iter()
+                .all(|p| format!("{prefix}{}", json!(p)).len() <= PAGE_PROMPT_BYTES)
+        );
     }
 
     #[test]

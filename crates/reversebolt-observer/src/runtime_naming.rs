@@ -171,23 +171,7 @@ impl Observer {
         activity: Option<&crate::runtime_activity::Input>,
         cancel: &AtomicBool,
     ) -> Receipt {
-        let mut receipt = Receipt {
-            incomplete_stage: None,
-            paged_selection: None,
-            object_text_fallback: None,
-            activity: None,
-            schema: 1,
-            report_sha256: inventory.report_sha256.clone(),
-            model: self.model.clone(),
-            model_digest: self.digest.clone(),
-            server_version: self.version.clone(),
-            stages: vec![],
-            selection: None,
-            batch: None,
-            error: None,
-            cancelled: false,
-            limitation: h::LIMITATION.into(),
-        };
+        let mut receipt = self.naming_receipt(inventory);
         // Discover potential properties from metadata before interpreting a clip.
         // A subtle, misleading or absent visible change must not veto hidden state.
         let result = self.naming_pass(inventory, cancel, &mut receipt).await;
@@ -210,7 +194,40 @@ impl Observer {
         }
         receipt
     }
-    async fn naming_pass(
+    /// Select observed types for investigation without proposing named controls.
+    /// Uses exactly the same bounded, report-bound selection as full naming.
+    pub async fn runtime_type_selection(
+        &self,
+        inventory: &Inventory,
+        cancel: &AtomicBool,
+    ) -> Receipt {
+        let mut receipt = self.naming_receipt(inventory);
+        if let Err(error) = self.selection_pass(inventory, cancel, &mut receipt).await {
+            receipt.error = Some(error);
+        }
+        receipt.cancelled = cancel.load(Ordering::SeqCst);
+        receipt
+    }
+    fn naming_receipt(&self, inventory: &Inventory) -> Receipt {
+        Receipt {
+            incomplete_stage: None,
+            paged_selection: None,
+            object_text_fallback: None,
+            activity: None,
+            schema: 1,
+            report_sha256: inventory.report_sha256.clone(),
+            model: self.model.clone(),
+            model_digest: self.digest.clone(),
+            server_version: self.version.clone(),
+            stages: vec![],
+            selection: None,
+            batch: None,
+            error: None,
+            cancelled: false,
+            limitation: h::LIMITATION.into(),
+        }
+    }
+    async fn selection_pass(
         &self,
         inventory: &Inventory,
         cancel: &AtomicBool,
@@ -220,16 +237,22 @@ impl Observer {
             return Ok(());
         }
         let prefix = format!("{SELECT_PROMPT}{OBJECT_TEXT_GUIDANCE}{INDEX_INTRO}");
-        let types = reversebolt_core::runtime_type_index::build(
-            inventory,
-            PROMPT_BYTES.saturating_sub(prefix.len()),
-        )?;
+        let types = reversebolt_core::runtime_type_index::build(inventory, selection::INDEX_BYTES)?;
         let selected = self.select_types(types, &prefix, cancel, receipt).await?;
         if cancel.load(Ordering::SeqCst) {
             return Ok(());
         }
         let selection = h::select(inventory, &selected)?;
         receipt.selection = Some(selection);
+        Ok(())
+    }
+    async fn naming_pass(
+        &self,
+        inventory: &Inventory,
+        cancel: &AtomicBool,
+        receipt: &mut Receipt,
+    ) -> Result<()> {
+        self.selection_pass(inventory, cancel, receipt).await?;
         if cancel.load(Ordering::SeqCst) {
             return Ok(());
         }
