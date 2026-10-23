@@ -88,3 +88,20 @@ applied or retried. Do not infer allowance from publication. The original
 pending-operation record, now marked `elevation_cancelled`, is
 `test-results/pending-allowance-20261023-002433.json`. No broader rule or upload
 was requested. The older connected desktop editor remains available.
+
+## Current build ran without another allowance (23 October local time)
+
+Product source `956553a` was staged as `0.1.0-20261023-012028` with executable
+SHA-256 `b43b841207e986ea178e4ca95923e5e2f47e83cc6c7363829bf369afc9c27f25`.
+It started normally in Anode and completed native Sable discovery and one
+guarded edit/restore comparison. No security setting was changed, no canceled
+elevation was retried, and no file was copied over a previously allowed path.
+Antivirus, real-time protection and tamper protection remained enabled; the
+before/after check found no new Reversebolt detection.
+
+After checking its manifest hashes, the exact tested directory was activated
+for the desktop shortcut's next launch. The current connected desktop editor
+remains on `233909`. Test and activation receipts are retained under
+`test-results/sable-live-context-v1`. Normal execution in this interval is not
+vendor clearance or an explanation of the historical detection. Nothing was
+uploaded.

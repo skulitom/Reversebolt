@@ -1,0 +1,106 @@
+{
+  "artifact_audit": "passed",
+  "development_retest": true,
+  "source_commit": "956553a24e672ad0aeaecc45a464c6f1e18b9ede",
+  "release": "0.1.0-20261023-012028",
+  "jobs": [
+    {
+      "phase": "Completed",
+      "error": null
+    }
+  ],
+  "evaluator_elapsed_ms": 204368,
+  "types": 339,
+  "fields": 1809,
+  "named_hypotheses": [
+    "footstep raycast distance",
+    "face the player during conversation",
+    "animSpeed",
+    "startRadius",
+    "Grip Multiplier"
+  ],
+  "metadata_error": null,
+  "incomplete_request_phase": null,
+  "completed_metadata_requests": 22,
+  "metadata_stage_ms": 69347,
+  "incomplete_request_ms": null,
+  "pages_per_round": [
+    11,
+    2,
+    1
+  ],
+  "activity_error": null,
+  "activity_stage_ms": 17109,
+  "comparison": {
+    "name": "footstep raycast distance",
+    "observed_value": "0.1",
+    "changed_value": "0",
+    "assessment": "suppression_not_observed",
+    "product_medians": [
+      9.132618471512053,
+      8.940935445580717,
+      8.700591216216218
+    ],
+    "independent_full_frame_medians": [
+      12.102412109374999,
+      12.001496853298612,
+      11.618445095486111
+    ],
+    "trial_restored": true,
+    "comparison_sha256": "724af0207ec097630aa713127dfdedc41c82b5a55cc76b469582851b32463e41"
+  },
+  "automatic_images": 33,
+  "input_holds": 16,
+  "setup_images_reviewed": 4,
+  "manually_reviewed_measurement_images": 0,
+  "helper_runs": 7,
+  "pause_count": 150,
+  "max_stop_to_resume_us": 5672,
+  "model_contexts": [
+    8192,
+    16384
+  ],
+  "telemetry_errors": 0,
+  "gpu_complete_samples": 290,
+  "gpu_incomplete_rows": 1,
+  "minimum_reported_free_mib": 688,
+  "maximum_reported_used_mib": 23451,
+  "gpu_csv_sha256": "78b535a8713cc58fe13ee90123aa688a51dc7b5f4c412aa11e854d747c44118f",
+  "model_telemetry_sha256": "f8324d4bd82a7eb5d24aea1c364a976478a920e264dab93d268fb58e1bf9b71c",
+  "activation_sha256": "265cc5cf78f535dee2637b94660fafa1f70b673bd66dd66ad562e323da5c2fd9",
+  "storage_differences": {
+    "changed": [
+      "Player-prev.log",
+      "Player.log",
+      "SaveData/SaveManager"
+    ],
+    "new": []
+  },
+  "frozen_sha256": "2d77583def45cf4d4c3f75bf21dac0412e98aedc60bf15b34305d24abbe3cf96",
+  "receipt_sha256": "495b6cc9c92d9062369f0d4a37760c616f86edc313fe7e3c3c0c66d09cdd2f2a",
+  "result_sha256": "428c86661bb532d069eb7a16348201aa9c05526eecd433112232de956bc9c261",
+  "cleanup": {
+    "recorded_utc": "2026-10-23T00:30:40.1036629Z",
+    "owned_processes_exited": true,
+    "owned_pids": [
+      101368,
+      76736,
+      56316,
+      84892,
+      31852,
+      51592,
+      17248
+    ],
+    "desktop_pid": 98332,
+    "desktop_responsive": true,
+    "protection": {
+      "tamper": true,
+      "antivirus": true,
+      "realtime": true
+    },
+    "new_reversebolt_detections": 0,
+    "launcher_unchanged": true,
+    "shortcut_unchanged": true
+  },
+  "limitation": "Development retest. Names are hypotheses; telemetry is global and observational. A rendered-response comparison does not establish gameplay semantics, generalization or full world rollback."
+}

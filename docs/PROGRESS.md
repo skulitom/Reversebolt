@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Sable current-build development retest (2026-10-23): **36% unchanged**.
+The staged build completed automatic discovery, producing five cited hypotheses
+in 22 metadata requests (69.347 seconds), then one edit/comparison/restoration.
+The complete evaluator took 204.368 seconds. There was no naming timeout in this
+run, but the selected groups all fit the smaller context; large live requests
+and the cause of the earlier failure remain unresolved.
+
+The planner chose a proposed footstep-detection value for a visual-response
+comparison. Neither product nor independent full-frame measurements showed
+suppression. This does not test footstep events or establish a useful control.
+The original bytes were restored; all seven helper runs unloaded. Thirty-three
+automatic images, sixteen bounded input holds and four setup images were used,
+with zero manually reviewed measurement images. Owned processes exited and the
+main save is unchanged; the save index and logs changed. Current protections
+remained enabled with no new detection. The exact tested build is now selected
+by the desktop shortcut for the next launch; the user's connected window is
+preserved. No security allowance was changed or retried. The new staging and
+manifest-checking activation steps separate testing from publication.
+[Evidence and remaining semantic-test gap](../research/independent-sable/LIVE-RESULT.md).
+
 Unchanged Sable native evaluation and request-accounting improvement
 (2026-10-23): **36% unchanged**. The same product build used for Viewfinder
 scanned 338 types/1,808 fields and completed fourteen selection requests, but

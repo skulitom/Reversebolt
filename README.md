@@ -3,9 +3,11 @@
 An open-source Rust workbench for discovering what controls an unfamiliar game.
 Part of the Bolt family. Humans and agents use the same engine and session.
 
-**Local preview status:** Windows quarantined the October 22 desktop build after
-a native discovery test. That preview is currently unavailable; the subsequent
-planning change is source-only. [Detection details](research/security-review/FOLLOWUP-2026-10-22.md).
+**Local preview status:** preview `0.1.0-20261023-012028` completed a native Sable
+development run and is selected by the desktop shortcut for the next launch.
+The existing connected desktop window remains on its earlier build. No security
+setting was changed for this release; the earlier detection remains unexplained.
+[Live result and limitations](research/independent-sable/LIVE-RESULT.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
@@ -33,8 +35,9 @@ Source builds expose a read-only comparison planner using retained play timing
 and cited field hypotheses. It keeps eligible alternatives and separate paths
 available, with exact question references and unresolved aliasing visible.
 See [the saved-case planning regression](research/path-planning/README.md).
-The published build passed a limited window/picker
-check and a native discovery run, but was subsequently quarantined by Windows.
+An earlier build passed a limited window/picker check and a native discovery run,
+but was subsequently quarantined by Windows. The current build's native test
+completed without a new detection; this does not establish vendor clearance.
 See [comparison planning and its limits](research/comparison-planner/README.md)
 and [the earlier preview check](research/desktop-preview-ui/README.md).
 An independent Hyperbolica run found two metadata hypotheses but no eligible
@@ -298,6 +301,10 @@ client; its subsequent processing is controlled by the client.
 `scripts/publish-preview.ps1` builds versioned preview binaries, updates the
 desktop launcher, and can launch the preview. Existing running versions are not
 overwritten. No global MCP client settings are changed.
+Use `-StageOnly` to prepare a build without updating the launcher. After testing,
+`scripts/activate-preview.ps1 -Version <staged-version>` checks all four binary
+hashes and points the shortcut at that exact tested directory. It does not
+restart an existing connected session.
 
 ## Architecture
 

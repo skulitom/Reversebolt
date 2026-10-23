@@ -1,5 +1,6 @@
-param([switch]$Launch, [switch]$SkipBuild, [string]$TargetDirectory = 'target')
+param([switch]$Launch, [switch]$SkipBuild, [switch]$StageOnly, [string]$TargetDirectory = 'target')
 $ErrorActionPreference = 'Stop'
+if ($Launch -and $StageOnly) { throw 'A staged preview must be checked before it is activated or launched.' }
 $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $buildDirectory = if ([IO.Path]::IsPathRooted($TargetDirectory)) {
     [IO.Path]::GetFullPath($TargetDirectory)
@@ -50,17 +51,9 @@ $manifest = Get-ChildItem -LiteralPath $destination -File | Where-Object { $_.Ex
     [pscustomobject]@{ name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
 }
 $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $destination 'manifest.json') -Encoding utf8
-$version | Set-Content -LiteralPath (Join-Path $repository 'dist\current.txt') -Encoding utf8
-$desktop = [Environment]::GetFolderPath('Desktop')
-$shell = New-Object -ComObject WScript.Shell
-$shortcut = $shell.CreateShortcut((Join-Path $desktop 'Reversebolt.lnk'))
-$shortcut.TargetPath = (Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe')
-$launcher = Join-Path $repository 'scripts\launch-preview.ps1'
-$shortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$launcher`""
-$shortcut.WorkingDirectory = $repository
-$shortcut.Description = 'Reversebolt — discover, investigate, and edit'
-$shortcut.IconLocation = Join-Path $destination 'Reversebolt.exe'
-$shortcut.Save()
-Write-Output "Published preview: $destination"
-Write-Output "Desktop shortcut: $(Join-Path $desktop 'Reversebolt.lnk')"
-if ($Launch) { & $launcher }
+if ($StageOnly) {
+    Write-Output "Staged preview: $destination"
+    return
+}
+& (Join-Path $PSScriptRoot 'activate-preview.ps1') -Version $version
+if ($Launch) { & (Join-Path $PSScriptRoot 'launch-preview.ps1') }

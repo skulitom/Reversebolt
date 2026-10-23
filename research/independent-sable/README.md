@@ -1,4 +1,12 @@
-# Sable: unchanged native discovery failed during naming
+# Sable: original failure and subsequent development retest
+
+**Latest:** the separately staged current build completed naming and one
+edit/restore comparison in Sable. The comparison was negative for the measured
+visual effect; it does not validate the proposed footstep meaning. The build is
+available through the desktop shortcut for the next launch.
+[Development retest, evidence and remaining gaps](LIVE-RESULT.md).
+
+## Original unchanged native evaluation
 
 The same published Reversebolt build used for the Viewfinder live test connected
 to Sable, scanned its runtime and selected promising types. Its first proposal
@@ -96,5 +104,6 @@ performance comparison.
 All **459 workspace tests**, strict all-target Clippy and formatting pass.
 Three new generated tests cover context boundaries, incomplete-request evidence,
 identity-check failure and legacy serialization. Native revalidation and desktop
-publication of this change remain outstanding. The user's connected desktop
-session is preserved on its existing build.
+publication were outstanding at this point; the subsequent retest is recorded
+separately above. The user's connected desktop session is preserved on its
+existing build.
