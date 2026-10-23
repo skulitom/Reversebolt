@@ -1,0 +1,45 @@
+{
+  "artifact_audit": "passed",
+  "cases": 7,
+  "native_calls": 51,
+  "managed_pauses": 90,
+  "max_stop_to_resume_us": 24,
+  "writes_restored": 4,
+  "readonly_writes_refused": 4,
+  "helper_sha256": "859ee3a5deb6f87587a76b9b0699ac7e33c3d9367b1bf23deaf0d96626b86438",
+  "frozen_sha256": "15c01045cc4229ded71e87b92cfceed879dbab713ccc38bddfb2bd592aa19741",
+  "unchanged_routes_values_and_root_fingerprints": true,
+  "large_case_loaded_fields": 17,
+  "large_case_headers": 200018,
+  "exact_header_limit_passed": true,
+  "oversized_required_layout_refused": true,
+  "gameplay_edits": 0,
+  "limitations": "Owned mock ABI via direct helper calls; not real-game coverage or remote loader unload evidence.",
+  "preview": "0.1.0-20261023-074606",
+  "debug_matrix_artifacts": "test-results/runtime-metadata-scaling-v1",
+  "release_matrix_artifacts": "test-results/runtime-metadata-scaling-release-v1",
+  "packaged_mcp": {
+    "passed": true,
+    "pid": 80732,
+    "exit_code": 0,
+    "tool_count": 65,
+    "protocol": "2025-11-25",
+    "binary_sha256": "3732b2e37abba1c0d5a404007ecd28df61a955504337793c3fdab4a4dda23892",
+    "tools_sha256": "e30079026c21911c754cf11ec964d2011669c388e22ac926185bbcea20531c5e",
+    "engine_connected": false,
+    "target_access": false
+  },
+  "packaged_headless": {
+    "passed": true,
+    "pid": 2576,
+    "binary_sha256": "f31a51e2138c888ca1e9a6172db8812a25345420843c36cbab48464bc8c47fed",
+    "unconnected_command_errors": {
+      "inspect_runtime_investigation": "Connect an application first.",
+      "recover_runtime_control": "Connect an application first."
+    },
+    "target_access": false,
+    "process_exited": true
+  },
+  "progress_percent": 38,
+  "native_game_retest_completed": false
+}

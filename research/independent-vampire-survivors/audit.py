@@ -1,6 +1,7 @@
 """Audit a retained failed independent run without launching a game or model."""
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -10,7 +11,8 @@ sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 frozen = read(OUT / 'frozen.json')
 for name, digest in frozen['sources'].items():
     assert sha(OUT / 'source' / name) == digest, name
-    assert sha(ROOT / name) == digest, f'Working source changed: {name}'
+    if '--verify-current' in sys.argv:
+        assert sha(ROOT / name) == digest, f'Working source changed: {name}'
 for name, digest in frozen['binaries'].items():
     assert sha(Path(frozen['bin']) / name) == digest, name
 for name, digest in frozen['game_files'].items():

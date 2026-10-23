@@ -61,11 +61,13 @@ or compatibility claim is implied by this diagnosis.
 
 Run `python -X utf8 research/independent-vampire-survivors/audit.py` to verify the
 retained evidence without starting a game, viewing images or calling a model.
-The [audit](audit.py) checks frozen/current sources and binaries, game hashes,
+The [audit](audit.py) checks frozen sources and binaries, game hashes,
 every image, sampled input episodes, model prompt hashes and identity, the native
 failure/unload, empty edit history and cleanup. [Results](results.json) contain
 the derived summary. Full local artifacts remain in
 `test-results/independent-vampire-survivors-v1` and are not committed.
+The original audit also checked the then-current sources. Use `--verify-current`
+to repeat that extra check; it is expected to fail after subsequent product edits.
 
 The existing Roaming save and its backup are byte-identical. The Steam
 `remote/SaveData` and `remotecache.vdf` changed during ordinary launch/play/exit;

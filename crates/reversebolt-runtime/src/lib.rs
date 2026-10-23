@@ -1,4 +1,5 @@
 //! Runtime-derived graph discovery, path reads and explicit guarded numeric trials.
+mod metadata;
 mod paths;
 pub mod pe_exports;
 mod values;
@@ -163,6 +164,7 @@ struct Catalog {
     omissions: Vec<String>,
     header: usize,
     array_header: usize,
+    root_inventory: metadata::RootInventory,
 }
 fn text(p: *const u8) -> Result<String> {
     win::text_pointer(p as usize)
@@ -217,10 +219,7 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
     if class.is_null() || c.lookup.contains_key(&(class as usize)) {
         return Ok(());
     }
-    if c.classes.len() >= 50_000
-        || c.field_count >= 200_000
-        || start.elapsed() > Duration::from_secs(20)
-    {
+    if c.classes.len() >= metadata::MAX_CLASSES || start.elapsed() > Duration::from_secs(20) {
         return Err("metadata budget".into());
     }
     unsafe {
@@ -287,12 +286,17 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
         };
         let mut iter = null_mut();
         loop {
-            if c.field_count >= 200_000 || start.elapsed() > Duration::from_secs(20) {
-                return Err("field metadata budget".into());
-            }
             let field = (api.il2cpp_class_get_fields)(class, &mut iter);
             if field.is_null() {
                 break;
+            }
+            if c.field_count >= metadata::MAX_FIELDS || start.elapsed() > Duration::from_secs(20) {
+                return Err(format!(
+                    "field metadata budget: {} layouts, {} fields, {} ms",
+                    c.classes.len(),
+                    c.field_count,
+                    start.elapsed().as_millis()
+                ));
             }
             c.field_count += 1;
             let typ = (api.il2cpp_field_get_type)(field);
@@ -437,8 +441,8 @@ fn flatten(c: &mut Catalog) {
         c.classes[index].flat = flat;
     }
 }
-fn catalog(api: &Api, start: Instant) -> Result<Catalog> {
-    let mut c = Catalog {
+fn empty_catalog(api: &Api) -> Catalog {
+    Catalog {
         images: Vec::new(),
         classes: Vec::new(),
         lookup: HashMap::new(),
@@ -447,7 +451,10 @@ fn catalog(api: &Api, start: Instant) -> Result<Catalog> {
         omissions: Vec::new(),
         header: unsafe { (api.il2cpp_object_header_size)() } as usize,
         array_header: unsafe { (api.il2cpp_array_object_header_size)() } as usize,
-    };
+        root_inventory: metadata::RootInventory::default(),
+    }
+}
+fn catalog(api: &Api, c: &mut Catalog, start: Instant) -> Result<()> {
     if !(8..=128).contains(&c.header) || !(c.header..=256).contains(&c.array_header) {
         return Err("unsupported runtime header sizes".into());
     }
@@ -468,20 +475,18 @@ fn catalog(api: &Api, start: Instant) -> Result<Catalog> {
                 return Err("image class budget".into());
             }
             for index in 0..count {
-                load_class(
-                    api,
-                    &mut c,
-                    (api.il2cpp_image_get_class)(image, index),
-                    true,
-                    start,
-                )?;
+                let class = (api.il2cpp_image_get_class)(image, index);
+                if metadata::root_owner(api, class, &mut c.root_inventory, start)? {
+                    load_class(api, c, class, true, start)?;
+                }
             }
         }
     }
+    c.root_inventory.complete = true;
     let addresses: Vec<_> = c.classes.iter().map(|k| k.address).collect();
-    prepare_encountered(api, &mut c, &addresses, start)?;
-    flatten(&mut c);
-    Ok(c)
+    prepare_encountered(api, c, &addresses, start)?;
+    flatten(c);
+    Ok(())
 }
 fn prepare_encountered(
     api: &Api,
@@ -530,6 +535,7 @@ const MAX_READS: usize = 16384;
 const ROOT_BATCH: usize = 64;
 const ARRAY_LIMIT: usize = 64;
 const TEXT_LIMIT: usize = 128;
+const MAX_DISCOVERY_DEPTH: usize = 4;
 const PAUSE_BUDGET: Duration = Duration::from_millis(5);
 #[derive(Clone, Copy, Default)]
 struct Node {
@@ -631,7 +637,7 @@ fn node_for(address: usize, depth: usize, nodes: &mut Vec<Node>, api: &Api, c: &
     nodes.len() - 1
 }
 fn edge(address: usize, depth: usize, nodes: &mut Vec<Node>, api: &Api, c: &Catalog) -> usize {
-    if address != 0 && depth >= 4 {
+    if address != 0 && depth >= MAX_DISCOVERY_DEPTH {
         usize::MAX - 3
     } else {
         node_for(address, depth + 1, nodes, api, c)
@@ -644,7 +650,7 @@ fn inline_node(
     nodes: &mut Vec<Node>,
     c: &Catalog,
 ) -> usize {
-    if depth > 4 {
+    if depth > MAX_DISCOVERY_DEPTH {
         return usize::MAX - 3;
     }
     if let Some(i) = nodes
@@ -955,7 +961,13 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
         })
     };
     let start = Instant::now();
-    let mut c = catalog(&api, start)?;
+    let mut c = empty_catalog(&api);
+    if let Err(error) = catalog(&api, &mut c, start) {
+        return Ok(
+            json!({"error":error,"pid":scope.pid,"created":scope.created,
+            "session":scope.session,"metadata":metadata::report(&c,start),"edit_authority":false}),
+        );
+    }
     let catalog_ms = start.elapsed().as_millis() as u64;
     if let Some(patch) = &request.patch {
         return paths::refresh(
@@ -1025,7 +1037,10 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
         let end = (next_root + ROOT_BATCH).min(c.roots.len());
         let mut shot = snapshot(&api, &c, next_root, end);
         let mut warming_error = None;
-        for attempt in 0..3 {
+        // Every depth may introduce an unseen runtime type. Load its complete
+        // layout after resumption, then take a fresh snapshot; never retain an
+        // object address across metadata preparation as a traversal authority.
+        for attempt in 0..=MAX_DISCOVERY_DEPTH {
             if shot.unknown.is_empty() {
                 break;
             }
@@ -1087,7 +1102,7 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
     }
     let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"key":k.key,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"value_size":k.value_size,"shape":shape,"element_inline_type":match k.shape { Shape::Array { inline, .. } => c.lookup.get(&inline).map(|id| &c.classes[*id].key), _ => None },"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"width":f.width,"reference":f.reference,"inline":f.inline!=0,"inline_type":c.lookup.get(&f.inline).map(|id| &c.classes[*id].key),"declared_type":f.declared_type,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
     Ok(
-        json!({"schema":5,"value_type_metadata":api.values.is_some(),"core_image":core_image,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
+        json!({"schema":5,"value_type_metadata":api.values.is_some(),"core_image":core_image,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"metadata":metadata::report(&c,start),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
     )
 }
 /// # Safety

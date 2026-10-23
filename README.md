@@ -9,10 +9,16 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-070135` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-074606` passed packaged headless
 startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
 the next launch; the existing editor window stays open. All 494 workspace tests,
 strict Clippy and formatting pass.
+
+Runtime discovery now loads full layouts for root holders and encountered types,
+instead of exhausting its budget on every declared type. A seven-case native
+fixture regression preserves typed paths, guarded edits and restoration with
+200,001 unrelated fields. Real-game scalability still needs fresh validation.
+[Metadata scaling and limits](research/runtime-metadata-scaling/README.md).
 
 New comparisons retain route metadata with their evidence. After discovery,
 checked remembered controls can reappear automatically with a "Needs a fresh

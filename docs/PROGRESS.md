@@ -4,6 +4,27 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Root-first metadata preparation (2026-10-23): **38% unchanged**. The runtime now
+streams cheap root-eligibility headers and loads complete layouts for root holders
+and freshly encountered types, parents and inline dependencies. Retained-layout,
+time and managed-pause limits remain. A separate bounded header scan and detailed
+counters expose coverage and failures; this is not arbitrary-size resumable
+metadata acquisition.
+
+The frozen old/new ABI regression passes seven cases in debug and with the exact
+packaged reader. The old reader fails with 200,001 unrelated fields; the new one
+keeps the same 23 typed routes and values while loading only 17 fields. The exact
+header limit succeeds, its overflow stops, and an oversized required layout still
+fails. Each packaged matrix audits 51 calls, 90 allocation-free mock pauses, four
+restored edits and four readonly refusals. Null/layout changes remain rejected.
+
+All 494 ordinary workspace tests, strict Clippy and formatting pass. Preview
+`0.1.0-20261023-074606` passes packaged headless dispatch and the 65-tool MCP check
+and is selected by the desktop shortcut. The user's current editor stays open.
+No new game was launched; generalization remains **0/10**. Next: a separately
+frozen native coverage/latency evaluation and a valid gameplay baseline before
+effect comparisons. [Implementation and evidence](../research/runtime-metadata-scaling/README.md).
+
 Independent Vampire Survivors baseline (2026-10-23): **38% unchanged**. The
 unchanged published build and evaluator collected fifteen images and four short
 input holds, then failed runtime discovery with `field metadata budget`. No

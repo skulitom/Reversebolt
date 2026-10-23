@@ -14,6 +14,17 @@ static STOPS: AtomicU32 = AtomicU32::new(0);
 static MODE: AtomicU32 = AtomicU32::new(0);
 static INIT: AtomicBool = AtomicBool::new(false);
 static ASSEMBLY: usize = 1;
+#[cfg(feature = "large-metadata")]
+static NOISE_FIELDS: AtomicU32 = AtomicU32::new(0);
+#[cfg(feature = "large-metadata")]
+static NOISE_ROOT: AtomicBool = AtomicBool::new(false);
+#[cfg(feature = "large-metadata")]
+#[unsafe(no_mangle)]
+pub extern "C" fn MockMetadata(fields: u32, root: bool) {
+    metadata();
+    NOISE_FIELDS.store(fields, Ordering::Relaxed);
+    NOISE_ROOT.store(root, Ordering::Relaxed);
+}
 fn metadata() {
     assert!(!STOPPED.load(Ordering::Relaxed));
 }
@@ -181,6 +192,8 @@ pub extern "C" fn il2cpp_thread_attach(_: Ptr) -> Ptr {
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_thread_detach(_: Ptr) {}
 #[unsafe(no_mangle)]
+/// # Safety
+/// `n` must point to a writable `usize` for the duration of this call.
 pub unsafe extern "C" fn il2cpp_domain_get_assemblies(_: Ptr, n: *mut usize) -> *const Ptr {
     metadata();
     unsafe {
@@ -201,12 +214,20 @@ pub extern "C" fn il2cpp_image_get_name(_: Ptr) -> *const u8 {
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_image_get_class_count(_: Ptr) -> usize {
     metadata();
-    12
+    if cfg!(feature = "large-metadata") {
+        13
+    } else {
+        12
+    }
 }
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_image_get_class(_: Ptr, i: usize) -> Ptr {
     metadata();
-    (i + 1) as Ptr
+    if cfg!(feature = "large-metadata") {
+        (if i == 0 { 13 } else { i }) as Ptr
+    } else {
+        (i + 1) as Ptr
+    }
 }
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_class_get_image(_: Ptr) -> Ptr {
@@ -214,6 +235,9 @@ pub extern "C" fn il2cpp_class_get_image(_: Ptr) -> Ptr {
     1usize as Ptr
 }
 fn name(c: usize) -> &'static std::ffi::CStr {
+    if cfg!(feature = "large-metadata") && c == 13 {
+        return c"DormantConstants";
+    }
     [
         c"Roots",
         c"Container",
@@ -279,6 +303,8 @@ fn value_size(c: usize) -> i32 {
     }
 }
 #[unsafe(no_mangle)]
+/// # Safety
+/// `c` must identify a fixture value type; non-null `a` must be writable.
 pub unsafe extern "C" fn il2cpp_class_value_size(c: Ptr, a: *mut u32) -> i32 {
     metadata();
     if !a.is_null() {
@@ -316,7 +342,7 @@ pub extern "C" fn il2cpp_class_get_element_class(c: Ptr) -> Ptr {
 pub extern "C" fn il2cpp_class_instance_size(c: Ptr) -> i32 {
     metadata();
     match c as usize {
-        1 => 16,
+        1 | 13 => 16,
         2 => 104,
         7 | 8 => 32,
         9 => 24,
@@ -326,12 +352,16 @@ pub extern "C" fn il2cpp_class_instance_size(c: Ptr) -> i32 {
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_class_get_data_size(c: Ptr) -> u32 {
     metadata();
-    if c as usize == 1 { 40 } else { 0 }
+    if c as usize == 1 || (cfg!(feature = "large-metadata") && c as usize == 13) {
+        40
+    } else {
+        0
+    }
 }
 #[unsafe(no_mangle)]
 pub extern "C" fn il2cpp_class_get_static_field_data(c: Ptr) -> Ptr {
     metadata();
-    if c as usize == 1 {
+    if c as usize == 1 || (cfg!(feature = "large-metadata") && c as usize == 13) {
         ROOTS.0.get().cast()
     } else {
         std::ptr::null_mut()
@@ -474,12 +504,41 @@ const FIELDS: &[&[F]] = &[
 ];
 fn field(p: Ptr) -> &'static F {
     let n = p as usize;
+    #[cfg(feature = "large-metadata")]
+    if n >= 10_000_000 {
+        if n == 10_000_000 && NOISE_ROOT.load(Ordering::Relaxed) {
+            return &F {
+                name: c"Root",
+                offset: 0,
+                typ: 2,
+                flags: 16,
+            };
+        }
+        return &F {
+            name: c"Constant",
+            offset: 0,
+            typ: 11,
+            flags: 0x50,
+        };
+    }
     &FIELDS[n / 100 - 1][n % 100]
 }
 #[unsafe(no_mangle)]
+/// # Safety
+/// `c` must identify a fixture class; `i` must point to its initialized iterator.
 pub unsafe extern "C" fn il2cpp_class_get_fields(c: Ptr, i: *mut Ptr) -> Ptr {
     metadata();
     let n = unsafe { *i as usize };
+    #[cfg(feature = "large-metadata")]
+    if c as usize == 13 {
+        if n >= NOISE_FIELDS.load(Ordering::Relaxed) as usize {
+            return std::ptr::null_mut();
+        }
+        unsafe {
+            *i = (n + 1) as Ptr;
+        }
+        return (10_000_000 + n) as Ptr;
+    }
     if n == FIELDS[c as usize - 1].len() {
         std::ptr::null_mut()
     } else {
@@ -551,6 +610,8 @@ pub extern "C" fn il2cpp_array_element_size(c: Ptr) -> i32 {
     }
 }
 #[unsafe(no_mangle)]
+/// # Safety
+/// `o` must be a live fixture object, with fixture mutation excluded by its lock.
 pub unsafe extern "C" fn il2cpp_object_get_class(o: Ptr) -> Ptr {
     assert!(
         [
@@ -565,6 +626,8 @@ pub unsafe extern "C" fn il2cpp_object_get_class(o: Ptr) -> Ptr {
     unsafe { *(o as *const usize) as Ptr }
 }
 #[unsafe(no_mangle)]
+/// # Safety
+/// `a` must point to a live fixture array while fixture mutation is excluded.
 pub unsafe extern "C" fn il2cpp_array_length(a: Ptr) -> u32 {
     unsafe { *((a as *const usize).add(3)) as u32 }
 }
@@ -588,6 +651,8 @@ pub extern "C" fn il2cpp_type_get_assembly_qualified_name(t: Ptr) -> *mut u8 {
     .cast()
 }
 #[unsafe(no_mangle)]
+/// # Safety
+/// Non-null `p` must be an unfreed string returned by this fixture's name API.
 pub unsafe extern "C" fn il2cpp_free(p: Ptr) {
     metadata();
     if !p.is_null() {

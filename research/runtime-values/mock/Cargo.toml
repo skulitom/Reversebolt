@@ -6,3 +6,6 @@ license = "MIT"
 [workspace]
 [lib]
 crate-type = ["cdylib"]
+
+[features]
+large-metadata = []
