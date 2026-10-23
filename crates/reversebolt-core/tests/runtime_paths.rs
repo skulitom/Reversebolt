@@ -185,6 +185,13 @@ fn sibling_plan_keeps_roles_distinct_and_reports_budget_omissions() {
     );
     assert!(n::plan(&r, &[seeds[0].clone(), seeds[0].clone()], 4).is_err());
     assert!(n::plan(&r, &["f".repeat(64)], 4).is_err());
+    let requested: Vec<_> = all.iter().map(|c| c.id.clone()).collect();
+    let selected = n::select_seeds(&r, &requested).unwrap();
+    assert_eq!(selected.observed_roles, 2);
+    assert_eq!(selected.omitted_roles, 0);
+    assert_eq!(selected.seeds.len(), 2);
+    assert!(n::select_seeds(&r, &["f".repeat(64)]).is_err());
+    assert!(n::select_seeds(&r, &[seeds[0].clone(), seeds[0].clone()]).is_err());
 }
 
 fn response_fixture(
@@ -214,6 +221,117 @@ fn response_fixture(
         r::Observation{report,input}
     }).collect();
     (plan, observations)
+}
+
+#[test]
+fn sibling_plan_reserves_native_utf16_request_space_with_long_unicode_types() {
+    use reversebolt_core::runtime_neighbors;
+    for type_name in [
+        "x".repeat(400),
+        "\u{6e2c}".repeat(400),
+        "\u{1f9ea}".repeat(200),
+    ] {
+        let mut r = report(0, "0x100", 0);
+        r["classes"][1]["key"]["type_name"] = json!(type_name);
+        for i in 1_i32..32 {
+            r["classes"][2]["fields"].as_array_mut().unwrap().push(json!({"id":i,"name":format!("F{i}"),"reference":false,"type_code":8,"width":4,"flags":0}));
+            r["snapshots"][0]["reads"].as_array_mut().unwrap().push(json!({"node":1,"declaring_class":2,"field":i,"element_index":null,"type_code":8,"bytes":i.to_le_bytes(),"value":i,"reference":null,"read_ok":true}));
+        }
+        let seed = runtime::candidates(&r, 1).unwrap()[0].id.clone();
+        let plan = runtime_neighbors::plan(&r, &[seed], 128).unwrap();
+        assert_eq!(plan.candidates.len(), 32);
+        assert_eq!(plan.omitted_fields, 0);
+        assert!(plan.batches.len() > 1);
+        for batch in plan.batches {
+            let paths = serde_json::to_string(&batch).unwrap();
+            let request = json!({"output":"x".repeat(1024),"root_start":0,
+                "expected_root_catalog_sha256":null,"paths":batch,"patch":null})
+            .to_string();
+            assert!(paths.len() <= 60 * 1024);
+            assert!(request.encode_utf16().count() < 32768);
+        }
+    }
+}
+
+#[test]
+fn partial_review_seed_selection_retains_role_omissions_in_receipt_order() {
+    use reversebolt_core::runtime_neighbors::select_seeds;
+    let mut combined = report(0, "0x100", 0);
+    combined["classes"] = json!([]);
+    combined["snapshots"] = json!([]);
+    for i in 0..34 {
+        let mut r = report(i * 3, "0x100", 0);
+        r["classes"][0]["key"]["type_name"] = json!(format!("Root{i}"));
+        r["snapshots"][0]["snapshot_id"] = json!(i);
+        combined["classes"]
+            .as_array_mut()
+            .unwrap()
+            .extend(r["classes"].as_array().unwrap().clone());
+        combined["snapshots"]
+            .as_array_mut()
+            .unwrap()
+            .extend(r["snapshots"].as_array().unwrap().clone());
+    }
+    let mut ids: Vec<_> = runtime::candidates(&combined, 128)
+        .unwrap()
+        .into_iter()
+        .map(|c| c.id)
+        .collect();
+    ids.reverse();
+    let selection = select_seeds(&combined, &ids).unwrap();
+    assert_eq!(selection.requested_paths, ids);
+    assert_eq!(selection.observed_roles, 34);
+    assert_eq!(selection.omitted_roles, 2);
+    assert_eq!(selection.seeds, ids[..32]);
+}
+
+#[test]
+fn sibling_response_validates_full_native_batches_beyond_ui_card_limits() {
+    use reversebolt_core::{runtime_neighbors, runtime_response::analyze};
+    let mut discovery = report(0, "0x100", 0);
+    discovery["classes"][2]["fields"] = json!([]);
+    discovery["snapshots"][0]["nodes"] = json!([{"id":0,"class":2,"address":"0x2222"}]);
+    discovery["snapshots"][0]["reads"] = json!([]);
+    for i in 0_i32..32 {
+        discovery["classes"][2]["fields"].as_array_mut().unwrap().push(json!({"id":i,"name":format!("F{i}"),"reference":false,"type_code":8,"width":4,"flags":0}));
+        discovery["snapshots"][0]["reads"].as_array_mut().unwrap().push(json!({"node":0,"declaring_class":2,"field":i,"element_index":null,"type_code":8,"bytes":0_i32.to_le_bytes(),"value":0,"reference":null,"read_ok":true}));
+    }
+    let seed = runtime::candidates(&discovery, 1).unwrap()[0].id.clone();
+    let plan = runtime_neighbors::plan(&discovery, &[seed], 128).unwrap();
+    assert_eq!(plan.batches[0].len(), 32);
+    let (_, mut observations) = response_fixture("state");
+    for observation in &mut observations {
+        let original = observation.report["checks"][0].clone();
+        observation.report["checks"] = json!(
+            plan.candidates
+                .iter()
+                .enumerate()
+                .map(|(i, c)| {
+                    let mut check = original.clone();
+                    check["path_id"] = json!(c.id);
+                    check["field_address"] = json!(format!("0x{:x}", 0x2240 + i * 4));
+                    check["snapshot_object_addresses"] = json!(["0x2222"]);
+                    check
+                })
+                .collect::<Vec<_>>()
+        );
+    }
+    let result = analyze(&plan, 0, &observations).unwrap();
+    assert_eq!(result["fields"].as_array().unwrap().len(), 32);
+    assert!(
+        result["fields"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|f| f["repeated_association"] == true)
+    );
+    observations[5].report["checks"][27]["status"] = json!("null_reference");
+    let result = analyze(&plan, 0, &observations).unwrap();
+    assert_eq!(result["fields"][27]["all_read"], false);
+    assert_eq!(result["fields"][27]["repeated_association"], false);
+    assert_eq!(result["fields"][28]["repeated_association"], true);
+    observations[5].report["checks"][28]["value"] = json!(99);
+    assert!(analyze(&plan, 0, &observations).is_err());
 }
 
 #[test]

@@ -1,0 +1,198 @@
+{
+  "original_failure": {
+    "audited": true,
+    "original_run_succeeded": false,
+    "failure_stage": "first naming proposal after type selection",
+    "error": "The local model request exceeded its 90-second time limit.",
+    "completed_metadata_requests": 14,
+    "completed_metadata_ms": 38854.2541,
+    "failed_prompt_utf8_bytes": 50909,
+    "failed_request_options": {
+      "num_ctx": 32768,
+      "num_predict": 1700,
+      "seed": 42,
+      "temperature": 0
+    },
+    "selected_types": 5,
+    "selected_paths": 256,
+    "observed_types": 339,
+    "automatic_images": 15,
+    "setup_images_reviewed": 4,
+    "discovery_input_holds": 4,
+    "measurement_input_holds": 0,
+    "sibling_reads": 0,
+    "gameplay_field_writes": 0,
+    "manually_reviewed_measurement_images": 0,
+    "native_discovery_helper_unloaded": true,
+    "elapsed_ms": 208822,
+    "progress_percent": 36
+  },
+  "continuation": {
+    "passed": true,
+    "source_commit": "617678c3f861826ac3512a9d1e9a89f04a33fd0b",
+    "product": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261023-021904",
+    "partial_review": true,
+    "original_analysis_rejections": 7,
+    "offline_reanalysis": true,
+    "roles": 10,
+    "selected_fields": 128,
+    "omitted_fields": 154,
+    "omitted_batches": 0,
+    "batches": [
+      {
+        "batch": 0,
+        "valid": true,
+        "fields": 18,
+        "all_read": 18,
+        "locations_stable": 18,
+        "quiet_stable_all_four": 18,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 1,
+        "valid": true,
+        "fields": 17,
+        "all_read": 17,
+        "locations_stable": 17,
+        "quiet_stable_all_four": 15,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 2,
+        "valid": true,
+        "fields": 18,
+        "all_read": 18,
+        "locations_stable": 18,
+        "quiet_stable_all_four": 18,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 3,
+        "valid": true,
+        "fields": 19,
+        "all_read": 19,
+        "locations_stable": 19,
+        "quiet_stable_all_four": 19,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 4,
+        "valid": true,
+        "fields": 22,
+        "all_read": 22,
+        "locations_stable": 22,
+        "quiet_stable_all_four": 22,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 5,
+        "valid": true,
+        "fields": 21,
+        "all_read": 21,
+        "locations_stable": 21,
+        "quiet_stable_all_four": 21,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      },
+      {
+        "batch": 6,
+        "valid": true,
+        "fields": 13,
+        "all_read": 13,
+        "locations_stable": 13,
+        "quiet_stable_all_four": 11,
+        "state_pulses": 0,
+        "step_pulses": 0,
+        "associations": []
+      }
+    ],
+    "native_helpers": 99,
+    "pauses": 340,
+    "max_stop_to_resume_us": 5681,
+    "measurement_input_holds": 28,
+    "hold_duration_ms_range": [
+      2984.984,
+      3003.4842
+    ],
+    "discovery_inputs": 4,
+    "automatic_images": 15,
+    "manually_reviewed_setup_images": 4,
+    "manually_reviewed_measurement_images": 0,
+    "gameplay_field_writes": 0,
+    "metadata_requests": 14,
+    "metadata_generation_ms": 38854.2541,
+    "changed_save_folder_files": [
+      "Player-prev.log",
+      "Player.log",
+      "SaveData/SaveManager"
+    ],
+    "progress_percent": 36
+  },
+  "coverage": {
+    "report_sha256": "649bb5504ecfa4a5510f96284dcdf6dd022f80e533552679b51ce1e16a4384b3",
+    "sampled_constant_paths": 124,
+    "sampled_changing_paths": [
+      {
+        "path_id": "6ebc11d3ceecd2c397299c318cca157028c544f0908c8327d162302306f360c4",
+        "field_name": "_hoverHeight",
+        "field_address": "0x28e100ad4e8",
+        "distinct_values": 14,
+        "batch": 1
+      },
+      {
+        "path_id": "e116b29b1b910f84a2ea85d43a52bde4acab92c1e350cfbf9ecad4689b9fc6e9",
+        "field_name": "_hoverHeight",
+        "field_address": "0x28e100ad4e8",
+        "distinct_values": 14,
+        "batch": 1
+      },
+      {
+        "path_id": "93e8459e188ffeade594b3c4ca4d0f357845e4bbd104f628b8a40a90172b9458",
+        "field_name": "_lastGroundedTime",
+        "field_address": "0x28e100ad604",
+        "distinct_values": 14,
+        "batch": 6
+      },
+      {
+        "path_id": "6fc7017a0ce87f1d059b3fe98c8e6a469f958a03212f700502634711eea9a5b4",
+        "field_name": "_lastGroundedTime",
+        "field_address": "0x28e100ad604",
+        "distinct_values": 14,
+        "batch": 6
+      }
+    ],
+    "distinct_snapshot_addresses_among_changing_paths": 2,
+    "unsupported_value_type_field_descriptors": 998,
+    "unsupported_value_type_fields_in_selected_types": 22,
+    "limitation": "Field descriptors and addresses are retained runtime evidence, not known gameplay meaning or persistent identity. Unsupported/omitted fields remain untested."
+  },
+  "cleanup": {
+    "owned_remaining": [],
+    "main_desktop_pid": 98332,
+    "main_desktop_responding": true,
+    "antivirus_enabled": true,
+    "realtime_enabled": true,
+    "tamper_enabled": true,
+    "current_reversebolt_detections": 0,
+    "preview": "0.1.0-20261023-012028"
+  },
+  "workspace_tests": 471,
+  "publication": {
+    "preview": "0.1.0-20261023-021904",
+    "current_process_preserved": true,
+    "current_process_path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe",
+    "main_desktop_pid": 98332,
+    "note": "Native-tested reader build activated for next launch; partial-review and repaired analysis remain research APIs."
+  }
+}

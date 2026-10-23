@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Native sibling-input development evaluation (2026-10-23): **36% unchanged**.
+The original Sable automatic investigation again timed out at a large naming
+proposal after fourteen completed type-selection requests. A separately frozen
+continuation used the partial selection without another model call, measuring
+128 scalar paths across ten rooted roles in 98 native read batches. All helpers
+unloaded. No gameplay fields were written, and zero measurement screenshots were
+manually viewed. The main desktop editor and main game save are preserved.
+
+Two integration defects were corrected: batches must fit both native byte and
+UTF-16 message limits, and raw batch validation must be independent of the UI's
+four-value task limit. Reanalysis of the same retained data accepted all seven
+batches but found zero repeated input associations: 124 paths were constant and
+four drifted during quiet periods too. The report also identifies 998 unsupported
+value-type field descriptors, including 22 in the selected types; 154 additional
+eligible scalar fields were outside the observation budget. No verified control
+or multi-game generalization credit is earned. All 471 workspace tests, strict
+all-target Clippy, formatting and evidence audits pass. Next work should extend
+generic runtime-state coverage and measure activity before complete semantic
+naming. The tested `0.1.0-20261023-021904` reader preview is selected for the next
+desktop launch, with the connected window preserved.
+[Native result, retained failures and coverage gaps](../research/runtime-siblings/LIVE-RESULT.md).
+
 Rooted sibling sampling groundwork (2026-10-23): **36% unchanged**.
 The shared Rust core now selects nearby scalar fields by exact rooted object
 path and analyzes repeated input associations using quiet samples and strict

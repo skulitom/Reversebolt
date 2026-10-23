@@ -135,6 +135,72 @@ pub struct Candidate {
     pub context: Vec<TextHint>,
 }
 
+#[derive(Clone, Debug)]
+pub struct RefreshedValue {
+    pub id: String,
+    pub status: String,
+    pub value: Value,
+    pub bytes: Vec<u8>,
+}
+
+/// Validate the native reader's batch contract independently of UI task limits.
+/// Missing reads remain gaps; all successful values must agree with their bytes.
+pub fn validate_refresh(candidates: &[&Candidate], report: &Value) -> Result<Vec<RefreshedValue>> {
+    let checks = report["checks"]
+        .as_array()
+        .ok_or("Missing refresh checks.")?;
+    if candidates.is_empty()
+        || candidates.len() > MAX_REFRESH_PATHS
+        || candidates
+            .iter()
+            .map(|c| &c.id)
+            .collect::<std::collections::BTreeSet<_>>()
+            .len()
+            != candidates.len()
+        || checks.len() != candidates.len()
+        || report["edit_authority"] != false
+    {
+        return Err("Invalid refresh result.".into());
+    }
+    let scope: Scope =
+        serde_json::from_value(report["scope"].clone()).map_err(|_| "Missing refresh scope.")?;
+    let mut updates = Vec::with_capacity(candidates.len());
+    for (candidate, check) in candidates.iter().zip(checks) {
+        candidate.locator.validate(&scope)?;
+        if candidate.id != candidate.locator.id() || check["path_id"] != candidate.id {
+            return Err("Refresh result belongs to another path or process.".into());
+        }
+        let status = check["status"].as_str().ok_or("Missing refresh status.")?;
+        let mut recorded_bytes = Vec::new();
+        let value = if status == "read" {
+            let bytes: Vec<u8> = serde_json::from_value(check["bytes"].clone())
+                .map_err(|_| "Invalid value bytes.")?;
+            let kind = check["type_code"]
+                .as_i64()
+                .and_then(|k| i32::try_from(k).ok())
+                .ok_or("Missing scalar kind.")?;
+            if kind != candidate.type_code || bytes.len() != candidate.bytes.len() {
+                return Err("Refresh scalar representation differs from discovery.".into());
+            }
+            let value = scalar_value(kind, &bytes)?;
+            if value != check["value"] {
+                return Err("Refresh value contradicts its bytes.".into());
+            }
+            recorded_bytes = bytes;
+            value
+        } else {
+            Value::Null
+        };
+        updates.push(RefreshedValue {
+            id: candidate.id.clone(),
+            status: status.to_owned(),
+            value,
+            bytes: recorded_bytes,
+        });
+    }
+    Ok(updates)
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TextHint {
     pub field: FieldRef,
@@ -393,61 +459,33 @@ impl View {
         if !matches!(task, Task::Refresh { .. }) {
             return Err("Expected a refresh task.".into());
         }
-        let checks = report["checks"]
-            .as_array()
-            .ok_or("Missing refresh checks.")?;
-        if checks.len() != paths.len() || report["edit_authority"] != false {
-            return Err("Invalid refresh result.".into());
-        }
-        let mut updates = Vec::new();
         let next_revision = self
             .revision
             .checked_add(1)
             .ok_or("Runtime revision limit reached.")?;
-        for (path, check) in paths.iter().zip(checks) {
-            let id = path.id();
-            if check["path_id"] != id
-                || serde_json::from_value::<Scope>(report["scope"].clone())
-                    .ok()
-                    .as_ref()
-                    != Some(&path.scope)
-            {
-                return Err("Refresh result belongs to another path or process.".into());
-            }
-            let status = check["status"].as_str().ok_or("Missing refresh status.")?;
-            let mut recorded_bytes = Vec::new();
-            let value = if status == "read" {
-                let bytes: Vec<u8> = serde_json::from_value(check["bytes"].clone())
-                    .map_err(|_| "Invalid value bytes.")?;
-                let kind = check["type_code"]
-                    .as_i64()
-                    .and_then(|k| i32::try_from(k).ok())
-                    .ok_or("Missing scalar kind.")?;
-                let original = &self
+        let candidates: Vec<_> = paths
+            .iter()
+            .map(|p| {
+                &self
                     .cards
                     .iter()
-                    .find(|c| c.candidate.id == id)
+                    .find(|c| c.candidate.id == p.id())
                     .unwrap()
-                    .candidate;
-                if kind != original.type_code || bytes.len() != original.bytes.len() {
-                    return Err("Refresh scalar representation differs from discovery.".into());
-                }
-                let value = scalar_value(kind, &bytes)?;
-                if value != check["value"] {
-                    return Err("Refresh value contradicts its bytes.".into());
-                }
-                recorded_bytes = bytes;
-                value
-            } else {
-                Value::Null
-            };
-            updates.push((id, status.to_owned(), value, recorded_bytes));
-        }
+                    .candidate
+            })
+            .collect();
+        let updates = validate_refresh(&candidates, report)?;
         let report_sha256 = format!(
             "{:x}",
             Sha256::digest(serde_json::to_vec(report).expect("JSON report"))
         );
-        for (id, status, value, bytes) in updates {
+        for RefreshedValue {
+            id,
+            status,
+            value,
+            bytes,
+        } in updates
+        {
             let card = self
                 .cards
                 .iter_mut()

@@ -1,14 +1,13 @@
 //! Input-associated field changes, not actor identity, semantics or edit authority.
 use crate::{
-    Result,
-    runtime::{self, Card, Task},
+    Result, runtime,
     runtime_neighbors::{Plan, role_id},
     visual::digest,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-pub const POLICY: &str = "bracketed_sibling_input_response_v1";
+pub const POLICY: &str = "bracketed_sibling_input_response_v2";
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Poll {
@@ -125,22 +124,8 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
                 .ok_or_else(|| "Batch path is absent from sibling plan".to_owned())
         })
         .collect::<Result<Vec<_>>>()?;
-    let mut view = runtime::View {
-        available: true,
-        catalog_id: plan.report_sha256.clone(),
-        cards: candidates
-            .iter()
-            .map(|c| Card {
-                candidate: c.clone(),
-                value: c.value.clone(),
-                status: "read".into(),
-                observed_unix_ms: 0,
-                readings: vec![],
-                readings_dropped: 0,
-            })
-            .collect(),
-        ..Default::default()
-    };
+    let references: Vec<_> = candidates.iter().collect();
+    let mut readings: Vec<Vec<runtime::RefreshedValue>> = vec![vec![]; candidates.len()];
     let mut previous_end = None;
     let mut keys = vec![];
     let mut receipts = vec![];
@@ -170,16 +155,12 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
         } else if !observation.input.expected_keys.is_empty() {
             return Err("Expected released input around each action".into());
         }
-        view.apply_refresh(
-            &Task::Refresh {
-                catalog_id: plan.report_sha256.clone(),
-                after_revision: view.revision,
-                ids: paths.iter().map(|p| p.id()).collect(),
-            },
-            report,
-            [0, 0],
-            "retained_response_report",
-        )?;
+        for (history, value) in readings
+            .iter_mut()
+            .zip(runtime::validate_refresh(&references, report)?)
+        {
+            history.push(value);
+        }
         receipts.push(json!({"report_sha256":digest(&serde_json::to_vec(report).map_err(|e|e.to_string())?),
             "input_sha256":digest(&serde_json::to_vec(&observation.input).map_err(|e|e.to_string())?),"sample":sample}));
     }
@@ -187,8 +168,8 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
         return Err("Actions do not repeat in the declared two-action sequence.".into());
     }
     let mut fields = vec![];
-    for (path_index, card) in view.cards.iter().enumerate() {
-        let readings = &card.readings;
+    for (path_index, candidate) in candidates.iter().enumerate() {
+        let readings = &readings[path_index];
         let first = &observations[0].report["checks"][path_index];
         let locations_stable = observations.iter().all(|o| {
             let check = &o.report["checks"][path_index];
@@ -204,7 +185,7 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
                 && check["snapshot_object_addresses"]
                     .as_array()
                     .is_some_and(|a| {
-                        a.len() == card.candidate.locator.steps.len() && a.iter().all(address)
+                        a.len() == candidate.locator.steps.len() && a.iter().all(address)
                     })
                 && check["snapshot_object_addresses"] == first["snapshot_object_addresses"]
         });
@@ -228,8 +209,8 @@ pub fn analyze(plan: &Plan, batch: usize, observations: &[Observation]) -> Resul
                 }
             }
         }
-        fields.push(json!({"path_id":card.candidate.id,"role_id":role_id(&card.candidate.locator)?,
-            "field_name":card.candidate.name,"all_read":complete,"locations_stable":locations_stable,
+        fields.push(json!({"path_id":candidate.id,"role_id":role_id(&candidate.locator)?,
+            "field_name":candidate.name,"all_read":complete,"locations_stable":locations_stable,
             "quiet_stable_pulses":quiet_stable,"state_associated_pulses":state_pulses,"step_associated_pulses":step_pulses,
             "repeated_association":state_pulses==4 || step_pulses==4,
             "values":readings.iter().map(|r|&r.value).collect::<Vec<_>>()}));

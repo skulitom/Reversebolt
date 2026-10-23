@@ -1,5 +1,11 @@
 # Measuring nearby runtime state
 
+The [subsequent native Sable run](LIVE-RESULT.md) collected 128 paths but found no
+repeated input association. It also exposed and corrected the original batch-size
+and UI-task-limit defects. A partial-review route can now continue measurement
+after semantic naming fails. Current verification is 471 workspace tests; the
+results below describe the earlier groundwork and remain historical evidence.
+
 The shared Rust core can now select sibling fields on an exact rooted object
 path and analyze repeated associations with observed input. This adds a way to
 investigate active runtime objects without relying entirely on names or visible
@@ -23,6 +29,9 @@ order and alternates between roles until the 128-field budget is exhausted.
 Field names and scalar values do not rank siblings. Eligibility still excludes
 unsupported scalars, noncanonical booleans and nonfinite discovery floats. The
 initial seed hypotheses remain influenced by the earlier metadata model.
+These v1 batch counts establish selection coverage only: their message sizes
+were later found to exceed the native loader's UTF-16 request limit. V2 produces
+seven Sable batches and eight Viewfinder batches with the same selected fields.
 
 The reader now records QPC bounds around every refresh pause, with both clock
 calls outside the managed pause. An unchanged owned ABI fixture completed one

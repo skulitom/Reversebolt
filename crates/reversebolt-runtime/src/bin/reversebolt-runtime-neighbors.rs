@@ -16,29 +16,53 @@ fn read(path: &str) -> Result<Value> {
 }
 fn main() -> Result<()> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 3 {
+    let partial = args.len() == 4 && args[3] == "--selected-types";
+    if args.len() != 3 && !partial {
         return Err(
-            "usage: reversebolt-runtime-neighbors DISCOVERY.json REVIEW.json NEW_OUTPUT_DIR".into(),
+            "usage: reversebolt-runtime-neighbors DISCOVERY.json REVIEW.json NEW_OUTPUT_DIR [--selected-types]".into(),
         );
     }
     let report = read(&args[0])?;
     let receipt = read(&args[1])?;
-    let rows = receipt["batch"]["accepted"]
-        .as_array()
-        .ok_or("Missing completed hypotheses")?;
     let mut seeds = vec![];
-    for h in rows {
-        for row in std::iter::once(&h["candidate"])
-            .chain(h["alternatives"].as_array().ok_or("Missing alternatives")?)
+    if partial {
+        for row in receipt["selection"]["rows"]
+            .as_array()
+            .ok_or("Missing selected type paths")?
         {
             let id = row["path_id"]
                 .as_str()
-                .ok_or("Missing candidate path")?
+                .ok_or("Missing selected path")?
                 .to_owned();
             if !seeds.contains(&id) {
                 seeds.push(id);
             }
         }
+    } else {
+        for h in receipt["batch"]["accepted"]
+            .as_array()
+            .ok_or("Missing completed hypotheses")?
+        {
+            for row in std::iter::once(&h["candidate"])
+                .chain(h["alternatives"].as_array().ok_or("Missing alternatives")?)
+            {
+                let id = row["path_id"]
+                    .as_str()
+                    .ok_or("Missing candidate path")?
+                    .to_owned();
+                if !seeds.contains(&id) {
+                    seeds.push(id);
+                }
+            }
+        }
+    }
+    let selection = if partial {
+        Some(runtime_neighbors::select_seeds(&report, &seeds)?)
+    } else {
+        None
+    };
+    if let Some(s) = &selection {
+        seeds = s.seeds.clone();
     }
     let plan = runtime_neighbors::plan(&report, &seeds, 128)?;
     if receipt["report_sha256"] != plan.report_sha256 {
@@ -46,6 +70,13 @@ fn main() -> Result<()> {
     }
     let output = Path::new(&args[2]);
     std::fs::create_dir(output).map_err(|e| e.to_string())?;
+    if let Some(s) = &selection {
+        std::fs::write(
+            output.join("seed-selection.json"),
+            serde_json::to_vec_pretty(s).map_err(|e| e.to_string())?,
+        )
+        .map_err(|e| e.to_string())?;
+    }
     std::fs::write(
         output.join("plan.json"),
         serde_json::to_vec_pretty(&plan).map_err(|e| e.to_string())?,
@@ -60,7 +91,8 @@ fn main() -> Result<()> {
     }
     println!(
         "{}",
-        serde_json::json!({"roles":plan.roles.len(),"fields":plan.candidates.len(),"omitted":plan.omitted_fields,"batches":plan.batches.len(),"edit_authority":false})
+        serde_json::json!({"roles":plan.roles.len(),"fields":plan.candidates.len(),"omitted":plan.omitted_fields,"batches":plan.batches.len(),
+            "partial_review":partial,"omitted_roles":selection.as_ref().map_or(0,|s|s.omitted_roles),"edit_authority":false})
     );
     Ok(())
 }

@@ -8,9 +8,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
-pub const POLICY: &str = "rooted_role_sibling_sampling_v1";
+pub const POLICY: &str = "rooted_role_sibling_sampling_v2";
 pub const LIMITATION: &str = "Neighbouring values share a rooted object path in this discovery, not persistent actor identity. Paths can alias or change occupants. Changing siblings may help investigate activity but do not establish meaning, control or causal relevance. Names and values do not determine selection; omitted fields remain unknown.";
 pub const MAX_PATHS: usize = 128;
+// The loader has a 32K UTF-16 request limit as well as a 64KiB file limit.
+// Reserve space for the output path and surrounding request fields.
+const MAX_BATCH_UTF16: usize = 30 * 1024;
+fn batch_fits(paths: &[Locator]) -> Result<bool> {
+    let json = serde_json::to_string(paths).map_err(|e| e.to_string())?;
+    Ok(json.len() <= 60 * 1024 && json.encode_utf16().count() <= MAX_BATCH_UTF16)
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Role {
     pub id: String,
@@ -30,6 +37,47 @@ pub struct Plan {
     pub batches: Vec<Vec<Locator>>,
     pub omitted_fields: usize,
     pub limitation: String,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SeedSelection {
+    pub requested_paths: Vec<String>,
+    pub seeds: Vec<String>,
+    pub observed_roles: usize,
+    pub omitted_roles: usize,
+}
+/// Collapse report-bound partial-review paths to one seed per rooted role.
+/// This uses no proposed names and grants no semantic or edit authority.
+pub fn select_seeds(report: &Value, paths: &[String]) -> Result<SeedSelection> {
+    if paths.is_empty()
+        || paths.len() > 512
+        || paths.iter().collect::<BTreeSet<_>>().len() != paths.len()
+    {
+        return Err("Select one to 512 distinct report-bound paths.".into());
+    }
+    let requested: BTreeSet<_> = paths.iter().collect();
+    let mut found = BTreeMap::new();
+    runtime::visit_candidates(report, "", 0, 1, &mut |c| {
+        if requested.contains(&c.id) && eligible(c) {
+            found.insert(c.id.clone(), role_id(&c.locator)?);
+        }
+        Ok(())
+    })?;
+    if found.len() != paths.len() {
+        return Err("A selected path is absent or unsupported.".into());
+    }
+    let mut roles = BTreeSet::new();
+    let mut seeds = vec![];
+    for path in paths {
+        if roles.insert(&found[path]) && seeds.len() < 32 {
+            seeds.push(path.clone());
+        }
+    }
+    Ok(SeedSelection {
+        requested_paths: paths.to_vec(),
+        omitted_roles: roles.len() - seeds.len(),
+        observed_roles: roles.len(),
+        seeds,
+    })
 }
 pub fn role_id(path: &Locator) -> Result<String> {
     path.validate(&path.scope)?;
@@ -125,12 +173,8 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
     }
     let mut batches: Vec<Vec<Locator>> = vec![];
     for candidate in &candidates {
-        if serde_json::to_vec(&vec![&candidate.locator])
-            .map_err(|e| e.to_string())?
-            .len()
-            > 60 * 1024
-        {
-            return Err("One sibling path exceeds the reader's byte budget.".into());
+        if !batch_fits(std::slice::from_ref(&candidate.locator))? {
+            return Err("One sibling path exceeds the reader's request budget.".into());
         }
         if batches
             .last()
@@ -140,10 +184,10 @@ pub fn plan(report: &Value, seeds: &[String], limit: usize) -> Result<Plan> {
         }
         let last = batches.last_mut().unwrap();
         last.push(candidate.locator.clone());
-        if serde_json::to_vec(last).map_err(|e| e.to_string())?.len() > 60 * 1024 {
+        if !batch_fits(last)? {
             let path = last.pop().unwrap();
             if last.is_empty() {
-                return Err("One sibling path exceeds the reader's byte budget.".into());
+                return Err("One sibling path exceeds the reader's request budget.".into());
             }
             batches.push(vec![path]);
         }
