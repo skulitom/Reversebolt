@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "progress_percent": 36,
+  "artifact_root": "C:\\DEV\\Reversebolt\\test-results\\runtime-values-v1",
+  "native": {
+    "passed": true,
+    "owned_native_calls": 43,
+    "live_calls": 11,
+    "pauses": 249,
+    "max_stop_to_resume_us": 5669,
+    "selected_storage": {
+      "embedded": 23,
+      "enum": 9
+    },
+    "fresh_native_reads": 96,
+    "owned_writes_restored": 7,
+    "readonly_writes_refused": 2,
+    "gameplay_writes": 0
+  },
+  "coverage": {
+    "prior_report": "C:\\DEV\\Reversebolt\\test-results\\runtime-siblings-sable-v1\\data\\runtime\\87932-01dd628c89027651\\ae35e7ab-8202-4614-8ddb-2e511d3ac979\\report.json",
+    "prior_sha256": "649bb5504ecfa4a5510f96284dcdf6dd022f80e533552679b51ce1e16a4384b3",
+    "prior_unsupported_descriptors": 998,
+    "seen_in_new_reports": 975,
+    "now_inline": 582,
+    "now_scalar_enum": 393,
+    "still_unsupported": 0,
+    "not_seen": 23,
+    "limitation": "Separate launches and bounded snapshots; descriptor comparison, not a controlled recall benchmark."
+  },
+  "preview": "0.1.0-20261023-030845",
+  "default_workspace_tests": 462,
+  "strict_all_target_all_feature_clippy": "passed",
+  "format": "passed",
+  "meaning_verified": false,
+  "generalization_credit_added": false
+}

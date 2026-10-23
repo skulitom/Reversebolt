@@ -42,6 +42,8 @@ struct Evaluation {
 struct RootSlot {
     address: usize,
     status: Status,
+    inline: usize,
+    writable: bool,
 }
 
 fn root_slot(c: &Catalog, path: &Locator) -> RootSlot {
@@ -52,13 +54,17 @@ fn root_slot(c: &Catalog, path: &Locator) -> RootSlot {
                 return RootSlot {
                     address: 0,
                     status: Status::RootAmbiguous,
+                    inline: 0,
+                    writable: false,
                 };
             }
-            found = Some(root.address);
+            found = Some(root);
         }
     }
     RootSlot {
-        address: found.unwrap_or(0),
+        address: found.map_or(0, |r| r.address),
+        inline: found.map_or(0, |r| c.classes[r.class].fields[r.field].inline),
+        writable: found.is_some_and(|r| c.classes[r.class].fields[r.field].flags & 0x60 == 0),
         status: if found.is_some() {
             Status::Read
         } else {
@@ -77,11 +83,17 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
         return result;
     }
     let mut pointer = [0; 8];
-    if !read_into(root.address, &mut pointer) {
+    if root.inline == 0 && !read_into(root.address, &mut pointer) {
         result.status = Status::Unreadable;
         return result;
     }
-    let mut address = usize::from_le_bytes(pointer);
+    let mut inline = root.inline;
+    let mut writable_container = inline == 0 || root.writable;
+    let mut address = if inline == 0 {
+        usize::from_le_bytes(pointer)
+    } else {
+        root.address
+    };
     for (index, step) in path.steps.iter().enumerate() {
         result.step = index;
         if stopped.elapsed() >= PAUSE_BUDGET {
@@ -93,13 +105,17 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             return result;
         }
         let mut header = [0; 128];
-        if !read_into(address, &mut header[..c.header]) {
+        if inline == 0 && !read_into(address, &mut header[..c.header]) {
             result.status = Status::Unreadable;
             return result;
         }
         result.visited[index] = address;
         result.visited_count = index + 1;
-        let runtime_class = unsafe { (api.il2cpp_object_get_class)(address as Ptr) } as usize;
+        let runtime_class = if inline == 0 {
+            (unsafe { (api.il2cpp_object_get_class)(address as Ptr) }) as usize
+        } else {
+            inline
+        };
         let Some(&class_id) = c.lookup.get(&runtime_class) else {
             result.unknown_class = runtime_class;
             result.status = Status::UnknownType;
@@ -110,7 +126,7 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             result.status = Status::TypeChanged;
             return result;
         }
-        let (offset, width, kind, reference, writable) = match &step.member {
+        let (offset, width, kind, reference, embedded, writable) = match &step.member {
             Member::Field { field } => {
                 let mut found = None;
                 for &(declaring, field_id) in &class.flat {
@@ -126,17 +142,25 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
                     result.status = Status::FieldUnavailable;
                     return result;
                 };
+                let Some(offset) = member_offset(
+                    Node {
+                        class: class_id,
+                        inline: inline != 0,
+                        ..Node::default()
+                    },
+                    c,
+                    field,
+                ) else {
+                    result.status = Status::FieldUnavailable;
+                    return result;
+                };
                 (
-                    field.offset,
+                    offset,
                     field.width,
                     field.kind,
                     field.reference,
-                    field.flags & 0x70 == 0
-                        && field.offset >= c.header
-                        && field
-                            .offset
-                            .checked_add(field.width)
-                            .is_some_and(|end| end <= class.size),
+                    field.inline,
+                    field.flags & 0x70 == 0,
                 )
             }
             Member::Element { index } => {
@@ -144,6 +168,7 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
                     stride,
                     kind,
                     reference,
+                    inline: embedded,
                 } = class.shape
                 else {
                     result.status = Status::UnsupportedArray;
@@ -160,15 +185,15 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
                     result.status = Status::ArrayBounds;
                     return result;
                 };
-                (offset, stride, kind, reference, true)
+                (offset, stride, kind, reference, embedded, true)
             }
         };
         let terminal = index + 1 == path.steps.len();
-        if terminal && reference {
+        if terminal && (reference || embedded != 0) {
             result.status = Status::NotScalar;
             return result;
         }
-        if !terminal && !reference {
+        if !terminal && !reference && embedded == 0 {
             result.status = Status::NotReference;
             return result;
         }
@@ -176,6 +201,12 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             result.status = Status::Unreadable;
             return result;
         };
+        if embedded != 0 {
+            address = field_address;
+            inline = embedded;
+            writable_container &= writable;
+            continue;
+        }
         if width == 0 || width > 8 || !read_into(field_address, &mut result.bytes[..width]) {
             result.status = Status::Unreadable;
             return result;
@@ -184,11 +215,13 @@ fn follow(api: &Api, c: &Catalog, path: &Locator, root: RootSlot, stopped: Insta
             result.width = width;
             result.kind = kind;
             result.address = field_address;
-            result.writable_field = writable;
+            result.writable_field = writable && writable_container;
             result.status = Status::Read;
             return result;
         }
         address = usize::from_le_bytes(result.bytes);
+        inline = 0;
+        writable_container = true;
     }
     result.status = Status::NotScalar;
     result

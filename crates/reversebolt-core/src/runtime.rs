@@ -534,6 +534,8 @@ struct Class {
     id: usize,
     key: TypeKey,
     shape: String,
+    #[serde(default)]
+    element_inline_type: Option<TypeKey>,
     fields: Vec<Field>,
 }
 #[derive(Deserialize)]
@@ -541,6 +543,10 @@ struct Field {
     id: usize,
     name: String,
     reference: bool,
+    #[serde(default)]
+    inline: bool,
+    #[serde(default)]
+    inline_type: Option<TypeKey>,
     type_code: i32,
     width: usize,
     flags: i32,
@@ -565,6 +571,8 @@ struct TextRead {
 struct Node {
     id: usize,
     class: Option<usize>,
+    #[serde(default)]
+    inline: bool,
 }
 #[derive(Deserialize)]
 struct Root {
@@ -583,6 +591,8 @@ struct Read {
     bytes: Vec<u8>,
     value: Value,
     reference: Value,
+    #[serde(default)]
+    embedded: Value,
     read_ok: bool,
 }
 
@@ -632,7 +642,7 @@ pub(crate) fn visit_candidates(
         return Err("Candidate limit must be between 1 and 4096.".into());
     }
     let report: Report = serde_json::from_value(report.clone()).map_err(|e| e.to_string())?;
-    if report.schema != 4
+    if !matches!(report.schema, 4 | 5)
         || report.edit_authority
         || report.classes.len() > 50_000
         || report.snapshots.len() > 10_000
@@ -671,8 +681,8 @@ pub(crate) fn visit_candidates(
         for root in &shot.roots {
             let class = classes.get(&root.class).ok_or("Root class missing.")?;
             let field = class.fields.get(root.field).ok_or("Root field missing.")?;
-            if !field.reference || field.flags & 0x10 == 0 {
-                return Err("Root is not a static reference.".into());
+            if (field.reference == field.inline) || field.flags & 0x10 == 0 {
+                return Err("Root is not a static reference or embedded value.".into());
             }
             if root.read_ok
                 && let Some(id) = root.node["id"].as_u64()
@@ -681,6 +691,12 @@ pub(crate) fn visit_candidates(
                 if !nodes.contains_key(&id) {
                     return Err("Dangling root edge.".into());
                 }
+                validate_edge(
+                    nodes[&id],
+                    field.inline,
+                    field.inline_type.as_ref(),
+                    &classes,
+                )?;
                 if let std::collections::btree_map::Entry::Vacant(entry) = routes.entry(id) {
                     entry.insert((
                         FieldRef {
@@ -698,10 +714,12 @@ pub(crate) fn visit_candidates(
             if !nodes.contains_key(&read.node) {
                 return Err("Read node missing.".into());
             }
-            if let Some(id) = read.reference["id"].as_u64()
-                && !nodes.contains_key(&(id as usize))
-            {
-                return Err("Dangling reference edge.".into());
+            for edge in [&read.reference, &read.embedded] {
+                if let Some(id) = edge["id"].as_u64()
+                    && !nodes.contains_key(&(id as usize))
+                {
+                    return Err("Dangling runtime edge.".into());
+                }
             }
             reads.entry(read.node).or_default().push(read);
         }
@@ -781,41 +799,64 @@ pub(crate) fn visit_candidates(
                 let declaring = classes
                     .get(&read.declaring_class)
                     .ok_or("Field owner missing.")?;
-                let (member, name, is_reference) = match (read.field, read.element_index) {
-                    (Some(field), None) => {
-                        let field = declaring.fields.get(field).ok_or("Field missing.")?;
-                        if field.width != read.bytes.len()
-                            || field.type_code != read.type_code
-                            || field.flags & 0x10 != 0
-                        {
-                            return Err("Field read schema mismatch.".into());
-                        }
-                        (
-                            Member::Field {
-                                field: FieldRef {
-                                    declaring: declaring.key.clone(),
-                                    field_id: field.id,
+                let (member, name, is_reference, embedded_type) =
+                    match (read.field, read.element_index) {
+                        (Some(field), None) => {
+                            let field = declaring.fields.get(field).ok_or("Field missing.")?;
+                            if (if field.inline { 0 } else { field.width }) != read.bytes.len()
+                                || field.type_code != read.type_code
+                                || field.flags & 0x10 != 0
+                                || field.inline != !read.embedded.is_null()
+                                || field.reference != !read.reference.is_null()
+                                || (field.inline && field.reference)
+                            {
+                                return Err("Field read schema mismatch.".into());
+                            }
+                            (
+                                Member::Field {
+                                    field: FieldRef {
+                                        declaring: declaring.key.clone(),
+                                        field_id: field.id,
+                                    },
                                 },
-                            },
-                            field.name.clone(),
-                            field.reference,
-                        )
-                    }
-                    (None, Some(index)) if owner.shape == "array" && declaring.id == owner.id => (
-                        Member::Element { index },
-                        format!("Element {index}"),
-                        !read.reference.is_null(),
-                    ),
-                    _ => return Err("Invalid runtime member read.".into()),
-                };
+                                field.name.clone(),
+                                field.reference,
+                                field.inline_type.as_ref(),
+                            )
+                        }
+                        (None, Some(index))
+                            if owner.shape == "array" && declaring.id == owner.id =>
+                        {
+                            (
+                                Member::Element { index },
+                                format!("Element {index}"),
+                                !read.reference.is_null(),
+                                owner.element_inline_type.as_ref(),
+                            )
+                        }
+                        _ => return Err("Invalid runtime member read.".into()),
+                    };
                 let mut steps = prefix.clone();
                 steps.push(Step {
                     owner: owner.key.clone(),
                     member,
                 });
-                if is_reference {
-                    if let Some(child) = read.reference["id"].as_u64() {
+                let is_inline = !read.embedded.is_null();
+                if is_inline != embedded_type.is_some() || (is_inline && is_reference) {
+                    return Err("Embedded runtime edge has no matching layout.".into());
+                }
+                if is_reference || is_inline {
+                    if !read.value.is_null() || (is_inline && !read.bytes.is_empty()) {
+                        return Err("Runtime edge cannot contain scalar data.".into());
+                    }
+                    let edge = if is_inline {
+                        &read.embedded
+                    } else {
+                        &read.reference
+                    };
+                    if let Some(child) = edge["id"].as_u64() {
                         let child = child as usize;
+                        validate_edge(nodes[&child], is_inline, embedded_type, &classes)?;
                         if let std::collections::btree_map::Entry::Vacant(entry) =
                             routes.entry(child)
                         {
@@ -916,6 +957,25 @@ pub(crate) fn visit_candidates(
         matches,
         candidates: answer.into_iter().skip(offset).collect(),
     })
+}
+
+fn validate_edge(
+    node: &Node,
+    inline: bool,
+    expected: Option<&TypeKey>,
+    classes: &BTreeMap<usize, &Class>,
+) -> Result<()> {
+    if node.inline != inline
+        || (inline
+            && (expected.is_none()
+                || node
+                    .class
+                    .and_then(|id| classes.get(&id))
+                    .is_none_or(|class| Some(&class.key) != expected)))
+    {
+        return Err("Runtime edge storage or embedded type mismatch.".into());
+    }
+    Ok(())
 }
 
 pub fn scalar_value(kind: i32, bytes: &[u8]) -> Result<Value> {

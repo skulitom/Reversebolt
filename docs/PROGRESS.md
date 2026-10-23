@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Generic embedded runtime state (2026-10-23): **36% unchanged**.
+The reader now follows nested structures, closed generic value types, arrays of
+structures/enums and static structures using runtime metadata, with exact scalar
+enum representation and existing layout/write/restoration guards. An owned ABI
+fixture passes 41 calls, seven change/restoration cases and two readonly refusals;
+an older provider passes two calls. Sable completes two discovery pages and all
+96 fresh reads across 32 newly reachable paths. All eleven game helpers unload;
+249 total observed pauses have zero helper Rust heap operations. Comparing saved
+descriptors finds supported representations for 975 previously skipped fields;
+23 were not encountered in the new bounded observations.
+
+No gameplay meaning or control is verified, so the fixed capability credits do
+not change. The native run used no measurement images, model calls, gameplay
+input or field writes. The pre-launch storage folder is retained, and the main
+save is unchanged. Preview `0.1.0-20261023-030845` passes ordinary Anode startup,
+accessibility and binary checks and is selected for the next desktop launch.
+All 462 default-feature workspace tests, strict all-target/all-feature Clippy,
+formatting and the retained artifact audit pass. The user's running editor is
+preserved. Next: measure sibling/input activity
+with embedded-state coverage and retain the enclosing field context of each leaf.
+[Implementation, native evidence and limits](../research/runtime-values/README.md).
+
 Native sibling-input development evaluation (2026-10-23): **36% unchanged**.
 The original Sable automatic investigation again timed out at a large naming
 proposal after fourteen completed type-selection requests. A separately frozen

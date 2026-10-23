@@ -1,6 +1,7 @@
 //! Runtime-derived graph discovery, path reads and explicit guarded numeric trials.
 mod paths;
 pub mod pe_exports;
+mod values;
 pub mod win;
 use reversebolt_core::runtime::{Locator, Scope, TypeKey};
 use serde_json::{Value, json};
@@ -49,9 +50,9 @@ type Ptr = *mut c_void;
 macro_rules! api {
     ($($name:ident: $ty:ty),+ $(,)?) => {
         pub const REQUIRED_EXPORTS: &[&str] = &[$(stringify!($name)),+];
-        struct Api { $($name: $ty),+ }
+        struct Api { values: Option<values::Api>, $($name: $ty),+ }
         impl Api { unsafe fn load(module: usize) -> Result<Self> {
-            Ok(Self { $($name: unsafe {
+            Ok(Self { values: unsafe { values::Api::load(module) }, $($name: unsafe {
                 let pointer = GetProcAddress(module as _,concat!(stringify!($name),"\0").as_ptr()).ok_or(stringify!($name))?;
                 std::mem::transmute::<unsafe extern "system" fn()->isize,$ty>(pointer)
             }),+ })
@@ -119,6 +120,8 @@ struct Field {
     kind: i32,
     width: usize,
     reference: bool,
+    inline: usize,
+    declared_type: Option<String>,
     flags: i32,
 }
 struct Class {
@@ -129,6 +132,7 @@ struct Class {
     image: usize,
     parent: usize,
     size: usize,
+    value_size: Option<usize>,
     fields: Vec<Field>,
     flat: Vec<(usize, usize)>,
     shape: Shape,
@@ -141,6 +145,7 @@ enum Shape {
         stride: usize,
         kind: i32,
         reference: bool,
+        inline: usize,
     },
     UnsupportedArray,
 }
@@ -244,16 +249,16 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
                 Shape::UnsupportedArray
             } else {
                 let typ = (api.il2cpp_class_get_type)(element);
-                let kind = (api.il2cpp_type_get_type)(typ);
-                let reference = !(api.il2cpp_class_is_valuetype)(element);
+                let layout = values::layout(api, typ)?;
+                let kind = layout.kind;
+                let reference = layout.reference;
                 let stride = (api.il2cpp_array_element_size)(class).max(0) as usize;
-                if (reference && stride == 8)
-                    || (!reference && width(kind) > 0 && stride == width(kind))
-                {
+                if stride > 0 && stride == layout.width {
                     Shape::Array {
                         stride,
                         kind,
                         reference,
+                        inline: layout.inline,
                     }
                 } else {
                     Shape::UnsupportedArray
@@ -275,6 +280,7 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
             image: image_id,
             parent: (api.il2cpp_class_get_parent)(class) as usize,
             size: (api.il2cpp_class_instance_size)(class).max(0) as usize,
+            value_size: values::size(api, class),
             fields: Vec::new(),
             flat: Vec::new(),
             shape,
@@ -293,30 +299,23 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
             if typ.is_null() {
                 continue;
             }
-            let kind = (api.il2cpp_type_get_type)(typ);
             let flags = (api.il2cpp_field_get_flags)(field);
-            let byref = (api.il2cpp_type_is_byref)(typ);
-            let reference = !byref && reference_kind(api, typ, kind);
-            let width = if reference {
-                8
-            } else if byref {
-                0
-            } else {
-                width(kind)
-            };
+            let layout = values::layout(api, typ)?;
             let f = Field {
                 name: text((api.il2cpp_field_get_name)(field))?,
                 offset: (api.il2cpp_field_get_offset)(field),
-                kind,
-                width,
-                reference,
+                kind: layout.kind,
+                width: layout.width,
+                reference: layout.reference,
+                inline: layout.inline,
+                declared_type: layout.declared_type,
                 flags,
             };
-            if roots && reference && flags & 0x10 != 0 && flags & 0x40 == 0 {
+            if roots && (f.reference || f.inline != 0) && flags & 0x10 != 0 && flags & 0x40 == 0 {
                 let storage = (api.il2cpp_class_get_static_field_data)(class) as usize;
                 let size = (api.il2cpp_class_get_data_size)(class) as usize;
                 if storage != 0
-                    && f.offset.checked_add(8).is_some_and(|end| end <= size)
+                    && f.offset.checked_add(f.width).is_some_and(|end| end <= size)
                     && let Some(address) = storage.checked_add(f.offset)
                 {
                     if c.roots.len() >= 10_000 {
@@ -332,6 +331,14 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
             entry.fields.push(f);
         }
         use sha2::{Digest, Sha256};
+        let array_type = if rank > 0 {
+            Some(qualified_name(
+                api,
+                (api.il2cpp_class_get_type)((api.il2cpp_class_get_element_class)(class)),
+            )?)
+        } else {
+            None
+        };
         let shape = match entry.shape {
             Shape::Object => json!(["object"]),
             Shape::String => json!(["string"]),
@@ -339,19 +346,50 @@ fn load_class(api: &Api, c: &mut Catalog, class: Ptr, roots: bool, start: Instan
                 stride,
                 kind,
                 reference,
-            } => json!(["array", stride, kind, reference]),
+                inline,
+            } => json!([
+                "array",
+                stride,
+                kind,
+                reference,
+                if inline == 0 {
+                    None
+                } else {
+                    Some(qualified_name(
+                        api,
+                        (api.il2cpp_class_get_type)(inline as Ptr),
+                    )?)
+                }
+            ]),
             Shape::UnsupportedArray => json!(["unsupported_array"]),
         };
         let fields: Vec<_> = entry
             .fields
             .iter()
-            .map(|f| json!([f.name, f.offset, f.kind, f.width, f.reference, f.flags]))
+            .map(|f| {
+                json!([
+                    f.name,
+                    f.offset,
+                    f.kind,
+                    f.width,
+                    f.reference,
+                    f.flags,
+                    f.inline != 0,
+                    f.declared_type
+                ])
+            })
             .collect();
         entry.key.layout_sha256 = format!(
             "{:x}",
             Sha256::digest(
-                serde_json::to_vec(&json!([entry.size, shape, fields]))
-                    .map_err(|e| e.to_string())?
+                serde_json::to_vec(&json!([
+                    entry.size,
+                    entry.value_size,
+                    shape,
+                    array_type,
+                    fields
+                ]))
+                .map_err(|e| e.to_string())?
             )
         );
         entry.key.validate()?;
@@ -440,6 +478,8 @@ fn catalog(api: &Api, start: Instant) -> Result<Catalog> {
             }
         }
     }
+    let addresses: Vec<_> = c.classes.iter().map(|k| k.address).collect();
+    prepare_encountered(api, &mut c, &addresses, start)?;
     flatten(&mut c);
     Ok(c)
 }
@@ -455,14 +495,28 @@ fn prepare_encountered(
     let mut pending = classes.to_vec();
     let mut seen = std::collections::HashSet::new();
     while let Some(address) = pending.pop() {
-        if address == 0 || !seen.insert(address) || seen.len() > 2048 {
+        if address == 0 || !seen.insert(address) {
             continue;
+        }
+        if seen.len() > 50_000 || start.elapsed() > Duration::from_secs(20) {
+            return Err("embedded metadata budget".into());
         }
         load_class(api, c, address as Ptr, false, start)?;
         if let Some(&id) = c.lookup.get(&address) {
             let parent = c.classes[id].parent;
             if parent != 0 && !c.lookup.contains_key(&parent) {
                 pending.push(parent);
+            }
+            pending.extend(
+                c.classes[id]
+                    .fields
+                    .iter()
+                    .filter_map(|f| (f.inline != 0).then_some(f.inline)),
+            );
+            if let Shape::Array { inline, .. } = c.classes[id].shape
+                && inline != 0
+            {
+                pending.push(inline);
             }
         }
     }
@@ -483,6 +537,7 @@ struct Node {
     class: usize,
     runtime_class: usize,
     depth: usize,
+    inline: bool,
 }
 #[derive(Clone, Copy, Default)]
 struct Read {
@@ -496,6 +551,7 @@ struct Read {
     kind: i32,
     width: usize,
     reference: bool,
+    inline: bool,
 }
 #[derive(Clone, Copy, Default)]
 struct RootRead {
@@ -553,7 +609,7 @@ fn node_for(address: usize, depth: usize, nodes: &mut Vec<Node>, api: &Api, c: &
     if address == 0 {
         return usize::MAX;
     }
-    if let Some(i) = nodes.iter().position(|n| n.address == address) {
+    if let Some(i) = nodes.iter().position(|n| n.address == address && !n.inline) {
         return i;
     }
     if nodes.len() == MAX_NODES {
@@ -570,6 +626,7 @@ fn node_for(address: usize, depth: usize, nodes: &mut Vec<Node>, api: &Api, c: &
         class,
         runtime_class,
         depth,
+        inline: false,
     });
     nodes.len() - 1
 }
@@ -579,6 +636,50 @@ fn edge(address: usize, depth: usize, nodes: &mut Vec<Node>, api: &Api, c: &Cata
     } else {
         node_for(address, depth + 1, nodes, api, c)
     }
+}
+fn inline_node(
+    address: usize,
+    runtime_class: usize,
+    depth: usize,
+    nodes: &mut Vec<Node>,
+    c: &Catalog,
+) -> usize {
+    if depth > 4 {
+        return usize::MAX - 3;
+    }
+    if let Some(i) = nodes
+        .iter()
+        .position(|n| n.address == address && n.inline && n.runtime_class == runtime_class)
+    {
+        return i;
+    }
+    if nodes.len() == MAX_NODES {
+        return usize::MAX - 1;
+    }
+    // Inline storage has no object header. Its type and bounds come from the
+    // containing field/array metadata; object_get_class must never inspect it.
+    let class = c.lookup.get(&runtime_class).copied().unwrap_or(usize::MAX);
+    nodes.push(Node {
+        address,
+        class,
+        runtime_class,
+        depth,
+        inline: true,
+    });
+    nodes.len() - 1
+}
+
+fn member_offset(n: Node, c: &Catalog, f: &Field) -> Option<usize> {
+    let class = &c.classes[n.class];
+    let (offset, size) = if n.inline {
+        (f.offset.checked_sub(c.header)?, class.value_size?)
+    } else {
+        (f.offset, class.size)
+    };
+    offset
+        .checked_add(f.width)
+        .filter(|end| *end <= size)
+        .map(|_| offset)
 }
 fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Capture {
     let mut nodes = vec![Node::default(); MAX_NODES];
@@ -607,9 +708,18 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
             break;
         }
         let mut bytes = [0; 8];
-        let ok = read_into(root.address, &mut bytes);
-        let address = if ok { usize::from_le_bytes(bytes) } else { 0 };
-        let node = if ok {
+        let f = &c.classes[root.class].fields[root.field];
+        let ok = f.inline != 0 || read_into(root.address, &mut bytes);
+        let address = if f.inline != 0 {
+            root.address
+        } else if ok {
+            usize::from_le_bytes(bytes)
+        } else {
+            0
+        };
+        let node = if f.inline != 0 {
+            inline_node(address, f.inline, 0, &mut nodes, c)
+        } else if ok {
             node_for(address, 0, &mut nodes, api, c)
         } else {
             usize::MAX - 2
@@ -656,6 +766,7 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
                     stride,
                     kind,
                     reference,
+                    inline,
                 } => {
                     let length = unsafe { (api.il2cpp_array_length)(n.address as Ptr) } as usize;
                     let mut attempted = 0;
@@ -665,12 +776,15 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
                             break;
                         }
                         let mut bytes = [0; 8];
-                        let ok = index
+                        let address = index
                             .checked_mul(stride)
                             .and_then(|v| v.checked_add(c.array_header))
-                            .and_then(|v| n.address.checked_add(v))
-                            .is_some_and(|a| read_into(a, &mut bytes[..stride]));
-                        let child = if reference && ok {
+                            .and_then(|v| n.address.checked_add(v));
+                        let ok = address
+                            .is_some_and(|a| inline != 0 || read_into(a, &mut bytes[..stride]));
+                        let child = if inline != 0 && ok {
+                            inline_node(address.unwrap(), inline, n.depth + 1, &mut nodes, c)
+                        } else if reference && ok {
                             edge(usize::from_le_bytes(bytes), n.depth, &mut nodes, api, c)
                         } else {
                             usize::MAX
@@ -686,6 +800,7 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
                             kind,
                             width: stride,
                             reference,
+                            inline: inline != 0,
                         });
                         attempted += 1;
                     }
@@ -707,11 +822,13 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
                         }
                         let f = &c.classes[class].fields[field];
                         let mut bytes = [0; 8];
-                        let ok = n
-                            .address
-                            .checked_add(f.offset)
-                            .is_some_and(|a| read_into(a, &mut bytes[..f.width]));
-                        let child = if f.reference && ok {
+                        let address =
+                            member_offset(n, c, f).and_then(|offset| n.address.checked_add(offset));
+                        let ok = address
+                            .is_some_and(|a| f.inline != 0 || read_into(a, &mut bytes[..f.width]));
+                        let child = if f.inline != 0 && ok {
+                            inline_node(address.unwrap(), f.inline, n.depth + 1, &mut nodes, c)
+                        } else if f.reference && ok {
                             edge(usize::from_le_bytes(bytes), n.depth, &mut nodes, api, c)
                         } else {
                             usize::MAX
@@ -727,6 +844,7 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
                             kind: f.kind,
                             width: f.width,
                             reference: f.reference,
+                            inline: f.inline != 0,
                         });
                     }
                 }
@@ -744,9 +862,9 @@ fn snapshot(api: &Api, c: &Catalog, root_start: usize, root_end: usize) -> Captu
         .collect();
     unknown.sort_unstable();
     unknown.dedup();
-    let nodes_json:Vec<_>=nodes.iter().enumerate().map(|(id,n)|json!({"id":id,"address":format!("0x{:x}",n.address),"class":if n.class==usize::MAX{Value::Null}else{json!(n.class)},"depth":n.depth,"status":if n.class==usize::MAX{"uncatalogued_runtime_type"}else{"catalogued"}})).collect();
+    let nodes_json:Vec<_>=nodes.iter().enumerate().map(|(id,n)|json!({"id":id,"address":format!("0x{:x}",n.address),"class":if n.class==usize::MAX{Value::Null}else{json!(n.class)},"inline":n.inline,"depth":n.depth,"status":if n.class==usize::MAX{"uncatalogued_runtime_type"}else{"catalogued"}})).collect();
     let roots_json:Vec<_>=roots.iter().map(|r|{let root=&c.roots[r.root];json!({"root":r.root,"class":root.class,"field":root.field,"reference":format!("0x{:x}",r.address),"node":node_json(r.node),"read_ok":r.ok})}).collect();
-    let reads_json:Vec<_>=reads.iter().map(|r|json!({"node":r.node,"declaring_class":r.class,"field":if r.element{Value::Null}else{json!(r.field)},"element_index":if r.element{json!(r.field)}else{Value::Null},"type_code":r.kind,"read_ok":r.ok,"bytes":&r.bytes[..r.width],"value":if !r.ok||r.reference{Value::Null}else{value(r.kind,r.bytes)},"reference":if r.reference{node_json(r.child)}else{Value::Null}})).collect();
+    let reads_json:Vec<_>=reads.iter().map(|r|json!({"node":r.node,"declaring_class":r.class,"field":if r.element{Value::Null}else{json!(r.field)},"element_index":if r.element{json!(r.field)}else{Value::Null},"type_code":r.kind,"read_ok":r.ok,"bytes":&r.bytes[..if r.inline {0} else {r.width}],"value":if !r.ok||r.reference||r.inline{Value::Null}else{value(r.kind,r.bytes)},"reference":if r.reference{node_json(r.child)}else{Value::Null},"embedded":if r.inline{node_json(r.child)}else{Value::Null}})).collect();
     let strings_json:Vec<_>=texts.iter().map(|t|{let units:Vec<_>=t.bytes[..t.count*2].as_chunks::<2>().0.iter().map(|b|u16::from_le_bytes(*b)).collect();json!({"node":t.node,"length":t.length,"read_ok":t.ok,"truncated":t.length>TEXT_LIMIT as i32,"text":if t.ok{json!(String::from_utf16_lossy(&units))}else{Value::Null}})}).collect();
     let arrays_json:Vec<_>=arrays.iter().map(|a|json!({"node":a.node,"length":a.length,"elements_read":a.attempted,"supported":a.supported,"truncated":a.attempted<a.length})).collect();
     let value = json!({"root_start":root_start,"root_end":root_end,"pause_held_us":held_us,"stop_to_resume_us":total_us,"helper_allocations_while_paused":PAUSED_ALLOCS.load(Ordering::Relaxed)-allocations_before,"helper_deallocations_while_paused":PAUSED_FREES.load(Ordering::Relaxed)-frees_before,"time_or_read_budget_reached":budget,"node_capacity_reached":nodes.len()==MAX_NODES,"processed_nodes":cursor,"nodes":nodes_json,"roots":roots_json,"reads":reads_json,"strings":strings_json,"arrays":arrays_json});
@@ -967,9 +1085,9 @@ fn inspect(request: &InspectionRequest) -> Result<Value> {
             used.insert(r["declaring_class"].as_u64().unwrap() as usize);
         }
     }
-    let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"key":k.key,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"shape":shape,"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"width":f.width,"reference":f.reference,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
+    let schema:Vec<_>=used.into_iter().map(|id|{let k=&c.classes[id];let shape=match k.shape{Shape::Object=>"object",Shape::String=>"string",Shape::Array{..}=>"array",Shape::UnsupportedArray=>"unsupported_array"};json!({"id":id,"key":k.key,"name":k.name,"namespace":k.namespace,"image":c.images[k.image],"instance_size":k.size,"value_size":k.value_size,"shape":shape,"element_inline_type":match k.shape { Shape::Array { inline, .. } => c.lookup.get(&inline).map(|id| &c.classes[*id].key), _ => None },"fields":k.fields.iter().enumerate().map(|(i,f)|json!({"id":i,"name":f.name,"offset":f.offset,"type_code":f.kind,"width":f.width,"reference":f.reference,"inline":f.inline!=0,"inline_type":c.lookup.get(&f.inline).map(|id| &c.classes[*id].key),"declared_type":f.declared_type,"flags":f.flags})).collect::<Vec<_>>()})}).collect();
     Ok(
-        json!({"schema":4,"core_image":core_image,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
+        json!({"schema":5,"value_type_metadata":api.values.is_some(),"core_image":core_image,"pid":pid,"created":win::creation(unsafe{GetCurrentProcess()})?,"session":win::session(pid)?,"runtime":module.path,"catalog_ms":catalog_ms,"catalog_classes":c.classes.len(),"catalog_fields":c.field_count,"catalog_roots":c.roots.len(),"root_catalog_sha256":root_fingerprint,"root_start":request.root_start,"next_root":next_root,"root_scan_complete":next_root==c.roots.len(),"graph_complete":false,"stop_reason":stop_reason,"catalog_omissions":c.omissions,"classes":schema,"snapshots":snapshots,"warmups":warmups,"elapsed_ms":start.elapsed().as_millis() as u64,"edit_authority":false,"identity_contract":"object IDs belong only to one paused snapshot; addresses may be reused; fresh snapshots follow type preparation; no retained object handles","instrumentation":"runtime thread attachment; metadata preparation between bounded managed-world pauses; preallocated snapshot reads; no gameplay field writes"}),
     )
 }
 /// # Safety

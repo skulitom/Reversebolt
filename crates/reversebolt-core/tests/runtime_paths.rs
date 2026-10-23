@@ -128,6 +128,57 @@ fn report(ids: usize, address: &str, value: i32) -> Value {
 }
 
 #[test]
+fn embedded_paths_retain_layouts_and_reject_reference_or_type_confusion() {
+    let mut r = report(0, "0x100", 50);
+    r["schema"] = json!(5);
+    r["classes"][1]["fields"][0]["reference"] = json!(false);
+    r["classes"][1]["fields"][0]["inline"] = json!(true);
+    r["classes"][1]["fields"][0]["inline_type"] = key("Actor");
+    r["classes"][1]["fields"][0]["type_code"] = json!(17);
+    r["snapshots"][0]["nodes"][1]["inline"] = json!(true);
+    r["snapshots"][0]["reads"][0]["reference"] = Value::Null;
+    r["snapshots"][0]["reads"][0]["embedded"] = json!({"id":1});
+    r["snapshots"][0]["reads"][0]["type_code"] = json!(17);
+    r["snapshots"][0]["reads"][0]["bytes"] = json!([]);
+    let c = runtime::candidates(&r, 20).unwrap();
+    assert_eq!(c.len(), 1);
+    assert_eq!(c[0].value, 50);
+    assert_eq!(c[0].locator.steps.len(), 2);
+    assert!(!c[0].edit_authority);
+    for (pointer, value) in [
+        ("/snapshots/0/nodes/1/inline", json!(false)),
+        ("/snapshots/0/nodes/1/class", json!(1)),
+        ("/snapshots/0/reads/0/reference", json!({"id":1})),
+        ("/snapshots/0/reads/0/bytes", json!([1])),
+        ("/snapshots/0/reads/0/value", json!(0)),
+        ("/snapshots/0/reads/0/embedded", json!({"id":999})),
+        ("/classes/1/fields/0/inline_type", Value::Null),
+    ] {
+        let mut bad = r.clone();
+        *bad.pointer_mut(pointer).unwrap() = value;
+        assert!(runtime::candidates(&bad, 20).is_err(), "{pointer}");
+    }
+    // Static embedded roots and struct-array elements retain the same typed path contract.
+    r["classes"][0]["fields"][0]["reference"] = json!(false);
+    r["classes"][0]["fields"][0]["inline"] = json!(true);
+    r["classes"][0]["fields"][0]["inline_type"] = key("Box<Actor>");
+    r["snapshots"][0]["nodes"][0]["inline"] = json!(true);
+    assert_eq!(runtime::candidates(&r, 20).unwrap().len(), 1);
+    r["classes"][0]["fields"][0]["reference"] = json!(true);
+    r["classes"][0]["fields"][0]["inline"] = json!(false);
+    r["classes"][0]["fields"][0]["inline_type"] = Value::Null;
+    r["snapshots"][0]["nodes"][0]["inline"] = json!(false);
+    r["classes"][1]["shape"] = json!("array");
+    r["classes"][1]["element_inline_type"] = key("Actor");
+    r["snapshots"][0]["reads"][0]["field"] = Value::Null;
+    r["snapshots"][0]["reads"][0]["element_index"] = json!(2);
+    assert!(matches!(
+        runtime::candidates(&r, 20).unwrap()[0].locator.steps[0].member,
+        Member::Element { index: 2 }
+    ));
+}
+
+#[test]
 fn sibling_plan_keeps_roles_distinct_and_reports_budget_omissions() {
     use reversebolt_core::runtime_neighbors as n;
     let widen = |ids| {
