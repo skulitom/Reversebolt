@@ -52,7 +52,7 @@ fn activity(
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 3 {
-        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only] [--activity MANIFEST] [--replay RECEIPT]".into());
+        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only [--current-state]] [--activity MANIFEST] [--replay RECEIPT]".into());
     }
     let bytes = std::fs::read(&args[0])?;
     if bytes.len() > 64 * 1024 * 1024 {
@@ -64,11 +64,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut activity_path = None;
     let mut replay_path = None;
     let mut selection_only = false;
+    let mut current_state = false;
     let mut options = args[3..].iter();
     while let Some(option) = options.next() {
         match option.as_str() {
             "--opaque" if !opaque => opaque = true,
             "--select-only" if !selection_only => selection_only = true,
+            "--current-state" if !current_state => current_state = true,
             "--activity" if activity_path.is_none() => {
                 activity_path = Some(options.next().ok_or("Missing activity manifest")?)
             }
@@ -83,6 +85,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if selection_only && (replay_path.is_some() || activity_path.is_some()) {
         return Err("Type selection alone cannot add activity or replay naming.".into());
+    }
+    if current_state && !selection_only {
+        return Err("Current-state selection requires --select-only.".into());
     }
     let activity = activity_path.map(|p| activity(p)).transpose()?;
     if opaque {
@@ -126,7 +131,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let observer = reversebolt_observer::Observer::connect(&args[2]).await?;
             Ok::<_, String>(if selection_only {
                 observer
-                    .runtime_type_selection(&inventory, &AtomicBool::new(false))
+                    .runtime_type_selection_for(
+                        &inventory,
+                        if current_state {
+                            reversebolt_observer::runtime_naming::SelectionPurpose::CurrentState
+                        } else {
+                            reversebolt_observer::runtime_naming::SelectionPurpose::AdjustableParameters
+                        },
+                        &AtomicBool::new(false),
+                    )
                     .await
             } else {
                 observer

@@ -4,6 +4,31 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Input-response diagnostic and selection purpose (2026-10-23): **36% unchanged**.
+An automated Sable experiment compared the research and product input formats
+using eighteen images and eight short holds. Both methods produced larger image
+changes than adjoining quiet intervals in every trial; actual actor displacement
+was unresolved and some change continued after release. No measurement image was
+manually viewed, no memory was read and no model or field write ran. The native
+run therefore does not support blaming the earlier result on a simple input API
+failure, while leaving the earlier run's actual delivery unproven.
+
+The earlier sampler reused a prompt that prefers adjustable parameters, although
+its test was seeking changing state. The observer now offers a separate explicit
+current-state selection purpose; default parameter discovery remains unchanged.
+A frozen replay of the same catalog completed 22 requests and selected 128 paths,
+66 different from the prior plan, with 35 embedded paths. This is a new hypothesis
+set, not evidence of better live discovery. It needs fresh native validation.
+
+The image/hash/clock and selection audits pass, as do all 475 all-feature workspace
+tests, strict all-target/all-feature Clippy and formatting. The owned processes
+exited, Anode was released and the main game save is unchanged. The user's editor
+and tested `0.1.0-20261023-034437` preview remain available; the new selection mode
+is in the shared observer/CLI and is not the desktop default. Next: measure a fresh
+state-focused selection with independently retained rendered-response and settling
+evidence, while keeping static parameters as a separate investigation path.
+[Native result, timing limits and saved selection](../research/input-delivery/README.md).
+
 Embedded sibling activity and catalog paging (2026-10-23): **36% unchanged**.
 The shared sampler now groups structured scalar leaves with their enclosing
 object and preserves the complete member context. Type selection can run before
