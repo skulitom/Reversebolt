@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Conditional gameplay baseline (2026-10-23): **36% unchanged**. One automated
+Sable observation collected fifteen images and four short input holds, with no
+measurement image manually viewed and no gameplay field changed. Repeated input
+episodes showed image contrasts above quiet intervals, but the image review
+retained uncertainty and did not establish a consistent semantic change.
+
+The existing planner rejected the sequence before either test-design request:
+three sampled durations slightly exceeded its 1000 ms upper bound. The frozen
+protocol had put its nominal holds exactly on that boundary. The original failure
+is retained; no measurements or thresholds were changed to obtain acceptance.
+Neither the ground-incline nor swimming-depth hypothesis has been tested.
+
+The offline planning example builds and passes strict Clippy; the evidence audit
+reproduces all fourteen image differences and verifies source, capture, input and
+storage hashes. Owned test processes exited and Anode was released. The main save
+and user's open editor are preserved. Next: leave timing margin in future input
+protocols and establish the required scene conditions and a useful measurement
+before attempting parameter edits.
+[Results and limits](../research/conditional-gameplay/README.md).
+
 Connected settings and recoverable hypotheses (2026-10-23): **36% unchanged**.
 The shared core now follows immediate parent/child contexts from replayed activity,
 retaining exact member paths and same-snapshot support without type/address joins.
