@@ -16,6 +16,11 @@ build. This release adds investigation inspection; its transport checks do not
 establish new gameplay effects.
 [Evidence and limitations](research/investigation-inspection/README.md).
 
+The development core also includes strict observed-route recovery from saved
+discoveries. Its fresh-process test stopped at a reader-version compatibility
+change before any edit; automatic restart recovery remains unfinished. The
+485-test development suite passes. [Recovery evidence](research/runtime-recovery/README.md).
+
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and

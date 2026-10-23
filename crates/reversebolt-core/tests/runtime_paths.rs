@@ -127,6 +127,85 @@ fn report(ids: usize, address: &str, value: i32) -> Value {
           {"node":1,"declaring_class":ids+2,"field":0,"element_index":null,"type_code":8,"bytes":value.to_le_bytes(),"value":value,"reference":null,"read_ok":true}]}]})
 }
 
+fn recovery_report(ids: usize, pid: u32, created: &str, value: i32) -> Value {
+    let mut r = report(ids, "0x7000", value);
+    r["pid"] = json!(pid);
+    r["created"] = json!(created);
+    r["runtime"] = json!("C:\\Example\\Runtime.dll");
+    r["root_catalog_sha256"] = json!("b".repeat(64));
+    r
+}
+
+#[test]
+fn recovery_reacquires_from_the_new_graph_without_old_scope_address_or_value() {
+    use reversebolt_core::runtime_recovery::find;
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let original = runtime::candidates(&old, 1).unwrap().remove(0);
+    let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+    current["snapshots"][0]["nodes"][1]["address"] = json!("0x777777");
+    let result = find(&old, &original.id, &current).unwrap();
+    assert_eq!(result.status, "matched");
+    assert!(!result.same_process);
+    assert!(!result.edit_authority);
+    let recovered = result.candidate.unwrap();
+    assert_eq!(recovered.locator.scope.pid, 88);
+    assert_eq!(recovered.value, 73);
+    assert_ne!(recovered.id, original.id);
+    assert_eq!(recovered.bytes, 73i32.to_le_bytes());
+    assert!(runtime::candidate(&current, &original.id).is_err());
+    assert_eq!(
+        runtime::candidate(&current, &recovered.id).unwrap().value,
+        73
+    );
+    assert!(find(&old, &original.id, &old).unwrap().same_process);
+}
+
+#[test]
+fn recovery_keeps_missing_routes_and_changed_catalogues_unresolved() {
+    use reversebolt_core::runtime_recovery::find;
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let id = runtime::candidates(&old, 1).unwrap()[0].id.clone();
+    for (field, value, status) in [
+        (
+            "/runtime",
+            json!("C:\\Other\\Runtime.dll"),
+            "runtime_changed",
+        ),
+        (
+            "/root_catalog_sha256",
+            json!("c".repeat(64)),
+            "catalog_changed",
+        ),
+        (
+            "/classes/2/key/layout_sha256",
+            json!("d".repeat(64)),
+            "not_observed",
+        ),
+        ("/snapshots/0/reads/1/read_ok", json!(false), "not_observed"),
+    ] {
+        let mut current = recovery_report(0, 88, "fedcba9876543210", 73);
+        *current.pointer_mut(field).unwrap() = value;
+        let result = find(&old, &id, &current).unwrap();
+        assert_eq!(result.status, status, "{field}");
+        assert!(result.candidate.is_none());
+        assert!(!result.edit_authority);
+    }
+}
+
+#[test]
+fn recovery_cannot_publish_an_early_match_from_a_later_invalid_graph() {
+    use reversebolt_core::runtime_recovery::find;
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let id = runtime::candidates(&old, 1).unwrap()[0].id.clone();
+    let mut current = recovery_report(0, 88, "fedcba9876543210", 73);
+    let mut corrupt = current["snapshots"][0].clone();
+    corrupt["snapshot_id"] = json!(1);
+    corrupt["reads"][0]["node"] = json!(9999);
+    current["snapshots"].as_array_mut().unwrap().push(corrupt);
+    assert!(find(&old, &id, &current).is_err());
+    assert!(find(&old, &"f".repeat(64), &old).is_err());
+}
+
 #[test]
 fn embedded_paths_retain_layouts_and_reject_reference_or_type_confusion() {
     let mut r = report(0, "0x100", 50);

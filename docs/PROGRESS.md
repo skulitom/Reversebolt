@@ -4,6 +4,22 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Strict restart recovery (2026-10-23): **36% unchanged**. A new shared-core API and
+offline CLI match a learned rooted member route against a separately validated
+current discovery, preserving fresh process scope and withholding edit authority.
+An exploratory saved-report replay matched across two archived processes. One
+frozen fresh Viewfinder launch instead stopped at `catalog_changed`: reader schema
+4 and schema 5 produced different catalogue and type-layout fingerprints.
+
+All 485 workspace tests, strict Clippy and formatting pass. No effect comparison
+or gameplay write occurred. The audit reproduces the failure,
+verifies frozen files, completed discovery and helper unload, and confirms no
+trials remain. Save/backup bytes are unchanged; owned test processes exited and
+Anode was released. The user's desktop preview remains open. This API is not yet
+automatic desktop/MCP recovery. Next: explicitly define and test reader-version
+compatibility, then revalidate a new path and its effect in a separately frozen
+run. [Implementation and evidence](../research/runtime-recovery/README.md).
+
 Independent investigation inspection (2026-10-23): **36% unchanged**. The default
 shared engine/MCP now exposes accepted questions independently of executable
 replay. It retains separate alternatives and questions outside the zero-probe

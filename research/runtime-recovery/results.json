@@ -1,0 +1,129 @@
+{
+  "artifact_audit": "passed",
+  "outcome": {
+    "finished": true,
+    "status": "catalog_changed",
+    "gameplay_writes": 0,
+    "model_calls": 0
+  },
+  "frozen_sha256": "1c9202fae789d657eb86c779e098d6de02ff9c75163b038b060fc8f0f15c7aa8",
+  "recovery_sha256": "4c364e53baf5d84acad92853f2861a0383d54cd5f7cad4b1b7bde752f2140441",
+  "schemas": [
+    4,
+    5
+  ],
+  "source_roots": 6398,
+  "current_roots": 7427,
+  "descriptor_diagnosis": [
+    {
+      "type": "AudioEmitterTrigger, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "old_key": {
+        "image": "ViewfinderAssembly.dll",
+        "type_name": "AudioEmitterTrigger, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "layout_sha256": "fdc1117dbaaffff5456cc3cb5d27597a4a8ffee23a9a64f9960492c495f61488"
+      },
+      "new_key": {
+        "image": "ViewfinderAssembly.dll",
+        "layout_sha256": "34fcde687e3cd860287436542e257b5025bfd5264128241427e2847cbda6d44e",
+        "type_name": "AudioEmitterTrigger, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "old_field": {
+        "flags": 17,
+        "id": 0,
+        "name": "_playerMovement",
+        "offset": 0,
+        "reference": true,
+        "type_code": 18,
+        "width": 8
+      },
+      "new_field": {
+        "declared_type": null,
+        "flags": 17,
+        "id": 0,
+        "inline": false,
+        "inline_type": null,
+        "name": "_playerMovement",
+        "offset": 0,
+        "reference": true,
+        "type_code": 18,
+        "width": 8
+      },
+      "shared_descriptors_equal": true
+    },
+    {
+      "type": "PlayerMovement, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "old_key": {
+        "image": "ViewfinderAssembly.dll",
+        "type_name": "PlayerMovement, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+        "layout_sha256": "a5055dfd70d5276e22a772903bb4800cf850bb4a227308145ea1731c4b0eb498"
+      },
+      "new_key": {
+        "image": "ViewfinderAssembly.dll",
+        "layout_sha256": "ca7d6ca652899c40227ddab4500f51398603bce05639a9d81a53cca38132b664",
+        "type_name": "PlayerMovement, ViewfinderAssembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+      },
+      "old_field": {
+        "flags": 6,
+        "id": 1,
+        "name": "MaxStableMoveSpeed",
+        "offset": 40,
+        "reference": false,
+        "type_code": 12,
+        "width": 4
+      },
+      "new_field": {
+        "declared_type": null,
+        "flags": 6,
+        "id": 1,
+        "inline": false,
+        "inline_type": null,
+        "name": "MaxStableMoveSpeed",
+        "offset": 40,
+        "reference": false,
+        "type_code": 12,
+        "width": 4
+      },
+      "shared_descriptors_equal": true
+    }
+  ],
+  "helper_runs": 1,
+  "pauses": 252,
+  "setup_images": 2,
+  "menu_actions": 1,
+  "measurement_images": 0,
+  "save_bytes_unchanged": {
+    "viewfinder_0.sav": true,
+    "viewfinder_0.bak": true
+  },
+  "storage_changes": [
+    "Player-prev.log",
+    "Player.log",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179271100100002.bfa60534/c",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179271100100002.bfa60534/e",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179271100100002.bfa60534/g",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179271100100002.bfa60534/s",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273192200001.a2c0d7cf/c",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273192200001.a2c0d7cf/e",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273192200001.a2c0d7cf/g",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273192200001.a2c0d7cf/s"
+  ],
+  "cleanup": {
+    "observed_utc": "2026-10-23T05:08:39.0952580Z",
+    "owned_pids": [
+      61828,
+      83052,
+      77184,
+      68436,
+      60220,
+      95516
+    ],
+    "remaining_owned": [],
+    "owned_processes_exited": true,
+    "preserved_editor": {
+      "ProcessId": 98332,
+      "SessionId": 1,
+      "ExecutablePath": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe"
+    }
+  },
+  "limitation": "Strict recovery stopped before any effect comparison. Matching shared field descriptors does not establish compatible layouts, persistent objects, verified semantics or a successful migration."
+}
