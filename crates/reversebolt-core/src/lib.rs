@@ -29,11 +29,13 @@ pub mod runtime;
 pub mod runtime_cards;
 pub mod runtime_hypotheses;
 pub mod runtime_inventory;
+pub mod runtime_neighbors;
 pub mod runtime_object_questions;
 pub mod runtime_patch;
 pub mod runtime_planning;
 #[cfg(feature = "comparison-priority-research")]
 pub mod runtime_priority;
+pub mod runtime_response;
 #[cfg(feature = "comparison-priority-research")]
 pub mod runtime_test_design;
 pub mod runtime_test_store;

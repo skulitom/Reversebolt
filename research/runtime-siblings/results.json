@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "coverage": [
+    {
+      "case": "sable",
+      "roles": 10,
+      "selected": 117,
+      "omitted": 0,
+      "batches": [
+        32,
+        32,
+        32,
+        21
+      ],
+      "plan_sha256": "a9fdbfb354e5477acf2b77155547f58d30171089b8bebebcb6de4440aef1cbdb"
+    },
+    {
+      "case": "viewfinder",
+      "roles": 5,
+      "selected": 128,
+      "omitted": 33,
+      "batches": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "plan_sha256": "de61a33d52750d5006942162d94406b01e2e3fd6f9afac7a0dafe016cd248867"
+    }
+  ],
+  "source_files": 221,
+  "native_calls": 4,
+  "balanced_pauses": 11,
+  "maximum_refresh_stop_to_resume_us": 11,
+  "workspace_tests": 468,
+  "native_input_association_evaluated": false,
+  "gameplay_controls_verified": 0,
+  "progress_percent": 36
+}

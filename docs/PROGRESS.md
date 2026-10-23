@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Rooted sibling sampling groundwork (2026-10-23): **36% unchanged**.
+The shared Rust core now selects nearby scalar fields by exact rooted object
+path and analyzes repeated input associations using quiet samples and strict
+foreground/key/clock coverage. Saved native Sable data selected 117 fields across
+ten roles with no omissions; Viewfinder selected 128 across five roles, retaining
+33 omissions. No new gameplay control was established. Positive response cases
+remain synthetic; native gameplay input association has not yet been evaluated.
+The new reader clock bounds passed an owned ABI check: four helpers unloaded,
+eleven balanced pauses, zero Rust heap operations while paused and consistent
+external clock bounds. All 468 workspace tests, strict all-target Clippy,
+formatting and source/artifact checks pass. No game, screenshot, model request
+or input was used. The connected desktop and tested preview remain in place.
+[Coverage, limitations and next native measurement](../research/runtime-siblings/README.md).
+
 Per-candidate test-design development replay (2026-10-23): **36% unchanged**.
 A Rust experiment separated measured evidence, visual interpretation and runtime
 metadata, then assessed 20 saved native candidates plus four synthetic robustness

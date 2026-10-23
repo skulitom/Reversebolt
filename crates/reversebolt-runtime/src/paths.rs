@@ -2,6 +2,7 @@
 use super::*;
 use reversebolt_core::runtime::{MAX_PATH_STEPS, Member};
 use reversebolt_core::runtime_patch::{Guard, Patch};
+use windows_sys::Win32::System::Performance::{QueryPerformanceCounter, QueryPerformanceFrequency};
 
 #[derive(Clone, Copy, serde::Serialize, Default, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -299,6 +300,8 @@ pub(super) fn refresh(
         reason: "path_unavailable",
         ..Default::default()
     };
+    let mut frequency = 0i64;
+    let frequency_ok = unsafe { QueryPerformanceFrequency(&mut frequency) } != 0 && frequency > 0;
     for attempt in 0..=MAX_PATH_STEPS {
         if start.elapsed() > Duration::from_secs(18) {
             for result in &mut results {
@@ -313,6 +316,8 @@ pub(super) fn refresh(
         let before = Instant::now();
         let allocations = PAUSED_ALLOCS.load(Ordering::Relaxed);
         let frees = PAUSED_FREES.load(Ordering::Relaxed);
+        let mut begin_ticks = 0i64;
+        let clock_begin_ok = unsafe { QueryPerformanceCounter(&mut begin_ticks) } != 0;
         unsafe { (api.il2cpp_stop_gc_world)() };
         let guard = Stopped(api.il2cpp_start_gc_world);
         PAUSED.store(true, Ordering::Relaxed);
@@ -325,9 +330,24 @@ pub(super) fn refresh(
         }
         let held_us = stopped.elapsed().as_micros() as u64;
         drop(guard);
+        let mut end_ticks = 0i64;
+        let clock_end_ok = unsafe { QueryPerformanceCounter(&mut end_ticks) } != 0;
         let total_us = before.elapsed().as_micros() as u64;
+        // Both clock calls are outside the managed pause. Bounds include the
+        // entire observation; they do not identify a gameplay event instant.
+        let sampling = if frequency_ok
+            && clock_begin_ok
+            && clock_end_ok
+            && begin_ticks >= 0
+            && end_ticks >= begin_ticks
+        {
+            json!({"frequency_hz":frequency,"begin_ticks":begin_ticks,"end_ticks":end_ticks})
+        } else {
+            Value::Null
+        };
         pauses.push(
             json!({"attempt":attempt,"pause_held_us":held_us,"stop_to_resume_us":total_us,
+            "sampling_qpc":sampling,
             "helper_allocations_while_paused":PAUSED_ALLOCS.load(Ordering::Relaxed)-allocations,
             "helper_deallocations_while_paused":PAUSED_FREES.load(Ordering::Relaxed)-frees}),
         );

@@ -127,6 +127,213 @@ fn report(ids: usize, address: &str, value: i32) -> Value {
           {"node":1,"declaring_class":ids+2,"field":0,"element_index":null,"type_code":8,"bytes":value.to_le_bytes(),"value":value,"reference":null,"read_ok":true}]}]})
 }
 
+#[test]
+fn sibling_plan_keeps_roles_distinct_and_reports_budget_omissions() {
+    use reversebolt_core::runtime_neighbors as n;
+    let widen = |ids| {
+        let mut r = report(ids, "0x100", 0);
+        for i in 1_i32..12 {
+            r["classes"][2]["fields"].as_array_mut().unwrap().push(json!({"id":i,"name":format!("F{i}"),"reference":false,"type_code":8,"width":4,"flags":0}));
+            r["snapshots"][0]["reads"].as_array_mut().unwrap().push(json!({"node":1,"declaring_class":ids+2,"field":i,"element_index":null,"type_code":8,"bytes":i.to_le_bytes(),"value":i,"reference":null,"read_ok":true}));
+        }
+        r
+    };
+    let mut r = widen(0);
+    let mut other = widen(10);
+    other["classes"][0]["key"]["type_name"] = json!("OtherRoot");
+    other["snapshots"][0]["snapshot_id"] = json!(1);
+    r["classes"]
+        .as_array_mut()
+        .unwrap()
+        .extend(other["classes"].as_array().unwrap().clone());
+    r["snapshots"]
+        .as_array_mut()
+        .unwrap()
+        .extend(other["snapshots"].as_array().unwrap().clone());
+    let all = runtime::candidates(&r, 64).unwrap();
+    let seeds: Vec<_> = ["Roots", "OtherRoot"]
+        .iter()
+        .map(|name| {
+            all.iter()
+                .find(|c| c.locator.root.declaring.type_name == *name)
+                .unwrap()
+                .id
+                .clone()
+        })
+        .collect();
+    let plan = n::plan(&r, &seeds, 4).unwrap();
+    assert_eq!(plan.roles.len(), 2);
+    assert_eq!(plan.omitted_fields, 20);
+    assert!(
+        plan.roles
+            .iter()
+            .all(|r| r.available_fields == 12 && r.selected_fields == 2)
+    );
+    assert_eq!(plan.batches.len(), 1);
+    assert_eq!(plan.batches[0].len(), 4);
+    assert!(plan.candidates.iter().all(|c| !c.edit_authority));
+    let mut renamed = r.clone();
+    renamed["classes"][2]["fields"][0]["name"] = json!("MisleadingName");
+    let selected = n::plan(&renamed, &seeds, 4).unwrap();
+    assert_eq!(
+        plan.candidates.iter().map(|c| &c.id).collect::<Vec<_>>(),
+        selected
+            .candidates
+            .iter()
+            .map(|c| &c.id)
+            .collect::<Vec<_>>()
+    );
+    assert!(n::plan(&r, &[seeds[0].clone(), seeds[0].clone()], 4).is_err());
+    assert!(n::plan(&r, &["f".repeat(64)], 4).is_err());
+}
+
+fn response_fixture(
+    mode: &str,
+) -> (
+    reversebolt_core::runtime_neighbors::Plan,
+    Vec<reversebolt_core::runtime_response::Observation>,
+) {
+    use reversebolt_core::{runtime_neighbors as n, runtime_response as r};
+    let discovery = report(0, "0x100", 0);
+    let seed = runtime::candidates(&discovery, 1).unwrap()[0].id.clone();
+    let plan = n::plan(&discovery, &[seed], 1).unwrap();
+    let candidate = &plan.candidates[0];
+    let mut counter = 0i32;
+    let observations=(0..14).map(|i| {
+        let action=[2,5,8,11].iter().position(|j|*j==i);
+        let down=action.map(|j|vec![if j%2==0 {68}else{65}]).unwrap_or_default();
+        if action.is_some() {counter+=1;}
+        let value=match mode {"state"=>i32::from(action.is_some()),"step"=>counter,"drift"=>i,_=>0};
+        let base=10000+i64::from(i)*1000;
+        let report=json!({"operation":"refresh_runtime_paths","scope":plan.scope,"edit_authority":false,
+            "pauses":[{"sampling_qpc":{"frequency_hz":10000,"begin_ticks":base+100,"end_ticks":base+120}}],
+            "checks":[{"path_id":candidate.id,"status":"read","type_code":8,"bytes":value.to_le_bytes(),"value":value,
+                "field_address":"0x2240","snapshot_object_addresses":["0x100","0x2222"]}]});
+        let input=r::InputWindow{scope:plan.scope.clone(),frequency_hz:10000,expected_keys:down.clone(),
+            polls:(0..10).map(|j|r::Poll{begin_ticks:base+j*20,end_ticks:base+j*20+1,selected_foreground:true,down:down.clone()}).collect()};
+        r::Observation{report,input}
+    }).collect();
+    (plan, observations)
+}
+
+#[test]
+fn sibling_response_distinguishes_pulses_steps_idle_drift_and_constants() {
+    use reversebolt_core::runtime_response::analyze;
+    for mode in ["state", "step", "drift", "constant"] {
+        let (plan, observations) = response_fixture(mode);
+        let result = analyze(&plan, 0, &observations).unwrap();
+        let field = &result["fields"][0];
+        assert_eq!(
+            field["repeated_association"],
+            json!(matches!(mode, "state" | "step"))
+        );
+        assert_eq!(
+            field["state_associated_pulses"],
+            json!(if mode == "state" { 4 } else { 0 })
+        );
+        assert_eq!(
+            field["step_associated_pulses"],
+            json!(if mode == "step" { 4 } else { 0 })
+        );
+    }
+}
+
+#[test]
+fn sibling_response_does_not_bridge_missing_reads_or_changed_locations() {
+    use reversebolt_core::runtime_response::analyze;
+    let (plan, original) = response_fixture("state");
+    for changed in 0..5 {
+        let mut observations = original.clone();
+        match changed {
+            0 => observations[5].report["checks"][0]["status"] = json!("null_reference"),
+            1 => observations[5].report["checks"][0]["field_address"] = json!("0x2400"),
+            2 => {
+                observations[5].report["checks"][0]["snapshot_object_addresses"][1] =
+                    json!("0x2300")
+            }
+            3 => {
+                for observation in &mut observations {
+                    observation.report["checks"][0]["field_address"] = json!("invalid");
+                }
+            }
+            _ => {
+                for observation in &mut observations {
+                    observation.report["checks"][0]["snapshot_object_addresses"][1] = Value::Null;
+                }
+            }
+        };
+        assert_eq!(
+            analyze(&plan, 0, &observations).unwrap()["fields"][0]["repeated_association"],
+            false
+        );
+    }
+}
+
+#[test]
+fn sibling_response_rejects_unbracketed_input_clocks_scope_and_value_evidence() {
+    use reversebolt_core::runtime_response::analyze;
+    let (plan, original) = response_fixture("state");
+    for changed in 0..11 {
+        let mut observations = original.clone();
+        match changed {
+            0 => observations[2].input.polls[5].selected_foreground = false,
+            1 => observations[2].input.polls[5].down.clear(),
+            2 => observations[2].input.polls[5].end_ticks = i64::MIN,
+            3 => observations[2].report["pauses"][0]["sampling_qpc"]["frequency_hz"] = json!(9999),
+            4 => observations[2].report["checks"][0]["value"] = json!(17),
+            5 => observations[2].input.scope.pid += 1,
+            6 => observations[2].report["pauses"][0]["sampling_qpc"] = Value::Null,
+            7 => {
+                observations[2].input.polls.clear();
+            }
+            8 => {
+                observations[2].input.polls.remove(5);
+                observations[2].input.polls.remove(5);
+                observations[2].input.frequency_hz = 100;
+                observations[2].report["pauses"][0]["sampling_qpc"]["frequency_hz"] = json!(100);
+            }
+            9 => observations[2].report["scope"]["pid"] = json!(78),
+            _ => observations[8].input.expected_keys = vec![65],
+        }
+        assert!(
+            analyze(&plan, 0, &observations).is_err(),
+            "variant {changed}"
+        );
+    }
+}
+
+#[test]
+fn sibling_response_rejects_altered_plan_batches_and_only_requires_bracket_polling() {
+    use reversebolt_core::runtime_response::{Sample, analyze, input_matches};
+    let (plan, observations) = response_fixture("state");
+    for changed in 0..4 {
+        let mut altered = plan.clone();
+        match changed {
+            0 => altered.batches[0].clear(),
+            1 => {
+                let p = altered.batches[0][0].clone();
+                altered.batches[0].push(p);
+            }
+            2 => altered.scope.pid += 1,
+            _ => altered.candidates[0].edit_authority = true,
+        }
+        assert!(analyze(&altered, 0, &observations).is_err());
+    }
+    let sample: Sample =
+        serde_json::from_value(observations[2].report["pauses"][0]["sampling_qpc"].clone())
+            .unwrap();
+    let mut input = observations[2].input.clone();
+    let mut earlier = input.polls[0].clone();
+    earlier.begin_ticks -= 1000;
+    earlier.end_ticks -= 1000;
+    earlier.selected_foreground = false;
+    earlier.down.clear();
+    input.polls.insert(0, earlier);
+    assert!(input_matches(&sample, &input).is_ok());
+    input.polls = vec![input.polls[0].clone(), input.polls.last().unwrap().clone()];
+    assert!(input_matches(&sample, &input).is_err());
+}
+
 fn labeled_report(ids: usize, label: &str) -> Value {
     let mut r = report(ids, "0x1234", 50);
     r["classes"][0]["key"]["type_name"] = json!(format!("Roots{ids}"));
