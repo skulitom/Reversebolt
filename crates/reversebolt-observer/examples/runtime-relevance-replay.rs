@@ -16,6 +16,15 @@ fn read(path: &Path) -> Result<Value, Box<dyn std::error::Error>> {
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
+    if args == ["schema"] {
+        println!(
+            "{}",
+            json!({"hypotheses":h::proposal_schema(),
+            "relevance":reversebolt_observer::runtime_relevance::schema(8),
+            "hypothesis_citation":h::citation_schema(Some(256)),"relevance_citation":h::citation_schema(None)})
+        );
+        return Ok(());
+    }
     if args.len() == 2 && args[0] == "check" {
         let directory = Path::new(&args[1]);
         let input: r::Input =

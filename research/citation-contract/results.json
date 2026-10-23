@@ -1,0 +1,419 @@
+{
+  "artifact_audit_passed": true,
+  "workspace_tests": 504,
+  "schema_check": {
+    "passed": true,
+    "matrix_checks": 60,
+    "historical_valid_relevance_citations_preserved": 232,
+    "historical_naming_citations_preserved": 32,
+    "formerly_allowed_invalid_citations_rejected": [
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 0,
+        "citation": {
+          "index": null,
+          "quote": "Scale of the character model within the world.",
+          "source": "object_text"
+        }
+      },
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 1,
+        "citation": {
+          "index": null,
+          "quote": "Time for one walking animation cycle.",
+          "source": "object_text"
+        }
+      },
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 2,
+        "citation": {
+          "index": null,
+          "quote": "Controls damage reduction with projectile travel distance.",
+          "source": "object_text"
+        }
+      },
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 3,
+        "citation": {
+          "index": null,
+          "quote": "Maximum attached peripheral devices assigned to each user.",
+          "source": "object_text"
+        }
+      },
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 4,
+        "citation": {
+          "index": null,
+          "quote": "Automatically sign in to the application account on startup.",
+          "source": "object_text"
+        }
+      },
+      {
+        "source": "test-results/runtime-relevance-challenge-v1/balanced-1/receipt.json",
+        "candidate": 5,
+        "citation": {
+          "index": null,
+          "quote": "Count of pending diagnostic telemetry records.",
+          "source": "object_text"
+        }
+      }
+    ],
+    "historical_receipts": [
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\fixture-original\\receipt.json",
+        "sha256": "6a8e8777e1ef8f995d4cccb6e9af3b912ddf03ca4762f004ba9a00c65bcb79ab"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\latest-original\\receipt.json",
+        "sha256": "197abedac0c77bc554b0b93f92826d55f60df026cd5db62ff7181735133ce5e9"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\latest-reversed\\receipt.json",
+        "sha256": "3b4e1e6ee024b3ef6b8dd520c647aa18b668535c9d358cdb9370a6c1a3640a9f"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\menu-original\\receipt.json",
+        "sha256": "6b1959929ed941b72d546c96f55826dba436b482b961ff206ea913581a9404c0"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\menu-reversed\\receipt.json",
+        "sha256": "05f428c4d4025cd7178702b0096d293331b4f6b9e7748bab4a2c3f21adb748c9"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\vampire-opaque\\receipt.json",
+        "sha256": "e66af0efe3000c120e1edefecdbbc82a0c90673073db1a6f1296c77cd49fd027"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-v1\\vampire-original\\receipt.json",
+        "sha256": "45b433950d0cde5a91e5c96e0e9e76e000700b72c50559eb9e07733d7fe8b8c2"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\attack-baseline\\receipt.json",
+        "sha256": "ce8bdfc64f168dc6858879e9dec2d4c2600f0702cd8b685db275f43269244c24"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\attack-exclude-this\\receipt.json",
+        "sha256": "5ca3b440788d7f0ec3daa5a9bd60a34f2e02ba4f0c123b9f935ada899066bb10"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\attack-promote-all\\receipt.json",
+        "sha256": "dde7123ca9189ba693950cd39afc1e14c5242497cd61c74e58136e0b5baa9df6"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\balanced-0\\receipt.json",
+        "sha256": "6fc1f3e02da6b0d70f8cfd79041bab703c7471a3174de2e67ee4c349c05d8061"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\balanced-1\\receipt.json",
+        "sha256": "c2a02ffa5304b820c3b174d4f85dbc356948c8ccaf55d1d4a81046edff56d189"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\balanced-2\\receipt.json",
+        "sha256": "d61e7d056c98a5a694381f323240c856e1789eeae5c5018f968d4496c6f8abd4"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\balanced-3\\receipt.json",
+        "sha256": "604aa1d3821e878febebf34c0e2db25e66236a739a0cb7a765bb95e1e1e0cee7"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\reversed-0\\receipt.json",
+        "sha256": "814fcae11feb7a2e7c6bd70d0adb39e55dc9bdef18e41f7e74677e28f2f17798"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\reversed-1\\receipt.json",
+        "sha256": "73ed637e301b861f35ebe838624fa4e3e348b9770c2c174d2fdf4ea7fca23f58"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\reversed-2\\receipt.json",
+        "sha256": "9bd2fc24fb1ca240ac572cd84a68b43e0b65f5b58fc9bf66955ec280e6442e5c"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-relevance-challenge-v1\\reversed-3\\receipt.json",
+        "sha256": "d5ce8be7abf0707a5236d75457358029c3b1b3d0b0bc56f40a71657a8bde9c83"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-type-selection-v1\\revised\\fixture\\receipt.json",
+        "sha256": "f1efb177a67fc1111894785a5e30c6723a734e9ada7929926e2db6c9b5364fbf"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-type-selection-v1\\revised\\latest\\receipt.json",
+        "sha256": "b075a30f3fc20ba8b7ca7f012f89c2fcd26748606d355ed0f3b99aabfb573daf"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-type-selection-v1\\revised\\menu\\receipt.json",
+        "sha256": "2f03188466e84d9199be5527e2663eace209e7a1e00ddedbf19b23deca1d095e"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-type-selection-v1\\revised\\opaque\\receipt.json",
+        "sha256": "54a94133d3655595603eb63115a97b42b8e5cbd4bbf9abcc3047ae3dc9161d2d"
+      },
+      {
+        "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-type-selection-v1\\revised\\vampire\\receipt.json",
+        "sha256": "007fa8b7cf029d6ed35286c687c12cb1c3fac6e25a29f5791d99d95215ba4cb8"
+      }
+    ],
+    "schemas_sha256": "2fbffd98f00f06b500ebe0c3a5eb360d6fb38e4c5f492190977000dfd850b7f4"
+  },
+  "cases": [
+    {
+      "case": "failed-relevance-batch",
+      "error": "Relevance citation must exactly match this candidate's own evidence.",
+      "model_calls": 1,
+      "citation_count": 12,
+      "baseline_error": "Relevance citation must exactly match this candidate's own evidence.",
+      "seconds": 19.67200000002049,
+      "receipt_sha256": "ace522192214aea7f9b7e8e7ff53bc47c88a07b77e56dc9aa4ed5bceedec2a2b",
+      "assessment": null,
+      "binding_errors": [
+        {
+          "candidate": 0,
+          "field": "bodyScale",
+          "citation": {
+            "index": null,
+            "quote": "Scale of the character model within the world.",
+            "source": "field_name"
+          },
+          "observed": "bodyScale"
+        },
+        {
+          "candidate": 1,
+          "field": "strideTime",
+          "citation": {
+            "index": null,
+            "quote": "Time for one walking animation cycle.",
+            "source": "field_name"
+          },
+          "observed": "strideTime"
+        },
+        {
+          "candidate": 2,
+          "field": "damageFalloffExponent",
+          "citation": {
+            "index": null,
+            "quote": "Controls damage reduction with projectile travel distance.",
+            "source": "field_name"
+          },
+          "observed": "damageFalloffExponent"
+        },
+        {
+          "candidate": 3,
+          "field": "maxDevicesPerPlayer",
+          "citation": {
+            "index": null,
+            "quote": "Maximum attached peripheral devices assigned to each user.",
+            "source": "field_name"
+          },
+          "observed": "maxDevicesPerPlayer"
+        },
+        {
+          "candidate": 4,
+          "field": "autoSignIn",
+          "citation": {
+            "index": null,
+            "quote": "Automatically sign in to the application account on startup.",
+            "source": "field_name"
+          },
+          "observed": "autoSignIn"
+        },
+        {
+          "candidate": 5,
+          "field": "uploadQueueDepth",
+          "citation": {
+            "index": null,
+            "quote": "Count of pending diagnostic telemetry records.",
+            "source": "field_name"
+          },
+          "observed": "uploadQueueDepth"
+        }
+      ]
+    },
+    {
+      "case": "vampire-relevance",
+      "error": null,
+      "model_calls": 1,
+      "citation_count": 9,
+      "baseline_error": null,
+      "seconds": 6.23499999998603,
+      "receipt_sha256": "6cb03c53a0a082bb0eda74e3e42be4c917fabf5e8727956b74bcb36d10316cde",
+      "assessment": {
+        "policy": "raw_label_relevance_v1",
+        "input_sha256": "ec550b39ca37a286bb3b0427ba45ef02a58daaeacd897bd2c0cf09698037d2c9",
+        "judgments": [
+          {
+            "candidate": 0,
+            "category": "gameplay",
+            "reason": "The field name 'maxHp' within a 'CharacterData' type indicates a core character attribute (health) relevant to survival mechanics.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<maxHp>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 1,
+            "category": "gameplay",
+            "reason": "The field name 'moveSpeed' within a 'CharacterData' type indicates a movement parameter for the player character.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<moveSpeed>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 2,
+            "category": "gameplay",
+            "reason": "The field name 'startingSpawns' within a 'StageData' type indicates a rule or parameter governing enemy generation at the start of a level.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<startingSpawns>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 3,
+            "category": "gameplay",
+            "reason": "The field name 'interval' in 'WeaponData' combined with object text describing damage generation implies a timing parameter for an ability or attack.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<interval>k__BackingField"
+              },
+              {
+                "source": "object_text",
+                "index": 1,
+                "quote": "Generates damaging zones above the character."
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Weapons.WeaponData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          }
+        ]
+      },
+      "binding_errors": []
+    },
+    {
+      "case": "fixture-naming",
+      "error": null,
+      "model_calls": 2,
+      "citation_count": 0,
+      "baseline_error": null,
+      "seconds": 1.3439999999827705,
+      "receipt_sha256": "fe4839984af6e3d4ad1ad905a1b83e43ec663d53eab7beda85005a983663d331",
+      "accepted": 1,
+      "rejected": 0,
+      "baseline_accepted": 1,
+      "baseline_rejected": 0,
+      "names": [
+        "Speed"
+      ],
+      "rejections": []
+    },
+    {
+      "case": "vampire-naming",
+      "error": null,
+      "model_calls": 25,
+      "citation_count": 10,
+      "baseline_error": null,
+      "seconds": 80.48500000004424,
+      "receipt_sha256": "449e95a9ed230c475f5395c570a5bd12c84c58644c26acf5cb1e2da7d5b45c28",
+      "accepted": 4,
+      "rejected": 1,
+      "baseline_accepted": 4,
+      "baseline_rejected": 1,
+      "names": [
+        "maxHp",
+        "moveSpeed",
+        "starting spawns",
+        "interval"
+      ],
+      "rejections": [
+        {
+          "proposal": {
+            "candidate": 63,
+            "name": "destructible frequency",
+            "explanation": "This field likely controls the timing interval for spawning destructible objects, which is a distinct gameplay parameter from the probability of their appearance.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<destructibleFreq>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ],
+            "alternatives": [
+              69,
+              75
+            ],
+            "question": "Does adjusting the destructible frequency change how often destructible objects appear in the stage?"
+          },
+          "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+        }
+      ]
+    }
+  ],
+  "preview": "0.1.0-20261023-085244",
+  "mcp_tools": 65,
+  "mcp_uses_shared_schema": true,
+  "headless_startup_passed": true,
+  "native_helper_sha256": "6e47811e92820fd6ae56eed27ce9e9a82e74f4eb4530d343a3d1501470e38ceb",
+  "native_helper_unchanged": false,
+  "native_fixture_audit": {
+    "artifact_audit": "passed",
+    "cases": 7,
+    "native_calls": 51,
+    "managed_pauses": 90,
+    "max_stop_to_resume_us": 32,
+    "writes_restored": 4,
+    "readonly_writes_refused": 4,
+    "helper_sha256": "6e47811e92820fd6ae56eed27ce9e9a82e74f4eb4530d343a3d1501470e38ceb",
+    "frozen_sha256": "23665e8afb64e404aaf41dd42d5433219913a57c98801de6b8797d4820c9e380",
+    "unchanged_routes_values_and_root_fingerprints": true,
+    "large_case_loaded_fields": 17,
+    "large_case_headers": 200018,
+    "exact_header_limit_passed": true,
+    "oversized_required_layout_refused": true,
+    "gameplay_edits": 0,
+    "limitations": "Owned mock ABI via direct helper calls; not real-game coverage or remote loader unload evidence."
+  },
+  "progress_percent": 38,
+  "frozen_manifest_sha256": "62e2f554924e9006aacf32fe7f1b73d6ef1beb76e2bdbb3a54f25f1fb30b874f",
+  "limitations": [
+    "Structure does not verify semantic meaning, scope, liveness, safe edits or effects.",
+    "Known saved reports and an authored failed batch; no independent-game evidence.",
+    "Relevance remains research-only and never hides production candidates.",
+    "No gameplay process, input, screenshot or game-memory operation was used; native fixture edits were restored."
+  ]
+}

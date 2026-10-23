@@ -9,10 +9,17 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-081315` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-085244` passed packaged headless
 startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
-the next launch; the existing editor window stays open. All 497 ordinary workspace tests,
+the next launch; the existing editor window stays open. All 504 ordinary workspace tests,
 strict Clippy and formatting pass.
+
+Automatic naming and agent submissions now share a citation format that matches
+the engine's source/index rules. Saved malformed citations are rejected by the
+format itself; exact attribution still requires engine checks. One difficult
+research case still misattributes object descriptions as field names and remains
+rejected. The new package also passes the owned native-helper regression.
+[Citation contract and remaining limits](research/citation-contract/README.md).
 
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native

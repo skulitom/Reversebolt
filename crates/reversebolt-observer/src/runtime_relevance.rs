@@ -29,10 +29,7 @@ pub fn schema(count: usize) -> Value {
             "candidate":{"type":"integer","minimum":0,"maximum":count.saturating_sub(1)},
             "category":{"type":"string","enum":["gameplay","application_configuration","implementation_detail","unclear"]},
             "reason":{"type":"string","minLength":1,"maxLength":400},
-            "citations":{"type":"array","maxItems":3,"items":{"type":"object","additionalProperties":false,
-                "required":["source","index","quote"],"properties":{
-                "source":{"type":"string","enum":["field_name","type_name","object_text"]},
-                "index":{"type":["integer","null"],"minimum":0},"quote":{"type":"string","minLength":1}}}}
+            "citations":{"type":"array","maxItems":3,"items":reversebolt_core::runtime_hypotheses::citation_schema(None)}
         }}}
     }})
 }

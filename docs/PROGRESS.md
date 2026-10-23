@@ -4,6 +4,31 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Shared citation-format contract (2026-10-23): **38% unchanged**. Automatic naming,
+the MCP submission schema and research relevance now express the same source/index
+relationship as the engine: null for field/type labels, a nonnegative integer for
+object text. Exact quote/path and lexical validation remain. Sixty independent
+schema checks pass, preserving 264 historical valid citations while rejecting
+six formerly permitted malformed ones.
+
+Four frozen fresh-output cases retain the limits: the difficult relevance batch
+still fails because it now labels object descriptions as field names. The engine
+rejects all six wrong bindings. Saved Vampire naming retains four accepted
+questions and one lexical rejection; the fixture retains its prior object-text
+fallback. A grammar-valid citation is not necessarily correctly attributed.
+Next investigate explicit supplied evidence references rather than copied
+quote/source triples, without auto-repairing or weakening binding checks.
+
+All 504 ordinary workspace tests, strict Clippy, formatting and release builds
+pass. Preview `0.1.0-20261023-085244` passes headless dispatch and the 65-tool MCP
+check; its submission schema matches the shared core. Because the helper binary
+changed, the exact packaged helper also passed seven owned ABI cases (51 calls,
+90 allocation-free recorded pauses, four restored writes and four readonly
+refusals). No game, gameplay input or screenshot was used. The desktop shortcut
+selects the preview and the user's existing editor is preserved. Relevance stays
+research-only, with no candidate hiding or new causal/generalization credit.
+[Structural repair, unresolved attribution and evidence](../research/citation-contract/README.md).
+
 Relevance false-exclusion challenge (2026-10-23): **38% unchanged**. Eleven
 frozen requests exercised 32 authored labels in balanced/reversed batches and
 paired instruction attacks. The unchanged reviewer classified aim sensitivity

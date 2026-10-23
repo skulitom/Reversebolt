@@ -568,6 +568,24 @@ pub fn validate_with_self_alternative_cleanup(
     ))
 }
 
+/// Match the source/index relationship already enforced by evidence validation.
+/// The quote is still checked against its exact candidate after generation.
+pub fn citation_schema(quote_limit: Option<usize>) -> serde_json::Value {
+    use serde_json::json;
+    let mut quote = json!({"type":"string","minLength":1});
+    if let Some(limit) = quote_limit {
+        quote["maxLength"] = json!(limit);
+    }
+    json!({"oneOf":[
+        {"type":"object","additionalProperties":false,"required":["source","index","quote"],"properties":{
+            "source":{"type":"string","enum":["field_name","type_name"]},
+            "index":{"type":"null"},"quote":quote}},
+        {"type":"object","additionalProperties":false,"required":["source","index","quote"],"properties":{
+            "source":{"type":"string","enum":["object_text"]},
+            "index":{"type":"integer","minimum":0},"quote":quote}}
+    ]})
+}
+
 pub fn proposal_schema() -> serde_json::Value {
     serde_json::json!({"type":"object","additionalProperties":false,"required":["hypotheses"],"properties":{
         "hypotheses":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,
@@ -577,11 +595,7 @@ pub fn proposal_schema() -> serde_json::Value {
                 "explanation":{"type":"string","minLength":1,"maxLength":240},
                 "question":{"type":"string","minLength":1,"maxLength":180},
                 "alternatives":{"type":"array","maxItems":4,"uniqueItems":true,"items":{"type":"integer","minimum":0,"maximum":255}},
-                "citations":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"object","additionalProperties":false,
-                    "required":["source","index","quote"],"properties":{
-                        "source":{"enum":["field_name","type_name","object_text"]},
-                        "index":{"type":["integer","null"],"minimum":0},"quote":{"type":"string","minLength":1,"maxLength":256}
-                    }}}
+                "citations":{"type":"array","minItems":1,"maxItems":3,"items":citation_schema(Some(256))}
             }}}
     }})
 }
@@ -694,6 +708,26 @@ mod tests {
         .unwrap();
         assert!(cleanup.is_none());
     }
+    #[test]
+    fn citation_index_mode_cannot_be_switched_or_inferred() {
+        for (source, index, quote, name) in [
+            ("field_name", None, "walkSpeed", "walkSpeed"),
+            ("type_name", None, "AgentSettings", "AgentSettings"),
+            ("object_text", Some(0), "Speed", "Speed"),
+        ] {
+            let mut p = proposal();
+            p.name = name.into();
+            p.citations = vec![Citation {
+                source: source.into(),
+                index,
+                quote: quote.into(),
+            }];
+            assert!(check(&p, &selection()).is_ok(), "{source}");
+            p.citations[0].index = if index.is_some() { None } else { Some(0) };
+            assert!(check(&p, &selection()).is_err(), "{source}");
+        }
+    }
+
     #[test]
     fn invented_semantics_wrong_references_and_unfinished_text_are_retained_as_rejections() {
         let mut variants = vec![];
