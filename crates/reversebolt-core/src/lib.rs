@@ -34,6 +34,8 @@ pub mod runtime_patch;
 pub mod runtime_planning;
 #[cfg(feature = "comparison-priority-research")]
 pub mod runtime_priority;
+#[cfg(feature = "comparison-priority-research")]
+pub mod runtime_test_design;
 pub mod runtime_test_store;
 pub mod runtime_tests;
 pub mod runtime_trials;

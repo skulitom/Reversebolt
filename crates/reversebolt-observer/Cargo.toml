@@ -11,6 +11,10 @@ comparison-priority-research = ["reversebolt-core/comparison-priority-research"]
 name = "comparison-priority-replay"
 required-features = ["comparison-priority-research"]
 
+[[example]]
+name = "test-design-replay"
+required-features = ["comparison-priority-research"]
+
 [dependencies]
 reversebolt-core.workspace = true
 reversebolt-vision = { path = "../reversebolt-vision" }

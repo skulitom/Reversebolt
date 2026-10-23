@@ -1,5 +1,9 @@
 # Comparison-priority research — not enabled
 
+A subsequent [per-candidate test-design experiment](../test-design/README.md)
+separated metadata from observations and requested missing measurements. It also
+failed to retain the known useful probe and remains outside automatic planning.
+
 The local model did not reliably improve which existing comparison to try first.
 The experiment is retained behind `comparison-priority-research`, an explicit
 Cargo feature that desktop and MCP builds do not enable. No automatic planner,

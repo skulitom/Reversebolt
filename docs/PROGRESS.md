@@ -4,6 +4,20 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Per-candidate test-design development replay (2026-10-23): **36% unchanged**.
+A Rust experiment separated measured evidence, visual interpretation and runtime
+metadata, then assessed 20 saved native candidates plus four synthetic robustness
+cases. All 24 requests completed, but none proposed a current probe: the design
+rejected irrelevant audio/event probes and also rejected the known useful
+Viewfinder path. It remains research-only and is not an automatic planner gate.
+Exact quotations also failed to prevent one contradictory support claim, and
+22 outputs left the requested readout unknown. No new game, image, input or
+field-write test occurred. All 463 workspace tests, strict all-target Clippy,
+formatting and the frozen artifact audit pass. The desktop preview and connected
+window are preserved. Next work must distinguish exploratory intervention from
+semantic verification and obtain evidence that can resolve the missing meaning.
+[Experiment and failed retention criterion](../research/test-design/README.md).
+
 Sable current-build development retest (2026-10-23): **36% unchanged**.
 The staged build completed automatic discovery, producing five cited hypotheses
 in 22 metadata requests (69.347 seconds), then one edit/comparison/restoration.
