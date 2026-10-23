@@ -1,0 +1,110 @@
+{
+  "artifact_audit_passed": true,
+  "workspace_tests": 510,
+  "cases": [
+    {
+      "case": "fixture-naming",
+      "model_calls": 2,
+      "evidence_references": 0,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "bc8474126c9c2b7e6cebc5f21945b9be005c43fcc978a75f1b56ed357ccbe451",
+      "seconds": 11.98499999998603,
+      "accepted": 1,
+      "rejected": 0,
+      "names": [
+        "Speed"
+      ],
+      "rejections": []
+    },
+    {
+      "case": "vampire-naming",
+      "model_calls": 25,
+      "evidence_references": 12,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": "A grouped proposal exceeded its budget or cited another group's rows.",
+      "receipt_sha256": "85880556fba1b2cb52c533fda149f51ef5175dec7d796075567b113520a4fc34",
+      "seconds": 81.48399999999674,
+      "accepted": 6,
+      "rejected": 0,
+      "names": [
+        "move speed",
+        "max hp",
+        "startingSpawns",
+        "destructibleFreq",
+        "move speed multiplier",
+        "power"
+      ],
+      "rejections": []
+    },
+    {
+      "case": "menu-naming",
+      "model_calls": 16,
+      "evidence_references": 12,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": "A grouped proposal exceeded its budget or cited another group's rows.",
+      "receipt_sha256": "a080e9e07478a286745bb139643f9b8db823d89d50509e70a8a4af6c97b75203",
+      "seconds": 46.375,
+      "accepted": 5,
+      "rejected": 0,
+      "names": [
+        "global noise scale",
+        "dithering factor",
+        "Raycast Max Dist",
+        "Spherecast Radius",
+        "joystickAxisSensitivity"
+      ],
+      "rejections": []
+    }
+  ],
+  "retained_group_errors": [
+    {
+      "case": "vampire-naming",
+      "invalid_alternatives": [
+        115,
+        157
+      ],
+      "schema_rejects": true
+    },
+    {
+      "case": "menu-naming",
+      "invalid_alternatives": [
+        102,
+        94
+      ],
+      "schema_rejects": true
+    }
+  ],
+  "progress_percent": 38,
+  "frozen_manifest_sha256": "2118577eaeb31e0292e050a673b582bfe4578b8254b3834d90b37153d684992f",
+  "limitations": [
+    "Valid references do not prove meaning, scope, liveness, safe values or effects.",
+    "Known saved reports and authored cases; no independent-game evidence.",
+    "Relevance remains research-only and never hides production candidates."
+  ],
+  "preview": "0.1.0-20261023-093127",
+  "mcp_tools": 65,
+  "manual_submission_contract_preserved": true,
+  "headless_startup_passed": true,
+  "native_fixture_audit": {
+    "artifact_audit": "passed",
+    "cases": 7,
+    "native_calls": 51,
+    "managed_pauses": 90,
+    "max_stop_to_resume_us": 21,
+    "writes_restored": 4,
+    "readonly_writes_refused": 4,
+    "helper_sha256": "d08782addfeba6fa4ab0eaba562119c1dba9574ad7f5de31830c2c44caf6a603",
+    "frozen_sha256": "071e8ba09abd714f206274dc40be5bf8aeefddcc7bf5fb49df5c515cb1ee81ec",
+    "unchanged_routes_values_and_root_fingerprints": true,
+    "large_case_loaded_fields": 17,
+    "large_case_headers": 200018,
+    "exact_header_limit_passed": true,
+    "oversized_required_layout_refused": true,
+    "gameplay_edits": 0,
+    "limitations": "Owned mock ABI via direct helper calls; not real-game coverage or remote loader unload evidence."
+  }
+}

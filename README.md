@@ -9,17 +9,21 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-085244` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-093127` passed packaged headless
 startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
-the next launch; the existing editor window stays open. All 504 ordinary workspace tests,
+the next launch; the existing editor window stays open. All 510 ordinary workspace tests,
 strict Clippy and formatting pass.
 
-Automatic naming and agent submissions now share a citation format that matches
-the engine's source/index rules. Saved malformed citations are rejected by the
-format itself; exact attribution still requires engine checks. One difficult
-research case still misattributes object descriptions as field names and remains
-rejected. The new package also passes the owned native-helper regression.
-[Citation contract and remaining limits](research/citation-contract/README.md).
+Automatic naming now selects explicit evidence entries; the engine resolves each
+to its exact label/source and retains the existing naming checks. Candidate
+alternatives are restricted to their group in both generation and validation.
+The earlier object-text attribution failure is resolved in saved-data tests;
+an intermediate ID-confusion regression is retained with its separate fix.
+Vampire naming now retains six provisional questions, including move speed and
+max HP. Menu results still mix rendering, interaction and input settings, so
+relevance and effects remain unverified. Manual MCP submissions retain their
+canonical citation contract. The package passes the owned native regression.
+[Evidence references, failures and follow-up](research/evidence-references/README.md).
 
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native

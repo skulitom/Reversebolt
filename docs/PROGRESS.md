@@ -4,6 +4,36 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Explicit evidence references (2026-10-23): **38% unchanged**. Automatic naming
+and the research relevance reviewer select IDs beside complete observed labels;
+the engine resolves exact source/index/text and applies the existing lexical
+checks. Report/row bindings, duplicate/missing/foreign IDs and altered tables are
+checked. Manual MCP submissions retain canonical citations.
+
+The first frozen seven-case trial resolves the prior eight-row attribution
+failure, including its reversed order. Four Vampire labels remain plausible
+gameplay and become unclear when obscured. However, Vampire and menu naming
+then fail because the model puts evidence IDs into candidate alternatives. Both
+failures and the unactivated `092222` package are retained. A separately frozen
+follow-up constrains primary/alternative candidate IDs to their exact group in
+the generation schema, keeping the existing runtime rejection rule intact.
+
+Three fresh naming runs finish: fixture 1 question / 2 calls, Vampire 6 / 25,
+menu 5 / 16. The independent schema checker rejects the four old out-of-group
+alternatives; offline replay reproduces canonical batches and the fixture
+fallback. Menu output still mixes rendering, interaction and input parameters;
+no relevance hiding rule or semantic/causal promotion is enabled.
+
+All 510 ordinary tests, strict Clippy, formatting and release builds pass.
+Preview `0.1.0-20261023-093127` passes packaged headless dispatch, all 65 MCP tools,
+the unchanged manual citation contract and seven native ABI cases (51 calls,
+90 allocation-free pauses, four restored writes, four readonly refusals).
+The shortcut selects it; the user's running editor is preserved. No game,
+gameplay input or screenshot was used. Next: use the retained candidate evidence
+to investigate observed behavior and actual effects, rather than treating labels
+as verified controls. No new independent-generalization credit is claimed.
+[Frozen trials, regressions and limits](../research/evidence-references/README.md).
+
 Shared citation-format contract (2026-10-23): **38% unchanged**. Automatic naming,
 the MCP submission schema and research relevance now express the same source/index
 relationship as the engine: null for field/type labels, a nonnegative integer for

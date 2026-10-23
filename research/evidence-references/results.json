@@ -1,0 +1,626 @@
+{
+  "artifact_audit_passed": true,
+  "workspace_tests": 509,
+  "cases": [
+    {
+      "case": "failed-relevance-batch",
+      "model_calls": 1,
+      "evidence_references": 23,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": "Relevance citation must exactly match this candidate's own evidence.",
+      "receipt_sha256": "c68f66afc0f381c55a0679ae0617eb6f31339b5e97e1587b594535bc9652cad8",
+      "seconds": 16.98399999999674,
+      "assessment": {
+        "policy": "raw_label_relevance_v1",
+        "input_sha256": "59f27044a6dcc02990311cd3a76559a883372d29bda8cf8881b0b4ed10e6776c",
+        "judgments": [
+          {
+            "candidate": 0,
+            "category": "gameplay",
+            "reason": "Field describes character model scale within the world, which is a character appearance parameter.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "bodyScale"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "CharacterAppearanceProfile"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Scale of the character model within the world."
+              }
+            ]
+          },
+          {
+            "candidate": 1,
+            "category": "gameplay",
+            "reason": "Field defines the duration of a walking animation cycle, which is an animation parameter.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "strideTime"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "AnimationConfiguration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Time for one walking animation cycle."
+              }
+            ]
+          },
+          {
+            "candidate": 2,
+            "category": "gameplay",
+            "reason": "Field controls damage reduction based on distance, which is a weapon rule/parameter.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "damageFalloffExponent"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "WeaponConfiguration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Controls damage reduction with projectile travel distance."
+              }
+            ]
+          },
+          {
+            "candidate": 3,
+            "category": "application_configuration",
+            "reason": "Field limits attached peripheral devices per user, which is input device setup.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "maxDevicesPerPlayer"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "ControllerAssignmentPreferences"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Maximum attached peripheral devices assigned to each user."
+              }
+            ]
+          },
+          {
+            "candidate": 4,
+            "category": "application_configuration",
+            "reason": "Field manages automatic account sign-in on startup, which is account configuration.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "autoSignIn"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "UserAccountSettings"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Automatically sign in to the application account on startup."
+              }
+            ]
+          },
+          {
+            "candidate": 5,
+            "category": "implementation_detail",
+            "reason": "Field tracks pending diagnostic telemetry records, which is internal bookkeeping.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "uploadQueueDepth"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "TelemetryCounters"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Count of pending diagnostic telemetry records."
+              }
+            ]
+          },
+          {
+            "candidate": 6,
+            "category": "unclear",
+            "reason": "Field name 'scale' and type 'Settings' are too generic without specific context to distinguish role.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "scale"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Settings"
+              }
+            ]
+          },
+          {
+            "candidate": 7,
+            "category": "unclear",
+            "reason": "Field name 'rate' and type 'Configuration' are vague; value '1' does not clarify if it is gameplay or config.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "rate"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Configuration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "vampire-relevance",
+      "model_calls": 1,
+      "evidence_references": 9,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "51c8a48c0d9fc3ca59f9b99d77cc902fcd7c6e55222319669123169a66ba3b79",
+      "seconds": 2.8119999999762513,
+      "assessment": {
+        "policy": "raw_label_relevance_v1",
+        "input_sha256": "ec550b39ca37a286bb3b0427ba45ef02a58daaeacd897bd2c0cf09698037d2c9",
+        "judgments": [
+          {
+            "candidate": 0,
+            "category": "gameplay",
+            "reason": "Field name indicates maximum health, a core character stat within the simulated world.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<maxHp>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 1,
+            "category": "gameplay",
+            "reason": "Field name indicates movement speed, a parameter governing character interaction within the game world.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<moveSpeed>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 2,
+            "category": "gameplay",
+            "reason": "Field name indicates starting spawns, a rule defining enemy generation in the stage.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<startingSpawns>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ]
+          },
+          {
+            "candidate": 3,
+            "category": "gameplay",
+            "reason": "Field name indicates interval, and object text describes a weapon generating damaging zones, implying a timing parameter for gameplay effects.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<interval>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Weapons.WeaponData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              },
+              {
+                "source": "object_text",
+                "index": 1,
+                "quote": "Generates damaging zones above the character."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "reversed-failed-relevance",
+      "model_calls": 1,
+      "evidence_references": 23,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "27bbaf0f79e817db7318c72ab2b7f50bbc9efaa6133125d7b888c843287bf79f",
+      "seconds": 5.7189999999827705,
+      "assessment": {
+        "policy": "raw_label_relevance_v1",
+        "input_sha256": "dc874c4064324463c404ba64cf2614d762d46c6179532c93d7885067f4de371e",
+        "judgments": [
+          {
+            "candidate": 0,
+            "category": "unclear",
+            "reason": "The field name 'rate' and type 'Configuration' are too generic to distinguish between gameplay parameters (e.g., spawn rate) and application settings without specific context.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "rate"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Configuration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "1"
+              }
+            ]
+          },
+          {
+            "candidate": 1,
+            "category": "unclear",
+            "reason": "The field name 'scale' and type 'Settings' are ambiguous; it could refer to UI scaling (application) or world/character scaling (gameplay), but no specific object text clarifies the domain.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "scale"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Settings"
+              }
+            ]
+          },
+          {
+            "candidate": 2,
+            "category": "implementation_detail",
+            "reason": "The object text explicitly describes 'diagnostic telemetry records' and the type is 'TelemetryCounters', indicating internal bookkeeping rather than gameplay or user-facing configuration.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "uploadQueueDepth"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "TelemetryCounters"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Count of pending diagnostic telemetry records."
+              }
+            ]
+          },
+          {
+            "candidate": 3,
+            "category": "application_configuration",
+            "reason": "The object text describes signing in to an 'application account' and the type is 'UserAccountSettings', which falls under account and application configuration.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "autoSignIn"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "UserAccountSettings"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Automatically sign in to the application account on startup."
+              }
+            ]
+          },
+          {
+            "candidate": 4,
+            "category": "application_configuration",
+            "reason": "The object text refers to 'attached peripheral devices' and the type is 'ControllerAssignmentPreferences', which relates to input device setup and OS integration.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "maxDevicesPerPlayer"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "ControllerAssignmentPreferences"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Maximum attached peripheral devices assigned to each user."
+              }
+            ]
+          },
+          {
+            "candidate": 5,
+            "category": "gameplay",
+            "reason": "The object text describes 'damage reduction' and 'projectile travel distance', which are core mechanics and rules within the simulated world.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "damageFalloffExponent"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "WeaponConfiguration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Controls damage reduction with projectile travel distance."
+              }
+            ]
+          },
+          {
+            "candidate": 6,
+            "category": "gameplay",
+            "reason": "The object text specifies 'walking animation cycle', which is a character animation parameter within the simulated world.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "strideTime"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "AnimationConfiguration"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Time for one walking animation cycle."
+              }
+            ]
+          },
+          {
+            "candidate": 7,
+            "category": "gameplay",
+            "reason": "The object text describes the 'Scale of the character model within the world', which is a character appearance parameter in the simulated environment.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "bodyScale"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "CharacterAppearanceProfile"
+              },
+              {
+                "source": "object_text",
+                "index": 0,
+                "quote": "Scale of the character model within the world."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "opaque-vampire-relevance",
+      "model_calls": 1,
+      "evidence_references": 8,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "ba46af57c740f8e6fa659e64498ca3c6f938d3b2e5ec4500941eff8382543bef",
+      "seconds": 2.860000000044238,
+      "assessment": {
+        "policy": "raw_label_relevance_v1",
+        "input_sha256": "df46e5fdc2b4399957f52575e3bfae62561440112b5b173dc458dea7c5aa1af6",
+        "judgments": [
+          {
+            "candidate": 0,
+            "category": "unclear",
+            "reason": "The field name is an opaque hex identifier and the type is a generic container, providing no semantic information to distinguish gameplay, configuration, or implementation roles.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "F000000003e"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Container"
+              }
+            ]
+          },
+          {
+            "candidate": 1,
+            "category": "unclear",
+            "reason": "The field name is an opaque hex identifier and the type is a generic container, providing no semantic information to distinguish gameplay, configuration, or implementation roles.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "F0000000050"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Container"
+              }
+            ]
+          },
+          {
+            "candidate": 2,
+            "category": "unclear",
+            "reason": "The field name is an opaque hex identifier and the type is a generic container, providing no semantic information to distinguish gameplay, configuration, or implementation roles.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "F000000002d"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Container"
+              }
+            ]
+          },
+          {
+            "candidate": 3,
+            "category": "unclear",
+            "reason": "The field name is an opaque hex identifier and the type is a generic container, providing no semantic information to distinguish gameplay, configuration, or implementation roles.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "F000000003a"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "Container"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "fixture-naming",
+      "model_calls": 2,
+      "evidence_references": 0,
+      "error": null,
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "f6e95cad378b672ebe73c007f19d58193e5ac79dc6c03d56a1a9303ab7e1d462",
+      "seconds": 1.422000000020489,
+      "accepted": 1,
+      "rejected": 0,
+      "names": [
+        "Speed"
+      ],
+      "rejections": []
+    },
+    {
+      "case": "vampire-naming",
+      "model_calls": 20,
+      "evidence_references": 2,
+      "error": "A grouped proposal exceeded its budget or cited another group's rows.",
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "5a72bcc44017598015e6b32857c0396040e4b2430c701448b08dcb8e88706ccf",
+      "seconds": 39.17200000002049,
+      "accepted": null,
+      "rejected": null,
+      "names": [],
+      "rejections": []
+    },
+    {
+      "case": "menu-naming",
+      "model_calls": 10,
+      "evidence_references": 6,
+      "error": "A grouped proposal exceeded its budget or cited another group's rows.",
+      "binding_errors": [],
+      "baseline_error": null,
+      "receipt_sha256": "5c7af277ebdabc665b0a8582674a9662348d9ebe4e81b7122a0cec43678cb7f0",
+      "seconds": 22.42199999996228,
+      "accepted": null,
+      "rejected": null,
+      "names": [],
+      "rejections": []
+    }
+  ],
+  "progress_percent": 38,
+  "frozen_manifest_sha256": "3dba4f70af2e1ddf37830fbd078bbc42be1d23a4803209e4cfefe1d04a155674",
+  "limitations": [
+    "Valid references do not prove meaning, scope, liveness, safe values or effects.",
+    "Known saved reports and authored cases; no independent-game evidence.",
+    "Relevance remains research-only and never hides production candidates."
+  ],
+  "preview": "0.1.0-20261023-092222",
+  "mcp_tools": 65,
+  "manual_submission_contract_preserved": true,
+  "headless_startup_passed": true,
+  "native_fixture_audit": {
+    "artifact_audit": "passed",
+    "cases": 7,
+    "native_calls": 51,
+    "managed_pauses": 90,
+    "max_stop_to_resume_us": 27,
+    "writes_restored": 4,
+    "readonly_writes_refused": 4,
+    "helper_sha256": "3020095d08ce7f1ae6719579f678dea7ba2c4a480db79533de96ed29c63415c1",
+    "frozen_sha256": "c20b3cfcbe379caafaa2d8e453523207779507d10edc0d1cde670b9db2cbdd99",
+    "unchanged_routes_values_and_root_fingerprints": true,
+    "large_case_loaded_fields": 17,
+    "large_case_headers": 200018,
+    "exact_header_limit_passed": true,
+    "oversized_required_layout_refused": true,
+    "gameplay_edits": 0,
+    "limitations": "Owned mock ABI via direct helper calls; not real-game coverage or remote loader unload evidence."
+  }
+}

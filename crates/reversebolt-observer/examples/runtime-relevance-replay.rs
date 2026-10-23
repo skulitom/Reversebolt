@@ -20,6 +20,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "{}",
             json!({"hypotheses":h::proposal_schema(),
+            "referenced_hypotheses":reversebolt_core::runtime_citations::proposal_schema(),
+            "references":reversebolt_core::runtime_citations::references_schema(1),
             "relevance":reversebolt_observer::runtime_relevance::schema(8),
             "hypothesis_citation":h::citation_schema(Some(256)),"relevance_citation":h::citation_schema(None)})
         );
@@ -34,6 +36,64 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "{}",
             json!({"checked":true,"assessment":assessment,"model_calls":0,"target_access":false})
+        );
+        return Ok(());
+    }
+    if args.len() == 2 && args[0] == "check-naming" {
+        let directory = Path::new(&args[1]);
+        let inventory =
+            serde_json::from_value(read(&directory.join("input.json"))?["inventory"].clone())?;
+        let receipt: reversebolt_observer::runtime_naming::Receipt =
+            serde_json::from_value(read(&directory.join("receipt.json"))?)?;
+        if receipt.error.is_some() || receipt.cancelled {
+            return Err("Incomplete naming receipt".into());
+        }
+        let selection = receipt.selection.as_ref().ok_or("No selection")?;
+        if h::select(&inventory, &selection.selected_types)? != *selection {
+            return Err("Selection differs from source inventory".into());
+        }
+        let table = receipt
+            .citation_evidence
+            .as_ref()
+            .ok_or("No evidence references")?;
+        table.check(&selection.report_sha256, &selection.rows)?;
+        let mut hypotheses = vec![];
+        for stage in &receipt.stages {
+            if stage.schema["properties"].get("hypotheses").is_none() {
+                continue;
+            }
+            if stage.response["done"] != true || stage.response["done_reason"] != "stop" {
+                return Err("Incomplete model response".into());
+            }
+            let proposed: reversebolt_core::runtime_citations::Proposals = serde_json::from_str(
+                stage.response["message"]["content"]
+                    .as_str()
+                    .ok_or("Missing model text")?,
+            )?;
+            hypotheses.extend(proposed.resolve(table, selection)?.hypotheses);
+        }
+        let (batch, cleanup) =
+            h::validate_with_self_alternative_cleanup(selection, h::Proposals { hypotheses })?;
+        let original = receipt
+            .object_text_fallback
+            .as_ref()
+            .map(|f| &f.original_batch)
+            .or(receipt.batch.as_ref());
+        if original != Some(&batch) || cleanup != receipt.alternative_cleanup {
+            return Err("Resolved proposals differ from the canonical checked batch".into());
+        }
+        if receipt.object_text_fallback.is_some() {
+            let mut replay = receipt.clone();
+            replay.batch = Some(batch);
+            replay.object_text_fallback = None;
+            replay.add_object_text_questions(&inventory)?;
+            if replay.batch != receipt.batch {
+                return Err("Fallback differs from the observed object text".into());
+            }
+        }
+        println!(
+            "{}",
+            json!({"checked":true,"model_calls":0,"target_access":false})
         );
         return Ok(());
     }
