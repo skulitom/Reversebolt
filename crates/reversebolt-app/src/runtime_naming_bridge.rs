@@ -382,6 +382,16 @@ fn inspect_investigation(engine: &Engine, c: &reversebolt_core::Command) -> Resu
 
 fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Value> {
     use reversebolt_core::runtime_planning as p;
+    let comparison_limit = c
+        .args
+        .get("comparison_limit")
+        .map(|v| {
+            v.as_u64()
+                .filter(|n| (1..=8).contains(n))
+                .map(|n| n as usize)
+                .ok_or("comparison_limit must be an integer from 1 through 8.")
+        })
+        .transpose()?;
     let session = engine
         .live
         .as_ref()
@@ -424,7 +434,26 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     let record_capacity = engine
         .runtime_tests
         .capacity(&session.view.investigation_id);
-    let next = if busy || record_capacity.remaining_record_slots == 0 {
+    let exploration = comparison_limit
+        .map(|limit| {
+            reversebolt_core::runtime_exploration::plan(
+                reversebolt_core::runtime_exploration::Context {
+                    review,
+                    actions: &actions,
+                    investigation: &session.view.investigation_id,
+                    catalog: &rt.catalog_id,
+                },
+                limit,
+                &engine.runtime_tests.records,
+                &engine.runtime_trials.records,
+                &choices,
+            )
+        })
+        .transpose()?;
+    let next = if busy
+        || record_capacity.remaining_record_slots == 0
+        || exploration.as_ref().is_some_and(|e| e.status != "continue")
+    {
         None
     } else {
         choices.iter().find(|v| v["status"] == "untried")
@@ -432,7 +461,7 @@ fn plan_comparisons(engine: &Engine, c: &reversebolt_core::Command) -> Result<Va
     Ok(
         json!({"investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,"after_revision":rt.revision,"review_id":review.evidence_id,
         "report_sha256":review.report_sha256,"activity_context":context,"activity_motion_comparison":context.motion_comparison()?,"activity_limitation":reversebolt_core::play_context::LIMITATION,
-        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"regional_history":regional_history,"limitation":p::LIMITATION}),
+        "observed_actions":actions,"choices":choices,"next":next,"busy":busy,"record_capacity":record_capacity,"regional_history":regional_history,"exploration":exploration,"tested_question":reversebolt_core::runtime_exploration::QUESTION,"limitation":p::LIMITATION}),
     )
 }
 

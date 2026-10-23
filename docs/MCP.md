@@ -1455,6 +1455,24 @@ It does not capture, run inference, access the target or execute an action.
 exact report row. `name`, `explanation` and `question` describe the originating
 primary hypothesis, not a verified meaning for a selected alternative.
 
+Optional `comparison_limit` (an integer from 1 through 8) enables
+`bounded_response_exploration_v1`. The returned `exploration` counts **all**
+saved tests in the same investigation, catalogue, report, frame/input digest and
+action sequence, including paths absent from the current review. It permits
+continuation only after complete negative results with matching, validated native
+restoration and rechecked completion assessments. Missing/changed evidence,
+stopped/inconclusive results or retired paths requiring review yield
+`needs_review`; a positive yields `response_found`; reaching the limit yields
+`budget_exhausted`. Each stops `next`. The normal busy/capacity/no-candidate
+checks still apply, so `continue` does not guarantee a non-null `next`.
+
+`tested_question` states the actual rendered-response suppression experiment,
+separate from the provisional metadata question. A negative screen result does
+not disprove an interaction, sound or other unmeasured effect. Re-read the plan
+after each comparison and use fresh test/change IDs; never retry an uncertain
+write or input. Omitting the limit preserves the existing suggestion behavior.
+Neither mode starts input/writes, authorizes effects or validates gameplay meaning.
+
 The saved-image reader now returns its selected `activity_source`. Whole-image
 selection retains priority and its existing serialized source shape. If it finds
 none and automatic regions are enabled, `regional_activity_selection_v1` checks

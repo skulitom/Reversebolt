@@ -9,10 +9,19 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-093127` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-104538` passed packaged headless
 startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
-the next launch; the existing editor window stays open. All 510 ordinary workspace tests,
+the next launch; the existing editor window stays open. All 511 ordinary workspace tests,
 strict Clippy and formatting pass.
+
+Agents can now request bounded response exploration through the shared planner:
+continue after a checked, restored negative test; stop on positive, inconclusive
+or unresolved evidence, or the comparison limit. The actual response question
+is kept separate from a provisional gameplay label. Thirty retained-native
+checks pass. A fresh game run stopped before editing because capture timing left
+an insufficient replay sequence; live continuation still needs verification.
+Progress remains **40%**.
+[Bounded exploration and the observation gap](research/bounded-exploration/README.md).
 
 Automatic naming now selects explicit evidence entries; the engine resolves each
 to its exact label/source and retains the existing naming checks. Candidate

@@ -30,6 +30,7 @@ pub mod runtime_activity_focus;
 pub mod runtime_cards;
 pub mod runtime_citations;
 pub mod runtime_connections;
+pub mod runtime_exploration;
 pub mod runtime_hypotheses;
 pub mod runtime_inventory;
 pub mod runtime_location;

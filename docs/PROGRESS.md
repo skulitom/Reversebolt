@@ -4,6 +4,37 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Bounded response exploration (2026-10-23): **40% unchanged**. The shared Rust
+planner/MCP accepts an optional comparison_limit (1–8), counts all tests in the
+exact report/frame/input/action context, and permits another candidate only
+after complete checked negative comparisons and native restoration. Positive,
+inconclusive, stopped, missing or inconsistent evidence ends the search. The
+actual rendered-response question is distinct from the provisional metadata
+question. Candidate order and existing input/write rules are unchanged.
+
+Thirty saved-native-history checks cover negative/positive outcomes, limits,
+retired candidates, missing/corrupt restoration, incomplete results and changed
+contexts. All 511 ordinary workspace tests, strict Clippy, formatting, release
+and packaged headless/65-tool MCP checks pass. Preview 0.1.0-20261023-104538 is
+selected by the desktop shortcut; the user's existing editor is preserved.
+
+A separately frozen Electrician follow-up completed discovery but made no edit.
+Four key holds were recorded, but two capture-timing intervals were unknown;
+the third probe lacked a valid preceding quiet interval, leaving only three
+bounded episodes. The existing four-episode replay rule refused comparison.
+Naming produced two provisional questions after 25 metadata calls, and the
+visual interpretation remained uncertain. No field or input was substituted.
+Live multi-comparison continuation is therefore not established by this run.
+
+The audit verifies 15 images, input records, the exact refusal and helper unload.
+127 recorded pauses were allocation-free, maximum 5.457 ms. Saves/Steam storage
+are unchanged; only logs changed. All owned processes exited and Anode was
+released. All weighted credits remain fixed, including generalization 0/10.
+Next: automatically obtain missing qualified observations, then evaluate the
+bounded search without weakening timing checks. Full semantics, useful ranking,
+consistent naming and withheld-game acceptance remain unfinished.
+[Implementation, checks and retained native refusal](../research/bounded-exploration/README.md).
+
 Electrician Simulator withheld trial (2026-10-23): **40% unchanged**. The frozen
 current preview and unchanged generic evaluator completed automatic discovery,
 one product-selected native comparison and exact restoration. Seven provisional

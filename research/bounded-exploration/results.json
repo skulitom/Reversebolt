@@ -1,0 +1,358 @@
+{
+  "artifact_audit": "passed",
+  "preview": "0.1.0-20261023-104538",
+  "setup": {
+    "game_pid": 28048,
+    "engine_pid": 71748,
+    "engine_job": "j_b2f8485463de4934b256c2a5effbcb37",
+    "window": "w_994f90d28d2c",
+    "setup_images_viewed": 6,
+    "images": [
+      "Photosensitivity notice",
+      "Fiction notice",
+      "Title prompt",
+      "Main menu",
+      "Continue confirmation",
+      "Loaded room with press-any-button prompt"
+    ],
+    "actions": [
+      "Focus Electrician window",
+      "Enter on photosensitivity notice",
+      "Enter on fiction notice",
+      "Enter on title prompt",
+      "Click Continue Game at 181,281",
+      "Confirm Continue at 518,392",
+      "Enter on loaded-room press-any-button prompt"
+    ],
+    "measurement_images_manually_viewed": 0,
+    "note": "No game movement or value chosen during setup. Fresh automated discovery starts after the observed final loading prompt was acknowledged."
+  },
+  "audit_source_sha256": "ba6d67aa3a14e76db36eeacfc2955dd687af001401e5f5a497edf8ae4b5b2174",
+  "progress_percent": 40,
+  "frozen_sha256": "51a057a929a18f5c287eae36bd2c0be7c46336a81a151e8c82729c1da91f3d7e",
+  "automatic_discovery_images": 15,
+  "input_holds": 4,
+  "manually_viewed_measurement_images": 0,
+  "jobs": [
+    {
+      "phase": "Completed",
+      "error": null
+    }
+  ],
+  "naming": {
+    "status": "complete",
+    "error": null,
+    "receipt_sha256": "367d8a452db1d06b5629e31f39df0263da3b97b45a996f930dd720c3b1f2125a",
+    "metadata_model_calls": 25,
+    "metadata_call_elapsed_ms": [
+      21690,
+      13123,
+      8762,
+      9739,
+      12785,
+      14307,
+      9893,
+      18143,
+      8988,
+      13626,
+      11148,
+      7474,
+      7813,
+      11907,
+      5589,
+      13620,
+      12138,
+      27502,
+      1507,
+      1302,
+      898,
+      10874,
+      2537,
+      2433,
+      1529
+    ],
+    "activity": {
+      "error": null,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "Both pairs show a top-down view of a shelf with stockings and a tool. The camera angle and object positions appear nearly identical between the before and after images in both pairs. The sparse patch matches report zero displacement for the few matched points, and the appearance evidence confirms zero displacement for the measured region. No consistent, significant visible change in appearance or ",
+        "uncertainty": "The evidence is insufficient to establish a change. The patch matcher found very few matches (2 and 1) with zero displacement, and the appearance matcher confirmed zero displacement for one region. The other regions were not measured or had poor matches. The visual inspection of the images also shows no obvious change. Therefore, the pairs do not support a consistent visible change."
+      },
+      "model_calls": 1
+    },
+    "types": 504,
+    "fields": 2344,
+    "reachable_paths": 61667,
+    "questions": [
+      {
+        "name": "in hand max length",
+        "question": "Does the in hand max length limit the cable reach while held?",
+        "field": "inHandMaxLength",
+        "observed_value": "2",
+        "path_id": "81b15913edcc9ee72716eb2cdc0c71dcda4573ff88ca01b947465be5268917b3",
+        "alternatives": [
+          "0360af0003797af7e53d3c8cf2544da8882fee0a20410dae07873f947b11a4cf"
+        ]
+      },
+      {
+        "name": "player money",
+        "question": "Does the player money value determine the purchasing power available in the game's shop?",
+        "field": "playerMoney",
+        "observed_value": 3199,
+        "path_id": "e585bc4b6366623e34852ffd4b2aaae771118bbd9b1096df083b69e95cd606f9",
+        "alternatives": []
+      }
+    ],
+    "rejected": [
+      {
+        "proposal": {
+          "alternatives": [
+            61
+          ],
+          "candidate": 23,
+          "citations": [
+            {
+              "index": null,
+              "quote": "startLenght",
+              "source": "field_name"
+            },
+            {
+              "index": null,
+              "quote": "Cables.CablePlug.CablePlugStartPointController, Assembly-CSharp, Version=4.2.0.0, Culture=neutral, PublicKeyToken=null",
+              "source": "type_name"
+            }
+          ],
+          "explanation": "The start length value may define the initial cable extension before interaction.",
+          "name": "start length",
+          "question": "Does the start length determine the initial cable extension?"
+        },
+        "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+      }
+    ]
+  },
+  "image_models": [
+    {
+      "receipt_sha256": "0527f5457f8cf3005672281b5aa2bd59977c833b0301efb3ead3c36f55e7d252",
+      "calls": 6,
+      "error": null,
+      "summary": "A first-person view of a static scene featuring a red tool held in the foreground, a wooden shelf with items above, and a HUD with inventory and status indicators. No motion or changes are visible between the two frames."
+    }
+  ],
+  "plan_available": false,
+  "comparisons": [],
+  "stop_reason": "plan_unavailable",
+  "planner_errors": [
+    "Observe four separated responses with a repeated two-action sequence and consistent timing first."
+  ],
+  "input_coverage": {
+    "source_sha256": "40466317c84d1c806c6997ae1ab1993b907acb85cff932806c6a7fa90219e914",
+    "actions": [
+      {
+        "bounded_episodes": [
+          3,
+          9
+        ],
+        "episodes": [
+          3,
+          9
+        ],
+        "key": 65,
+        "key_label": "A",
+        "median_difference": 31.28191768626735,
+        "next_observation": "Inspect the cited before/after images to identify what changed and test whether that consequence fits a grounded hypothesis. Do not infer the key's meaning from its name or this metric.",
+        "quiet_median_difference": 0.09846945763330898
+      },
+      {
+        "bounded_episodes": [
+          1
+        ],
+        "episodes": [
+          1,
+          7
+        ],
+        "key": 68,
+        "key_label": "D",
+        "median_difference": 30.425093590211834,
+        "next_observation": "Observe another separated action and quiet interval; current coverage is insufficient for a repeatable test.",
+        "quiet_median_difference": 0.09846945763330898
+      }
+    ],
+    "episodes": [
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "no_keys_detected"
+        },
+        "first_interval": 0,
+        "last_interval": 0,
+        "median_difference": 0.09308802045288532
+      },
+      {
+        "bounded_by_quiet": true,
+        "exposure": {
+          "kind": "key",
+          "value": 68
+        },
+        "first_interval": 1,
+        "last_interval": 1,
+        "median_difference": 30.425093590211834
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "no_keys_detected"
+        },
+        "first_interval": 2,
+        "last_interval": 2,
+        "median_difference": 0.13274401935719504
+      },
+      {
+        "bounded_by_quiet": true,
+        "exposure": {
+          "kind": "key",
+          "value": 65
+        },
+        "first_interval": 3,
+        "last_interval": 3,
+        "median_difference": 31.598589298758217
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "no_keys_detected"
+        },
+        "first_interval": 4,
+        "last_interval": 4,
+        "median_difference": 0.10734340759678597
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "unknown",
+          "value": "Invalid, overlapping or widely separated capture timing"
+        },
+        "first_interval": 5,
+        "last_interval": 5,
+        "median_difference": 0.1022872534696859
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "unknown",
+          "value": "Invalid, overlapping or widely separated capture timing"
+        },
+        "first_interval": 6,
+        "last_interval": 6,
+        "median_difference": 0.09377853360116874
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "key",
+          "value": 68
+        },
+        "first_interval": 7,
+        "last_interval": 7,
+        "median_difference": 30.98959664901388
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "no_keys_detected"
+        },
+        "first_interval": 8,
+        "last_interval": 8,
+        "median_difference": 0.1297080441928415
+      },
+      {
+        "bounded_by_quiet": true,
+        "exposure": {
+          "kind": "key",
+          "value": 65
+        },
+        "first_interval": 9,
+        "last_interval": 9,
+        "median_difference": 30.96524607377648
+      },
+      {
+        "bounded_by_quiet": false,
+        "exposure": {
+          "kind": "no_keys_detected"
+        },
+        "first_interval": 10,
+        "last_interval": 13,
+        "median_difference": 0.09413520361577793
+      }
+    ]
+  },
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\bounded-exploration-v1\\data\\runtime\\28048-01dd62d352232237\\f3b479c6-ea27-446f-80e3-9b91e1b82610\\stdout.jsonl",
+      "events_sha256": "10bfcce83ee7b1d2d35c1d0fdc808d97dc635ecaad9bc79aa788634924451186",
+      "report_sha256": "1d8d41983962f3936515ac381353ca8301416019e1ec0489d252ef3884e25748",
+      "elapsed_ms": 4773,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 4142,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 3649,
+        "loaded_fields": 23523,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": false,
+      "roots_complete": false
+    }
+  ],
+  "recorded_pauses": 127,
+  "max_stop_to_resume_us": 5457,
+  "runtime_trials": [],
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\LocalLow\\Take IT Studio!\\Electrician",
+      "changes": [
+        "Player-prev.log",
+        "Player.log"
+      ]
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1080020",
+      "changes": []
+    }
+  ],
+  "cleanup": {
+    "game_shutdown": "Normal close request, then verified process exit",
+    "anode_lease_released": true,
+    "owned_pids": [
+      28048,
+      71748,
+      75580,
+      3628,
+      38536,
+      61444
+    ],
+    "owned_processes_exited": true,
+    "mcp_exit_code": 0,
+    "preserved_editor": {
+      "session": 1,
+      "pid": 98332,
+      "responsive": true
+    },
+    "engine_shutdown": "Owned Anode job cancelled after verified settled state"
+  },
+  "limitation": "Known development target following the retained negative first trial; not a withheld evaluation. Labels and image differences alone do not verify gameplay meaning; a completed audit may retain a negative or unavailable comparison."
+}
