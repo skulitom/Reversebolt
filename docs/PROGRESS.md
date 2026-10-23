@@ -4,6 +4,23 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Independent investigation inspection (2026-10-23): **36% unchanged**. The default
+shared engine/MCP now exposes accepted questions independently of executable
+replay. It retains separate alternatives and questions outside the zero-probe
+bounds, validates current catalogue/process/review bindings, and preserves valid
+questions when activity is missing. Checked activity includes the original
+interpretation and structured timing failures without changing execution limits.
+
+All 482 workspace tests and strict Clippy pass. A frozen replay of the last native
+baseline preserves its uncertain interpretation and the three original timing
+failures; it still cannot produce an executable sequence. No new game input,
+capture, inference or gameplay write occurred. The 64-tool packaged MCP catalogue
+and isolated headless startup/route checks pass. Preview
+`0.1.0-20261023-054738` is selected for the next desktop launch; the user's current
+editor remains open. Next: use this evidence handoff to choose and perform a useful
+observation or exploratory intervention; semantic controls and generalization
+remain unverified. [Implementation and evidence](../research/investigation-inspection/README.md).
+
 Conditional gameplay baseline (2026-10-23): **36% unchanged**. One automated
 Sable observation collected fifteen images and four short input holds, with no
 measurement image manually viewed and no gameplay field changed. Repeated input

@@ -108,6 +108,9 @@ fn inventory_index(
 
 /// Agent-supplied proposals use the same inventory and validation as local inference.
 pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) -> Result<Value> {
+    if c.action == "inspect_runtime_investigation" {
+        return inspect_investigation(engine, c);
+    }
     if c.action == "plan_runtime_comparisons" {
         return plan_comparisons(engine, c);
     }
@@ -298,6 +301,82 @@ pub fn command(engine: &mut Engine, c: &reversebolt_core::Command, base: &Path) 
     *view = staged;
     Ok(
         json!({"review":review,"activity_transfer":activity_transfer,"activity_reuse":activity_reuse,"activity_motion_comparison":motion_comparison,"card_publication":card_publication,"replayed":false,"published":true}),
+    )
+}
+
+/// Questions remain inspectable when input cannot yet be replayed. This is a
+/// read-only evidence packet for agent-led investigation, not a prepared test.
+fn inspect_investigation(engine: &Engine, c: &reversebolt_core::Command) -> Result<Value> {
+    use reversebolt_core::runtime_planning as p;
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Request {
+        catalog_id: String,
+        review_id: String,
+    }
+    let request: Request = serde_json::from_value(c.args.clone()).map_err(|e| e.to_string())?;
+    let session = engine
+        .live
+        .as_ref()
+        .ok_or("Connect an application first.")?;
+    let rt = &session.view.runtime;
+    let review = rt
+        .naming
+        .as_ref()
+        .ok_or("No completed metadata review is available.")?;
+    if request.catalog_id != rt.catalog_id || request.review_id != review.evidence_id {
+        return Err("The catalogue or hypothesis review changed.".into());
+    }
+    let inventory =
+        reversebolt_core::runtime_inventory::build(&crate::runtime_bridge::catalog_report(rt)?)?;
+    let memory_process = session
+        .view
+        .memory_process
+        .as_ref()
+        .unwrap_or(&session.view.process);
+    if inventory.scope != crate::runtime_bridge::runtime_scope(memory_process) {
+        return Err("The retained runtime catalogue belongs to a different process.".into());
+    }
+    let questions = p::investigation_questions(review, &inventory)?;
+    let activity = (|| -> Result<Value> {
+        let context = review
+            .play_context
+            .as_ref()
+            .ok_or("No retained activity observation is available.")?;
+        if context.source.investigation_id != session.view.investigation_id
+            || context.source.batch != session.view.coverage.batch
+        {
+            return Err(
+                "The retained activity belongs to a different investigation or batch.".into(),
+            );
+        }
+        let frames = context.resolve_frames(&session.view.frames)?;
+        let response = crate::play_evidence::read(
+            session,
+            &json!({
+            "investigation_id":session.view.investigation_id,"batch":session.view.coverage.batch,
+            "frame_ids":frames.iter().map(|f| &f.id).collect::<Vec<_>>()}),
+        )?;
+        crate::play_evidence::check_activity_context(context, &response)?;
+        let evidence =
+            serde_json::from_value(response["evidence"].clone()).map_err(|e| e.to_string())?;
+        let replay = p::assess_actions(context, &frames, &evidence)?;
+        Ok(
+            json!({"context":context,"motion_comparison":context.motion_comparison()?,
+            "replay":replay,"limitation":reversebolt_core::play_context::LIMITATION}),
+        )
+    })();
+    let (activity, activity_error) = match activity {
+        Ok(activity) => (Some(activity), None),
+        Err(error) => (None, Some(error)),
+    };
+    Ok(
+        json!({"policy":"independent_question_activity_inspection_v1",
+        "investigation_id":session.view.investigation_id,"catalog_id":rt.catalog_id,
+        "after_revision":rt.revision,"review_id":review.evidence_id,
+        "report_sha256":inventory.report_sha256,"questions":questions,
+        "activity":activity,"activity_error":activity_error,"execution_authority":false,
+        "limitation":"Questions and observations are independently checked evidence for deciding what to investigate next. Missing activity or an unavailable replay does not disprove a question. Selected alternatives do not inherit the primary name or meaning. No input, model request, target access, trial preparation or write occurs; no proposed value or gameplay semantics are established."}),
     )
 }
 

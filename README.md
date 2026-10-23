@@ -3,11 +3,18 @@
 An open-source Rust workbench for discovering what controls an unfamiliar game.
 Part of the Bolt family. Humans and agents use the same engine and session.
 
-**Local preview status:** preview `0.1.0-20261023-012028` completed a native Sable
-development run and is selected by the desktop shortcut for the next launch.
-The existing connected desktop window remains on its earlier build. No security
-setting was changed for this release; the earlier detection remains unexplained.
-[Live result and limitations](research/independent-sable/LIVE-RESULT.md).
+Agents can inspect accepted questions alongside independently checked activity
+with `reversebolt_inspect_runtime_investigation`. Missing observations or an
+unsupported replay no longer prevent inspecting what to investigate next. The
+response retains separate alternative paths and timing failures; it performs no
+input, inference, target access or edits.
+
+**Local preview status:** preview `0.1.0-20261023-054738` passed packaged headless
+startup/MCP checks and is selected by the desktop shortcut for the next launch.
+All 482 workspace tests pass. The existing desktop window remains on its earlier
+build. This release adds investigation inspection; its transport checks do not
+establish new gameplay effects.
+[Evidence and limitations](research/investigation-inspection/README.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime

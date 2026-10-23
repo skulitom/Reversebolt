@@ -373,6 +373,7 @@ impl Session {
                     | "list_processes"
                     | "list_memory_processes"
                     | "search_runtime_values"
+                    | "inspect_runtime_investigation"
                     | "plan_runtime_comparisons"
                     | "read_runtime_inventory"
                     | "read_capture"

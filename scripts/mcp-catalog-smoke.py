@@ -44,6 +44,10 @@ try:
     assert tool["annotations"]["readOnlyHint"] is True
     assert tool["inputSchema"]["required"] == ["catalog_id"]
     assert "object_samples" in tool["description"] and "context_coverage" in tool["description"]
+    inspection = next(t for t in definitions if t["name"] == "reversebolt_inspect_runtime_investigation")
+    assert inspection["annotations"]["readOnlyHint"] is True
+    assert inspection["inputSchema"]["required"] == ["catalog_id", "review_id"]
+    assert inspection["inputSchema"]["additionalProperties"] is False
     process.stdin.close()
     code = process.wait(timeout=15)
     assert code == 0

@@ -143,6 +143,7 @@ fn read_only(action: &str) -> bool {
             | "read_change_evidence"
             | "read_runtime_test"
             | "search_runtime_values"
+            | "inspect_runtime_investigation"
             | "plan_runtime_comparisons"
             | "read_runtime_inventory"
             | "list_processes"

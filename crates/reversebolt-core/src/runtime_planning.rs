@@ -31,11 +31,42 @@ pub struct ObservedActions {
     pub episode_order: Option<Vec<usize>>,
 }
 
+/// A replay assessment can be unavailable while the underlying observation is
+/// still useful for deciding what to investigate next.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ActionAssessment {
+    pub policy: String,
+    pub actions: Option<ObservedActions>,
+    pub timing_issues: Vec<TimingIssue>,
+    pub reason: Option<String>,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct TimingIssue {
+    pub episode: usize,
+    pub key: u8,
+    pub hold_bounds_us: [u64; 2],
+    pub estimated_hold_ms: u64,
+    pub reason: String,
+}
+
 pub fn actions(
     context: &Context,
     frames: &[FrameRef],
     evidence: &Evidence,
 ) -> Result<ObservedActions> {
+    let assessment = assess_actions(context, frames, evidence)?;
+    assessment.actions.ok_or_else(|| {
+        assessment
+            .reason
+            .unwrap_or_else(|| "No supported replay sequence.".into())
+    })
+}
+
+pub fn assess_actions(
+    context: &Context,
+    frames: &[FrameRef],
+    evidence: &Evidence,
+) -> Result<ActionAssessment> {
     context.validate()?;
     let hash = visual::digest(&serde_json::to_vec(frames).map_err(|e| e.to_string())?);
     let regional =
@@ -62,6 +93,7 @@ pub fn actions(
         return Err("The retained activity evidence changed.".into());
     }
     let mut episodes = vec![];
+    let mut timing_issues = vec![];
     for (index, e) in evidence.episodes.iter().enumerate() {
         if regional && !context.source.pairs.iter().any(|p| p.episode == index) {
             continue;
@@ -129,6 +161,13 @@ pub fn actions(
         };
         let ms = midpoint / 1000;
         if !(100..=1000).contains(&ms) {
+            timing_issues.push(TimingIssue {
+                episode: index,
+                key,
+                hold_bounds_us: [lower, upper],
+                estimated_hold_ms: ms,
+                reason: "Estimated hold is outside the existing 100–1000 ms replay range. The observation has not been shortened or discarded.".into(),
+            });
             continue;
         }
         let action = Action {
@@ -162,13 +201,21 @@ pub fn actions(
                 .abs_diff(episodes[1].action.hold_ms)
                 > 50
         {
-            return Err("Both locally measured responses need bounded, consistent sampled holds before proposing repetition.".into());
+            return Ok(ActionAssessment {
+                policy: "sampled_action_assessment_v1".into(), actions: None, timing_issues,
+                reason: Some("Both locally measured responses need bounded, consistent sampled holds before proposing repetition.".into()),
+            });
         }
-        return Ok(ObservedActions {
-            frame_metadata_sha256: hash,
-            actions: [0, 1, 0, 1].map(|i| episodes[i].action.clone()).into(),
-            episodes,
-            episode_order: Some(vec![0, 1, 0, 1]),
+        return Ok(ActionAssessment {
+            policy: "sampled_action_assessment_v1".into(),
+            timing_issues,
+            reason: None,
+            actions: Some(ObservedActions {
+                frame_metadata_sha256: hash,
+                actions: [0, 1, 0, 1].map(|i| episodes[i].action.clone()).into(),
+                episodes,
+                episode_order: Some(vec![0, 1, 0, 1]),
+            }),
         });
     }
     if episodes.len() != 4
@@ -184,14 +231,66 @@ pub fn actions(
                     > 50
         })
     {
-        return Err("Observe four separated responses with a repeated two-action sequence and consistent timing first.".into());
+        return Ok(ActionAssessment {
+            policy: "sampled_action_assessment_v1".into(), actions: None, timing_issues,
+            reason: Some("Observe four separated responses with a repeated two-action sequence and consistent timing first.".into()),
+        });
     }
-    Ok(ObservedActions {
-        frame_metadata_sha256: hash,
-        actions: episodes.iter().map(|e| e.action.clone()).collect(),
-        episodes,
-        episode_order: None,
+    Ok(ActionAssessment {
+        policy: "sampled_action_assessment_v1".into(),
+        timing_issues,
+        reason: None,
+        actions: Some(ObservedActions {
+            frame_metadata_sha256: hash,
+            actions: episodes.iter().map(|e| e.action.clone()).collect(),
+            episodes,
+            episode_order: None,
+        }),
     })
+}
+
+/// Inspect every accepted question and separate alternative, including paths
+/// that cannot currently use the planner's zero/false probe. No proposed edits.
+pub fn investigation_questions(review: &Review, inventory: &Inventory) -> Result<Vec<Value>> {
+    // Activity is independently checked by the caller. A missing or damaged
+    // observation must not hide otherwise valid metadata questions.
+    let mut metadata = review.clone();
+    metadata.play_context = None;
+    let batch = review
+        .batch
+        .as_ref()
+        .ok_or("No completed hypotheses are available.")?;
+    if review.status != "complete"
+        || review.error.is_some()
+        || review.report_sha256 != inventory.report_sha256
+        || batch.report_sha256 != inventory.report_sha256
+    {
+        return Err(
+            "The metadata review is incomplete or belongs to a different catalogue.".into(),
+        );
+    }
+    let mut questions = vec![];
+    for hypothesis in &batch.accepted {
+        for (row, role) in std::iter::once((&hypothesis.candidate, "primary")).chain(
+            hypothesis
+                .alternatives
+                .iter()
+                .map(|row| (row, "alternative")),
+        ) {
+            let reference = Reference {
+                review_id: review.evidence_id.clone(),
+                hypothesis_path_id: hypothesis.candidate.path_id.clone(),
+                selected_path_id: row.path_id.clone(),
+            };
+            let origin = h::resolve(&metadata, &reference, inventory)?;
+            questions.push(json!({"hypothesis_ref": reference,
+                "selected_candidate": origin.selected()?, "selection_role": role,
+                "name": hypothesis.proposal.name, "explanation": hypothesis.proposal.explanation,
+                "question": hypothesis.proposal.question, "citations": hypothesis.proposal.citations,
+                "meaning_verified": false}));
+        }
+    }
+    Ok(questions)
 }
 
 pub fn choices(
@@ -380,6 +479,69 @@ pub(crate) mod tests {
         let mut incomplete = evidence;
         incomplete.episodes.retain(|e| e.first_interval < 7);
         assert!(actions(&context, &frames, &incomplete).is_err());
+    }
+
+    #[test]
+    fn unavailable_replay_retains_the_observed_timing_without_clamping() {
+        let (mut context, mut frames, _) = observed();
+        // Longer intervals and holds, with the same complete sampling cadence.
+        let keys = [0, 68, 0, 65, 0, 68, 0, 65, 0];
+        for (i, frame) in frames.iter_mut().enumerate() {
+            let interval = frame.capture_interval.as_mut().unwrap();
+            interval.begin_us *= 2;
+            interval.end_us *= 2;
+            let prior = if i == 0 {
+                0
+            } else {
+                (i as u64 - 1) * 2_000_000 + 2000
+            };
+            let key = if i == 0 { 0 } else { keys[i - 1] };
+            let mut buffer = crate::inputs::Buffer::new("clock".into(), "owner".into(), 0);
+            for t in (prior + 10..interval.end_us).step_by(16_000) {
+                buffer
+                    .push(crate::inputs::Poll {
+                        begin_us: t,
+                        end_us: t + 1,
+                        focus: crate::inputs::Focus::SelectedForeground,
+                        down: if key != 0 && (prior + 200_000..prior + 1_400_000).contains(&t) {
+                            vec![key]
+                        } else {
+                            vec![]
+                        },
+                    })
+                    .unwrap();
+            }
+            frame.input_context = buffer.window(prior, interval.end_us);
+        }
+        let evidence = crate::play_evidence::analyze(
+            &frames,
+            [0., 12., 0., 12., 0., 12., 0., 12., 0.]
+                .into_iter()
+                .map(|d| crate::play_evidence::Measurement {
+                    difference: Some(d),
+                    error: None,
+                })
+                .collect(),
+        )
+        .unwrap();
+        context.source = crate::play_context::select(&frames, &evidence, "clock", 1)
+            .unwrap()
+            .unwrap();
+        let assessment = assess_actions(&context, &frames, &evidence).unwrap();
+        assert!(assessment.actions.is_none());
+        assert_eq!(assessment.timing_issues.len(), 4);
+        assert!(
+            assessment
+                .timing_issues
+                .iter()
+                .all(|i| i.estimated_hold_ms > 1000)
+        );
+        assert_eq!(
+            actions(&context, &frames, &evidence).unwrap_err(),
+            assessment.reason.unwrap()
+        );
+        frames[0].sha256 = "f".repeat(64);
+        assert!(assess_actions(&context, &frames, &evidence).is_err());
     }
 
     #[test]
@@ -679,6 +841,41 @@ pub(crate) mod tests {
             choices[0]["selected_candidate"]["path_id"],
             choices[3]["selected_candidate"]["path_id"]
         );
+    }
+
+    #[test]
+    fn inspection_keeps_questions_outside_probe_bounds_and_without_activity() {
+        let (mut review, mut inventory, _) = question_fixture();
+        inventory.types[0].fields[0].samples[0].value = json!("0");
+        inventory.types[0].fields[0].values = vec![json!("0"), json!("8")];
+        inventory.types[1].fields[0].samples[0].value = json!("50");
+        inventory.types[1].fields[0].values = vec![json!("50")];
+        competing_questions(&mut review, &inventory);
+        review.play_context = None;
+        let questions = investigation_questions(&review, &inventory).unwrap();
+        assert_eq!(questions.len(), 6); // two primaries and four cited alternatives
+        assert!(
+            questions
+                .iter()
+                .all(|q| q.get("value").is_none() && q["meaning_verified"] == false)
+        );
+        assert_eq!(questions[0]["selected_candidate"]["value"], "0");
+        assert!(
+            questions
+                .iter()
+                .any(|q| q["selected_candidate"]["value"] == "50")
+        );
+        let alternative = questions
+            .iter()
+            .find(|q| q["selected_candidate"]["field_name"] == "lookSpeed")
+            .unwrap();
+        assert_eq!(alternative["selection_role"], "alternative");
+        assert_eq!(alternative["name"], "walkSpeed");
+        let mut changed = inventory.clone();
+        changed.types[1].fields[0].samples[0].value = json!("51");
+        assert!(investigation_questions(&review, &changed).is_err());
+        review.status = "pending".into();
+        assert!(investigation_questions(&review, &inventory).is_err());
     }
     fn competing_questions(review: &mut Review, inventory: &Inventory) {
         let selection = h::select(inventory, &[0, 1]).unwrap();

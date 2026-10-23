@@ -180,6 +180,49 @@ fn agent_submission_keeps_activity_in_durable_receipts_without_republishing_old_
     let base = directory.join("runtime");
     let first = command(&mut engine, &first_request, &base).unwrap();
     assert_eq!(first["activity_transfer"]["retained"], true);
+    // Inspection preserves independently valid questions when their retained
+    // image evidence is unavailable. This target panics on reads or captures.
+    let inspect = reversebolt_core::Command {
+        action: "inspect_runtime_investigation".into(),
+        source: "fixture-agent".into(),
+        args: json!({"catalog_id":catalog,"review_id":first["review"]["evidence_id"]}),
+    };
+    let before_inspection = json!(engine.live.as_ref().unwrap().view);
+    let packet = command(&mut engine, &inspect, &base).unwrap();
+    assert_eq!(packet["questions"].as_array().unwrap().len(), 1);
+    assert_eq!(
+        packet["questions"][0]["selected_candidate"],
+        json!(selection.rows[0])
+    );
+    assert!(packet["activity"].is_null());
+    assert!(packet["activity_error"].is_string());
+    assert_eq!(packet["execution_authority"], false);
+    assert_eq!(json!(engine.live.as_ref().unwrap().view), before_inspection);
+    engine
+        .live
+        .as_mut()
+        .unwrap()
+        .view
+        .memory_process
+        .as_mut()
+        .unwrap()
+        .created = "fedcba9876543210".into();
+    assert!(command(&mut engine, &inspect, &base).is_err());
+    engine
+        .live
+        .as_mut()
+        .unwrap()
+        .view
+        .memory_process
+        .as_mut()
+        .unwrap()
+        .created = "0123456789abcdef".into();
+    let mut stale_inspect = inspect.clone();
+    stale_inspect.args["review_id"] = json!(original.evidence_id);
+    assert!(command(&mut engine, &stale_inspect, &base).is_err());
+    stale_inspect = inspect;
+    stale_inspect.args["extra"] = json!(true);
+    assert!(command(&mut engine, &stale_inspect, &base).is_err());
     assert_eq!(first["review"]["model"], "agent:fixture-agent");
     assert_eq!(
         first["activity_motion_comparison"]["relation"],

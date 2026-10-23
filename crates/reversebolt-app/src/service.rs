@@ -149,6 +149,7 @@ impl EngineHandle {
                         | "read_activity_experiment"
                         | "read_change_evidence"
                         | "read_runtime_test"
+                        | "inspect_runtime_investigation"
                         | "plan_runtime_comparisons"
                 );
                 let result = tests.before(&mut engine, &command).and_then(|()| {
@@ -206,6 +207,7 @@ impl EngineHandle {
                             | "restore_runtime_change"
                             | "search_runtime_values"
                             | "show_runtime_values"
+                            | "inspect_runtime_investigation"
                             | "plan_runtime_comparisons"
                             | "read_runtime_inventory"
                             | "submit_runtime_hypotheses"
@@ -277,6 +279,7 @@ impl EngineHandle {
                                 | "restore_runtime_change"
                                 | "search_runtime_values"
                                 | "show_runtime_values"
+                                | "inspect_runtime_investigation"
                                 | "plan_runtime_comparisons"
                                 | "read_runtime_inventory"
                                 | "submit_runtime_hypotheses"
@@ -470,7 +473,10 @@ pub(crate) fn native_command(
                 &directory.parent().unwrap_or(directory).join("runtime"),
             );
         }
-        "plan_runtime_comparisons" | "read_runtime_inventory" | "submit_runtime_hypotheses" => {
+        "inspect_runtime_investigation"
+        | "plan_runtime_comparisons"
+        | "read_runtime_inventory"
+        | "submit_runtime_hypotheses" => {
             return crate::runtime_naming_bridge::command(
                 engine,
                 command,

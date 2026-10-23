@@ -214,6 +214,28 @@ fn automatic_input_handoff_preserves_questions_and_reaches_comparison_planning()
                     4
                 );
                 assert!(comparison["next"].is_object());
+                let before_inspection = json!(engine.live.as_ref().unwrap().view);
+                let inspection = naming::command(
+                    &mut engine,
+                    &reversebolt_core::Command {
+                        action: "inspect_runtime_investigation".into(),
+                        source: "fixture-agent".into(),
+                        args: json!({"catalog_id":catalog,"review_id":derived.evidence_id}),
+                    },
+                    &base,
+                )
+                .unwrap();
+                assert!(inspection["activity_error"].is_null());
+                assert_eq!(
+                    inspection["activity"]["replay"]["actions"],
+                    comparison["observed_actions"]
+                );
+                assert_eq!(
+                    inspection["activity"]["context"],
+                    comparison["activity_context"]
+                );
+                assert_eq!(inspection["questions"].as_array().unwrap().len(), 1);
+                assert_eq!(json!(engine.live.as_ref().unwrap().view), before_inspection);
                 let report = crate::runtime_bridge::catalog_report(
                     &engine.live.as_ref().unwrap().view.runtime,
                 )
