@@ -4,6 +4,31 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Native product recovery (2026-10-23): **38%**. Published preview
+`0.1.0-20261023-070135` completed two fresh Viewfinder comparisons with a full game
+and engine restart between them. The first new test retained its own recipe in
+ordinary preparation; automatic discovery in the second process independently
+rechecked its evidence and showed a unique fresh candidate. MCP recovery returned
+that same candidate and supplied the new comparison template. Both comparisons
+observed suppression and return after exact restoration. No research backfill or
+production code change was used for the new product history.
+
+The frozen audit checks 36 automatic images, 24 short input holds, source recipes,
+fresh report/process bindings, durable history, input receipts, value readbacks and
+restoration order. Independent full-frame gray measurements agree. All 14 helpers
+unloaded; 516 managed pauses recorded zero helper allocations/deallocations. Four
+setup images and two Continue clicks were used; no measurement image was manually
+viewed and no model was called. Save and backup bytes remained identical. Owned
+processes exited and Anode was released; the user's open editor is preserved.
+
+Intent/editing increases from **2/10 to 3/10** for verified durable recovery and
+revalidation in the shared product. Other credits remain foundation 4, native 6,
+observation 5, discovery 8, validation 5, collaboration 7 and generalization 0.
+The existing 494-test/Clippy/formatting-checked preview remains selected by the
+desktop shortcut. Next: unchanged evaluation on an independent game beyond the
+already investigated Viewfinder, Sable, Hyperbolica and Manifold Garden targets.
+[Protocol, native evidence and limits](../research/runtime-recovery/PRODUCT.md).
+
 Product recovery integration (2026-10-23): **37% unchanged**. New comparisons
 retain compact route metadata in their existing durable history. Runtime discovery
 now rechecks up to eight latest remembered routes and shows unique fresh candidates

@@ -1,0 +1,178 @@
+{
+  "artifact_audit": "passed",
+  "preview": "0.1.0-20261023-070135",
+  "frozen_sha256": "5005689555628511a70fbdc44995cfb9e74055cc2a27be89ede2a29a3f3ab841",
+  "phases": [
+    {
+      "phase": "learn",
+      "test_id": "b708f878-87e7-448a-84a2-c094299cb666",
+      "change_id": "4012ff79-57bd-49c2-bbc4-c50f2958bd72",
+      "candidate_id": "c81d8fd67128202b22b80dea232bba9f8d8dbabae040e1a825ffd66226f2f939",
+      "recipe_report_sha256": "353750ad5e4072903d4473f0eec63dd0d8474c2a13bcae1bbd613588eee4174e",
+      "product_medians": [
+        14.146140545105917,
+        0.1388730368882396,
+        14.066988335463842
+      ],
+      "independent_full_frame_gray_medians": [
+        14.218469509548612,
+        0.562138671875,
+        14.074125976562499
+      ],
+      "input_holds": 12,
+      "automatic_measurement_images": 18,
+      "restored": true,
+      "setup": {
+        "setup_images_viewed": 2,
+        "menu_actions": 1,
+        "action": "Continue click on observed menu",
+        "game_pid": 16540,
+        "main_editor_preserved": 98332,
+        "measurement_images_viewed": 0,
+        "gameplay_ready": true
+      }
+    },
+    {
+      "phase": "recover",
+      "test_id": "28497624-46c8-44b0-b338-d0ac4a2aa127",
+      "change_id": "a1b45dc7-dca0-4e1f-86d2-0ab5b04ede69",
+      "candidate_id": "b37125d5e7c937577ed5f21b1fd387956c8cc4e4244d4b67fca9114672e2ef91",
+      "recipe_report_sha256": "b3359fc68c3c6412fa4a0aa7eeabedb810a1c83b58279d2600367dee83fa1d47",
+      "product_medians": [
+        13.939483085281228,
+        0.14128697954711467,
+        14.142981875456538
+      ],
+      "independent_full_frame_gray_medians": [
+        13.986769205729168,
+        0.5724549696180555,
+        14.218880750868056
+      ],
+      "input_holds": 12,
+      "automatic_measurement_images": 18,
+      "restored": true,
+      "setup": {
+        "setup_images_viewed": 2,
+        "menu_actions": 1,
+        "action": "Continue click on observed menu",
+        "game_pid": 80084,
+        "main_editor_preserved": 98332,
+        "measurement_images_viewed": 0,
+        "gameplay_ready": true
+      }
+    }
+  ],
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\124998a6-d6eb-4e02-b25a-9e571c2e02b2\\stdout.jsonl",
+      "sha256": "e3672341b7441a2f09dd1486963aef0e39e0c01cf9b47a1d5b42f57cfe578b02",
+      "elapsed_ms": 3127
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\1e4ab76c-ff21-4c58-ae7e-c7e7c9a9f6c2\\stdout.jsonl",
+      "sha256": "04b4152c780a7c203c4fdb1cdc0af562ab932484e77e8da61fb6e51f30f863ab",
+      "elapsed_ms": 3138
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\5c328581-7c25-4446-8583-9f5c124c20c6\\stdout.jsonl",
+      "sha256": "bfa54f44e9e701e089d3fe99129e2e6c61cc04abd4a988a464abd83873e29e7b",
+      "elapsed_ms": 3108
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\8f652f04-f213-4b84-8796-ab6401985e7e\\stdout.jsonl",
+      "sha256": "4027a9504aec071557e6c1b243211d7e11eb6de55d3adcf27dfcebf4b150f6f1",
+      "elapsed_ms": 3167
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\bc5bd947-b46a-4666-9fc9-2f652143bb29\\stdout.jsonl",
+      "sha256": "77a25c2ce07529de4149e778cc1a77b75de52c115d9619ddd8e7f41c0c3194c6",
+      "elapsed_ms": 3386
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\d26396b7-928c-4723-afb9-c955a136e085\\stdout.jsonl",
+      "sha256": "a44cfa6e2ebada47e9fed27572723f4242ceafb330526d89f1d91338e4e8ea01",
+      "elapsed_ms": 8522
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\16540-01dd62b5340059c6\\dc56916e-aa5c-4c28-bf88-a0087a68aa77\\stdout.jsonl",
+      "sha256": "dc6af49aef9692ada9fd02d6601928d737b96dae490840d924de7f64127aab1e",
+      "elapsed_ms": 3149
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\10e6baa4-1c5b-4852-9c9a-ae6aa5508b4f\\stdout.jsonl",
+      "sha256": "f5f99969cff11aeec9b70b489d495f5fa93ce28810cb78f195afcc1beedb78cc",
+      "elapsed_ms": 3112
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\6cd04f9b-3cdc-4d87-8772-508af5d4c0d3\\stdout.jsonl",
+      "sha256": "aec5d1fefeafb41a62ae4d928d36525f49b7b00691150b69a4d1236108dbf33f",
+      "elapsed_ms": 3208
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\73596180-6d11-43d2-9a99-1b4bd7b0b13d\\stdout.jsonl",
+      "sha256": "e1f4f5f22ca765ff4324452f90a78279f26ebb5397f4e9013a7d864b07ac7d14",
+      "elapsed_ms": 3204
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\b542a593-d0e5-4a92-b55b-ca9323ec5e0a\\stdout.jsonl",
+      "sha256": "b376d96eae69e134547fc1b7a9e75e0180da4e3fb115c55c3e7519f8498eb178",
+      "elapsed_ms": 8553
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\d7a28f78-9317-41bf-b739-fc519226de82\\stdout.jsonl",
+      "sha256": "17aed9e067d18ab81b1065ae63b8c6e941110d99b761455c78830ec24fc306f9",
+      "elapsed_ms": 3177
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\d839d265-5c41-4653-a6bb-00d2af9800c5\\stdout.jsonl",
+      "sha256": "aafd65dfad55582f2e0419fc490d2d558f4b4898378e542bfa8811ce295406a3",
+      "elapsed_ms": 3174
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-native-product-v1\\data\\runtime\\80084-01dd62b594586953\\f3c80d01-cbb9-4616-ad60-5bc427f0525e\\stdout.jsonl",
+      "sha256": "e9d154cb843436189b741bd48c53c5d554664e96e2018c6116005b72dff8e1bc",
+      "elapsed_ms": 3137
+    }
+  ],
+  "pauses": 516,
+  "product_recipe_retained": true,
+  "automatic_recovery": true,
+  "mcp_recovery": true,
+  "new_native_comparisons": 2,
+  "research_backfill": false,
+  "model_calls": 0,
+  "manually_viewed_measurement_images": 0,
+  "save_bytes_unchanged": {
+    "viewfinder_0.sav": true,
+    "viewfinder_0.bak": true
+  },
+  "storage_changes": [
+    "Player-prev.log",
+    "Player.log",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/c",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/e",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/g",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/s"
+  ],
+  "cleanup": {
+    "remaining_owned": [],
+    "anode_lease_released": true,
+    "checked_owned_ids": [
+      16540,
+      28676,
+      38300,
+      99188,
+      80084,
+      58240,
+      97216,
+      5404
+    ],
+    "preserved_editor": {
+      "pid": 98332,
+      "session": 1,
+      "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe"
+    },
+    "owned_processes_exited": true
+  },
+  "limitation": "Known development game and action-specific rendered response; no exact semantics, persistent actor identity, complete rollback or independent-game generalization."
+}

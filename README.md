@@ -17,9 +17,10 @@ strict Clippy and formatting pass.
 New comparisons retain route metadata with their evidence. After discovery,
 checked remembered controls can reappear automatically with a "Needs a fresh
 check" explanation; agents use `reversebolt_recover_runtime_control` through the
-same engine. A retrospective native-evidence replay verifies both paths without
-new gameplay or model calls. Older tests without recipes require a new comparison.
-Progress remains **37%**; this is not new independent-game generalization.
+same engine. Two new native comparisons now verify automatic recovery and fresh
+effect revalidation across a full game/engine restart, with exact restoration and
+unchanged save bytes. Older tests without recipes require a new comparison.
+Progress is **38%**; this does not establish independent-game generalization.
 [Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
 
 **Research preview:** connect a running application to start discovery automatically.

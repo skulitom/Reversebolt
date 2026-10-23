@@ -57,11 +57,52 @@ That historical comparison predates recipe retention. The replay deliberately
 adds a recipe from its own archived discovery to an **isolated research copy**,
 then reopens the stores. It does not modify the original evidence or demonstrate
 automatic migration of old production history. Synthetic fixtures cover recipe
-persistence; a newly prepared native comparison using this product integration
-remains future work. No additional generalization credit is claimed: **37%**.
+persistence. The subsequent prospective native run below verifies that retention
+and automatic recovery in the product itself.
 
 Run `replay-product.py NEW_OUTPUT_DIRECTORY` to reproduce with the local archived
 evidence. The manifest pins source files and input reports; `result.json` records
 the checked file hashes and output bindings. Original artifacts are under
 `test-results/runtime-recovery-product-v1`; the compact result is
 [product-replay-results.json](product-replay-results.json).
+
+## Prospective product test across a full restart
+
+Published preview `0.1.0-20261023-070135` completed two new native comparisons in
+separate Viewfinder processes, with the headless engine closed and reopened
+between them. The first comparison saved its own route recipe during ordinary
+MCP preparation. Its historical seed was used only by the generic proposal CLI;
+no old test was imported into product storage. In the second process, automatic
+discovery rechecked the new test's retained evidence and displayed a unique fresh
+candidate. `recover_runtime_control` independently returned the same candidate
+and the new preparation template used for the second comparison.
+
+| Fresh process | Product response: baseline / changed / restored | Independent full-frame response |
+|---|---|---|
+| Learn | 14.146 / 0.139 / 14.067 | 14.218 / 0.562 / 14.074 |
+| Recover | 13.939 / 0.141 / 14.143 | 13.987 / 0.572 / 14.219 |
+
+These are image-difference measurements, not physical speed. Both runs restored
+the original value and observed the response return. The audit checks the two
+process identities and engine boots, unchanged first-test history, source recipe
+and fresh report bindings, both MCP paths, all 36 images, 24 short input holds,
+input execution receipts, value readbacks and ordered restoration. All 14 helpers
+completed and unloaded. Across 516 recorded managed pauses, helper allocations
+and deallocations were zero.
+
+Only four setup images were viewed, with two Continue clicks in total. No
+measurement image was manually viewed and no model was called. Save and backup
+bytes remained identical; normal logs/analytics changed. All owned test processes
+exited, Anode was released, and main-desktop editor PID 98332 remained running.
+The tested app/MCP/loader/helper are the exact packaged binaries already selected
+by the desktop shortcut. No production code changed for this evaluation.
+
+Intent/editing credit rises from **2/10 to 3/10** for durable knowledge reused and
+revalidated after a complete product/game restart: **38/100** overall. This is
+still a known development game. Exact semantic meanings, persistent actor identity,
+composed changes, full world rollback and independent-game transfer remain unproven.
+
+- [Frozen protocol](NATIVE-PRODUCT-PROTOCOL.md), [freezer](freeze-native-product.py),
+  [native runner](run-native-product.py), [audit](audit-native-product.py).
+- [Audited result](native-product-results.json).
+- Complete local artifacts: `test-results/runtime-recovery-native-product-v1`.
