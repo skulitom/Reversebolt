@@ -25,6 +25,14 @@ relevance and effects remain unverified. Manual MCP submissions retain their
 canonical citation contract. The package passes the owned native regression.
 [Evidence references, failures and follow-up](research/evidence-references/README.md).
 
+The current preview now completes automatic discovery → comparison → restoration
+in Hyperbolica. It chose the walking-speed hypothesis itself, changed 2.25 to 0,
+measured a 93% reduction in rendered response, restored the original bytes, and
+observed the response return. A separate image metric confirms the direction.
+The save is unchanged. This supports a reversible behavioral effect, not exact
+physical units or unseen-game generalization. Progress is **39%**.
+[Native Hyperbolica evidence and limits](research/hyperbolica-effects/README.md).
+
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native
 fixture regression preserves typed paths, guarded edits and restoration with
@@ -39,7 +47,7 @@ check" explanation; agents use `reversebolt_recover_runtime_control` through the
 same engine. Two new native comparisons now verify automatic recovery and fresh
 effect revalidation across a full game/engine restart, with exact restoration and
 unchanged save bytes. Older tests without recipes require a new comparison.
-Progress is **38%**; this does not establish independent-game generalization.
+That recovery evidence does not establish independent-game generalization.
 [Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
 
 The original independent Vampire Survivors trial stopped at the native metadata

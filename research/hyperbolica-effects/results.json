@@ -1,0 +1,411 @@
+{
+  "artifact_audit": "passed",
+  "preview": "0.1.0-20261023-093127",
+  "setup": {
+    "setup_images_viewed": 3,
+    "actions": [
+      {
+        "action": "click",
+        "x": 641,
+        "y": 419,
+        "purpose": "Continue existing save"
+      }
+    ],
+    "gameplay_scene_visible": true,
+    "measurement_images_manually_viewed": 0,
+    "time_ns": 1792744880931361100
+  },
+  "audit_source_sha256": "74d372215971682cfdadde71272e4743311059a178c5780b572055640bebaff7",
+  "progress_percent": 39,
+  "frozen_sha256": "a310108c85dc7c4d7a1d17e98c7957e8abf5465c64379c0312b0cb8d16dc22e0",
+  "automatic_discovery_images": 15,
+  "input_holds": 4,
+  "manually_viewed_measurement_images": 0,
+  "jobs": [
+    {
+      "phase": "Completed",
+      "error": null
+    }
+  ],
+  "naming": {
+    "status": "complete",
+    "error": null,
+    "receipt_sha256": "ce7a4233a1fc375dc76c62335a7584f3b5ab95e27566fb7a70df8b7ea13cea35",
+    "metadata_model_calls": 7,
+    "activity": {
+      "error": null,
+      "observation": {
+        "consistent_visible_change": true,
+        "description": "In both pairs, the central desk and chair shift rightward by roughly 56 pixels. The robot on the right also moves right, partially exiting the frame. The background tree and sky remain largely static. The consistent rightward displacement of foreground objects across both intervals indicates a uniform screen-space shift.",
+        "uncertainty": "The shift is consistent in direction and magnitude across both pairs, but the cause (camera pan vs. object movement) is unknown. Some background elements show minor shifts, suggesting possible parallax or measurement noise. The exact nature of the motion remains ambiguous."
+      },
+      "model_calls": 1
+    },
+    "types": 184,
+    "fields": 603,
+    "reachable_paths": 22146,
+    "questions": [
+      {
+        "name": "walking speed",
+        "question": "Does the walking speed value control the player's movement rate?",
+        "field": "walkingSpeed",
+        "observed_value": "2.25",
+        "path_id": "db8754d502f6f0be72ac65211dcdfe1e491410840f147f424abbbb74099a9087",
+        "alternatives": []
+      },
+      {
+        "name": "jump speed",
+        "question": "Does the jump speed value affect the height or force of the player's jump?",
+        "field": "jumpSpeed",
+        "observed_value": "2.2",
+        "path_id": "12e30db6b6a390001b5951130c2bd0db187e01b518aa107217e2ce52c36434ac",
+        "alternatives": []
+      }
+    ],
+    "rejected": []
+  },
+  "image_models": [
+    {
+      "receipt_sha256": "fcc417936ebfff5ffd97db792b78dd146a21fcb7f514f8c8d67dc7e946634792",
+      "calls": 6,
+      "summary": "A low-poly outdoor scene with a desk and chair in the center, a small tree behind it, a cyan robot figure on the right, red cone plants and a grey rock on the left, and a small orange speck in the sky that shifts slightly between frames."
+    }
+  ],
+  "plan_available": true,
+  "comparison": {
+    "test_id": "4d1a62e0-58ee-45bd-8ea2-cc1ddd4ebc0e",
+    "candidate_id": "db8754d502f6f0be72ac65211dcdfe1e491410840f147f424abbbb74099a9087",
+    "phase": "complete",
+    "hypothesis": "Does the walking speed value control the player's movement rate?",
+    "value": "0",
+    "assessment": {
+      "limitation": "A comparison of rendered response within these observations. Windows key samples are not proof of delivered game actions. Screen changes do not measure physical speed or identify a gameplay property; unobserved and downstream effects remain unknown.",
+      "medians": [
+        13.845005478451425,
+        0.9459630661066472,
+        13.096272370343318
+      ],
+      "reason": "Less rendered response was observed after the edit, and response returned after recovery.",
+      "status": "suppression_observed"
+    },
+    "independent_full_frame_gray_medians": [
+      13.177941666666667,
+      1.1057098484848487,
+      12.171840151515152
+    ],
+    "actions": [
+      {
+        "hold_ms": 213,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 199,
+        "keys": [
+          65
+        ]
+      },
+      {
+        "hold_ms": 196,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          65
+        ]
+      }
+    ],
+    "measurement_images": 18,
+    "input_holds": 12,
+    "comparison_sha256": "0ca95f10e61bdb71d6d2eb2cf44cdd444eedebf8504b49e7f9de7cd91b954d9e",
+    "remembered_recipe_retained": true
+  },
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\18b77ca5-ff04-4ef9-a965-623c7d3ebedf\\stdout.jsonl",
+      "events_sha256": "e52242f4f157658bacb8fe4560fa02a9808b5cb302b38d77a68341b060c81daf",
+      "report_sha256": "23c1587c4a5f444fa5306b6de37820c2983588520f0efb56da2927732c0f4e2c",
+      "elapsed_ms": 127,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 119,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\2bc1dcc1-6244-4158-beb8-5012f74e6299\\stdout.jsonl",
+      "events_sha256": "dbc3b3be225171442c26ee66df398758dddd89638b1420c008044a3262c8d8c1",
+      "report_sha256": "862a645e6cac92694cdc4cfb8d98190e9b34f44b0a092450754b466473b6071d",
+      "elapsed_ms": 125,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 118,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\520f6bfa-04e6-4f6f-b00d-484f61f13b03\\stdout.jsonl",
+      "events_sha256": "f6ad057e211c5cb84e8288e3927e37f490aea46a60174d48a8dc138ae94ac1f0",
+      "report_sha256": "e4bce5c1529c1d21842c841582eff2cb0396ef30ef724c88e1d3f9a532f2a893",
+      "elapsed_ms": 123,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 116,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\5abfd7f1-0739-49e1-b824-57b1e44da15c\\stdout.jsonl",
+      "events_sha256": "8c355671b344575df70d0157f01fa9725f7b180f67a33816aee1e8dcccdd1760",
+      "report_sha256": "a0b946d631fea066e6a2baad72605e7d3d8983ed804d6c396b489810fba9e8ca",
+      "elapsed_ms": 1888,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 1652,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 1149,
+        "loaded_fields": 6271,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": false,
+      "roots_complete": true
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\739d068b-bf82-49d8-b1bf-3597a8074327\\stdout.jsonl",
+      "events_sha256": "9e271dc44fa98786340d39d0327d05c7f6f5e3795dfead7f5dde150bd95a0c3f",
+      "report_sha256": "90c232e6273fa8e9bb94d558b137d748e1dbce9995cae7b2785b4ce5d97257e0",
+      "elapsed_ms": 123,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 116,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\83b666e9-4728-4bf5-80e7-7c7252fd6c22\\stdout.jsonl",
+      "events_sha256": "518186859cb5f918a8544ff5f8623aaab53c33df5b748203fdb9253484c4c8cf",
+      "report_sha256": "ac7513ca1affb07e0826ec5c1b28c6873f2001a4ea80ebd6010d3ac6a43b7a63",
+      "elapsed_ms": 123,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 115,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-effects-v1\\data\\runtime\\82840-01dd62ca148cf27f\\e4d9f9fb-3050-40cd-9fb3-bd1537358c00\\stdout.jsonl",
+      "events_sha256": "baf0b2976dfdda688d9866407ca473e89d9ed71fd45f6b4c0bdc518f21d3518c",
+      "report_sha256": "5bee0154aece7e8a3c129ab66b810edb10f47f014921aa7276d679394cf44443",
+      "elapsed_ms": 124,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 117,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 698,
+        "loaded_fields": 4774,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 5053,
+          "complete": true,
+          "field_headers_examined": 19214,
+          "open_generic_classes": 236,
+          "potential_root_owners": 527
+        },
+        "static_roots": 1435
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    }
+  ],
+  "recorded_pauses": 90,
+  "max_stop_to_resume_us": 3924,
+  "runtime_trials": [
+    {
+      "id": "0f70376c-d576-4435-a0bc-fa8be7a593d3",
+      "phase": "restored",
+      "candidate_id": "db8754d502f6f0be72ac65211dcdfe1e491410840f147f424abbbb74099a9087",
+      "original_bytes": [
+        0,
+        0,
+        16,
+        64
+      ],
+      "replacement_bytes": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "restored_bytes": [
+        0,
+        0,
+        16,
+        64
+      ],
+      "type_code": 12,
+      "record_sha256": "d26e7bed8e587d30b2fce6e1d61faad75d9a13e79e4e46912ddc0624ed35697f",
+      "original_f32": 2.25,
+      "replacement_f32": 0.0
+    }
+  ],
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\LocalLow\\CodeParade\\Hyperbolica",
+      "changes": [
+        "Player-prev.log",
+        "Player.log",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179262787700003.eccb3ad6/c",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179262787700003.eccb3ad6/e",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179262787700003.eccb3ad6/g",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179262787700003.eccb3ad6/s",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/c",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/e",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/g",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/s"
+      ]
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1256230",
+      "changes": []
+    }
+  ],
+  "cleanup": {
+    "mcp_exit_code": 0,
+    "anode_lease_released": true,
+    "preserved_editor": {
+      "responsive": true,
+      "session": 1,
+      "pid": 98332
+    },
+    "game_shutdown": "Normal close request, then verified process exit",
+    "engine_shutdown": "Owned Anode job cancelled after verified settled state",
+    "owned_processes_exited": true
+  },
+  "limitation": "Known development target. Labels and image differences alone do not verify gameplay meaning; a completed audit may retain a negative or unavailable comparison."
+}

@@ -4,6 +4,34 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Hyperbolica native effect (2026-10-23): **39%**. The unchanged current preview and
+generic evaluator automatically discovered walking/jump-speed hypotheses, chose
+the walking-speed comparison, changed 2.25 to 0, measured suppressed rendered
+response, restored the exact original bytes, and measured the response return.
+No memory field, route, address or replacement value was manually selected.
+The product medians were 13.8450 → 0.9460 → 13.0963; an independent full-frame
+grayscale metric confirms the direction (13.1779 → 1.1057 → 12.1718). These are
+image-response measures, not physical speed or complete semantic validation.
+
+The audit verifies frozen product/model/game identity, 15 discovery and 18
+comparison images, four initial probes and 12 comparison holds, exact native
+write/readback/restoration, and all seven helper unloads. Ninety recorded pauses
+show zero helper allocations/deallocations, with a 3.924 ms maximum. Setup used
+one Continue click and three images; no measurement image was manually viewed.
+The existing game save and Steam app storage are unchanged; normal logs/analytics
+changed and are retained. Owned processes exited, Anode was released and the
+main editor stayed responsive. Product code is unchanged, so the checked
+510-test preview `0.1.0-20261023-093127` remains selected.
+
+Validation earns **6/15** (previously 5/15) for this additional automatically
+selected and restored native effect. Other credits stay fixed: foundation 4/10,
+native 6/10, observation 5/15, discovery 8/20, intent 3/10, collaboration 7/10,
+generalization 0/10. Total **39/100**. Hyperbolica is a known development target;
+withheld-game generalization, exact semantics, broader consequences and this
+route's restart recovery remain unproven. Next: automatic recovery/revalidation
+of the retained control, followed by broader unchanged discovery evaluation.
+[Native protocol, measurements and audit](../research/hyperbolica-effects/README.md).
+
 Explicit evidence references (2026-10-23): **38% unchanged**. Automatic naming
 and the research relevance reviewer select IDs beside complete observed labels;
 the engine resolves exact source/index/text and applies the existing lexical
