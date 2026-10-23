@@ -29,24 +29,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     if args.len() != 4 {
-        return Err("usage: runtime-relevance-replay SAVED_NAMING_DIRECTORY NEW_OUTPUT MODEL original|reversed|opaque".into());
+        return Err("usage: runtime-relevance-replay SOURCE NEW_OUTPUT MODEL original|reversed|opaque|synthetic".into());
     }
     let source = Path::new(&args[0]);
-    let inputs = read(&source.join("input.json"))?;
-    let inventory = serde_json::from_value(inputs["inventory"].clone())?;
-    let naming: reversebolt_observer::runtime_naming::Receipt =
-        serde_json::from_value(read(&source.join("receipt.json"))?)?;
-    if naming.error.is_some() || naming.cancelled {
-        return Err("Source naming did not complete".into());
-    }
-    let selection = naming.selection.as_ref().ok_or("No source selection")?;
-    if h::select(&inventory, &selection.selected_types)? != *selection {
-        return Err("Source inventory changed".into());
-    }
-    let mut input =
-        r::Input::from_batch(selection, naming.batch.as_ref().ok_or("No source batch")?)?;
+    let mut input = if args[3] == "synthetic" {
+        let saved = read(source)?;
+        if saved["synthetic"] != true {
+            return Err("Authored challenge input must declare its synthetic origin".into());
+        }
+        let input: r::Input = serde_json::from_value(saved["input"].clone())?;
+        input.validate()?;
+        input
+    } else {
+        let inputs = read(&source.join("input.json"))?;
+        let inventory = serde_json::from_value(inputs["inventory"].clone())?;
+        let naming: reversebolt_observer::runtime_naming::Receipt =
+            serde_json::from_value(read(&source.join("receipt.json"))?)?;
+        if naming.error.is_some() || naming.cancelled {
+            return Err("Source naming did not complete".into());
+        }
+        let selection = naming.selection.as_ref().ok_or("No source selection")?;
+        if h::select(&inventory, &selection.selected_types)? != *selection {
+            return Err("Source inventory changed".into());
+        }
+        r::Input::from_batch(selection, naming.batch.as_ref().ok_or("No source batch")?)?
+    };
     match args[3].as_str() {
-        "original" => {}
+        "original" | "synthetic" => {}
         "reversed" => input.candidates.reverse(),
         "opaque" => {
             for row in &mut input.candidates {
@@ -61,7 +70,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir(output)?;
     std::fs::write(
         output.join("input.json"),
-        serde_json::to_vec_pretty(&json!({"source":args[0],"variation":args[3],"input":input}))?,
+        serde_json::to_vec_pretty(
+            &json!({"source":args[0],"variation":args[3],"synthetic":args[3] == "synthetic","input":input}),
+        )?,
     )?;
     let receipt = tokio::runtime::Runtime::new()?.block_on(async {
         reversebolt_observer::Observer::connect(&args[2])

@@ -1,5 +1,9 @@
 # Blinded raw-label relevance review
 
+The subsequent [32-case challenge](CHALLENGE.md) found an order-sensitive
+misclassification of aim sensitivity and a malformed-citation batch. It supports
+keeping this review advisory rather than using categories to hide candidates.
+
 The saved menu case continues to propose device preferences even though naming
 instructions exclude them. Its names pass the exact-label contract, demonstrating
 that lexical grounding is insufficient to establish useful gameplay meaning.

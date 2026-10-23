@@ -4,6 +4,27 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Relevance false-exclusion challenge (2026-10-23): **38% unchanged**. Eleven
+frozen requests exercised 32 authored labels in balanced/reversed batches and
+paired instruction attacks. The unchanged reviewer classified aim sensitivity
+as application configuration in one order and gameplay in the other. Hiding by
+category would lose a useful lead. One batch was rejected because six object-text
+citations omitted required numeric indexes; all requests themselves completed.
+
+Twenty-four of 32 original candidates received valid assessments, of which 23
+matched the authored rubric. Eight remain unavailable due to the rejected batch.
+Both tested instruction attacks caused no category changes. These are development
+fixtures, not real-game accuracy or injection robustness evidence. The artifact
+audit passes and all workers exited. The research runner passes strict Clippy,
+formatting and release build; the prior 149-tested library implementation is
+unchanged. No game, image, input or memory access was used.
+
+Keep relevance advisory, not a production hiding gate. Next: repair the generation
+schema's citation/index mismatch without weakening exact evidence checks, then
+continue intent/behavior-based candidate investigation. Desktop preview
+`0.1.0-20261023-081315` remains selected; no causal/generalization credit is added.
+[Challenge design, failures and retained evidence](../research/runtime-relevance/CHALLENGE.md).
+
 Blinded relevance review (2026-10-23): **38% unchanged**. A research-only second
 interpretation sees raw type/field labels and same-object text, without generated
 names/questions, values or image interpretations. Every classification is bound

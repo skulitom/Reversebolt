@@ -53,6 +53,9 @@ It sees raw observed labels rather than the generator's explanation. Reordered
 and opaque-label checks pass, but this is not independent semantic validation and
 does not filter production cards.
 [Raw-label review and limits](research/runtime-relevance/README.md).
+A broader authored challenge found an order-sensitive misclassification of aim
+sensitivity, so this review remains advisory and cannot hide candidates.
+[False-exclusion challenge](research/runtime-relevance/CHALLENGE.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
