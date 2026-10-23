@@ -23,6 +23,12 @@ unchanged save bytes. Older tests without recipes require a new comparison.
 Progress is **38%**; this does not establish independent-game generalization.
 [Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
 
+An unchanged independent Vampire Survivors trial stopped at the native metadata
+budget before producing controls. Its recorded image interpretation also reported
+a level-up menu, so movement effects were not established. The failure and storage
+changes are retained; progress remains **38%**.
+[Independent baseline and next scaling work](research/independent-vampire-survivors/README.md).
+
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and

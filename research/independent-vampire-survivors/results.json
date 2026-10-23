@@ -1,0 +1,105 @@
+{
+  "artifact_audit": "passed",
+  "native_discovery": "failed_metadata_budget",
+  "source_commit": "04c875c04dcb15600c6a7c0d5b3d685af2be5470",
+  "release": "0.1.0-20261023-070135",
+  "game_app_id": "1794680",
+  "product_and_evaluator_unchanged": true,
+  "setup": {
+    "game_pid": 99872,
+    "engine_pid": 76248,
+    "seat_session": 3,
+    "setup_images_viewed": 6,
+    "setup_screenshot_calls": 7,
+    "truncated_screenshot_not_viewed": 1,
+    "actions": [
+      {
+        "keys": "enter",
+        "purpose": "dismiss initial warning"
+      },
+      {
+        "keys": "enter",
+        "purpose": "advance static title screen"
+      },
+      {
+        "click": [
+          828,
+          468
+        ],
+        "purpose": "use offered Quick Start defaults"
+      }
+    ],
+    "gameplay_confirmed": true,
+    "manually_reviewed_measurement_images": 0,
+    "note": "The first screenshot result was truncated before compaction; six subsequent setup images were viewed. No character or stage was manually selected."
+  },
+  "automatic_images": 15,
+  "input_holds": 4,
+  "sampled_input_episodes": [
+    [
+      68
+    ],
+    [
+      65
+    ],
+    [
+      68
+    ],
+    [
+      65
+    ]
+  ],
+  "metadata_naming_calls": 0,
+  "image_model_evidence": [
+    {
+      "receipt_sha256": "851e09abeb72fe40a24cb8963cd9b3dfb5451f228a1b34b8172a4e7adfa4a7fc",
+      "calls": 3,
+      "summary": "Two near-identical frames of a 'Level Up!' menu over a dark brick background filled with multicolored particles. A stats panel sits left; Skip and Banish buttons sit right. The top bar changes color between frames."
+    }
+  ],
+  "named_controls": 0,
+  "comparisons": 0,
+  "gameplay_edits": 0,
+  "helper_elapsed_ms": 8367,
+  "helper_unloaded": true,
+  "runtime_report_sha256": "c9d331e0370f5d405770e4e4b4dc8417d0852e5305a9a9a02daeff72aff3fbe1",
+  "runtime_events_sha256": "af931f6abf7a3871b02fcc2e9726cc6c12952dd11d8cc4e1ec9dc50c5485f07a",
+  "metadata_limit_diagnosis": "The source rejects either 200000 fields or 20 seconds; the whole helper finished in 8367 ms, implicating the field-count cap. No field count or pause telemetry was retained in its error-only report.",
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\Roaming\\Vampire_Survivors",
+      "changes": []
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1794680",
+      "changes": [
+        "remote/SaveData",
+        "remotecache.vdf"
+      ]
+    }
+  ],
+  "new_storage_files": [
+    "Player.log",
+    "Unity/ShaderVariantAnalytics/ShaderRuntimeInfoEvent.json",
+    "prefs.bin"
+  ],
+  "cleanup": {
+    "owned_process_ids": [
+      99872,
+      76248,
+      43468,
+      99544
+    ],
+    "owned_processes_exited": true,
+    "remaining": [],
+    "preserved_editor": {
+      "pid": 98332,
+      "responsive": true,
+      "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe",
+      "session": 1
+    },
+    "anode_lease_released": true
+  },
+  "frozen_manifest_sha256": "4914d0a1964f665e29867e1f28ca244f2fac2cae88130d4694c8c92c16e728ba",
+  "limitation": "No runtime catalogue or tested control. The model reports a level-up menu in the first two observation frames; its interpretation is unverified and movement effects cannot be assumed. Artifact integrity and orderly cleanup do not establish generalization."
+}

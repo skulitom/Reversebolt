@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Independent Vampire Survivors baseline (2026-10-23): **38% unchanged**. The
+unchanged published build and evaluator collected fifteen images and four short
+input holds, then failed runtime discovery with `field metadata budget`. No
+catalogue, named control, comparison or gameplay edit was produced. Native
+inspection completed in 8.367 seconds and confirmed helper unload. This implicates
+the 200,000-field cap before root traversal; the error report lacks exact counters.
+
+The retained local model interpretation also describes a level-up menu during
+observation. No scene rescue was made, so gameplay movement was not established.
+Six setup images were viewed (one additional request was truncated); none of the
+measurement images were manually viewed. The frozen artifact audit passes source,
+binary, image, input and model checks. Roaming save/backup bytes are unchanged;
+Steam save/cache changed and before/after copies are retained. Owned processes
+exited and Anode was released; the user's editor remains responsive.
+
+No product code or published preview changed. Next: bounded metadata acquisition
+with explicit coverage/continuation and useful budget diagnostics, plus a valid
+gameplay baseline before effect comparisons. Generalization remains **0/10**.
+[Protocol, failed result and audit](../research/independent-vampire-survivors/README.md).
+
 Native product recovery (2026-10-23): **38%**. Published preview
 `0.1.0-20261023-070135` completed two fresh Viewfinder comparisons with a full game
 and engine restart between them. The first new test retained its own recipe in
