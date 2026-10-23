@@ -1,0 +1,165 @@
+{
+  "artifact_audit": "passed",
+  "audit_source_sha256": "954c40deb9397caa7122e56816d54a8638360221650916ab0894ddd17994595f",
+  "frozen_sha256": "cc4e27da1bb707cb5aab6cefbb5d509348991c26a9761a4e34b195ab0f4f27ab",
+  "preview": "0.1.0-20261023-093127",
+  "source_test_id": "4d1a62e0-58ee-45bd-8ea2-cc1ddd4ebc0e",
+  "source_candidate_id": "db8754d502f6f0be72ac65211dcdfe1e491410840f147f424abbbb74099a9087",
+  "new_test_id": "fd71dba8-270c-4ec5-a94a-0f1918ff95cf",
+  "new_candidate_id": "2f5872a20fe91f49b5bdf223c9410ddd40acdafffd549899f1e34d488e924b5f",
+  "source_process": {
+    "created": "01dd62ca148cf27f",
+    "pid": 82840,
+    "session": 3
+  },
+  "new_process": {
+    "created": "01dd62ccbc8e59d6",
+    "pid": 99992,
+    "session": 3
+  },
+  "source_boot": 1,
+  "new_boot": 2,
+  "automatic_recovery": true,
+  "mcp_recovery": true,
+  "matching_routes": 1,
+  "new_recipe_retained": true,
+  "original_data_preserved": true,
+  "historical_files_copied": 187,
+  "model_calls": 0,
+  "new_discovery_images": 0,
+  "comparison_images": 18,
+  "comparison_key_holds": 12,
+  "assessment": {
+    "limitation": "A comparison of rendered response within these observations. Windows key samples are not proof of delivered game actions. Screen changes do not measure physical speed or identify a gameplay property; unobserved and downstream effects remain unknown.",
+    "medians": [
+      12.019049032140249,
+      0.551842699963477,
+      11.95069679054054
+    ],
+    "reason": "Less rendered response was observed after the edit, and response returned after recovery.",
+    "status": "suppression_observed"
+  },
+  "independent_gray_medians": [
+    11.281687121212121,
+    0.6975636363636364,
+    11.092567424242425
+  ],
+  "original_bytes": [
+    0,
+    0,
+    16,
+    64
+  ],
+  "replacement_bytes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "restored_bytes": [
+    0,
+    0,
+    16,
+    64
+  ],
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\681141fc-f9db-45d4-8ff8-b458b2b7dbc5\\stdout.jsonl",
+      "sha256": "a16c8f8030f1cfe6d21e096c5a6e5b8199b0b515e4c006c64437502e2ea0882a",
+      "report_sha256": "2a3914ab3bf84ada8abb45fe5ac47b39bfea65583ba77b66079882fa911d9960",
+      "elapsed_ms": 125
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\76276f0f-5b5b-4fc7-8a74-93c919666469\\stdout.jsonl",
+      "sha256": "0677a25568d75e6fc5da7b827879a3ff1d6a94271f7d50cbb7c54b923320e8c2",
+      "report_sha256": "52777aa1c04c55cfc513c85016d8c0dfcb93f76c4daa31ce600eb3f05e86a193",
+      "elapsed_ms": 1889
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\a24d923e-3433-4e51-9dd0-0bc8bfb90135\\stdout.jsonl",
+      "sha256": "ef41c550394747f96c0782e25aa87e02fce2578785f9e2663deac9a26afb4806",
+      "report_sha256": "0b871134f4efa44951c9f6cc0b2cafd01ada4ea0c1d0dc62960d43cb490bec22",
+      "elapsed_ms": 122
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\a56cb272-18f9-44af-a5cf-77992e882c18\\stdout.jsonl",
+      "sha256": "41a656bc07347204d9e4e2507adbb405b83c4b3a28bd77dbb927668a473f0f6d",
+      "report_sha256": "d95e1d7de76816b78bf26f8fe78d75477f66d876b8738a92cfd202647b908473",
+      "elapsed_ms": 119
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\e9d9c09c-4da2-4e1a-bc76-8a86ccf6d401\\stdout.jsonl",
+      "sha256": "99fd1c893ac04b366ec9bed92061bce048d20580440fd8be35dc9c1238df8622",
+      "report_sha256": "6d2f7c1718112f92434c679c09818258afcb05ea7f91967d0d0e9777dd68be72",
+      "elapsed_ms": 122
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\eee64e30-e5fe-4a8a-9293-f636b1175c1a\\stdout.jsonl",
+      "sha256": "a6af63de0979f2d49cc0bd40884e97d0964ef95184e5e1ef09170c7b59022465",
+      "report_sha256": "390445f10a7ffb80335f70084121445a5fa13764a35a47ff940b328a3af7446c",
+      "elapsed_ms": 122
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\hyperbolica-recovery-v1\\data\\runtime\\99992-01dd62ccbc8e59d6\\f160f816-91d3-4a4e-813b-cca5e5a484f2\\stdout.jsonl",
+      "sha256": "b354737c4246ac81c6b00786fb1e372d42397aa3cbf08007775044a23ab657cf",
+      "report_sha256": "badede53eca2797ef52919558830339df2dda7ec2e554d9fee8b8361e11f16f7",
+      "elapsed_ms": 125
+    }
+  ],
+  "recorded_pauses": 90,
+  "max_pause_us": 4058,
+  "setup": {
+    "setup_images_viewed": 2,
+    "actions": [
+      {
+        "action": "focus",
+        "window": "w_79cb003bcf2d"
+      },
+      {
+        "action": "click",
+        "x": 641,
+        "y": 419,
+        "purpose": "Continue existing save"
+      }
+    ],
+    "gameplay_scene_visible": true,
+    "measurement_images_manually_viewed": 0,
+    "time_ns": 1792745996060303600
+  },
+  "cleanup": {
+    "mcp_exit_code": 0,
+    "owned_processes_exited": true,
+    "anode_lease_released": true,
+    "preserved_editor": {
+      "responsive": true,
+      "pid": 98332,
+      "session": 1
+    },
+    "game_shutdown": "Normal window close followed by verified process exit",
+    "engine_shutdown": "Owned job cancelled after verified settled state"
+  },
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\LocalLow\\CodeParade\\Hyperbolica",
+      "changes": [
+        "Player-prev.log",
+        "Player.log",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/c",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/e",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/g",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274509800003.b5d3a17c/s",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274611500005.ffab3d7f/c",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274611500005.ffab3d7f/e",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274611500005.ffab3d7f/g",
+        "Unity/6452a880-bc05-4cd0-98d0-11e98d1be907/Analytics/ArchivedEvents/179274611500005.ffab3d7f/s"
+      ]
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1256230",
+      "changes": []
+    }
+  ],
+  "save_unchanged": true,
+  "progress_percent": 40,
+  "limitation": "Known development target and one action-specific visual effect after one restart. Exact semantics, persistent actor identity, scene/load recovery, downstream effects and withheld-game generalization remain unproven."
+}

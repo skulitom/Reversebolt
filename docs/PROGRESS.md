@@ -4,6 +4,32 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Hyperbolica restart recovery (2026-10-23): **40%**. A new game process and engine
+reopened an exact copy of the prior durable session. Automatic discovery
+rechecked the genuine positive test and found one fresh route/candidate needing
+revalidation. The shared MCP recovery command agreed and supplied a fresh
+preparation template without edit authority. No model, field/address selection,
+history rewriting or recipe backfill was used.
+
+The new comparison passed its baseline, changed 2.25 to 0, measured suppression,
+restored exact original bytes and measured the response return. Product medians
+were 12.0190 → 0.5518 → 11.9507; independent full-frame grayscale medians were
+11.2817 → 0.6976 → 11.0926. The audit checks new identities/boot, canonical
+test/recipe bindings, original and copied history integrity, all 18 new images,
+12 key holds, guarded writes/readbacks, chronology and seven helper unloads.
+Ninety recorded pauses have zero helper allocations/deallocations and a 4.058 ms
+maximum. Setup used two images, one focus action and one Continue click; no
+measurement image was manually reviewed. Original data, game save and Steam
+app storage are unchanged. Owned processes exited and Anode was released.
+
+Intent/editing earns **4/10** (previously 3/10) for native recovery/revalidation
+of an automatically learned control in another game. Other credits remain:
+foundation 4/10, native 6/10, observation 5/15, discovery 8/20, validation 6/15,
+collaboration 7/10, generalization 0/10. Total **40/100**. Scene/load changes,
+game updates, exact semantics and withheld-game acceptance remain unproven.
+The unchanged 510-test preview stays selected and the user's editor is preserved.
+[Restart protocol, fresh comparison and audit](../research/hyperbolica-recovery/README.md).
+
 Hyperbolica native effect (2026-10-23): **39%**. The unchanged current preview and
 generic evaluator automatically discovered walking/jump-speed hypotheses, chose
 the walking-speed comparison, changed 2.25 to 0, measured suppressed rendered

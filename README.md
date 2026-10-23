@@ -30,8 +30,14 @@ in Hyperbolica. It chose the walking-speed hypothesis itself, changed 2.25 to 0,
 measured a 93% reduction in rendered response, restored the original bytes, and
 observed the response return. A separate image metric confirms the direction.
 The save is unchanged. This supports a reversible behavioral effect, not exact
-physical units or unseen-game generalization. Progress is **39%**.
+physical units or unseen-game generalization.
 [Native Hyperbolica evidence and limits](research/hyperbolica-effects/README.md).
+
+After a full game/engine restart, automatic discovery recovers this control from
+its genuine saved recipe. A fresh comparison again observes suppression and
+return, with exact restoration, zero model calls and an unchanged save.
+Progress is **40%**; scene/load transitions and withheld-game acceptance remain.
+[Hyperbolica restart recovery and revalidation](research/hyperbolica-recovery/README.md).
 
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native
