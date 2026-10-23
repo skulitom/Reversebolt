@@ -4,6 +4,29 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Bounded type-selection convergence (2026-10-23): **38% unchanged**. Complete
+pages now receive explicit nomination allowances checked in prompts, schemas,
+responses and receipts. Once there are at most eight pages, their combined
+allowance is eight. The four-round, 24-selection-call and 12,000-byte limits remain;
+page grouping can still discard useful candidates and large singleton rows can
+still fail explicitly. No game/field-specific ranking was added.
+
+Five frozen saved-report replays complete and pass their evidence audit. The
+Vampire V2 inventory is unchanged: selection now reaches eight types in two rounds
+(364 → 40 → 8), with 17 selection and eight field-review calls. Four provisional
+questions are accepted and one is rejected. Earlier gameplay yields nine accepted
+questions, the menu two unwanted device settings, the owned fixture one prior
+object-text fallback, and the opaque-label case none. These outcomes show bounded
+convergence, not verified semantics, effects or independent generalization.
+
+All 497 ordinary workspace tests, strict Clippy, formatting and release build pass.
+Preview `0.1.0-20261023-081315` passes packaged headless dispatch and the 65-tool
+MCP check and is selected by the desktop shortcut. The native helper is unchanged;
+the user's existing editor stays open. No game, memory access, input or manual
+image review was needed for the saved-case experiment. Next: useful-candidate
+relevance and a valid gameplay baseline before effect comparisons.
+[Protocol, outcomes and limits](../research/bounded-type-selection/README.md).
+
 Vampire Survivors reader rerun (2026-10-23): **38% unchanged**. The separately
 frozen preview `0.1.0-20261023-074606` gets past the earlier metadata failure:
 44,050 fields in 6,073 layouts, 5.043 seconds for native inspection and confirmed

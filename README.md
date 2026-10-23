@@ -9,17 +9,17 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-074606` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-081315` passed packaged headless
 startup and the 65-tool MCP catalogue check. The desktop shortcut selects it for
-the next launch; the existing editor window stays open. All 494 workspace tests,
+the next launch; the existing editor window stays open. All 497 ordinary workspace tests,
 strict Clippy and formatting pass.
 
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native
 fixture regression preserves typed paths, guarded edits and restoration with
 200,001 unrelated fields. A fresh Vampire Survivors run now produces a partial
-catalogue in 5.043 seconds, but automatic naming still fails to reach its shortlist
-limit. No new usable control or gameplay effect was established.
+catalogue in 5.043 seconds. Its saved inventory now passes revised automatic naming,
+yielding four provisional questions. No gameplay effect was established.
 [Metadata scaling and limits](research/runtime-metadata-scaling/README.md).
 
 New comparisons retain route metadata with their evidence. After discovery,
@@ -38,6 +38,14 @@ above the eight-type proposal limit. Both runs' image interpretations report a
 level-up menu, so movement effects remain unestablished. Failures and storage
 changes are retained; progress remains **38%**.
 [Independent baseline, reader rerun and limits](research/independent-vampire-survivors/README.md).
+
+The updated selector gives complete pages explicit shares of the shortlist budget.
+Five saved-report replays now finish within the existing limits. Vampire selection
+reaches eight types in two rounds and proposes four label-supported questions,
+including `maxHp` and `moveSpeed`. The menu still suggests device settings, and
+opaque labels still yield no questions. Convergence is improved; usefulness and
+gameplay effects remain unverified.
+[Selection replay and remaining limitations](research/bounded-type-selection/README.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime

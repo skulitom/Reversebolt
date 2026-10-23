@@ -1,0 +1,385 @@
+{
+  "audit_passed": true,
+  "progress_percent": 38,
+  "model": {
+    "name": "qwen3.8:latest",
+    "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "size": 17741872154
+  },
+  "artifact_root": "test-results\\bounded-type-selection-v1",
+  "frozen_sha256": "8bc6fde5a112a8a3c227a07ea57410204bf4da8b58f95b2bcebb840468c27599",
+  "workspace_tests": 497,
+  "cases": [
+    {
+      "case": "vampire",
+      "inventory_types": 364,
+      "selection_rounds": [
+        {
+          "types": 364,
+          "pages": 14,
+          "quotas": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            3,
+            8,
+            8,
+            8,
+            8,
+            1
+          ],
+          "nominated": 40
+        },
+        {
+          "types": 40,
+          "pages": 3,
+          "quotas": [
+            3,
+            3,
+            2
+          ],
+          "nominated": 8
+        }
+      ],
+      "selection_model_calls": 17,
+      "total_model_calls": 25,
+      "error": null,
+      "selected_types": [
+        234,
+        236,
+        245,
+        250,
+        253,
+        254,
+        306,
+        313
+      ],
+      "accepted": 4,
+      "rejected": 1,
+      "questions": [
+        {
+          "name": "maxHp",
+          "question": "Does adjusting the maxHp value change the character's maximum health?",
+          "field": "<maxHp>k__BackingField",
+          "type": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "moveSpeed",
+          "question": "Does changing the moveSpeed value affect the character's movement speed?",
+          "field": "<moveSpeed>k__BackingField",
+          "type": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "starting spawns",
+          "question": "Does the starting spawns value determine the initial number of enemies present at the beginning of the stage?",
+          "field": "<startingSpawns>k__BackingField",
+          "type": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "interval",
+          "question": "Does the interval value determine the frequency at which damaging zones are generated above the character?",
+          "field": "<interval>k__BackingField",
+          "type": "VampireSurvivors.Data.Weapons.WeaponData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      ],
+      "rejections": [
+        {
+          "proposal": {
+            "candidate": 63,
+            "name": "destructible frequency",
+            "explanation": "This field likely controls the timing interval for spawning destructible objects, which is a distinct gameplay parameter from the probability of their appearance.",
+            "citations": [
+              {
+                "source": "field_name",
+                "index": null,
+                "quote": "<destructibleFreq>k__BackingField"
+              },
+              {
+                "source": "type_name",
+                "index": null,
+                "quote": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+              }
+            ],
+            "alternatives": [
+              69,
+              75
+            ],
+            "question": "Does adjusting the destructible frequency change how often destructible objects appear in the stage?"
+          },
+          "reason": "The proposed name adds meaning absent from its cited labels or is only a generic placeholder."
+        }
+      ],
+      "baseline_error": "Type selection exhausted its review-round budget.",
+      "baseline_model_calls": 20,
+      "baseline_accepted": null,
+      "baseline_rejected": null,
+      "seconds": 91.36342096328735,
+      "receipt_sha256": "007fa8b7cf029d6ed35286c687c12cb1c3fac6e25a29f5791d99d95215ba4cb8"
+    },
+    {
+      "case": "latest",
+      "inventory_types": 340,
+      "selection_rounds": [
+        {
+          "types": 340,
+          "pages": 12,
+          "quotas": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            3
+          ],
+          "nominated": 29
+        },
+        {
+          "types": 29,
+          "pages": 2,
+          "quotas": [
+            4,
+            4
+          ],
+          "nominated": 7
+        }
+      ],
+      "selection_model_calls": 14,
+      "total_model_calls": 21,
+      "error": null,
+      "selected_types": [
+        7,
+        16,
+        32,
+        33,
+        91,
+        92,
+        112
+      ],
+      "accepted": 9,
+      "rejected": 0,
+      "questions": [
+        {
+          "name": "spring",
+          "question": "Does adjusting the spring value change how quickly the carried object follows the player's movement?",
+          "field": "spring",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "breakDistance",
+          "question": "Does increasing the breakDistance allow the player to carry the object further away before it drops?",
+          "field": "breakDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "light fill speed",
+          "question": "Does the light fill speed determine the rate at which the receiver's light fill state changes?",
+          "field": "LightFillSpeed",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "require cube dropped",
+          "question": "Does the require cube dropped flag determine if the receiver only activates when a cube is dropped onto it?",
+          "field": "RequireCubeDropped",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "fill speed",
+          "question": "Does the fill speed determine how quickly the line display fills?",
+          "field": "fillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "unfill speed",
+          "question": "Does the unfill speed determine how quickly the line display unfills?",
+          "field": "unfillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "walk speed",
+          "question": "What is the intended base movement velocity for the character when walking?",
+          "field": "walkSpeed",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "max step up",
+          "question": "What is the maximum height of an obstacle that the character can automatically step over?",
+          "field": "maxStepUp",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "grow speed",
+          "question": "Does the grow speed value determine the rate at which the tree growth level increases over time?",
+          "field": "growSpeed",
+          "type": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      ],
+      "rejections": [],
+      "baseline_error": null,
+      "baseline_model_calls": 9,
+      "baseline_accepted": 7,
+      "baseline_rejected": 1,
+      "seconds": 67.24548983573914,
+      "receipt_sha256": "b075a30f3fc20ba8b7ca7f012f89c2fcd26748606d355ed0f3b99aabfb573daf"
+    },
+    {
+      "case": "menu",
+      "inventory_types": 261,
+      "selection_rounds": [
+        {
+          "types": 261,
+          "pages": 9,
+          "quotas": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "nominated": 7
+        }
+      ],
+      "selection_model_calls": 9,
+      "total_model_calls": 16,
+      "error": null,
+      "selected_types": [
+        12,
+        15,
+        18,
+        19,
+        93,
+        99,
+        100
+      ],
+      "accepted": 2,
+      "rejected": 0,
+      "questions": [
+        {
+          "name": "maxJoysticksPerPlayer",
+          "question": "Does this value cap the number of joysticks that can be assigned to a single player?",
+          "field": "maxJoysticksPerPlayer",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+        },
+        {
+          "name": "force4WayHats",
+          "question": "Does enabling this force analog stick input to be treated as 4-way directional hats?",
+          "field": "force4WayHats",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+        }
+      ],
+      "rejections": [],
+      "baseline_error": null,
+      "baseline_model_calls": 9,
+      "baseline_accepted": 2,
+      "baseline_rejected": 2,
+      "seconds": 44.22557520866394,
+      "receipt_sha256": "2f03188466e84d9199be5527e2663eace209e7a1e00ddedbf19b23deca1d095e"
+    },
+    {
+      "case": "fixture",
+      "inventory_types": 3,
+      "selection_rounds": [],
+      "selection_model_calls": 1,
+      "total_model_calls": 2,
+      "error": null,
+      "selected_types": [
+        2
+      ],
+      "accepted": 1,
+      "rejected": 0,
+      "questions": [
+        {
+          "name": "Speed",
+          "question": "Does changing this value affect what the object's text \u201cSpeed\u201d refers to?",
+          "field": "Coefficient",
+          "type": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture"
+        }
+      ],
+      "rejections": [],
+      "baseline_error": null,
+      "baseline_model_calls": 2,
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "seconds": 1.217902421951294,
+      "receipt_sha256": "f1efb177a67fc1111894785a5e30c6723a734e9ada7929926e2db6c9b5364fbf"
+    },
+    {
+      "case": "opaque",
+      "inventory_types": 345,
+      "selection_rounds": [
+        {
+          "types": 345,
+          "pages": 5,
+          "quotas": [
+            2,
+            2,
+            2,
+            1,
+            1
+          ],
+          "nominated": 0
+        }
+      ],
+      "selection_model_calls": 5,
+      "total_model_calls": 5,
+      "error": null,
+      "selected_types": [],
+      "accepted": 0,
+      "rejected": 0,
+      "questions": [],
+      "rejections": [],
+      "baseline_error": null,
+      "baseline_model_calls": 1,
+      "baseline_accepted": 0,
+      "baseline_rejected": 0,
+      "seconds": 17.064697265625,
+      "receipt_sha256": "54a94133d3655595603eb63115a97b42b8e5cbd4bbf9abcc3047ae3dc9161d2d"
+    }
+  ],
+  "packaged_preview": "0.1.0-20261023-081315",
+  "headless_check": {
+    "passed": true,
+    "pid": 82664,
+    "bin": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261023-081315",
+    "target_access": false,
+    "binary_sha256": "665e0e4c03d8cd19b86b4fd586f8edae982b7bb651f90e18b058c814fdef3101",
+    "unconnected_command_errors": {
+      "inspect_runtime_investigation": "Connect an application first.",
+      "recover_runtime_control": "Connect an application first."
+    },
+    "process_exited": true
+  },
+  "mcp_check": {
+    "passed": true,
+    "pid": 96796,
+    "exit_code": 0,
+    "tool_count": 65,
+    "protocol": "2025-11-25",
+    "binary_sha256": "3732b2e37abba1c0d5a404007ecd28df61a955504337793c3fdab4a4dda23892",
+    "tools_sha256": "e30079026c21911c754cf11ec964d2011669c388e22ac926185bbcea20531c5e",
+    "engine_connected": false,
+    "target_access": false
+  },
+  "unchanged_native_helper": true,
+  "limits": [
+    "Saved development reports, not new independent-game evidence.",
+    "Page quotas bound the shortlist, but page order and grouping can discard useful candidates.",
+    "Accepted questions pass reference/lexical checks; gameplay meaning and effects are unverified.",
+    "Older four baselines precede other changes and do not isolate this quota revision.",
+    "No target process, input, image review or memory edit was used for this replay."
+  ]
+}
