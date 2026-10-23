@@ -1124,7 +1124,7 @@ pub unsafe extern "system" fn ReverseboltInspect(argument: Ptr) -> u32 {
             .open(&request.output)
             .map_err(|e| e.to_string())?;
         let report = inspect(&request).unwrap_or_else(|e| json!({"error":e}));
-        serde_json::to_writer(file, &report).map_err(|e| e.to_string())?;
+        write_report(file, &report)?;
         Ok(())
     });
     match result {
@@ -1132,6 +1132,17 @@ pub unsafe extern "system" fn ReverseboltInspect(argument: Ptr) -> u32 {
         Ok(Err(_)) => 2,
         Err(_) => 3,
     }
+}
+
+// This runs after inspection has resumed the managed world. Streaming JSON
+// directly to File performs a system write for each small serializer fragment.
+// Bound buffering without creating a second complete report, and surface flush
+// errors before the loader may accept completion and unload the helper.
+fn write_report(writer: impl std::io::Write, report: &serde_json::Value) -> Result<()> {
+    use std::io::Write;
+    let mut buffered = std::io::BufWriter::with_capacity(64 * 1024, writer);
+    serde_json::to_writer(&mut buffered, report).map_err(|e| e.to_string())?;
+    buffered.flush().map_err(|e| e.to_string())
 }
 
 #[cfg(test)]
@@ -1150,5 +1161,55 @@ mod tests {
         let before = RESTARTS.load(Ordering::Relaxed);
         assert!(fail().is_err());
         assert_eq!(RESTARTS.load(Ordering::Relaxed), before + 1);
+    }
+
+    #[derive(Default)]
+    struct Output {
+        bytes: Vec<u8>,
+        writes: usize,
+        flushes: usize,
+        fail_write: bool,
+        fail_flush: bool,
+    }
+    impl std::io::Write for Output {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.writes += 1;
+            if self.fail_write {
+                return Err(std::io::Error::other("disk write failed"));
+            }
+            self.bytes.extend_from_slice(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            self.flushes += 1;
+            if self.fail_flush {
+                return Err(std::io::Error::other("disk flush failed"));
+            }
+            Ok(())
+        }
+    }
+    #[test]
+    fn buffered_report_preserves_bytes_and_batches_small_serializer_writes() {
+        let report = json!({"rows":(0..20000).map(|i|json!({"id":i,"text":"quoted \"value\" — 日本語"})).collect::<Vec<_>>()});
+        let mut direct = Output::default();
+        serde_json::to_writer(&mut direct, &report).unwrap();
+        let mut buffered = Output::default();
+        write_report(&mut buffered, &report).unwrap();
+        assert_eq!(buffered.bytes, direct.bytes);
+        assert_eq!(buffered.flushes, 1);
+        assert!(direct.writes > buffered.writes * 1000);
+        assert!(buffered.writes < 32);
+    }
+    #[test]
+    fn buffered_report_does_not_hide_final_write_or_flush_errors() {
+        let report = json!({"complete":true});
+        for (fail_write, fail_flush) in [(true, false), (false, true)] {
+            let mut output = Output {
+                fail_write,
+                fail_flush,
+                ..Default::default()
+            };
+            assert!(write_report(&mut output, &report).is_err());
+        }
     }
 }

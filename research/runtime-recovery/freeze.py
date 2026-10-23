@@ -1,8 +1,12 @@
 """Freeze one prospective native recovery test from an audited historical effect."""
-import hashlib, json, shutil, subprocess
+import hashlib, json, shutil, subprocess, sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
-OUT=ROOT/'test-results/runtime-recovery-live-v1'
+assert sys.argv[1:] in ([], ['--declared-route'], ['--declared-route', '--buffered-helper'])
+declared = '--declared-route' in sys.argv[1:]
+buffered = '--buffered-helper' in sys.argv[1:]
+folder = 'runtime-recovery-declared-buffered-v1' if buffered else ('runtime-recovery-declared-v1' if declared else 'runtime-recovery-live-v1')
+OUT=ROOT/'test-results'/folder
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 assert read(ROOT/'research/independent-viewfinder/live-results.json')['artifact_audit']=='passed'
@@ -16,9 +20,12 @@ shutil.copy2(source_path,OUT/'source-report.json')
 version=(ROOT/'dist/current.txt').read_text(encoding='utf-8-sig').strip()
 frozen={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
     'preview':version,'sources':{},'binaries':{},'historical':{},'maximum_comparisons':1,
-    'maximum_setup_images':3,'maximum_menu_actions':2,'model_calls':0}
+    'maximum_setup_images':3,'maximum_menu_actions':2,'model_calls':0,
+    'recovery_policy':'declared_route_proposal' if declared else 'strict',
+    'buffered_helper':buffered}
 for name in ['Reversebolt.exe','reversebolt-mcp.exe','reversebolt-runtime-loader.exe','reversebolt_runtime.dll']:
-    shutil.copy2(ROOT/'dist'/version/name,OUT/'bin'/name);frozen['binaries'][name]=sha(OUT/'bin'/name)
+    binary = ROOT/'target/release'/name if buffered and name=='reversebolt_runtime.dll' else ROOT/'dist'/version/name
+    shutil.copy2(binary,OUT/'bin'/name);frozen['binaries'][name]=sha(OUT/'bin'/name)
 shutil.copy2(ROOT/'target/release/examples/runtime_recovery.exe',OUT/'bin/runtime_recovery.exe')
 frozen['binaries']['runtime_recovery.exe']=sha(OUT/'bin/runtime_recovery.exe')
 for p in list((ROOT/'crates').rglob('*.rs'))+list((ROOT/'research/runtime-recovery').glob('*.*')):

@@ -9,17 +9,16 @@ unsupported replay no longer prevent inspecting what to investigate next. The
 response retains separate alternative paths and timing failures; it performs no
 input, inference, target access or edits.
 
-**Local preview status:** preview `0.1.0-20261023-054738` passed packaged headless
+**Local preview status:** preview `0.1.0-20261023-063356` passed packaged headless
 startup/MCP checks and is selected by the desktop shortcut for the next launch.
-All 482 workspace tests pass. The existing desktop window remains on its earlier
-build. This release adds investigation inspection; its transport checks do not
-establish new gameplay effects.
-[Evidence and limitations](research/investigation-inspection/README.md).
+All 490 workspace tests pass. The existing desktop window remains on its earlier
+build. This release buffers native report output to avoid excessive small file
+writes. [Evidence and limitations](research/runtime-recovery/README.md).
 
-The development core also includes strict observed-route recovery from saved
-discoveries. Its fresh-process test stopped at a reader-version compatibility
-change before any edit; automatic restart recovery remains unfinished. The
-485-test development suite passes. [Recovery evidence](research/runtime-recovery/README.md).
+The development core can propose a fresh route after reader/layout changes while
+retaining strict mismatches. One restarted-game comparison reproduced the earlier
+rendered effect and restored the original value; automatic desktop/MCP recovery
+remains unfinished. All 490 development tests pass. [Recovery evidence](research/runtime-recovery/README.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime

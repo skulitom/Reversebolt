@@ -1,0 +1,59 @@
+{
+  "version": "0.1.0-20261023-063356",
+  "workspace_tests": 490,
+  "strict_clippy_passed": true,
+  "formatting_passed": true,
+  "published_binaries": [
+    {
+      "name": "reversebolt_runtime.dll",
+      "sha256": "DC1F4B01B51699C00C605988180A947B6D98D8F1625E664575DBA0413C856E6C"
+    },
+    {
+      "name": "reversebolt-mcp.exe",
+      "sha256": "B077E42E4DDC6E3520637B2B3AE1DF2FE16C00DD670BFBB15FE47AD72EDDE292"
+    },
+    {
+      "name": "reversebolt-runtime-loader.exe",
+      "sha256": "D3059BB80B49F14B15A6A2D28DDB70B87835F530D268041247CF012D087E0CD9"
+    },
+    {
+      "name": "Reversebolt.exe",
+      "sha256": "8B872E9C5E489F925019644B5A43E981DD1C1A99285EDB93B8D4D22669A3A794"
+    }
+  ],
+  "catalog": {
+    "passed": true,
+    "pid": 48644,
+    "exit_code": 0,
+    "tool_count": 64,
+    "protocol": "2025-11-25",
+    "binary_sha256": "b077e42e4ddc6e3520637b2b3ae1df2fe16c00dd670bfbb15fe47ad72edde292",
+    "tools_sha256": "12cd242b37e881c6c791e9f81b76daecec229e947d2c21771fa5bac6972a6a60",
+    "engine_connected": false,
+    "target_access": false
+  },
+  "headless_smoke": {
+    "passed": true,
+    "target_attached": false,
+    "model_calls": 0,
+    "writes": 0,
+    "expected_missing_application_error": true
+  },
+  "smoke_cleanup": [
+    {
+      "pid": 29408,
+      "exit_code": 1
+    },
+    {
+      "pid": 82692,
+      "exit_code": 0
+    }
+  ],
+  "native_test_helper_sha256": "8d631e15fca333c773f54df57ace66bde0f8d126d0f4d3a5b756525d91e89203",
+  "packaged_helper_sha256": "dc1f4b01b51699c00c605988180a947b6d98d8f1625e664575dba0413c856e6c",
+  "native_experiment_core_sha256": "3b780a9a06b6da2efb9168b782833f28bd278ac34399a1688f9014c8e5288333",
+  "current_core_sha256": "3b780a9a06b6da2efb9168b782833f28bd278ac34399a1688f9014c8e5288333",
+  "native_experiment_helper_source_sha256": "7d88e16d960929224d6f3498692e0ca61ad89abafdc6dabe50044d9cc29d6947",
+  "current_helper_source_sha256": "7d88e16d960929224d6f3498692e0ca61ad89abafdc6dabe50044d9cc29d6947",
+  "limitation": "Native experiment used separately frozen release-library helper. Packaged workspace build uses the same source with a different binary hash; packaged headless checks attached no target."
+}

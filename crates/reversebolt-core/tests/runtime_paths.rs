@@ -207,6 +207,117 @@ fn recovery_cannot_publish_an_early_match_from_a_later_invalid_graph() {
 }
 
 #[test]
+fn recovery_proposal_relearns_new_layout_ordinals_without_transferring_authority() {
+    use reversebolt_core::runtime_recovery::propose;
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let id = runtime::candidates(&old, 1).unwrap()[0].id.clone();
+    let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+    current["schema"] = json!(5);
+    current["root_catalog_sha256"] = json!("e".repeat(64));
+    for class in current["classes"].as_array_mut().unwrap() {
+        class["key"]["layout_sha256"] = json!("c".repeat(64));
+    }
+    let fields = current["classes"][2]["fields"].as_array_mut().unwrap();
+    let mut inserted = fields[0].clone();
+    inserted["name"] = json!("Unrelated");
+    fields[0]["id"] = json!(1);
+    fields[0]["offset"] = json!(80);
+    fields.insert(0, inserted);
+    current["snapshots"][0]["reads"][1]["field"] = json!(1);
+    let proposal = propose(&old, &id, &current).unwrap();
+    assert_eq!(proposal.strict.status, "catalog_changed");
+    assert_eq!(proposal.status, "candidate_for_revalidation");
+    assert_eq!(proposal.matching_routes, 1);
+    assert!(!proposal.edit_authority);
+    let new = proposal.candidate.unwrap();
+    assert_eq!(new.locator.scope.pid, 88);
+    assert_eq!(new.value, 73);
+    assert!(!new.edit_authority);
+    assert_eq!(runtime::candidate(&current, &new.id).unwrap().id, new.id);
+    assert!(runtime::candidate(&current, &id).is_err());
+}
+
+#[test]
+fn recovery_proposal_retains_missing_incompatible_and_duplicate_routes() {
+    use reversebolt_core::runtime_recovery::propose;
+    let old = recovery_report(0, 77, "0123456789abcdef", 50);
+    let id = runtime::candidates(&old, 1).unwrap()[0].id.clone();
+    for (pointer, replacement) in [
+        ("/classes/2/fields/0/name", json!("Different")),
+        ("/classes/2/fields/0/flags", json!(6)),
+        ("/classes/2/key/type_name", json!("DifferentActor")),
+        ("/snapshots/0/reads/1/read_ok", json!(false)),
+    ] {
+        let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+        *current.pointer_mut(pointer).unwrap() = replacement;
+        let proposal = propose(&old, &id, &current).unwrap();
+        assert_eq!(proposal.status, "not_observed", "{pointer}");
+        assert!(proposal.candidate.is_none());
+    }
+    let mut current = recovery_report(40, 88, "fedcba9876543210", 73);
+    let mut extra = recovery_report(80, 88, "fedcba9876543210", 91);
+    for class in extra["classes"].as_array_mut().unwrap() {
+        class["key"]["layout_sha256"] = json!("d".repeat(64));
+    }
+    extra["snapshots"][0]["snapshot_id"] = json!(1);
+    current["classes"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["classes"].as_array().unwrap().clone());
+    current["snapshots"]
+        .as_array_mut()
+        .unwrap()
+        .extend(extra["snapshots"].as_array().unwrap().clone());
+    let ambiguous = propose(&old, &id, &current).unwrap();
+    assert_eq!(ambiguous.status, "ambiguous");
+    assert_eq!(ambiguous.matching_routes, 2);
+    assert!(ambiguous.candidate.is_none());
+    current["runtime"] = json!("C:\\Other\\Runtime.dll");
+    assert_eq!(
+        propose(&old, &id, &current).unwrap().status,
+        "runtime_changed"
+    );
+    current["snapshots"][1]["reads"][0]["node"] = json!(9999);
+    assert!(propose(&old, &id, &current).is_err());
+}
+
+#[test]
+fn recovery_proposal_checks_array_indices_representations_and_declared_metadata() {
+    use reversebolt_core::runtime_recovery::propose;
+    let mut old = recovery_report(0, 77, "0123456789abcdef", 50);
+    old["classes"][1]["shape"] = json!("array");
+    old["snapshots"][0]["reads"][0]["field"] = Value::Null;
+    old["snapshots"][0]["reads"][0]["element_index"] = json!(2);
+    let id = runtime::candidates(&old, 1).unwrap()[0].id.clone();
+    let mut current = old.clone();
+    current["pid"] = json!(88);
+    assert_eq!(
+        propose(&old, &id, &current).unwrap().status,
+        "candidate_for_revalidation"
+    );
+    current["snapshots"][0]["reads"][0]["element_index"] = json!(3);
+    assert_eq!(propose(&old, &id, &current).unwrap().status, "not_observed");
+    current["snapshots"][0]["reads"][0]["element_index"] = json!(2);
+    current["classes"][2]["fields"][0]["type_code"] = json!(9);
+    current["snapshots"][0]["reads"][1]["type_code"] = json!(9);
+    assert_eq!(propose(&old, &id, &current).unwrap().status, "not_observed");
+    current = old.clone();
+    current["classes"][2]["fields"][0]["width"] = json!(8);
+    assert!(propose(&old, &id, &current).is_err());
+    current = old.clone();
+    let mut duplicate = current["classes"][2]["fields"][0].clone();
+    duplicate["id"] = json!(1);
+    current["classes"][2]["fields"]
+        .as_array_mut()
+        .unwrap()
+        .push(duplicate);
+    assert!(propose(&old, &id, &current).is_err());
+    current = old.clone();
+    current["classes"][2]["fields"][0]["declared_type"] = json!("OtherKind");
+    assert_eq!(propose(&old, &id, &current).unwrap().status, "not_observed");
+}
+
+#[test]
 fn embedded_paths_retain_layouts_and_reject_reference_or_type_confusion() {
     let mut r = report(0, "0x100", 50);
     r["schema"] = json!(5);

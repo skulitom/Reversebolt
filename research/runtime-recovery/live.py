@@ -7,9 +7,12 @@ OUT=Path(sys.argv[1]).resolve();PID=int(sys.argv[2]);BIN=OUT/'bin';DATA=OUT/'dat
 read=lambda p:json.loads(p.read_text(encoding='utf-8-sig'))
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 frozen=read(OUT/'frozen.json');old=read(OUT/'source-test.json')
+declared=frozen.get('recovery_policy','strict')=='declared_route_proposal'
+if 'data' in frozen:DATA=Path(frozen['data'])
 assert sha(Path(__file__))==frozen['sources']['research/runtime-recovery/live.py']
 for n,h in frozen['binaries'].items():assert sha(BIN/n)==h
 for n,h in frozen['historical'].items():assert sha(OUT/n)==h
+for n,h in frozen.get('parent_artifacts',{}).items():assert sha(Path(n))==h
 session=W.DWORD();assert C.WinDLL('kernel32').ProcessIdToSessionId(os.getpid(),C.byref(session)) and session.value==3
 mcp=None;seq=0;lines=queue.Queue();active_test=None;change=None
 def save(name,value):
@@ -43,34 +46,54 @@ try:
     threading.Thread(target=lambda:[lines.put(s) for s in mcp.stdout],daemon=True).start()
     rpc('initialize',{'protocolVersion':'2025-11-25','capabilities':{},'clientInfo':{'name':'runtime-recovery-revalidation','version':'1'}})
     mcp.stdin.write(json.dumps({'jsonrpc':'2.0','method':'notifications/initialized'})+'\n');mcp.stdin.flush()
-    assert status()['state']['live'] is None
-    target=next(p for p in call('list_processes')['state']['processes'] if p['pid']==PID);save('target',target)
-    attached=call('attach_process',{k:target[k] for k in ['pid','created','window']}|{'budget_mib':1,'auto_observe':False})
-    history=attached['jobs']['history']
-    call('start_runtime_job',{'request_id':1,'boot':history['boot'],'binding':history['current'],
-        'task':{'operation':'discover'},'local_model':None,'observe_play':False})
-    deadline=time.monotonic()+1000;progress=0
-    while time.monotonic()<deadline:
-        current=status();jobs=current['jobs']['history']['jobs']
-        if time.monotonic()>=progress:
-            print(json.dumps({'phase':'discovery','jobs':[j['phase'] for j in jobs.values()]}),flush=True);progress=time.monotonic()+20
-        if jobs and all(j['phase'] in ['Completed','Failed','Cancelled','Interrupted'] for j in jobs.values()):break
-        time.sleep(.5)
-    else:raise RuntimeError('Discovery remains pending; recover its existing job')
-    save('discovery',current)
-    assert all(j['phase']=='Completed' for j in jobs.values()),'Discovery failed'
-    runtime=current['state']['live']['runtime'];assert current['state']['live']['sample_count']==0
-    shutil.copy2(Path(runtime['catalog_source']['path']),OUT/'current-report.json')
-    with (OUT/'recovery.stdout').open('x') as stdout,(OUT/'recovery.stderr').open('x') as stderr:
-        child=subprocess.Popen([str(BIN/'runtime_recovery.exe'),str(OUT/'source-report.json'),old['candidate']['id'],
-            str(OUT/'current-report.json'),str(OUT/'recovery.json')],stdout=stdout,stderr=stderr,creationflags=subprocess.CREATE_NO_WINDOW)
-        save('recovery-process',{'pid':child.pid});code=child.wait();save('recovery-terminal',{'pid':child.pid,'exit_code':code})
-    assert code==0
-    recovered=read(OUT/'recovery.json');assert not recovered['same_process']
-    if recovered['status']!='matched':
+    if 'continuation_of' in frozen:
+        parent=Path(frozen['continuation_of']);expected=read(parent/'final-state.json')
+        current=status();save('continuation-state',current)
+        assert current['state']['live']==expected['state']['live']
+        assert current['jobs']==expected['jobs'] and current['jobs']['in_flight'] is None
+        assert not current['state']['runtime_tests'] and not current['state']['runtime_trials']
+        assert not current['state']['freezes']
+        runtime=current['state']['live']['runtime']
+        assert sha(Path(runtime['catalog_source']['path']))==sha(OUT/'current-report.json')
+        assert runtime['catalog_source']['document_sha256']==sha(OUT/'current-report.json')
+    else:
+        assert status()['state']['live'] is None
+        target=next(p for p in call('list_processes')['state']['processes'] if p['pid']==PID);save('target',target)
+        attached=call('attach_process',{k:target[k] for k in ['pid','created','window']}|{'budget_mib':1,'auto_observe':False})
+        history=attached['jobs']['history']
+        call('start_runtime_job',{'request_id':1,'boot':history['boot'],'binding':history['current'],
+            'task':{'operation':'discover'},'local_model':None,'observe_play':False})
+        deadline=time.monotonic()+1000;progress=0
+        while time.monotonic()<deadline:
+            current=status();jobs=current['jobs']['history']['jobs']
+            if time.monotonic()>=progress:
+                print(json.dumps({'phase':'discovery','jobs':[j['phase'] for j in jobs.values()]}),flush=True);progress=time.monotonic()+20
+            if jobs and all(j['phase'] in ['Completed','Failed','Cancelled','Interrupted'] for j in jobs.values()):break
+            time.sleep(.5)
+        else:raise RuntimeError('Discovery remains pending; recover its existing job')
+        save('discovery',current)
+        assert all(j['phase']=='Completed' for j in jobs.values()),'Discovery failed'
+        runtime=current['state']['live']['runtime'];assert current['state']['live']['sample_count']==0
+        shutil.copy2(Path(runtime['catalog_source']['path']),OUT/'current-report.json')
+        with (OUT/'recovery.stdout').open('x') as stdout,(OUT/'recovery.stderr').open('x') as stderr:
+            child=subprocess.Popen([str(BIN/'runtime_recovery.exe')]+(['--propose-declared-route'] if declared else [])+[str(OUT/'source-report.json'),old['candidate']['id'],
+                str(OUT/'current-report.json'),str(OUT/'recovery.json')],stdout=stdout,stderr=stderr,creationflags=subprocess.CREATE_NO_WINDOW)
+            save('recovery-process',{'pid':child.pid});code=child.wait();save('recovery-terminal',{'pid':child.pid,'exit_code':code})
+        assert code==0
+    recovered=read(OUT/'recovery.json');strict=recovered['strict'] if declared else recovered
+    assert not strict['same_process'] and strict['current_scope']['pid']==PID
+    if recovered['status']!=('candidate_for_revalidation' if declared else 'matched'):
         save('result',{'finished':True,'status':recovered['status'],'gameplay_writes':0,'model_calls':0})
     else:
         candidate=recovered['candidate'];assert candidate['locator']['scope']['pid']==PID and candidate['id']!=old['candidate']['id']
+        # Select only the exact proposed ID through the existing shared search panel.
+        # The query comes from this proposal, never a manually chosen game label.
+        for offset in range(0,4097,20):
+            page=call('search_runtime_values',{'catalog_id':runtime['catalog_id'],'query':candidate['name'][:96],'offset':offset})['data']['search']
+            if any(c['id']==candidate['id'] for c in page['candidates']):break
+            if offset+20>=page['matches']:raise RuntimeError('Proposed route absent from search results')
+        else:raise RuntimeError('Selection exceeds shared search budget')
+        runtime=status()['state']['live']['runtime']
         call('show_runtime_values',{'catalog_id':runtime['catalog_id'],'after_revision':runtime['revision'],'ids':[candidate['id']]})
         live=status()['state']['live'];active_test=str(uuid.uuid4());change=str(uuid.uuid4())
         args={'test_id':active_test,'change_id':change,'investigation_id':live['investigation_id'],'catalog_id':live['runtime']['catalog_id'],

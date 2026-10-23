@@ -1,0 +1,56 @@
+{
+  "artifact_audit": "passed",
+  "frozen_sha256": "059fc97d940bb26136bc7ea94a6d7bc074b1e6bb77002f6e7c1b21ea04d35da7",
+  "model_calls": 0,
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\runtime-recovery-declared-buffered-v1\\data\\runtime\\63396-01dd62aeee2445a3\\047892f8-8b2e-4b04-b7d8-7bd61143dcb8\\stdout.jsonl",
+      "sha256": "b013a55caea7bca161d32cacf3faedfa925372fefbc8c32b23dfd89246fca43f",
+      "completed": true
+    }
+  ],
+  "pauses": 252,
+  "setup_images": 2,
+  "menu_actions": 1,
+  "manually_viewed_measurement_images": 0,
+  "save_bytes_unchanged": {
+    "viewfinder_0.sav": true,
+    "viewfinder_0.bak": true
+  },
+  "storage_changes": [
+    "Player-prev.log",
+    "Player.log",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273279300001.084afae7/c",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273279300001.084afae7/e",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273279300001.084afae7/g",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273279300001.084afae7/s",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/c",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/e",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/g",
+    "Unity/a600f3d2-cd3c-4285-910a-60c1f63c8bc3/Analytics/ArchivedEvents/179273342900001.2a2d8685/s"
+  ],
+  "cleanup": {
+    "observed_utc": "2026-10-23T05:31:02.4832467Z",
+    "owned_pids": [
+      63396,
+      5160,
+      71124,
+      58152,
+      74156,
+      40792
+    ],
+    "remaining_owned": [],
+    "owned_processes_exited": true,
+    "preserved_editor": {
+      "ProcessId": 98332,
+      "SessionId": 1,
+      "ExecutablePath": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe"
+    }
+  },
+  "outcome": "selection_step_rejected_before_test",
+  "gameplay_writes": 0,
+  "automatic_measurement_images": 0,
+  "helper_unload_confirmed": true,
+  "discovery_total_ms": 8470,
+  "limitation": "Known development game; no persistent actor identity, exact semantics, physical speed units, complete world rollback or unfamiliar-game generalization established."
+}

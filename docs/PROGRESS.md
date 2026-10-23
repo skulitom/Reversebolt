@@ -4,6 +4,32 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Fresh restart revalidation (2026-10-23): **37%**. A separate declared-route policy
+found one fresh candidate despite changed reader/layout fingerprints, retained
+the strict mismatch, and enabled a newly prepared MCP comparison in a restarted
+Viewfinder process. The observed response fell after the edit and returned after
+exact restoration. Independent full-frame differences agree with the product
+assessment. All 18 images, 12 holds, seven helper unloads and ordered readbacks
+were audited. Save/backup bytes are unchanged; owned processes exited.
+
+The record preserves a native timeout and a subsequent evaluator selection error.
+Bounded report buffering fixes excessive small writes without changing timeout
+or pause limits; the later discovery completed in 8.470 seconds. The selection
+repair was separately frozen against the same verified process and catalogue.
+No measurement image was manually viewed and no model calls ran.
+
+All 490 workspace tests, strict Clippy and formatting pass. Preview
+`0.1.0-20261023-063356` passes packaged headless startup and the 64-tool MCP catalogue
+check and is selected for the next desktop launch; the user's open editor is
+preserved. The native experiment used a separately frozen release helper build;
+the workspace-packaged helper is rebuilt from the same source. Intent/editing rises
+from **1/10 to 2/10** for reuse with fresh native revalidation. Other credits remain
+foundation 4, native access 6, observation 5, discovery 8, validation 5, agent/human
+collaboration 7 and generalization 0. One known-game rendered effect does not
+establish exact semantics, actor persistence, complete rollback or independent-game
+generalization. Next: persist learned routes and expose recovery in the shared
+product engine/MCP and desktop. [Evidence](../research/runtime-recovery/README.md).
+
 Strict restart recovery (2026-10-23): **36% unchanged**. A new shared-core API and
 offline CLI match a learned rooted member route against a separately validated
 current discovery, preserving fresh process scope and withholding edit authority.

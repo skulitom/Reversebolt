@@ -12,9 +12,29 @@ fn read(path: &str) -> Result<Value, Box<dyn std::error::Error>> {
     Ok(serde_json::from_slice(&bytes)?)
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
+    let proposal = args
+        .first()
+        .is_some_and(|a| a == "--propose-declared-route");
+    if proposal {
+        args.remove(0);
+    }
     if args.len() != 4 {
-        return Err("usage: runtime_recovery OLD_REPORT PATH_ID NEW_REPORT NEW_OUTPUT".into());
+        return Err("usage: runtime_recovery [--propose-declared-route] OLD_REPORT PATH_ID NEW_REPORT NEW_OUTPUT".into());
+    }
+    if proposal {
+        let result = runtime_recovery::propose(&read(&args[0])?, &args[1], &read(&args[2])?)?;
+        let out = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&args[3])?;
+        serde_json::to_writer_pretty(out, &result)?;
+        println!(
+            "{}",
+            serde_json::json!({"status":result.status,"matching_routes":result.matching_routes,
+            "strict_status":result.strict.status,"edit_authority":false})
+        );
+        return Ok(());
     }
     let recovered = runtime_recovery::find(&read(&args[0])?, &args[1], &read(&args[2])?)?;
     let out = fs::OpenOptions::new()
