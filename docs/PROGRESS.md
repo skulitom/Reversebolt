@@ -4,6 +4,27 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Connected settings and recoverable hypotheses (2026-10-23): **36% unchanged**.
+The shared core now follows immediate parent/child contexts from replayed activity,
+retaining exact member paths and same-snapshot support without type/address joins.
+A frozen saved-data run reached six contexts and selected 128 of 145 scalar paths;
+116 survived existing naming sample limits. Four unchanged model requests proposed
+two questions, both rejected for repeating their primary ID as an alternative.
+
+The original zero-accepted/two-rejected result remains intact. A separate frozen
+cleanup replay removed only those exact redundant references and reran strict
+validation, recovering two investigation questions about ground incline and
+swimming depth. No extra model call, live input, memory access, image or write was
+used. All question text, citations, distinct alternatives and original rejections
+are retained. No gameplay effect or usable control is verified.
+
+The connection feature passed 479 workspace tests. The subsequent cleanup passed
+273 core/observer tests; whole-workspace strict Clippy and formatting pass after
+both. The user's editor remains open; automatic desktop/MCP focus integration is
+unfinished. Next: validate a proposed effect under its required activity with a
+suitable measurement and fresh paths before exposing an editable control.
+[Frozen result, cleanup replay and limitations](../research/runtime-connected-focus/README.md).
+
 Activity-focused parameter review (2026-10-23): **36% unchanged**. The shared
 core now reconstructs the original discovery plan and replays raw observations
 before using repeated state associations to scope a new parameter investigation.

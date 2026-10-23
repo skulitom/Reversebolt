@@ -512,6 +512,62 @@ pub fn validate(selection: &Selection, proposals: Proposals) -> Result<Batch> {
     Ok(batch)
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct RemovedSelfAlternative {
+    pub proposal_index: usize,
+    pub alternative_index: usize,
+    pub candidate: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct AlternativeCleanup {
+    pub policy: String,
+    pub original_batch: Batch,
+    pub removed: Vec<RemovedSelfAlternative>,
+}
+
+/// A primary row listed again as its own alternative is redundant, not a new
+/// hypothesis. Remove only that exact reference, retain the original rejection,
+/// and run the unchanged validator. Do not repair names, quotes or unknown IDs.
+pub fn validate_with_self_alternative_cleanup(
+    selection: &Selection,
+    mut proposals: Proposals,
+) -> Result<(Batch, Option<AlternativeCleanup>)> {
+    let original_batch = validate(selection, proposals.clone())?;
+    let mut removed = vec![];
+    for (proposal_index, p) in proposals.hypotheses.iter_mut().enumerate() {
+        if p.alternatives.len() > 4
+            || p.alternatives.iter().collect::<BTreeSet<_>>().len() != p.alternatives.len()
+            || selection
+                .rows
+                .get(p.candidate)
+                .is_none_or(|r| r.id != p.candidate)
+        {
+            continue;
+        }
+        if let Some(alternative_index) = p.alternatives.iter().position(|id| *id == p.candidate) {
+            p.alternatives.remove(alternative_index);
+            removed.push(RemovedSelfAlternative {
+                proposal_index,
+                alternative_index,
+                candidate: p.candidate,
+            });
+        }
+    }
+    if removed.is_empty() {
+        return Ok((original_batch, None));
+    }
+    let batch = validate(selection, proposals)?;
+    Ok((
+        batch,
+        Some(AlternativeCleanup {
+            policy: "remove_exact_self_alternative_v1".into(),
+            original_batch,
+            removed,
+        }),
+    ))
+}
+
 pub fn proposal_schema() -> serde_json::Value {
     serde_json::json!({"type":"object","additionalProperties":false,"required":["hypotheses"],"properties":{
         "hypotheses":{"type":"array","maxItems":12,"items":{"type":"object","additionalProperties":false,
@@ -592,6 +648,51 @@ mod tests {
             b.accepted[0].candidate.value,
             b.accepted[0].alternatives[0].value
         );
+    }
+    #[test]
+    fn redundant_self_alternative_cleanup_retains_raw_rejections_and_other_guards() {
+        let mut raw = proposal();
+        raw.alternatives = vec![0, 1];
+        let (batch, cleanup) = validate_with_self_alternative_cleanup(
+            &selection(),
+            Proposals {
+                hypotheses: vec![raw.clone()],
+            },
+        )
+        .unwrap();
+        let cleanup = cleanup.unwrap();
+        assert_eq!(cleanup.original_batch.rejected[0].proposal, raw);
+        assert_eq!(cleanup.removed[0].alternative_index, 0);
+        assert_eq!(batch.accepted[0].proposal, proposal());
+        assert_eq!(batch.accepted[0].alternatives.len(), 1);
+        for variant in 0..6 {
+            let mut bad = raw.clone();
+            match variant {
+                0 => bad.alternatives = vec![0, 99],
+                1 => bad.citations[0].quote = "moveSpeed".into(),
+                2 => bad.name = "Damage".into(),
+                3 => bad.alternatives = vec![0, 1, 1],
+                4 => bad.alternatives = vec![0, 1, 2, 3, 4],
+                _ => bad.candidate = 99,
+            }
+            let (batch, _) = validate_with_self_alternative_cleanup(
+                &selection(),
+                Proposals {
+                    hypotheses: vec![bad],
+                },
+            )
+            .unwrap();
+            assert!(batch.accepted.is_empty(), "variant {variant}");
+            assert_eq!(batch.rejected.len(), 1);
+        }
+        let (_, cleanup) = validate_with_self_alternative_cleanup(
+            &selection(),
+            Proposals {
+                hypotheses: vec![proposal()],
+            },
+        )
+        .unwrap();
+        assert!(cleanup.is_none());
     }
     #[test]
     fn invented_semantics_wrong_references_and_unfinished_text_are_retained_as_rejections() {

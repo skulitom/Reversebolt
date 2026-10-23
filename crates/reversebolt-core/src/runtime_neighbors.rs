@@ -91,7 +91,7 @@ pub fn role_id(path: &Locator) -> Result<String> {
             .ok_or("Empty runtime path")?,
     )
 }
-fn eligible(candidate: &Candidate) -> bool {
+pub(crate) fn eligible(candidate: &Candidate) -> bool {
     matches!(candidate.type_code, 2 | 4..=13)
         && matches!(
             candidate.locator.steps.last().map(|s| &s.member),

@@ -17,6 +17,8 @@ pub struct BatchObservations {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Focus {
     pub policy: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub connections: Option<crate::runtime_connections::Connections>,
     pub source_plan_sha256: String,
     pub observed_batches: Vec<usize>,
     pub unobserved_batches: Vec<usize>,
@@ -92,11 +94,38 @@ pub fn build(
         .sum();
     let observed: BTreeSet<_> = batches.iter().map(|b| b.batch).collect();
     Ok(Focus {
-        policy: POLICY.into(), source_plan_sha256: digest(&bytes),
+        policy: POLICY.into(), connections: None, source_plan_sha256: digest(&bytes),
         observed_batches: observed.iter().copied().collect(),
         unobserved_batches: (0..plan.batches.len()).filter(|i| !observed.contains(i)).collect(),
         responses, responding_paths, neighborhood, inventory, review_sampled_paths,
         edit_authority: false,
         limitation: "Repeated state associations nominate rooted contexts for further investigation, not actors or useful controls. Nearby constant parameters remain eligible, but do not inherit the observed response. Paths can alias or change occupants; current activity is not established at the earlier discovery time. Missing batches, unselected fields and unsampled paths remain unknown. No causal effect, semantic meaning, live binding, bounds or write authority is established.".into(),
     })
+}
+
+/// Investigate immediate connected contexts after recomputing the same state
+/// evidence. This is separate from the default same-context review.
+pub fn build_connected(
+    report: &Value,
+    plan: &runtime_neighbors::Plan,
+    batches: &[BatchObservations],
+) -> Result<Focus> {
+    let mut focus = build(report, plan, batches)?;
+    let (connections, neighborhood) =
+        crate::runtime_connections::plan(report, &focus.responding_paths)?;
+    let paths: Vec<_> = neighborhood.as_ref().map_or_else(Vec::new, |p| {
+        p.candidates.iter().map(|c| c.id.clone()).collect()
+    });
+    focus.inventory = runtime_inventory::for_paths(report, &paths)?;
+    focus.review_sampled_paths = focus
+        .inventory
+        .types
+        .iter()
+        .flat_map(|t| &t.fields)
+        .map(|f| f.samples.len())
+        .sum();
+    focus.policy = "response_connected_parameter_focus_v1".into();
+    focus.connections = Some(connections);
+    focus.neighborhood = neighborhood;
+    Ok(focus)
 }

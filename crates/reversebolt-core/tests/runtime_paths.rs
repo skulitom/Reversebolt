@@ -468,6 +468,118 @@ fn focused_inventory_resolves_selected_paths_beyond_the_original_sample_limit() 
     assert!(i::for_paths(&discovery, &[last.clone(), last]).is_err());
 }
 
+fn connected_fixture() -> (Value, String) {
+    let mut r = report(0, "0x100", 0);
+    r["classes"][1]["fields"].as_array_mut().unwrap().extend([
+        json!({"id":1,"name":"Speed","reference":false,"type_code":8,"width":4,"flags":0}),
+        json!({"id":2,"name":"Other","reference":true,"type_code":18,"width":8,"flags":0}),
+    ]);
+    r["classes"][2]["fields"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({
+            "id":1,"name":"Settings","reference":true,"type_code":18,"width":8,"flags":0
+        }));
+    r["classes"].as_array_mut().unwrap().push(json!({
+        "id":3,"key":key("Parameters"),"shape":"object","fields":[
+            {"id":0,"name":"Rate","reference":false,"type_code":8,"width":4,"flags":0}]
+    }));
+    r["snapshots"][0]["nodes"].as_array_mut().unwrap().extend([
+        json!({"id":2,"class":2,"address":"0x3333"}),
+        json!({"id":3,"class":3,"address":"0x4444"}),
+    ]);
+    r["snapshots"][0]["reads"].as_array_mut().unwrap().extend([
+        json!({"node":0,"declaring_class":1,"field":1,"element_index":null,"type_code":8,"bytes":10_i32.to_le_bytes(),"value":10,"reference":null,"read_ok":true}),
+        json!({"node":0,"declaring_class":1,"field":2,"element_index":null,"type_code":18,"bytes":0x3333_u64.to_le_bytes(),"value":null,"reference":{"id":2},"read_ok":true}),
+        json!({"node":2,"declaring_class":2,"field":0,"element_index":null,"type_code":8,"bytes":0_i32.to_le_bytes(),"value":0,"reference":null,"read_ok":true}),
+        json!({"node":1,"declaring_class":2,"field":1,"element_index":null,"type_code":18,"bytes":0x4444_u64.to_le_bytes(),"value":null,"reference":{"id":3},"read_ok":true}),
+        json!({"node":3,"declaring_class":3,"field":0,"element_index":null,"type_code":8,"bytes":5_i32.to_le_bytes(),"value":5,"reference":null,"read_ok":true})
+    ]);
+    let seed = runtime::candidates(&report(0, "0x100", 0), 1).unwrap()[0]
+        .id
+        .clone();
+    (r, seed)
+}
+
+#[test]
+fn connected_scope_uses_immediate_routes_not_types_values_or_distant_siblings() {
+    use reversebolt_core::runtime_connections::{self as c, Direction};
+    let (r, seed) = connected_fixture();
+    let (connections, neighbors) = c::plan(&r, std::slice::from_ref(&seed)).unwrap();
+    let neighbors = neighbors.unwrap();
+    assert_eq!(connections.roles.len(), 2);
+    assert_eq!(connections.available_fields, 2);
+    assert_eq!(connections.omitted_fields, 0);
+    assert_eq!(
+        neighbors
+            .candidates
+            .iter()
+            .map(|c| c.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Speed", "Rate"]
+    );
+    let parent = &connections.roles[0].links[0];
+    assert_eq!(parent.direction, Direction::Parent);
+    assert_eq!(parent.members_from_parent, ["Child"]);
+    let child = &connections.roles[1].links[0];
+    assert_eq!(child.direction, Direction::Child);
+    assert_eq!(child.members_from_parent, ["Settings"]);
+    assert!(neighbors.candidates.iter().all(|c| !c.edit_authority));
+    let mut unread = r.clone();
+    unread["snapshots"][0]["reads"][5]["read_ok"] = json!(false);
+    let (_, neighbors) = c::plan(&unread, std::slice::from_ref(&seed)).unwrap();
+    assert_eq!(neighbors.unwrap().candidates.len(), 1);
+    assert!(c::plan(&r, &[seed.clone(), seed]).is_err());
+    assert!(c::plan(&r, &["f".repeat(64)]).is_err());
+}
+
+#[test]
+fn connected_scope_keeps_embedded_hops_and_refuses_cross_snapshot_joins() {
+    use reversebolt_core::runtime_connections as c;
+    let (mut r, seed) = connected_fixture();
+    let mut later = r["snapshots"][0].clone();
+    later["snapshot_id"] = json!(1);
+    r["snapshots"][0]["reads"].as_array_mut().unwrap().remove(2);
+    r["snapshots"].as_array_mut().unwrap().push(later);
+    let (_, neighbors) = c::plan(&r, std::slice::from_ref(&seed)).unwrap();
+    assert_eq!(
+        neighbors
+            .unwrap()
+            .candidates
+            .iter()
+            .map(|c| c.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Rate"]
+    );
+    r["snapshots"][1]["snapshot_id"] = json!(0);
+    assert!(c::plan(&r, std::slice::from_ref(&seed)).is_err());
+    let (mut r, seed) = connected_fixture();
+    r["schema"] = json!(5);
+    r["classes"][1]["fields"][0]["reference"] = json!(false);
+    r["classes"][1]["fields"][0]["inline"] = json!(true);
+    r["classes"][1]["fields"][0]["inline_type"] = key("Actor");
+    r["classes"][1]["fields"][0]["type_code"] = json!(17);
+    r["snapshots"][0]["nodes"][1]["inline"] = json!(true);
+    r["snapshots"][0]["reads"][0]["reference"] = Value::Null;
+    r["snapshots"][0]["reads"][0]["embedded"] = json!({"id":1});
+    r["snapshots"][0]["reads"][0]["type_code"] = json!(17);
+    r["snapshots"][0]["reads"][0]["bytes"] = json!([]);
+    let (connections, neighbors) = c::plan(&r, &[seed]).unwrap();
+    let names: Vec<_> = neighbors
+        .unwrap()
+        .candidates
+        .into_iter()
+        .map(|c| c.name)
+        .collect();
+    assert!(names.contains(&"Rate".into()) && !names.contains(&"Speed".into()));
+    let rate = connections
+        .roles
+        .iter()
+        .find(|r| r.links[0].members_from_parent == ["Child", "Settings"])
+        .unwrap();
+    assert_eq!(rate.links[0].direction, c::Direction::Child);
+}
+
 #[test]
 fn sibling_plan_reserves_native_utf16_request_space_with_long_unicode_types() {
     use reversebolt_core::runtime_neighbors;

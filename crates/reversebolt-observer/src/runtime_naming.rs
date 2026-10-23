@@ -48,6 +48,8 @@ pub struct Stage {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alternative_cleanup: Option<h::AlternativeCleanup>,
     #[serde(default)]
     pub selection_purpose: SelectionPurpose,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -242,6 +244,7 @@ impl Observer {
     }
     fn naming_receipt(&self, inventory: &Inventory) -> Receipt {
         Receipt {
+            alternative_cleanup: None,
             selection_purpose: SelectionPurpose::default(),
             incomplete_stage: None,
             paged_selection: None,
@@ -352,10 +355,12 @@ impl Observer {
             }
             hypotheses.extend(proposed.hypotheses);
         }
-        receipt.batch = Some(h::validate(
+        let (batch, cleanup) = h::validate_with_self_alternative_cleanup(
             receipt.selection.as_ref().unwrap(),
             h::Proposals { hypotheses },
-        )?);
+        )?;
+        receipt.batch = Some(batch);
+        receipt.alternative_cleanup = cleanup;
         Ok(())
     }
 }
@@ -396,6 +401,7 @@ mod tests {
         let selection = h::select(&inventory, &[0]).unwrap();
         let batch = h::validate(&selection, h::Proposals { hypotheses: vec![] }).unwrap();
         let receipt = Receipt {
+            alternative_cleanup: None,
             selection_purpose: SelectionPurpose::default(),
             incomplete_stage: None,
             paged_selection: None,

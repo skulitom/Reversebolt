@@ -53,6 +53,7 @@ fn activity(
 fn focused_inventory(
     report: &serde_json::Value,
     path: &str,
+    connected: bool,
 ) -> Result<reversebolt_core::runtime_activity_focus::Focus, Box<dyn std::error::Error>> {
     #[derive(serde::Deserialize)]
     #[serde(deny_unknown_fields)]
@@ -98,14 +99,16 @@ fn focused_inventory(
             },
         );
     }
-    Ok(reversebolt_core::runtime_activity_focus::build(
-        report, &plan, &batches,
-    )?)
+    Ok(if connected {
+        reversebolt_core::runtime_activity_focus::build_connected(report, &plan, &batches)?
+    } else {
+        reversebolt_core::runtime_activity_focus::build(report, &plan, &batches)?
+    })
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 3 {
-        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only [--current-state]] [--activity MANIFEST] [--replay RECEIPT] [--focus MANIFEST]".into());
+        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only [--current-state]] [--activity MANIFEST] [--replay RECEIPT] [--focus MANIFEST [--connected-focus]]".into());
     }
     let bytes = std::fs::read(&args[0])?;
     if bytes.len() > 64 * 1024 * 1024 {
@@ -119,6 +122,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut selection_only = false;
     let mut current_state = false;
     let mut focus_path = None;
+    let mut connected_focus = false;
     let mut options = args[3..].iter();
     while let Some(option) = options.next() {
         match option.as_str() {
@@ -134,6 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "--focus" if focus_path.is_none() => {
                 focus_path = Some(options.next().ok_or("Missing focus manifest")?)
             }
+            "--connected-focus" if !connected_focus => connected_focus = true,
             _ => return Err("Unknown or repeated mode".into()),
         }
     }
@@ -151,8 +156,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         return Err("Activity focus requires a fresh metadata-only parameter review.".into());
     }
+    if connected_focus && focus_path.is_none() {
+        return Err("Connected review requires --focus MANIFEST.".into());
+    }
     let focus = focus_path
-        .map(|p| focused_inventory(&report, p))
+        .map(|p| focused_inventory(&report, p, connected_focus))
         .transpose()?;
     if let Some(focus) = &focus {
         inventory = focus.inventory.clone();

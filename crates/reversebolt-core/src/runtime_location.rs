@@ -17,6 +17,14 @@ pub struct Location {
     /// Complete runtime labels from anchor through leaf; untrusted observations.
     pub members: Vec<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct RoleAnchor {
+    pub anchor_step: usize,
+    pub role_id: String,
+    /// Observed member labels from the parent role to this one. Empty at root.
+    pub members_from_parent: Vec<String>,
+}
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 struct Field {
     id: usize,
@@ -64,7 +72,7 @@ impl Index {
         }
         Ok(Self(classes))
     }
-    pub fn locate(&self, path: &Locator) -> Result<Location> {
+    fn context(&self, path: &Locator) -> Result<(Vec<String>, Vec<bool>)> {
         path.validate(&path.scope)?;
         let mut names = vec![];
         let mut embedded = vec![];
@@ -99,6 +107,28 @@ impl Index {
             // their enclosing object; references never cross the role boundary.
             embedded.push(inline_type.is_some() && matches!(step.member, Member::Field { .. }));
         }
+        Ok((names, embedded))
+    }
+    /// Role boundaries on the actual rooted route, not matching type names or
+    /// addresses across snapshots. Embedded fields stay inside their owner.
+    pub fn role_chain(&self, path: &Locator) -> Result<Vec<RoleAnchor>> {
+        let (names, embedded) = self.context(path)?;
+        let mut result = vec![];
+        let mut parent = 0;
+        for anchor in 0..path.steps.len() {
+            if anchor == 0 || !embedded[anchor - 1] {
+                result.push(RoleAnchor {
+                    anchor_step: anchor,
+                    role_id: role_id_at(path, anchor)?,
+                    members_from_parent: names[parent..anchor].to_vec(),
+                });
+                parent = anchor;
+            }
+        }
+        Ok(result)
+    }
+    pub fn locate(&self, path: &Locator) -> Result<Location> {
+        let (names, embedded) = self.context(path)?;
         let mut anchor = path.steps.len() - 1;
         while anchor > 0 && embedded[anchor - 1] {
             anchor -= 1;

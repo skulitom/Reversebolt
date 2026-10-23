@@ -3,11 +3,14 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / 'test-results/runtime-activity-focus-v1'
+assert sys.argv[1:] in [[], ['--connected']]
+CONNECTED = bool(sys.argv[1:])
+OUT = ROOT / ('test-results/runtime-connected-focus-v1' if CONNECTED else 'test-results/runtime-activity-focus-v1')
 PRIOR = ROOT / 'test-results/runtime-state-activity-v1'
 read = lambda p: json.loads(p.read_text(encoding='utf-8-sig'))
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
@@ -23,10 +26,13 @@ frozen = {
     'prior': str(PRIOR), 'prior_audit_sha256': sha(PRIOR / 'audit.json'),
     'max_selection_requests': 24, 'max_proposal_requests': 8,
     'manual_measurement_images': 0, 'gameplay_writes': 0,
+    'connected_focus': CONNECTED,
 }
 sources = [p for folder in ['crates/reversebolt-core/src', 'crates/reversebolt-observer/src']
            for p in (ROOT / folder).rglob('*.rs')]
 sources += list((ROOT / 'research/runtime-activity-focus').glob('*.*'))
+if CONNECTED:
+    sources += list((ROOT / 'research/runtime-connected-focus').glob('*.*'))
 for source in sources:
     name = source.relative_to(ROOT).as_posix()
     destination = OUT / 'source' / name

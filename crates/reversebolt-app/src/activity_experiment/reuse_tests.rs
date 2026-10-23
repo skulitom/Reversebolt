@@ -4,6 +4,7 @@ use reversebolt_core::{runtime, runtime_hypotheses as h};
 
 fn metadata_receipt(error: Option<String>) -> reversebolt_observer::runtime_naming::Receipt {
     reversebolt_observer::runtime_naming::Receipt {
+        alternative_cleanup: None,
         selection_purpose: Default::default(),
         incomplete_stage: None,
         paged_selection: None,
