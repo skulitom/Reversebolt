@@ -7,6 +7,7 @@ license.workspace = true
 [features]
 # Saved-data research only; excluded from the desktop and MCP builds.
 comparison-priority-research = []
+runtime-relevance-research = []
 
 [dependencies]
 serde.workspace = true

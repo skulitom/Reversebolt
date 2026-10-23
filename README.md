@@ -47,6 +47,13 @@ opaque labels still yield no questions. Convergence is improved; usefulness and
 gameplay effects remain unverified.
 [Selection replay and remaining limitations](research/bounded-type-selection/README.md).
 
+A research-only relevance review can separate the known device-setting proposals
+from plausible gameplay candidates while leaving ambiguous labels uncertain.
+It sees raw observed labels rather than the generator's explanation. Reordered
+and opaque-label checks pass, but this is not independent semantic validation and
+does not filter production cards.
+[Raw-label review and limits](research/runtime-relevance/README.md).
+
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime
 inspection without screenshots. Other applications use the existing window and

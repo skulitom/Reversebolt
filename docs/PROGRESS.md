@@ -4,6 +4,28 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Blinded relevance review (2026-10-23): **38% unchanged**. A research-only second
+interpretation sees raw type/field labels and same-object text, without generated
+names/questions, values or image interpretations. Every classification is bound
+to the exact report/path evidence and must cite its own labels. Unknown results
+are retained; no candidate is removed or given edit authority.
+
+Eight frozen saved-data cases pass their evidence audit with seven local model
+requests. The thirteen original gameplay candidates are classified as plausible
+gameplay, two known device settings as application configuration, and the generic
+fixture as unclear. Reversing the gameplay/menu batches changes no categories;
+removing meaningful labels from four Vampire candidates makes all four unclear.
+These are same-model development diagnostics, not verified meanings or a measured
+precision/generalization result. The display fields remain ambiguous in reality,
+and an owned fixture's reason ends abruptly within its text budget.
+
+149 core/observer tests, strict workspace Clippy, formatting and the research
+build pass. The feature is absent from default desktop/MCP builds. Current preview
+`0.1.0-20261023-081315` stays selected. Next: broader false-exclusion and adversarial
+checks before considering a production relevance policy, alongside a valid
+gameplay baseline for actual effect experiments.
+[Protocol, all classifications and limitations](../research/runtime-relevance/README.md).
+
 Bounded type-selection convergence (2026-10-23): **38% unchanged**. Complete
 pages now receive explicit nomination allowances checked in prompts, schemas,
 responses and receipts. Once there are at most eight pages, their combined

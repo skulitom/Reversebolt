@@ -15,6 +15,8 @@ pub mod runtime_activity;
 pub mod runtime_naming;
 #[cfg(feature = "comparison-priority-research")]
 pub mod runtime_priority;
+#[cfg(feature = "runtime-relevance-research")]
+pub mod runtime_relevance;
 #[cfg(feature = "comparison-priority-research")]
 pub mod runtime_test_design;
 pub mod tracking;

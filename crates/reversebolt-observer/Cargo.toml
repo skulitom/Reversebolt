@@ -6,6 +6,11 @@ license.workspace = true
 
 [features]
 comparison-priority-research = ["reversebolt-core/comparison-priority-research"]
+runtime-relevance-research = ["reversebolt-core/runtime-relevance-research"]
+
+[[example]]
+name = "runtime-relevance-replay"
+required-features = ["runtime-relevance-research"]
 
 [[example]]
 name = "comparison-priority-replay"

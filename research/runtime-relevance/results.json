@@ -1,0 +1,766 @@
+{
+  "artifact_audit_passed": true,
+  "model": {
+    "name": "qwen3.8:latest",
+    "digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "size": 17741872154
+  },
+  "cases": [
+    {
+      "case": "vampire-original",
+      "candidate_count": 4,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "gameplay": 4
+      },
+      "judgments": [
+        {
+          "path_id": "3a775ec915c64b8ac4618ee1589d09d7dd4d046323278317c0f81e0fc20766f3",
+          "field": "<maxHp>k__BackingField",
+          "type": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 0,
+          "category": "gameplay",
+          "reason": "The field name 'maxHp' within a 'CharacterData' type indicates a core character attribute (health) relevant to survival mechanics.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "<maxHp>k__BackingField"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "035b69c79231695a8739b5b21c04e15c204f27a4bbb1b75d2543d7fcc096b5e8",
+          "field": "<moveSpeed>k__BackingField",
+          "type": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 1,
+          "category": "gameplay",
+          "reason": "The field name 'moveSpeed' within a 'CharacterData' type indicates a movement parameter for the player character.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "<moveSpeed>k__BackingField"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "VampireSurvivors.Data.Characters.CharacterData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "256dc52c8c48f39a94c750f5390c5eb1fe802b3ed13390c49760a3336b5bdb23",
+          "field": "<startingSpawns>k__BackingField",
+          "type": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 2,
+          "category": "gameplay",
+          "reason": "The field name 'startingSpawns' within a 'StageData' type indicates a rule or parameter governing enemy generation at the start of a level.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "<startingSpawns>k__BackingField"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "VampireSurvivors.Data.Stage.StageData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "5272b44c3c1f2eec982909a3cda1df8b0ab9b4fb4464765b7a8b469e461a7798",
+          "field": "<interval>k__BackingField",
+          "type": "VampireSurvivors.Data.Weapons.WeaponData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 3,
+          "category": "gameplay",
+          "reason": "The field name 'interval' in 'WeaponData' combined with object text describing damage generation implies a timing parameter for a weapon ability.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "<interval>k__BackingField"
+            },
+            {
+              "source": "object_text",
+              "index": 1,
+              "quote": "Generates damaging zones above the character."
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "VampireSurvivors.Data.Weapons.WeaponData, VampireSurvivors.Runtime, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        }
+      ],
+      "seconds": 13.59399999998277,
+      "receipt_sha256": "45b433950d0cde5a91e5c96e0e9e76e000700b72c50559eb9e07733d7fe8b8c2",
+      "offline_checked": true
+    },
+    {
+      "case": "latest-original",
+      "candidate_count": 9,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "gameplay": 9
+      },
+      "judgments": [
+        {
+          "path_id": "71b5fbd41ebdc3259a6f243ce0f87e320127d31e9b5712c953447190d33b25a7",
+          "field": "spring",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 0,
+          "category": "gameplay",
+          "reason": "A spring parameter on a rigidbody controller suggests physics-based interaction or movement rules within the simulated world.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "spring"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "99afaf496f03495fc4eac07807b8f09ebd0b1cd7d3260575c7ce619d78ebfb2a",
+          "field": "breakDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 1,
+          "category": "gameplay",
+          "reason": "A distance threshold for breaking or separating objects is a plausible gameplay rule or interaction parameter.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "breakDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "bf262a5c9c10268e9e5ca2bace85b0fb051b62d86eb66f5f30d4c7ea7e649d71",
+          "field": "LightFillSpeed",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 2,
+          "category": "gameplay",
+          "reason": "A speed parameter for filling a receiver is a plausible gameplay mechanic or resource accumulation rate.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "LightFillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "073ec97252de6bd8a8c89a7e26f7bcef3f88dbe5ce9bfa5e15de0d0d21676c9b",
+          "field": "RequireCubeDropped",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 3,
+          "category": "gameplay",
+          "reason": "A condition requiring a specific object interaction (dropping a cube) is a plausible gameplay rule or trigger.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "RequireCubeDropped"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "7db3a365b88e23f916c35f313d9ec317ad099b09aafa7b92e83b70628c4f011d",
+          "field": "fillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 4,
+          "category": "gameplay",
+          "reason": "A speed parameter for filling a display is a plausible gameplay animation or state change rate.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "fillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "b5827358837751ec552e6567066e4ef3e37ff6ea9bb431b3121c36a7983e7419",
+          "field": "unfillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 5,
+          "category": "gameplay",
+          "reason": "A speed parameter for unfilling a display is a plausible gameplay animation or state change rate.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "unfillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "50ab7c8206fa93afcc1bd84c7f9914d3f6298c2f4d27c5fe8c6fe660de9fed7b",
+          "field": "walkSpeed",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 6,
+          "category": "gameplay",
+          "reason": "A speed parameter for walking is a core gameplay movement parameter for a character or object.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "walkSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "5b285c2a6ae4392507b3197f209eea2a14561530d07cc735ce94ccf137b18837",
+          "field": "maxStepUp",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 7,
+          "category": "gameplay",
+          "reason": "A maximum step-up height is a plausible gameplay movement constraint or collision rule.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "maxStepUp"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "d0fdd8b79c4e8aacb93b8fa954c37ccc5c5aec820266ffec1770fb7192fc539e",
+          "field": "growSpeed",
+          "type": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 8,
+          "category": "gameplay",
+          "reason": "A speed parameter for tree growth is a plausible gameplay animation or world state change rate.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "growSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        }
+      ],
+      "seconds": 10.73399999999674,
+      "receipt_sha256": "197abedac0c77bc554b0b93f92826d55f60df026cd5db62ff7181735133ce5e9",
+      "offline_checked": true
+    },
+    {
+      "case": "menu-original",
+      "candidate_count": 2,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "application_configuration": 2
+      },
+      "judgments": [
+        {
+          "path_id": "689346f9ea63f078aafc29c18c3746267a8a85e3f9b73964e5d7658c737a19e3",
+          "field": "maxJoysticksPerPlayer",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 0,
+          "category": "application_configuration",
+          "reason": "The field name explicitly references joystick limits per player, which is a standard input device configuration parameter for handling hardware connections and mapping, falling under application configuration rather than in-game simulation state.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "maxJoysticksPerPlayer"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "f16984532ac29ec3be0d0b9d5682e87e7ef0c9df8655e16c4ea231b3bce3da9e",
+          "field": "force4WayHats",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 1,
+          "category": "application_configuration",
+          "reason": "The field name indicates a setting to force 4-way hat behavior, which is a specific input device configuration option for how joystick hat switches are interpreted, belonging to application configuration.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "force4WayHats"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        }
+      ],
+      "seconds": 3.6709999999729916,
+      "receipt_sha256": "6b1959929ed941b72d546c96f55826dba436b482b961ff206ea913581a9404c0",
+      "offline_checked": true
+    },
+    {
+      "case": "fixture-original",
+      "candidate_count": 1,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "unclear": 1
+      },
+      "judgments": [
+        {
+          "path_id": "13f85d20fea5b38e110fa187826bd6809476cc6e6afa3619d9ced08f323bf171",
+          "field": "Coefficient",
+          "type": "Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture",
+          "candidate": 0,
+          "category": "unclear",
+          "reason": "The field name 'Coefficient' and object text 'Speed' suggest a gameplay parameter, but the type name 'Owned.Box`1[[Owned.Actor, OwnedPathFixture]], OwnedPathFixture' indicates a generic container or framework plumbing structure. Without further context linking this specific coefficient to a defined gameplay rule or state, the role is ambiguous between a gameplay parameter and an internal data hold",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "Coefficient"
+            },
+            {
+              "source": "object_text",
+              "index": 0,
+              "quote": "Speed"
+            }
+          ]
+        }
+      ],
+      "seconds": 2.577999999979511,
+      "receipt_sha256": "6a8e8777e1ef8f995d4cccb6e9af3b912ddf03ca4762f004ba9a00c65bcb79ab",
+      "offline_checked": true
+    },
+    {
+      "case": "opaque-original",
+      "candidate_count": 0,
+      "model_calls": 0,
+      "error": null,
+      "categories": {},
+      "judgments": [],
+      "seconds": 0.062000000034458935,
+      "receipt_sha256": "c75faebdb4c58d86dbb9369c45cfee15467062800d87a5d8857040a0729ff51b",
+      "offline_checked": true
+    },
+    {
+      "case": "latest-reversed",
+      "candidate_count": 9,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "gameplay": 9
+      },
+      "judgments": [
+        {
+          "path_id": "d0fdd8b79c4e8aacb93b8fa954c37ccc5c5aec820266ffec1770fb7192fc539e",
+          "field": "growSpeed",
+          "type": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 0,
+          "category": "gameplay",
+          "reason": "The field name 'growSpeed' combined with the type 'TreeGrowthController' indicates a parameter controlling the growth rate of an in-world object (tree), which is a gameplay mechanic.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "growSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "TreeGrowthControllerOptimized, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "5b285c2a6ae4392507b3197f209eea2a14561530d07cc735ce94ccf137b18837",
+          "field": "maxStepUp",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 1,
+          "category": "gameplay",
+          "reason": "'maxStepUp' on a 'RigidbodyController' suggests a movement constraint defining the maximum height a character or object can automatically step over, which is a core gameplay movement rule.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "maxStepUp"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "50ab7c8206fa93afcc1bd84c7f9914d3f6298c2f4d27c5fe8c6fe660de9fed7b",
+          "field": "walkSpeed",
+          "type": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 2,
+          "category": "gameplay",
+          "reason": "'walkSpeed' on a 'RigidbodyController' is a standard parameter for character movement speed within the simulated world.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "walkSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "RigidbodyController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "b5827358837751ec552e6567066e4ef3e37ff6ea9bb431b3121c36a7983e7419",
+          "field": "unfillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 3,
+          "category": "gameplay",
+          "reason": "'unfillSpeed' on a 'LineDisplay' suggests a visual or state change rate for a display element, likely representing a resource level or progress bar animation within the game world.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "unfillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "7db3a365b88e23f916c35f313d9ec317ad099b09aafa7b92e83b70628c4f011d",
+          "field": "fillSpeed",
+          "type": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 4,
+          "category": "gameplay",
+          "reason": "'fillSpeed' on a 'LineDisplay' indicates the rate at which a visual element fills, typically representing resource accumulation or progress in gameplay.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "fillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "LineDisplay, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "073ec97252de6bd8a8c89a7e26f7bcef3f88dbe5ce9bfa5e15de0d0d21676c9b",
+          "field": "RequireCubeDropped",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 5,
+          "category": "gameplay",
+          "reason": "'RequireCubeDropped' on a 'CubeReceiverController' implies a rule or condition for interacting with or receiving a specific game object (cube), which is a gameplay interaction logic.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "RequireCubeDropped"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "bf262a5c9c10268e9e5ca2bace85b0fb051b62d86eb66f5f30d4c7ea7e649d71",
+          "field": "LightFillSpeed",
+          "type": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 6,
+          "category": "gameplay",
+          "reason": "'LightFillSpeed' on a 'CubeReceiverController' suggests a visual effect or state change rate (light filling) associated with the receiver object, likely part of the gameplay feedback or state indication.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "LightFillSpeed"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CubeReceiverController, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "99afaf496f03495fc4eac07807b8f09ebd0b1cd7d3260575c7ce619d78ebfb2a",
+          "field": "breakDistance",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 7,
+          "category": "gameplay",
+          "reason": "'breakDistance' on a 'CarryRigidbody' indicates a physical constraint or rule for when a carried object detaches or breaks, which is a gameplay interaction rule.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "breakDistance"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "71b5fbd41ebdc3259a6f243ce0f87e320127d31e9b5712c953447190d33b25a7",
+          "field": "spring",
+          "type": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 8,
+          "category": "gameplay",
+          "reason": "'spring' on a 'CarryRigidbody' likely refers to a physics parameter (spring stiffness or damping) governing the movement or attachment behavior of the carried object, which is a gameplay physics rule.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "spring"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "CarryRigidbody, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        }
+      ],
+      "seconds": 12.01600000000326,
+      "receipt_sha256": "3b4e1e6ee024b3ef6b8dd520c647aa18b668535c9d358cdb9370a6c1a3640a9f",
+      "offline_checked": true
+    },
+    {
+      "case": "menu-reversed",
+      "candidate_count": 2,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "application_configuration": 2
+      },
+      "judgments": [
+        {
+          "path_id": "f16984532ac29ec3be0d0b9d5682e87e7ef0c9df8655e16c4ea231b3bce3da9e",
+          "field": "force4WayHats",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 0,
+          "category": "application_configuration",
+          "reason": "The field name 'force4WayHats' refers to a specific input device behavior (joystick hat axis handling), which is a peripheral device configuration setting rather than a gameplay rule or internal implementation detail.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "force4WayHats"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        },
+        {
+          "path_id": "689346f9ea63f078aafc29c18c3746267a8a85e3f9b73964e5d7658c737a19e3",
+          "field": "maxJoysticksPerPlayer",
+          "type": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+          "candidate": 1,
+          "category": "application_configuration",
+          "reason": "The field name 'maxJoysticksPerPlayer' defines a limit on input device connections per user, which is an input device setup and application configuration parameter.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "maxJoysticksPerPlayer"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Rewired.Data.ConfigVars, Rewired_Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            }
+          ]
+        }
+      ],
+      "seconds": 3.5630000000237487,
+      "receipt_sha256": "05f428c4d4025cd7178702b0096d293331b4f6b9e7748bab4a2c3f21adb748c9",
+      "offline_checked": true
+    },
+    {
+      "case": "vampire-opaque",
+      "candidate_count": 4,
+      "model_calls": 1,
+      "error": null,
+      "categories": {
+        "unclear": 4
+      },
+      "judgments": [
+        {
+          "path_id": "3a775ec915c64b8ac4618ee1589d09d7dd4d046323278317c0f81e0fc20766f3",
+          "field": "F000000003e",
+          "type": "Container",
+          "candidate": 0,
+          "category": "unclear",
+          "reason": "Generic container type with no descriptive text or specific field semantics to distinguish gameplay, configuration, or implementation roles.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "F000000003e"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Container"
+            }
+          ]
+        },
+        {
+          "path_id": "035b69c79231695a8739b5b21c04e15c204f27a4bbb1b75d2543d7fcc096b5e8",
+          "field": "F0000000050",
+          "type": "Container",
+          "candidate": 1,
+          "category": "unclear",
+          "reason": "Generic container type with no descriptive text or specific field semantics to distinguish gameplay, configuration, or implementation roles.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "F0000000050"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Container"
+            }
+          ]
+        },
+        {
+          "path_id": "256dc52c8c48f39a94c750f5390c5eb1fe802b3ed13390c49760a3336b5bdb23",
+          "field": "F000000002d",
+          "type": "Container",
+          "candidate": 2,
+          "category": "unclear",
+          "reason": "Generic container type with no descriptive text or specific field semantics to distinguish gameplay, configuration, or implementation roles.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "F000000002d"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Container"
+            }
+          ]
+        },
+        {
+          "path_id": "5272b44c3c1f2eec982909a3cda1df8b0ab9b4fb4464765b7a8b469e461a7798",
+          "field": "F000000003a",
+          "type": "Container",
+          "candidate": 3,
+          "category": "unclear",
+          "reason": "Generic container type with no descriptive text or specific field semantics to distinguish gameplay, configuration, or implementation roles.",
+          "citations": [
+            {
+              "source": "field_name",
+              "index": null,
+              "quote": "F000000003a"
+            },
+            {
+              "source": "type_name",
+              "index": null,
+              "quote": "Container"
+            }
+          ]
+        }
+      ],
+      "seconds": 4.703000000037719,
+      "receipt_sha256": "e66af0efe3000c120e1edefecdbbc82a0c90673073db1a6f1296c77cd49fd027",
+      "offline_checked": true
+    }
+  ],
+  "order_comparisons": {
+    "latest": {
+      "same_paths": true,
+      "changed_categories": []
+    },
+    "menu": {
+      "same_paths": true,
+      "changed_categories": []
+    }
+  },
+  "core_observer_tests": 149,
+  "progress_percent": 38,
+  "desktop_changed": false,
+  "production_filter_enabled": false,
+  "frozen_manifest_sha256": "93c9c527c61782e660dcc2565499d91bbb22e9e67e0308839a55fe97b88f124d",
+  "limitations": [
+    "Known development candidates, not independent or held-out semantic validation.",
+    "The same model generates and classifies. Agreement does not establish truth.",
+    "Category labels and exact citations do not establish liveness, owner, effect or edit authority.",
+    "Unknown candidates are retained and no production candidates are removed.",
+    "Reordered and opaque variants are synthetic robustness checks, not gameplay evidence."
+  ]
+}
