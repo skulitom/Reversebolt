@@ -4,6 +4,30 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Fresh current-state activity (2026-10-23): **36% unchanged**. A frozen Sable
+development run used the explicit state selector and unchanged enclosing-role
+sampler. All 1,484 readings across 106 paths succeeded; eight paths changed and
+two passed the existing four-repeat association rule. Their runtime labels refer
+to animation state. This is useful evidence for finding relevant objects, but no
+field meaning, editable control, intervention effect or generalization is verified.
+
+Forty-eight automatically captured images provide separate rendered-response
+evidence for the first D/A pair in each batch. Action differences exceeded adjoining
+quiet differences, but some change continued after release, interval durations
+differed and no action pair had distributed patch-motion consensus. No measurement
+image was manually viewed. Product input classifications remain unknown; the
+external diagnostic sequence is retained separately. All 113 helpers unloaded,
+all eight analyses and image differences replay, and all 485 pauses recorded zero
+helper Rust heap operations. Unscanned roots, omitted fields and two unmeasured
+batches remain unknown. No gameplay field was written or control published.
+
+The owned processes exited, Anode was released and the main save is unchanged.
+The user's desktop editor remains open. This checkpoint changes research only;
+the 475-test/Clippy/fmt product baseline is unchanged. Next: use repeated state
+activity to investigate relevant object roles, then independently validate proposed
+parameter effects with fresh paths and bounded interventions.
+[Results and interpretation limits](../research/runtime-state-activity/README.md).
+
 Input-response diagnostic and selection purpose (2026-10-23): **36% unchanged**.
 An automated Sable experiment compared the research and product input formats
 using eighteen images and eight short holds. Both methods produced larger image
