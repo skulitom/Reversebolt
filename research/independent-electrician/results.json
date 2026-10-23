@@ -1,0 +1,494 @@
+{
+  "artifact_audit": "passed",
+  "preview": "0.1.0-20261023-093127",
+  "setup": {
+    "game_pid": 53472,
+    "engine_pid": 73452,
+    "engine_job": "j_de33c260ff1441d6bead9ef4be72024f",
+    "window": "w_8bd1aceddb2a",
+    "setup_images_viewed": 6,
+    "images": [
+      "Publisher splash",
+      "Photosensitivity notice",
+      "Fiction notice",
+      "Title prompt",
+      "Main menu",
+      "Continue confirmation"
+    ],
+    "actions": [
+      "Focus Electrician window",
+      "Enter on photosensitivity notice",
+      "Enter on fiction notice",
+      "Enter on title prompt",
+      "Click Continue Game at 181,281",
+      "Confirm Continue at 518,392"
+    ],
+    "measurement_images_manually_viewed": 0,
+    "note": "Setup image budget reached at Continue confirmation. Wait 45 seconds before starting unchanged evaluator; no additional manual image used to establish loaded scene. Automatic captures/model evidence must establish scene context."
+  },
+  "audit_source_sha256": "068e45002a0479e8e17463688603b2c2a70195fd2960c027cb3c6531b1ceab6b",
+  "progress_percent": 40,
+  "frozen_sha256": "0f9c3f19c86173a126a4062c8ed561f13487e20251422b06c202a7997ce14003",
+  "automatic_discovery_images": 15,
+  "input_holds": 4,
+  "manually_viewed_measurement_images": 0,
+  "jobs": [
+    {
+      "phase": "Completed",
+      "error": null
+    }
+  ],
+  "naming": {
+    "status": "complete",
+    "error": null,
+    "receipt_sha256": "e06745e0337ffcbfb8f2311a391f6de839dd39dcd2d34e262512fac4b34f9bfd",
+    "metadata_model_calls": 25,
+    "metadata_call_elapsed_ms": [
+      27498,
+      14314,
+      10408,
+      9666,
+      9925,
+      10798,
+      9044,
+      8562,
+      6783,
+      10139,
+      7137,
+      6699,
+      6361,
+      8666,
+      4097,
+      10420,
+      8792,
+      4528,
+      42725,
+      15742,
+      736,
+      2113,
+      2665,
+      932,
+      3836
+    ],
+    "activity": {
+      "error": null,
+      "observation": {
+        "consistent_visible_change": false,
+        "description": "Pair 0->1 shows a lit room becoming completely black. Pair 2->3 shows a top-down view with a slight shift in the visible shelf contents and tool position. The changes are unrelated (total blackout vs. minor perspective shift) and do not form a consistent pattern.",
+        "uncertainty": "The two pairs describe fundamentally different visual events. The first is a global lighting change; the second is a minor spatial adjustment. They cannot be attributed to the same consistent visible change or control effect."
+      },
+      "model_calls": 1
+    },
+    "types": 504,
+    "fields": 2344,
+    "reachable_paths": 61667,
+    "questions": [
+      {
+        "name": "wide cast enable",
+        "question": "Does the wide cast enable flag determine if the wide cast system is active?",
+        "field": "wideCastEnable",
+        "observed_value": {
+          "boolean": true,
+          "raw": 1
+        },
+        "path_id": "eb0ecde39bea1bafc9821ff25e6dd466264ad6cd1824382cfe5c6ce96a45d279",
+        "alternatives": [
+          "9e312719d29efc4c79ad6fa1edfa2a706d17d95184fad33409da4b8eb1dd9cbb",
+          "7d5b5bca81050cb4d4b5c47ecffcd0b5bdab9672651a355e5106220897804bb4",
+          "5a81bdd28ccd11490e6071c94ba977730feb179ce74fdcd9e9407d730ed739d5"
+        ]
+      },
+      {
+        "name": "raycast distance",
+        "question": "Does the raycast distance value set the maximum range for the standard raycast interaction?",
+        "field": "raycastDistance",
+        "observed_value": "2",
+        "path_id": "3e8dd5479657b7b95df6f8bc6964298475d208ee66dc4f7abc2f90301a7af4c5",
+        "alternatives": [
+          "e825fb73c9dd57148b5c5c272838ac25bd5602d18615ab0a740e3ffb69b89f48",
+          "f13fb008b5281068a78e4138b9597f67674bf9c9df86ecacbabfcd81e6f886db",
+          "267cb875c06d2b93c195d0da125a604f6610610316d63ad1626a47d12f96a1b4"
+        ]
+      },
+      {
+        "name": "walk speed",
+        "question": "What is the current walk speed setting for the first person controller?",
+        "field": "walkSpeed",
+        "observed_value": "3.5",
+        "path_id": "24ad42aa1291956da43416ed4df26c269c864f52894db96d09a566f7961fe423",
+        "alternatives": []
+      },
+      {
+        "name": "jump speed",
+        "question": "What is the configured jump speed for the player's movement?",
+        "field": "jumpSpeed",
+        "observed_value": "5",
+        "path_id": "a66c81c16af4b4b1fe8d8d26ad01080e56c899205868c9f9bccce489afe326a2",
+        "alternatives": []
+      },
+      {
+        "name": "min force",
+        "question": "Does the min force value determine the minimum input required to throw a dart?",
+        "field": "minForce",
+        "observed_value": "30",
+        "path_id": "b9bf2ee20e0155d053faa021b031c54917adef5122f1069e6d16a8fa2c99e796",
+        "alternatives": [
+          "386e07075f7f219f4195a579b66e34840f35c82e8520a384ada801466dfaeaad"
+        ]
+      },
+      {
+        "name": "camera lerp speed",
+        "question": "What is the intended gameplay effect of adjusting the camera lerp speed?",
+        "field": "cameraLerpSpeed",
+        "observed_value": "15",
+        "path_id": "d16c6f6756da126c2dccec733d16d346eb3e198e56c781ca9e6f4cf210a55b35",
+        "alternatives": [
+          "c6022573a82bdaefeec3399edd17251cc9925fd3aa630ac8b9409e7029bd05df"
+        ]
+      },
+      {
+        "name": "player money",
+        "question": "Does the player money value determine the amount of currency available for purchasing items in the game?",
+        "field": "playerMoney",
+        "observed_value": 3199,
+        "path_id": "2dc4d6451250ed79938cc23ba3d5e0a1d41776548621001dfab4b850975778e3",
+        "alternatives": []
+      }
+    ],
+    "rejected": []
+  },
+  "image_models": [
+    {
+      "receipt_sha256": "568aee9725c97e24b64af39e2b5a9e7f93938ad6fb0ad2ea0c160341e0d9fa64",
+      "calls": 6,
+      "error": "The local observation pass exhausted its inference budget.",
+      "summary": "A dimly lit room with floral wallpaper, a window covered in newspaper, and string lights. A doorway leads to another room. A warning message is displayed at the bottom."
+    }
+  ],
+  "plan_available": true,
+  "comparison": {
+    "test_id": "8e9182ad-39dc-4493-8c54-fd20fe8459f6",
+    "candidate_id": "eb0ecde39bea1bafc9821ff25e6dd466264ad6cd1824382cfe5c6ce96a45d279",
+    "phase": "complete",
+    "hypothesis": "Does the wide cast enable flag determine if the wide cast system is active?",
+    "value": "false",
+    "assessment": {
+      "limitation": "A comparison of rendered response within these observations. Windows key samples are not proof of delivered game actions. Screen changes do not measure physical speed or identify a gameplay property; unobserved and downstream effects remain unknown.",
+      "medians": [
+        23.267165814463112,
+        23.106598680606282,
+        23.102775178049672
+      ],
+      "reason": "The planned edit did not suppress the rendered response in this comparison.",
+      "status": "suppression_not_observed"
+    },
+    "independent_full_frame_gray_medians": [
+      26.20090494791667,
+      26.14488986545139,
+      26.146361219618058
+    ],
+    "actions": [
+      {
+        "hold_ms": 198,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          65
+        ]
+      },
+      {
+        "hold_ms": 198,
+        "keys": [
+          68
+        ]
+      },
+      {
+        "hold_ms": 197,
+        "keys": [
+          65
+        ]
+      }
+    ],
+    "measurement_images": 18,
+    "input_holds": 12,
+    "comparison_sha256": "acc4a421efc671e45e8405b5158cedb4565b4418e37ad6245bb19291cf932f6e",
+    "remembered_recipe_retained": true
+  },
+  "helpers": [
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\2a8d43f4-8e24-45c1-8ac8-26ce1cba1542\\stdout.jsonl",
+      "events_sha256": "135463eea04a82ace18f836acf23cd90d466b593d6e39bbc8ef42775d6a54d91",
+      "report_sha256": "4c5eea6045b01a38561b8a99864afdc0c468a914b3c442fc69fc57661738d73a",
+      "elapsed_ms": 502,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 490,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\83b25cb1-d1b1-4b3e-b4a0-aac462f1ac3d\\stdout.jsonl",
+      "events_sha256": "e7b2b0089143f70d0beae3e176b4cd2cf5e72c043da8254c24d20a9eb4697956",
+      "report_sha256": "471ccc3196476fccea7c956404397fb6f1bc347e0614cb9335b54166759157dc",
+      "elapsed_ms": 4733,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 4116,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 3649,
+        "loaded_fields": 23523,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": false,
+      "roots_complete": false
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\91160758-0ffb-4170-b6a3-54e4a6ebfc1d\\stdout.jsonl",
+      "events_sha256": "2b608cd8cc60018d166182eb14c4d2fafc57b31c12373a89373a61c890144a2a",
+      "report_sha256": "4c56c7ae1b0b05ac1f871784259f540c02d6397f113bf1291841fbdaf91a485d",
+      "elapsed_ms": 514,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 503,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\a0d4a4c9-9f13-4869-8c81-765479738eec\\stdout.jsonl",
+      "events_sha256": "e4936cb569eeaf43ff6ee221f1bd0639ae57a21f30fe66d0edc6237bc3c6f34e",
+      "report_sha256": "e8eac59b0d5aa4c420b2043785ed924d7440d3ca59c0130f03626b2b9eb39193",
+      "elapsed_ms": 500,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 489,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\ad4b3e9c-3637-4ac0-b737-b909ceb1c6d7\\stdout.jsonl",
+      "events_sha256": "48543529a91388083d3cf093799158c06d5e76ff5f7ac11d43b22ae3fec66856",
+      "report_sha256": "68c932b632d5de1ab3d4879c3784417da7d75ed1e9c1b157b62a0734213adcda",
+      "elapsed_ms": 501,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 489,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\e173c543-5398-4107-9fd0-1f65cbe8abe1\\stdout.jsonl",
+      "events_sha256": "19db4087354ae84c53e7ec4fbfc97f5f1ad3e10e311a1984456c67c797a7343b",
+      "report_sha256": "9e7ace4cba8b525fded421ea0e8004ace1ee5a7d40691f61df4f67dc172adfdb",
+      "elapsed_ms": 499,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 488,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    },
+    {
+      "path": "C:\\DEV\\Reversebolt\\test-results\\independent-electrician-v1\\data\\runtime\\53472-01dd62cf4a29bdd6\\e68e4399-280a-4ac8-aa86-03e7af071d7d\\stdout.jsonl",
+      "events_sha256": "e4ac15d3f140d2b3dc06c957202894963833038c4d1b4288948a9445c940f190",
+      "report_sha256": "3a85c06a737b3d83296914bc49c8f711d388ab448e508bb1025824fc14c40819",
+      "elapsed_ms": 491,
+      "error": null,
+      "metadata": {
+        "elapsed_ms": 478,
+        "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+        "limits": {
+          "declared_classes": 50000,
+          "elapsed_ms": 20000,
+          "loaded_classes": 50000,
+          "loaded_fields": 200000,
+          "root_field_headers": 2000000
+        },
+        "loaded_classes": 2298,
+        "loaded_fields": 17847,
+        "policy": "roots_then_encountered_layouts_v1",
+        "root_inventory": {
+          "classes_examined": 14056,
+          "complete": true,
+          "field_headers_examined": 53360,
+          "open_generic_classes": 1326,
+          "potential_root_owners": 1621
+        },
+        "static_roots": 4916
+      },
+      "graph_complete": null,
+      "roots_complete": null
+    }
+  ],
+  "recorded_pauses": 139,
+  "max_stop_to_resume_us": 5571,
+  "runtime_trials": [
+    {
+      "id": "0065d336-eb1a-424e-9443-5f10754e8608",
+      "phase": "restored",
+      "candidate_id": "eb0ecde39bea1bafc9821ff25e6dd466264ad6cd1824382cfe5c6ce96a45d279",
+      "original_bytes": [
+        1
+      ],
+      "replacement_bytes": [
+        0
+      ],
+      "restored_bytes": [
+        1
+      ],
+      "type_code": 2,
+      "record_sha256": "3486f7548835d40e8f87e0d47521b991a63d8d500b53c51be91f8af34066ecc5"
+    }
+  ],
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\LocalLow\\Take IT Studio!\\Electrician",
+      "changes": [
+        "Player-prev.log",
+        "Player.log"
+      ]
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1080020",
+      "changes": []
+    }
+  ],
+  "cleanup": {
+    "mcp_exit_code": 0,
+    "preserved_editor": {
+      "pid": 98332,
+      "session": 1,
+      "responsive": true
+    },
+    "anode_lease_released": true,
+    "game_shutdown": "Normal close request, then verified process exit",
+    "owned_pids": [
+      53472,
+      73452,
+      32132,
+      34100,
+      17264,
+      8072
+    ],
+    "owned_processes_exited": true,
+    "engine_shutdown": "Owned Anode job cancelled after verified settled state"
+  },
+  "limitation": "One target withheld from recorded development, selected for installed IL2CPP support and short movement probes. Labels and image differences alone do not verify gameplay meaning; a completed audit may retain a negative or unavailable comparison."
+}

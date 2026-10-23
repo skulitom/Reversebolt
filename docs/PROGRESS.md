@@ -4,6 +4,33 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Electrician Simulator withheld trial (2026-10-23): **40% unchanged**. The frozen
+current preview and unchanged generic evaluator completed automatic discovery,
+one product-selected native comparison and exact restoration. Seven provisional
+questions were accepted, including walk speed and player money. The planner chose
+wide cast enable first; true -> false -> true did not suppress the rendered
+response (23.2672 -> 23.1066 -> 23.1028). An independent image metric agrees with
+that negative result. No alternate candidate was selected or retried.
+
+The partial native catalogue took 4.733 seconds; naming required 25 metadata
+calls and the full evaluator about 414 seconds. The separate six-call visual
+review exhausted its budget; activity interpretation was inconsistent and patch
+matching lacked support. The planner currently uses the first untried choice
+after a type round robin, exposing a gap between question selection and an
+experiment able to answer it. This is an honest negative first comparison on a
+new target, not verified gameplay semantics or a passed generalization gate.
+
+The provenance audit checks 33 images, all input/action records, exact native
+readbacks/restoration and seven helper unloads. All 139 recorded pauses were
+allocation-free, maximum 5.571 ms. Six setup images/actions and zero manually
+viewed measurement images were used. Saves and Steam storage are unchanged;
+only two game log files changed. Owned processes exited, Anode was released and
+the main editor stayed responsive. Product code and the 510-test preview remain
+unchanged. All weighted credits stay fixed, including generalization 0/10.
+Next: align experiments with the question and observed activity, and reduce
+naming latency; preserve this run before any tuned follow-up.
+[Protocol, negative outcome and audit](../research/independent-electrician/README.md).
+
 Hyperbolica restart recovery (2026-10-23): **40%**. A new game process and engine
 reopened an exact copy of the prior durable session. Automatic discovery
 rechecked the genuine positive test and found one fresh route/candidate needing

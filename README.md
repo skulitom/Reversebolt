@@ -39,6 +39,13 @@ return, with exact restoration, zero model calls and an unchanged save.
 Progress is **40%**; scene/load transitions and withheld-game acceptance remain.
 [Hyperbolica restart recovery and revalidation](research/hyperbolica-recovery/README.md).
 
+An unchanged first evaluation on Electrician Simulator found seven provisional
+questions and completed one restored native comparison, but measured no effect
+on rendered response. The planner chose an interaction flag for its first
+suppression test. This leaves a concrete experiment-selection gap; it is not a
+passed generalization result. Saves were unchanged, and progress remains **40%**.
+[Withheld Electrician trial, failures and evidence](research/independent-electrician/README.md).
+
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native
 fixture regression preserves typed paths, guarded edits and restoration with
