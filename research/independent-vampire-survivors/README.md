@@ -12,7 +12,54 @@ storage before launch. The installed Steam manifest reports build `25016043`.
 No game update, source inspection, decompilation, field selection, prompt change,
 threshold change or evaluator modification was used for this baseline.
 
-## Procedure and retained outcome
+## Root-first reader rerun (V2, 2026-10-23)
+
+Preview `0.1.0-20261023-074606` now gets past the original metadata failure on
+the same installed game. The separately [frozen protocol](PROTOCOL-v2.md) used
+the unchanged generic evaluator, game hashes and local model. Vampire Survivors
+is now a known development target; this is not an unseen-game result.
+
+Native inspection completed in **5.043 seconds** and confirmed helper unload.
+The reader examined 197,675 field headers across 46,778 declared classes and
+loaded 44,050 fields in 6,073 complete layouts. It inventoried 9,935 static roots
+and visited the first 2,304 before the graph output budget stopped discovery.
+Root and graph coverage remain explicitly incomplete. The 113 recorded pauses
+show zero helper allocations/deallocations and a maximum stop-to-resume duration
+of 5,190 microseconds; this is recorded telemetry, not a hard real-time guarantee
+or a count of every attempted snapshot.
+
+Naming received 364 types and 2,502 fields. Twenty successful local model
+requests narrowed the type pool over four rounds: **364 → 30 → 18 → 12 → 10**.
+The next stage accepts at most eight, so the round budget ended with
+`Type selection exhausted its review-round budget.` No field proposal,
+accepted gameplay hypothesis, comparison, edit or freeze followed. The engine
+retained 64 raw metadata candidates; these are not validated controls. Each page
+asked for up to eight candidates independently, revealing a general convergence
+problem. The saved inventory supports the next selection experiment without
+another game run or manually choosing fields.
+
+Four setup images and three menu actions reached the default Quick Start game.
+The evaluator collected fifteen automatic images and four 200 ms D/A/D/A holds;
+none of the measurement images was manually viewed. The separate appearance
+pass again described a level-up modal. That same-model interpretation is
+unverified, and gameplay movement or causal effects were not established.
+
+Run `python -X utf8 research/independent-vampire-survivors/audit-v2.py` to check
+the retained evidence without launching a game or model. The [audit](audit-v2.py)
+passed frozen sources/binaries, game hashes, capture/input evidence, native
+coverage/unload, model identity, every complete selection page and nomination,
+empty edit history, storage copies and cleanup. [Results](results-v2.json) are
+derived from `test-results/independent-vampire-survivors-v2`; full artifacts stay
+local. `--verify-current` additionally checks the current product sources.
+
+Roaming save/backup bytes stayed identical. Steam `remote/SaveData` and
+`remotecache.vdf` changed, as did LocalLow logs, shader analytics and preferences
+backup. All before/after files are retained locally; no complete save rollback
+is claimed. All owned processes exited and the Anode lease was released. The
+user's open editor stayed responsive. Progress remains **38%**, with no new
+generalization credit.
+
+## V1 procedure and retained outcome
 
 Hidden Anode session 3 launched the game and a fresh shared engine. Two Enter
 presses passed the initial screens; the offered Quick Start option selected the

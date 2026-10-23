@@ -17,7 +17,9 @@ strict Clippy and formatting pass.
 Runtime discovery now loads full layouts for root holders and encountered types,
 instead of exhausting its budget on every declared type. A seven-case native
 fixture regression preserves typed paths, guarded edits and restoration with
-200,001 unrelated fields. Real-game scalability still needs fresh validation.
+200,001 unrelated fields. A fresh Vampire Survivors run now produces a partial
+catalogue in 5.043 seconds, but automatic naming still fails to reach its shortlist
+limit. No new usable control or gameplay effect was established.
 [Metadata scaling and limits](research/runtime-metadata-scaling/README.md).
 
 New comparisons retain route metadata with their evidence. After discovery,
@@ -29,11 +31,13 @@ unchanged save bytes. Older tests without recipes require a new comparison.
 Progress is **38%**; this does not establish independent-game generalization.
 [Product recovery evidence and limits](research/runtime-recovery/PRODUCT.md).
 
-An unchanged independent Vampire Survivors trial stopped at the native metadata
-budget before producing controls. Its recorded image interpretation also reported
-a level-up menu, so movement effects were not established. The failure and storage
+The original independent Vampire Survivors trial stopped at the native metadata
+budget. A separately frozen rerun with the revised reader gets past that failure,
+then stops at automatic type-selection convergence: 364 → 30 → 18 → 12 → 10,
+above the eight-type proposal limit. Both runs' image interpretations report a
+level-up menu, so movement effects remain unestablished. Failures and storage
 changes are retained; progress remains **38%**.
-[Independent baseline and next scaling work](research/independent-vampire-survivors/README.md).
+[Independent baseline, reader rerun and limits](research/independent-vampire-survivors/README.md).
 
 **Research preview:** connect a running application to start discovery automatically.
 Supported IL2CPP applications provide internal-value candidates through runtime

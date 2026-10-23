@@ -4,6 +4,26 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Vampire Survivors reader rerun (2026-10-23): **38% unchanged**. The separately
+frozen preview `0.1.0-20261023-074606` gets past the earlier metadata failure:
+44,050 fields in 6,073 layouts, 5.043 seconds for native inspection and confirmed
+helper unload. Discovery visited 2,304 of 9,935 roots before its output budget;
+the catalogue is partial. All 113 recorded pauses show zero helper allocations
+or deallocations, with a maximum stop-to-resume duration of 5.190 ms.
+
+Automatic naming still fails. Twenty successful model requests over four rounds
+reduce 364 types to 30, 18, 12, then 10, above the eight-type proposal limit.
+There are no accepted gameplay hypotheses, comparisons or edits. The unchanged
+evaluator retains fifteen automatic images and four short input holds; its
+appearance interpretation again describes a level-up menu. Four setup images
+were viewed, no measurement images were viewed, and no scene rescue was used.
+
+The artifact audit passes. Before/after storage copies retain ordinary game
+changes; owned processes exited and the user's editor is preserved. This is a
+known development target, not new independent generalization. Next: test bounded
+type-selection convergence on the saved inventory without another game run.
+[Native result, failure trace and audit](../research/independent-vampire-survivors/README.md).
+
 Root-first metadata preparation (2026-10-23): **38% unchanged**. The runtime now
 streams cheap root-eligibility headers and loads complete layouts for root holders
 and freshly encountered types, parents and inline dependencies. Retained-layout,

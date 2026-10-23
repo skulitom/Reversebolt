@@ -1,0 +1,165 @@
+{
+  "artifact_audit": "passed",
+  "native_discovery": "partial_catalogue",
+  "naming": "review_round_budget_exhausted",
+  "source_commit": "6241b978981a30bb92f8bb035ad8d353f566a7d7",
+  "release": "0.1.0-20261023-074606",
+  "game_app_id": "1794680",
+  "setup": {
+    "game_pid": 37928,
+    "engine_pid": 99712,
+    "window_id": "w_582f18b650f8",
+    "seat_session": 3,
+    "setup_images_viewed": 4,
+    "actions": [
+      {
+        "keys": "enter",
+        "purpose": "dismiss initial warning"
+      },
+      {
+        "keys": "enter",
+        "purpose": "advance observed Press to Start title"
+      },
+      {
+        "click": [
+          828,
+          468
+        ],
+        "purpose": "use offered Quick Start defaults"
+      }
+    ],
+    "manually_reviewed_measurement_images": 0,
+    "gameplay_confirmed": true
+  },
+  "automatic_images": 15,
+  "input_holds": 4,
+  "sampled_input_episodes": [
+    [
+      68
+    ],
+    [
+      65
+    ],
+    [
+      68
+    ],
+    [
+      65
+    ]
+  ],
+  "metadata": {
+    "elapsed_ms": 4402,
+    "limitation": "Root eligibility covers declared non-open-generic types. Complete layouts are loaded for eligible root owners and encountered types, parents and inline dependencies; other layouts are deferred. Root inventory completion is not full object-graph coverage.",
+    "limits": {
+      "declared_classes": 50000,
+      "elapsed_ms": 20000,
+      "loaded_classes": 50000,
+      "loaded_fields": 200000,
+      "root_field_headers": 2000000
+    },
+    "loaded_classes": 6073,
+    "loaded_fields": 44050,
+    "policy": "roots_then_encountered_layouts_v1",
+    "root_inventory": {
+      "classes_examined": 46778,
+      "complete": true,
+      "field_headers_examined": 197675,
+      "open_generic_classes": 2058,
+      "potential_root_owners": 2947
+    },
+    "static_roots": 9935
+  },
+  "report_bytes": 30366600,
+  "catalog_ms": 967,
+  "helper_elapsed_ms": 5043,
+  "roots_visited": 2304,
+  "root_inventory_size": 9935,
+  "root_scan_complete": false,
+  "graph_complete": false,
+  "stop_reason": "output_budget",
+  "recorded_pauses": 113,
+  "max_stop_to_resume_us": 5190,
+  "helper_unloaded": true,
+  "inventory_types": 364,
+  "inventory_fields": 2502,
+  "reachable_paths": 69679,
+  "metadata_model_calls": 20,
+  "selection_rounds": [
+    {
+      "input_types": 364,
+      "pages": 13,
+      "selected_types": 30
+    },
+    {
+      "input_types": 30,
+      "pages": 3,
+      "selected_types": 18
+    },
+    {
+      "input_types": 18,
+      "pages": 2,
+      "selected_types": 12
+    },
+    {
+      "input_types": 12,
+      "pages": 2,
+      "selected_types": 10
+    }
+  ],
+  "image_model_evidence": [
+    {
+      "receipt_sha256": "046b98a7d2a6a2576da025ca4ed2b892e2eaf8cb26d62ebac1665861fefd1cf0",
+      "calls": 3,
+      "summary": "Two near-identical frames of a 'Level Up!' modal over a dark brick background filled with multicolored particles. A stats sidebar sits left; SKIP and BANISH buttons sit right; a 00:14 timer is top-center. No visible change between frames."
+    }
+  ],
+  "raw_runtime_cards": 64,
+  "accepted_gameplay_hypotheses": 0,
+  "validated_controls": 0,
+  "comparisons": 0,
+  "gameplay_edits": 0,
+  "runtime_report_sha256": "6fbf27d12fe52aeb6dc8c2d681aacd1b4e61104cb3a50d0c9afffd5ced939d8e",
+  "runtime_events_sha256": "1a747adbf91ee04847d88e0b11776803940221483ba75c8cbaeaad6ff0bbaaa3",
+  "naming_receipt_sha256": "976eb13c9f130c054b8957bb173323ed28452273fcf0a6779addf4e789999a99",
+  "storage_changes": [
+    {
+      "path": "C:\\Users\\artem\\AppData\\Roaming\\Vampire_Survivors",
+      "changes": []
+    },
+    {
+      "path": "D:\\Steam\\userdata\\95209006\\1794680",
+      "changes": [
+        "remote/SaveData",
+        "remotecache.vdf"
+      ]
+    },
+    {
+      "path": "C:\\Users\\artem\\AppData\\LocalLow\\poncle\\Vampire Survivors",
+      "changes": [
+        "Player-prev.log",
+        "Player.log",
+        "Unity/ShaderVariantAnalytics/ShaderRuntimeInfoEvent.json",
+        "prefs.bin.bak"
+      ]
+    }
+  ],
+  "cleanup": {
+    "owned_process_ids": [
+      37928,
+      99712,
+      101160,
+      98984
+    ],
+    "owned_processes_exited": true,
+    "remaining": [],
+    "preserved_editor": {
+      "responsive": true,
+      "pid": 98332,
+      "session": 1,
+      "path": "C:\\DEV\\Reversebolt\\dist\\0.1.0-20261022-233909\\Reversebolt.exe"
+    },
+    "anode_lease_released": true
+  },
+  "frozen_manifest_sha256": "f4fafeb795d91eb99cb0785c508fcab3554c470c2cb1fcd8f8655819f553c960",
+  "limitation": "Known development target after a reader change. Partial catalogue only; the complete-type shortlist failed to reach eight candidates, so no hypotheses or gameplay controls were tested. The local image model again reports a level-up menu; no movement or causal effect is established."
+}
