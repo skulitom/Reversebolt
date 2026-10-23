@@ -4,6 +4,24 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Activity-focused parameter review (2026-10-23): **36% unchanged**. The shared
+core now reconstructs the original discovery plan and replays raw observations
+before using repeated state associations to scope a new parameter investigation.
+It retains negative results and missing batches, keeps constant neighboring fields
+eligible, and resolves exact objects beyond the original four-example sample cap.
+No field inherits the responding path's meaning or edit authority.
+
+A frozen saved-data review narrowed the retained Sable run to 26 fields around
+two rooted roles. The unchanged model prompts made three requests and abstained
+from proposing controls for either selected type. All original analyses, scope
+bindings and provenance checks pass. There was no new game launch, input, capture,
+memory access or write. All 477 workspace tests, strict Clippy and formatting pass.
+The feature is available in the shared core and offline CLI; automatic desktop/MCP
+use is unfinished. The user's running editor and tested preview remain unchanged.
+Next: investigate explicit reference relationships to settings outside the active
+objects, then verify proposed effects with suitable measurements and interventions.
+[Result and scope limits](../research/runtime-activity-focus/README.md).
+
 Fresh current-state activity (2026-10-23): **36% unchanged**. A frozen Sable
 development run used the explicit state selector and unchanged enclosing-role
 sampler. All 1,484 readings across 106 paths succeeded; eight paths changed and

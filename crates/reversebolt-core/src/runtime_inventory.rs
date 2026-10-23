@@ -7,7 +7,7 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 pub const MAX_FIELDS: usize = 8192;
 pub const MAX_PATH_SAMPLES: usize = 4;
@@ -180,6 +180,90 @@ fn numeric(candidate: &Candidate) -> bool {
             .is_some_and(f64::is_finite),
         _ => false,
     }
+}
+
+/// Restrict review to exact report-bound paths, retaining original type IDs.
+/// Revisit the graph rather than filtering the already truncated path samples:
+/// a selected object may occur after a field's first four examples.
+pub fn for_paths(report: &Value, paths: &[String]) -> Result<Inventory> {
+    if paths.len() > crate::runtime_neighbors::MAX_PATHS
+        || paths.iter().collect::<BTreeSet<_>>().len() != paths.len()
+    {
+        return Err("Review up to 128 distinct report-bound paths.".into());
+    }
+    let mut inventory = build(report)?;
+    let total = inventory.reachable_paths;
+    inventory.reachable_paths = 0;
+    inventory.omitted_core_paths = 0;
+    inventory.omitted_array_elements = 0;
+    inventory.omitted_non_numeric_paths = 0;
+    for typ in &mut inventory.types {
+        for field in &mut typ.fields {
+            field.values.clear();
+            field.samples.clear();
+            field.path_count = 0;
+        }
+    }
+    let requested: BTreeSet<_> = paths.iter().collect();
+    let mut found = BTreeSet::new();
+    runtime::visit_candidates(report, "", 0, 1, &mut |candidate| {
+        if !requested.contains(&candidate.id) {
+            return Ok(());
+        }
+        found.insert(candidate.id.clone());
+        inventory.reachable_paths += 1;
+        let Some(Member::Field { field }) = candidate.locator.steps.last().map(|s| &s.member)
+        else {
+            inventory.omitted_array_elements += 1;
+            return Ok(());
+        };
+        if report["core_image"].as_str() == Some(field.declaring.image.as_str()) {
+            inventory.omitted_core_paths += 1;
+            return Ok(());
+        }
+        if !numeric(candidate) {
+            inventory.omitted_non_numeric_paths += 1;
+            return Ok(());
+        }
+        let entry = inventory
+            .types
+            .iter_mut()
+            .find(|t| t.key == field.declaring)
+            .and_then(|t| t.fields.iter_mut().find(|f| f.field_id == field.field_id))
+            .ok_or("Selected path is absent from the checked inventory")?;
+        entry.path_count += 1;
+        if entry.values.len() < MAX_VALUE_SAMPLES && !entry.values.contains(&candidate.value) {
+            entry.values.push(candidate.value.clone());
+        }
+        if entry.samples.len() < MAX_PATH_SAMPLES {
+            entry.samples.push(PathSample {
+                path_id: candidate.id.clone(),
+                value: candidate.value.clone(),
+                context: candidate.context.clone(),
+            });
+        }
+        Ok(())
+    })?;
+    if found.len() != paths.len() {
+        return Err("A selected review path is absent from this report.".into());
+    }
+    for typ in &mut inventory.types {
+        typ.fields.retain(|f| f.path_count > 0);
+    }
+    inventory.types.retain(|t| !t.fields.is_empty());
+    inventory.limitation = format!(
+        "Review restricted to {} of {total} observed paths. Unselected paths remain unknown. {}",
+        paths.len(),
+        inventory.limitation
+    );
+    if serde_json::to_vec(&inventory)
+        .map_err(|e| e.to_string())?
+        .len()
+        > MAX_EVIDENCE_BYTES
+    {
+        return Err("Focused runtime naming evidence exceeds 8 MiB.".into());
+    }
+    Ok(inventory)
 }
 
 #[derive(Debug, Serialize)]

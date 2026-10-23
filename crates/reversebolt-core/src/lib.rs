@@ -26,6 +26,7 @@ pub mod probes;
 pub mod references;
 pub mod rule_checks;
 pub mod runtime;
+pub mod runtime_activity_focus;
 pub mod runtime_cards;
 pub mod runtime_hypotheses;
 pub mod runtime_inventory;

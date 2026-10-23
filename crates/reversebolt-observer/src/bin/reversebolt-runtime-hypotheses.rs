@@ -49,10 +49,63 @@ fn activity(
     input.validate()?;
     Ok(input)
 }
+
+fn focused_inventory(
+    report: &serde_json::Value,
+    path: &str,
+) -> Result<reversebolt_core::runtime_activity_focus::Focus, Box<dyn std::error::Error>> {
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Batch {
+        batch: usize,
+        observations: PathBuf,
+    }
+    #[derive(serde::Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Manifest {
+        plan: PathBuf,
+        batches: Vec<Batch>,
+    }
+    fn read(path: &std::path::Path, limit: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let mut bytes = vec![];
+        std::fs::File::open(path)?
+            .take(limit + 1)
+            .read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > limit {
+            return Err("Focus input exceeds its budget".into());
+        }
+        Ok(bytes)
+    }
+    let path = std::path::Path::new(path);
+    let base = path.parent().ok_or("Missing manifest directory")?;
+    let manifest: Manifest = serde_json::from_slice(&read(path, 64 * 1024)?)?;
+    if manifest.batches.is_empty() || manifest.batches.len() > 128 {
+        return Err("Invalid focus batch count".into());
+    }
+    let plan = serde_json::from_slice(&read(&base.join(manifest.plan), 8 * 1024 * 1024)?)?;
+    let mut remaining = 128 * 1024 * 1024;
+    let mut batches = vec![];
+    for batch in manifest.batches {
+        let bytes = read(
+            &base.join(batch.observations),
+            remaining.min(16 * 1024 * 1024),
+        )?;
+        remaining -= bytes.len() as u64;
+        batches.push(
+            reversebolt_core::runtime_activity_focus::BatchObservations {
+                batch: batch.batch,
+                observations: serde_json::from_slice(&bytes)?,
+            },
+        );
+    }
+    Ok(reversebolt_core::runtime_activity_focus::build(
+        report, &plan, &batches,
+    )?)
+}
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.len() < 3 {
-        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only [--current-state]] [--activity MANIFEST] [--replay RECEIPT]".into());
+        return Err("usage: reversebolt-runtime-hypotheses REPORT OUTPUT MODEL [--opaque] [--select-only [--current-state]] [--activity MANIFEST] [--replay RECEIPT] [--focus MANIFEST]".into());
     }
     let bytes = std::fs::read(&args[0])?;
     if bytes.len() > 64 * 1024 * 1024 {
@@ -65,6 +118,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut replay_path = None;
     let mut selection_only = false;
     let mut current_state = false;
+    let mut focus_path = None;
     let mut options = args[3..].iter();
     while let Some(option) = options.next() {
         match option.as_str() {
@@ -77,6 +131,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "--replay" if replay_path.is_none() => {
                 replay_path = Some(options.next().ok_or("Missing replay receipt")?)
             }
+            "--focus" if focus_path.is_none() => {
+                focus_path = Some(options.next().ok_or("Missing focus manifest")?)
+            }
             _ => return Err("Unknown or repeated mode".into()),
         }
     }
@@ -88,6 +145,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if current_state && !selection_only {
         return Err("Current-state selection requires --select-only.".into());
+    }
+    if focus_path.is_some()
+        && (opaque || activity_path.is_some() || replay_path.is_some() || selection_only)
+    {
+        return Err("Activity focus requires a fresh metadata-only parameter review.".into());
+    }
+    let focus = focus_path
+        .map(|p| focused_inventory(&report, p))
+        .transpose()?;
+    if let Some(focus) = &focus {
+        inventory = focus.inventory.clone();
     }
     let activity = activity_path.map(|p| activity(p)).transpose()?;
     if opaque {
@@ -124,6 +192,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         None
     };
     std::fs::create_dir(&output)?;
+    // Preserve the complete selection evidence before starting model requests.
+    if let Some(focus) = &focus {
+        std::fs::write(output.join("focus.json"), serde_json::to_vec_pretty(focus)?)?;
+    }
     let receipt = if let Some(receipt) = replay {
         receipt
     } else {
@@ -159,7 +231,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::write(
         output.join("input.json"),
         serde_json::to_vec_pretty(
-            &serde_json::json!({"opaque_research_only":opaque,"source":args[0],"inventory":inventory,"activity_manifest":activity_path,"replay_receipt":replay_path}),
+            &serde_json::json!({"opaque_research_only":opaque,"source":args[0],"inventory":inventory,"activity_manifest":activity_path,"replay_receipt":replay_path,"focus_manifest":focus_path,
+                "focus_sha256":focus.as_ref().map(|f|serde_json::to_vec(f).map(|bytes|reversebolt_core::visual::digest(&bytes))).transpose()?}),
         )?,
     )?;
     println!(

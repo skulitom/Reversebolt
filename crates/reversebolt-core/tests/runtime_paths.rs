@@ -367,6 +367,108 @@ fn response_fixture(
 }
 
 #[test]
+fn activity_focus_replays_evidence_and_keeps_constant_neighbors_without_promoting_them() {
+    use reversebolt_core::{runtime_activity_focus as f, runtime_neighbors};
+    let mut discovery = report(0, "0x100", 0);
+    discovery["classes"][2]["fields"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({
+            "id":1,"name":"Capacity","reference":false,"type_code":8,"width":4,"flags":0
+        }));
+    discovery["snapshots"][0]["reads"]
+        .as_array_mut()
+        .unwrap()
+        .push(json!({
+            "node":1,"declaring_class":2,"field":1,"element_index":null,"type_code":8,
+            "bytes":100_i32.to_le_bytes(),"value":100,"reference":null,"read_ok":true
+        }));
+    let (original, observations) = response_fixture("state");
+    let plan = runtime_neighbors::plan(&discovery, &original.seed_ids, 1).unwrap();
+    let batches = vec![f::BatchObservations {
+        batch: 0,
+        observations,
+    }];
+    let focus = f::build(&discovery, &plan, &batches).unwrap();
+    assert_eq!(focus.responding_paths, plan.seed_ids);
+    assert_eq!(focus.observed_batches, [0]);
+    assert!(focus.unobserved_batches.is_empty());
+    assert_eq!(focus.review_sampled_paths, 2);
+    let neighborhood = focus.neighborhood.as_ref().unwrap();
+    assert_eq!(neighborhood.roles.len(), 1);
+    assert_eq!(neighborhood.candidates.len(), 2);
+    assert!(neighborhood.candidates.iter().all(|c| !c.edit_authority));
+    assert!(!focus.edit_authority);
+    assert_eq!(focus.inventory.types[0].fields[1].name, "Capacity");
+    assert_eq!(focus.inventory.types[0].fields[1].values, [json!(100)]);
+    assert_eq!(focus.responses[0]["fields"].as_array().unwrap().len(), 1);
+    // A changed source, forged label, duplicate batch or broken input must not
+    // turn an externally supplied success flag into a new investigation scope.
+    let mut altered = plan.clone();
+    altered.candidates[0].name = "Speed".into();
+    assert!(f::build(&discovery, &altered, &batches).is_err());
+    assert!(f::build(&report(0, "0x100", 1), &plan, &batches).is_err());
+    assert!(f::build(&discovery, &plan, &[batches[0].clone(), batches[0].clone()]).is_err());
+    assert!(f::build(&discovery, &plan, &[]).is_err());
+    let mut invalid = batches.clone();
+    invalid[0].observations[2].input.polls[5].down.clear();
+    assert!(f::build(&discovery, &plan, &invalid).is_err());
+    let (_, observations) = response_fixture("drift");
+    let idle = f::build(
+        &discovery,
+        &plan,
+        &[f::BatchObservations {
+            batch: 0,
+            observations,
+        }],
+    )
+    .unwrap();
+    assert!(idle.responding_paths.is_empty() && idle.neighborhood.is_none());
+    assert!(idle.inventory.types.is_empty());
+}
+
+#[test]
+fn focused_inventory_resolves_selected_paths_beyond_the_original_sample_limit() {
+    use reversebolt_core::runtime_inventory as i;
+    let mut discovery = report(0, "0x100", 0);
+    let root = discovery["classes"][0]["fields"][0].clone();
+    let snapshot = discovery["snapshots"][0].clone();
+    for index in 1..6 {
+        let mut next_root = root.clone();
+        next_root["id"] = json!(index);
+        next_root["name"] = json!(format!("Other{index}"));
+        discovery["classes"][0]["fields"]
+            .as_array_mut()
+            .unwrap()
+            .push(next_root);
+        let mut next = snapshot.clone();
+        next["snapshot_id"] = json!(index);
+        next["roots"][0]["field"] = json!(index);
+        discovery["snapshots"].as_array_mut().unwrap().push(next);
+    }
+    let all = i::build(&discovery).unwrap();
+    let paths = runtime::candidates(&discovery, 32).unwrap();
+    assert_eq!(paths.len(), 6);
+    assert_eq!(all.types[0].fields[0].path_count, 6);
+    assert_eq!(all.types[0].fields[0].samples.len(), 4);
+    let last = paths.last().unwrap().id.clone();
+    assert!(
+        all.types[0].fields[0]
+            .samples
+            .iter()
+            .all(|s| s.path_id != last)
+    );
+    let scoped = i::for_paths(&discovery, std::slice::from_ref(&last)).unwrap();
+    assert_eq!(scoped.report_sha256, all.report_sha256);
+    assert_eq!(scoped.types[0].id, all.types[0].id);
+    assert_eq!(scoped.reachable_paths, 1);
+    assert_eq!(scoped.types[0].fields[0].path_count, 1);
+    assert_eq!(scoped.types[0].fields[0].samples[0].path_id, last);
+    assert!(i::for_paths(&discovery, &["f".repeat(64)]).is_err());
+    assert!(i::for_paths(&discovery, &[last.clone(), last]).is_err());
+}
+
+#[test]
 fn sibling_plan_reserves_native_utf16_request_space_with_long_unicode_types() {
     use reversebolt_core::runtime_neighbors;
     for type_name in [
