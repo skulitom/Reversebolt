@@ -96,13 +96,18 @@ impl Observer {
         cancel: &AtomicBool,
         receipt: &mut Receipt,
     ) -> Result<Vec<usize>> {
-        // Preserve the original one-request behavior and receipt for small catalogs.
+        // Small catalogs still use one request; context sizing is shared with proposals.
         if format!("{prefix}{}", json!(index)).len() <= PAGE_PROMPT_BYTES {
-            let stage = self
-                .naming_stage(format!("{prefix}{}", json!(index)), schema(), 600, 49152)
+            let stage_index = self
+                .naming_stage(
+                    format!("{prefix}{}", json!(index)),
+                    schema(),
+                    600,
+                    49152,
+                    receipt,
+                )
                 .await?;
-            receipt.stages.push(stage);
-            return selected_types(naming_text(receipt.stages.last().unwrap())?, &index);
+            return selected_types(naming_text(&receipt.stages[stage_index])?, &index);
         }
         receipt.paged_selection = Some(PagedSelection {
             policy: "complete_type_pages_v1".into(),
@@ -141,11 +146,16 @@ impl Observer {
                         stage_index: receipt.stages.len(),
                         selected: None,
                     });
-                let stage = self
-                    .naming_stage(format!("{prefix}{}", json!(page)), schema(), 600, 16384)
+                let stage_index = self
+                    .naming_stage(
+                        format!("{prefix}{}", json!(page)),
+                        schema(),
+                        600,
+                        16384,
+                        receipt,
+                    )
                     .await?;
-                receipt.stages.push(stage);
-                let selected = selected_types(naming_text(receipt.stages.last().unwrap())?, page)?;
+                let selected = selected_types(naming_text(&receipt.stages[stage_index])?, page)?;
                 nominated.extend(selected.iter().copied());
                 receipt
                     .paged_selection

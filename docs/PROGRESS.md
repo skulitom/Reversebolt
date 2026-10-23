@@ -4,6 +4,27 @@ This is a weighted capability estimate, not an estimate of elapsed development
 time or a measured probability of success. The denominator stays fixed. Credit
 requires a concrete implementation and evidence. Partial credit is allowed.
 
+Unchanged Sable native evaluation and request-accounting improvement
+(2026-10-23): **36% unchanged**. The same product build used for Viewfinder
+scanned 338 types/1,808 fields and completed fourteen selection requests, but
+its first naming proposal timed out. No named controls, comparisons or gameplay
+edits resulted. Four setup images and fifteen automatic images were used; no
+measurement images were manually reviewed. The helper unloaded, all owned test
+processes exited, the main save file is unchanged and its pre-launch folder
+backup is retained. The save index and logs changed during the run.
+
+The failed request was small, not an established context-overflow case. Four
+game-closed reconstructions completed at both large and smaller contexts, so the
+native cause remains unresolved. Small complete naming requests now avoid the
+oversized context; large requests keep their original allowance. Failed stages
+retain their exact input/settings/error rather than losing the request. A
+separately frozen metadata replay produced three cited hypotheses without target
+access, screenshots or writes. These are not verified controls. All **459
+workspace tests**, strict all-target Clippy, formatting and both artifact audits
+pass. Native revalidation and publication remain outstanding; the existing
+connected desktop editor is preserved.
+[Native failure, diagnostics and limitations](../research/independent-sable/README.md).
+
 Comparison-priority development replay (2026-10-23): **36% unchanged**.
 Two frozen four-case local replays tested whether a model could order existing
 comparisons using their labels and retained activity. V1 abstained in all four

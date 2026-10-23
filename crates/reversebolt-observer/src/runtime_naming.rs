@@ -1,6 +1,8 @@
 //! Bounded text-only hypotheses from an engine-checked runtime inventory.
+mod request;
 mod selection;
 use crate::{Observer, Result, response_text};
+pub use request::IncompleteStage;
 use reversebolt_core::{runtime_hypotheses as h, runtime_inventory::Inventory, visual::digest};
 pub use selection::PagedSelection;
 use serde::{Deserialize, Serialize};
@@ -28,6 +30,8 @@ pub struct Stage {
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Receipt {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub incomplete_stage: Option<IncompleteStage>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paged_selection: Option<PagedSelection>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -81,7 +85,7 @@ impl Receipt {
         if self.object_text_fallback.is_some() {
             return Err("Object-text fallback has already been applied.".into());
         }
-        if self.error.is_some() || self.cancelled {
+        if self.error.is_some() || self.cancelled || self.incomplete_stage.is_some() {
             return Ok(());
         }
         if self.report_sha256 != inventory.report_sha256 {
@@ -118,25 +122,44 @@ impl Observer {
         schema: Value,
         output: usize,
         context: usize,
-    ) -> Result<Stage> {
-        if prompt.len() > PROMPT_BYTES {
-            return Err("Naming prompt exceeds its 110 KiB budget.".into());
-        }
-        self.verify_model().await?;
+        receipt: &mut Receipt,
+    ) -> Result<usize> {
+        let context = request::context_for(prompt.len(), output, context);
         let options = json!({"temperature":0,"seed":42,"num_ctx":context,"num_predict":output});
-        let start = Instant::now();
-        let response = self
-            .generate(&prompt, schema.clone(), options.clone(), &[])
-            .await?;
-        self.verify_model().await?;
-        Ok(Stage {
+        let mut stage = Stage {
             prompt_sha256: digest(prompt.as_bytes()),
             prompt,
             schema,
             options,
-            response,
-            elapsed_ms: start.elapsed().as_millis(),
-        })
+            response: Value::Null,
+            elapsed_ms: 0,
+        };
+        let start = Instant::now();
+        let mut phase = "preflight";
+        let outcome = async {
+            if stage.prompt.len() > PROMPT_BYTES {
+                return Err("Naming prompt exceeds its 110 KiB budget.".into());
+            }
+            self.verify_model().await?;
+            phase = "request";
+            stage.response = self
+                .generate(
+                    &stage.prompt,
+                    stage.schema.clone(),
+                    stage.options.clone(),
+                    &[],
+                )
+                .await?;
+            phase = "identity_recheck";
+            self.verify_model().await
+        }
+        .await;
+        stage.elapsed_ms = start.elapsed().as_millis();
+        request::finish(
+            receipt,
+            stage,
+            outcome.err().map(|error| (phase.into(), error)),
+        )
     }
     pub async fn runtime_hypotheses(&self, inventory: &Inventory, cancel: &AtomicBool) -> Receipt {
         self.runtime_hypotheses_with_activity(inventory, None, cancel)
@@ -149,6 +172,7 @@ impl Observer {
         cancel: &AtomicBool,
     ) -> Receipt {
         let mut receipt = Receipt {
+            incomplete_stage: None,
             paged_selection: None,
             object_text_fallback: None,
             activity: None,
@@ -209,9 +233,12 @@ impl Observer {
         if cancel.load(Ordering::SeqCst) {
             return Ok(());
         }
-        let selection = receipt.selection.as_ref().unwrap();
+        let selection = receipt.selection.as_ref().unwrap().clone();
         if selection.rows.is_empty() {
-            receipt.batch = Some(h::validate(selection, h::Proposals { hypotheses: vec![] })?);
+            receipt.batch = Some(h::validate(
+                &selection,
+                h::Proposals { hypotheses: vec![] },
+            )?);
             return Ok(());
         }
         let mut hypotheses = vec![];
@@ -246,12 +273,11 @@ impl Observer {
                 "{PROPOSE_PROMPT}\nThis group has a budget of {quota} questions. Select distinct useful properties to investigate from the cited labels. A property may be hidden or inactive: no image, current action or visible response is required. Keep different purposes separate and avoid duplicate aliases. Abstain when these labels do not support a useful property.\nObserved paths: {}",
                 json!(table)
             );
-            let stage = self
-                .naming_stage(prompt, schema, quota * 850, 32768)
+            let stage_index = self
+                .naming_stage(prompt, schema, quota * 850, 32768, receipt)
                 .await?;
-            receipt.stages.push(stage);
             let proposed: h::Proposals =
-                serde_json::from_str(naming_text(receipt.stages.last().unwrap())?)
+                serde_json::from_str(naming_text(&receipt.stages[stage_index])?)
                     .map_err(|e| e.to_string())?;
             if proposed.hypotheses.len() > quota
                 || proposed.hypotheses.iter().any(|p| {
@@ -311,6 +337,7 @@ mod tests {
         let selection = h::select(&inventory, &[0]).unwrap();
         let batch = h::validate(&selection, h::Proposals { hypotheses: vec![] }).unwrap();
         let receipt = Receipt {
+            incomplete_stage: None,
             paged_selection: None,
             object_text_fallback: None,
             activity: None,

@@ -1,0 +1,78 @@
+{
+  "artifact_audit": "passed",
+  "app_id": "757310",
+  "installed_build": "10132013",
+  "release": "0.1.0-20261022-235934",
+  "unchanged_from_viewfinder": true,
+  "source_commit": "7818181f199d14bfd81cef1beb491864c7f56253",
+  "jobs": [
+    {
+      "phase": "Completed",
+      "error": null
+    }
+  ],
+  "named_hypotheses": 0,
+  "metadata_error": "The local model request exceeded its 90-second time limit.",
+  "runtime_summary": {
+    "available": true,
+    "phase": "ready",
+    "notice": "Internal values are provisional. Their gameplay effects have not been tested.",
+    "catalog_id": "f578221a-ab00-42e1-bcd0-1af562facc7a",
+    "revision": 0
+  },
+  "model_identity": {
+    "model": "qwen3.8:latest",
+    "model_digest": "22130167c4c20e20c7b71454612966ca8e8171e9b3cc8ab6ce8aa6cbfec79643",
+    "server_version": "0.40.7"
+  },
+  "completed_metadata_model_calls": 14,
+  "metadata_stage_ms": 43276,
+  "activity_error": null,
+  "activity_interpretation_performed": false,
+  "types": 338,
+  "fields": 1808,
+  "reachable_paths": 44901,
+  "pages_per_round": [
+    11,
+    2,
+    1
+  ],
+  "comparisons": false,
+  "automatic_discovery_images": 15,
+  "discovery_input_holds": 4,
+  "manually_reviewed_setup_images": 4,
+  "manually_reviewed_measurement_images": 0,
+  "helper_runs": 1,
+  "pause_count": 144,
+  "max_stop_to_resume_us": 5641,
+  "storage_differences": {
+    "changed": [
+      "Player.log",
+      "SaveData/SaveManager"
+    ],
+    "new": [
+      "Player-prev.log"
+    ]
+  },
+  "frozen_sha256": "54b149f399e2521a244d9b9c323ddf6172dc05b9a2583e2359af05cc5aeb3e6d",
+  "result_sha256": "603ef436887909dad3ac6e44b93e6a68f8e822c7f4efc7f26685f75f0eeea45d",
+  "cleanup": {
+    "recorded_utc": "2026-10-22T23:59:37.4290789Z",
+    "owned_processes_exited": true,
+    "owned_pids": [
+      82408,
+      34012,
+      55252,
+      78688
+    ],
+    "desktop_pid": 98332,
+    "desktop_responsive": true,
+    "protection": {
+      "antivirus": true,
+      "realtime": true,
+      "tamper": true
+    },
+    "new_reversebolt_detections": 0
+  },
+  "limitation": "Artifact checks do not establish meaningful controls, safe ranges, world rollback or generalization. Comparison effects require a separate raw-evidence audit."
+}

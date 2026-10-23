@@ -1,0 +1,218 @@
+{
+  "artifact_audit": "passed",
+  "development_replay": true,
+  "native_timeout_resolved": false,
+  "new_images": 0,
+  "field_writes": 0,
+  "context_probe_frozen_sha256": "71b1dc9511e796264849baa409d8cd713a170ac39d6d44b6ce2bc6454bbe7a32",
+  "context_probes": [
+    {
+      "context": 32768,
+      "elapsed_ms": 6141,
+      "load_ms": 5507.5231,
+      "prompt_tokens": 801,
+      "output_tokens": 12,
+      "abstained": true,
+      "reported_model_vram": 17445882427,
+      "result_sha256": "f5f31a667657002af9c8479a8c0da8c772bdbd0265babf812c92afa4ebd8e6ab"
+    },
+    {
+      "context": 32768,
+      "elapsed_ms": 218,
+      "load_ms": 2.5784,
+      "prompt_tokens": 801,
+      "output_tokens": 12,
+      "abstained": true,
+      "reported_model_vram": 17445882427,
+      "result_sha256": "0cb62ea6a1d29379bd3ccf1ce9f775367449a0735cb2d75b24541dc29cd5c02e"
+    },
+    {
+      "context": 16384,
+      "elapsed_ms": 6469,
+      "load_ms": 5840.392,
+      "prompt_tokens": 801,
+      "output_tokens": 12,
+      "abstained": true,
+      "reported_model_vram": 17361996347,
+      "result_sha256": "3927276c456108a93bf4bcacedd2a80d4c0539b3dfa1e9e7f98d3d383a8fd71c"
+    },
+    {
+      "context": 16384,
+      "elapsed_ms": 218,
+      "load_ms": 2.8716,
+      "prompt_tokens": 801,
+      "output_tokens": 12,
+      "abstained": true,
+      "reported_model_vram": 17361996347,
+      "result_sha256": "b121c269e0f85047563f81b371312fc8836b6463b53e2cfc03cdbf88733fd6e5"
+    }
+  ],
+  "replay_frozen_sha256": "966d5228771cc47720973f10c21d0c710651340e012d3135df104993f98abd2b",
+  "receipt_sha256": "7d3a2c00377250e731c2285ee6bda2f8195a364d48b9148710841bea7dc8b4c4",
+  "selected_types": [
+    24,
+    39,
+    71,
+    80,
+    101,
+    105,
+    109
+  ],
+  "accepted": [
+    "max ground incline",
+    "usables check range",
+    "Grip Multiplier"
+  ],
+  "rejected": 0,
+  "stages": [
+    {
+      "stage": 0,
+      "context": 16384,
+      "prompt_bytes": 11967,
+      "prompt_tokens": 3710,
+      "elapsed_ms": 7133
+    },
+    {
+      "stage": 1,
+      "context": 16384,
+      "prompt_bytes": 11894,
+      "prompt_tokens": 3306,
+      "elapsed_ms": 1782
+    },
+    {
+      "stage": 2,
+      "context": 16384,
+      "prompt_bytes": 11939,
+      "prompt_tokens": 3558,
+      "elapsed_ms": 1861
+    },
+    {
+      "stage": 3,
+      "context": 16384,
+      "prompt_bytes": 11956,
+      "prompt_tokens": 3425,
+      "elapsed_ms": 1958
+    },
+    {
+      "stage": 4,
+      "context": 16384,
+      "prompt_bytes": 11713,
+      "prompt_tokens": 3409,
+      "elapsed_ms": 2011
+    },
+    {
+      "stage": 5,
+      "context": 16384,
+      "prompt_bytes": 11716,
+      "prompt_tokens": 3902,
+      "elapsed_ms": 1946
+    },
+    {
+      "stage": 6,
+      "context": 16384,
+      "prompt_bytes": 11912,
+      "prompt_tokens": 3476,
+      "elapsed_ms": 1850
+    },
+    {
+      "stage": 7,
+      "context": 16384,
+      "prompt_bytes": 11715,
+      "prompt_tokens": 3337,
+      "elapsed_ms": 1774
+    },
+    {
+      "stage": 8,
+      "context": 16384,
+      "prompt_bytes": 9596,
+      "prompt_tokens": 3007,
+      "elapsed_ms": 1568
+    },
+    {
+      "stage": 9,
+      "context": 16384,
+      "prompt_bytes": 11989,
+      "prompt_tokens": 3211,
+      "elapsed_ms": 1659
+    },
+    {
+      "stage": 10,
+      "context": 16384,
+      "prompt_bytes": 4038,
+      "prompt_tokens": 1043,
+      "elapsed_ms": 891
+    },
+    {
+      "stage": 11,
+      "context": 16384,
+      "prompt_bytes": 11904,
+      "prompt_tokens": 3378,
+      "elapsed_ms": 2116
+    },
+    {
+      "stage": 12,
+      "context": 16384,
+      "prompt_bytes": 4039,
+      "prompt_tokens": 1137,
+      "elapsed_ms": 907
+    },
+    {
+      "stage": 13,
+      "context": 16384,
+      "prompt_bytes": 8000,
+      "prompt_tokens": 2302,
+      "elapsed_ms": 1634
+    },
+    {
+      "stage": 14,
+      "context": 16384,
+      "prompt_bytes": 3540,
+      "prompt_tokens": 801,
+      "elapsed_ms": 720
+    },
+    {
+      "stage": 15,
+      "context": 16384,
+      "prompt_bytes": 3037,
+      "prompt_tokens": 656,
+      "elapsed_ms": 568
+    },
+    {
+      "stage": 16,
+      "context": 32768,
+      "prompt_bytes": 56542,
+      "prompt_tokens": 16844,
+      "elapsed_ms": 20528
+    },
+    {
+      "stage": 17,
+      "context": 16384,
+      "prompt_bytes": 5574,
+      "prompt_tokens": 1381,
+      "elapsed_ms": 6640
+    },
+    {
+      "stage": 18,
+      "context": 16384,
+      "prompt_bytes": 3962,
+      "prompt_tokens": 935,
+      "elapsed_ms": 634
+    },
+    {
+      "stage": 19,
+      "context": 16384,
+      "prompt_bytes": 8536,
+      "prompt_tokens": 2117,
+      "elapsed_ms": 3490
+    },
+    {
+      "stage": 20,
+      "context": 16384,
+      "prompt_bytes": 4315,
+      "prompt_tokens": 1024,
+      "elapsed_ms": 674
+    }
+  ],
+  "total_stage_ms": 62344,
+  "limitation": "The game was closed. Names are hypotheses. Both legacy-context and reduced-context diagnostic requests succeeded; this is not a causal diagnosis of the native timeout or gameplay validation."
+}
